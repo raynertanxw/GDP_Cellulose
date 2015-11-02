@@ -6,7 +6,7 @@ public class Enemy_Movement : MonoBehaviour
 	private float speed = 0.1f;
 	private Vector2 velocity;
 
-	private Rigidbody2D thisRB;
+	public Rigidbody2D thisRB;
 
 	void Awake()
 	{
