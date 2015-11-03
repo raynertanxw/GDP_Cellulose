@@ -152,6 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb211a8479c0b4f7293768ecda2f1a1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentCommand: 
+  children: []
   squadIndex: 1
 --- !u!61 &691526629
 BoxCollider2D:
@@ -233,6 +235,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb211a8479c0b4f7293768ecda2f1a1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentCommand: 
+  children: []
   squadIndex: 0
 --- !u!61 &720415781
 BoxCollider2D:
@@ -387,9 +391,10 @@ GameObject:
   - 114: {fileID: 1095421900}
   - 50: {fileID: 1095421899}
   - 114: {fileID: 1095421901}
+  - 61: {fileID: 1095421902}
   m_Layer: 0
   m_Name: Enemy_Cell
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -459,6 +464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 593c969937aaa4915b6c4ced5d329a49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  thisRB: {fileID: 0}
 --- !u!114 &1095421901
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,6 +478,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NumChildCells: 0
   enemyCellPrefab: {fileID: 129788, guid: a5b7ee48a68434888a6866f170bb0da7, type: 2}
+--- !u!61 &1095421902
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1095421896}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Size: {x: .159999996, y: .159999996}
 --- !u!1 &1516100925
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,7 +612,7 @@ GameObject:
   - 61: {fileID: 1972632686}
   m_Layer: 0
   m_Name: Player_Cell
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -732,6 +751,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb211a8479c0b4f7293768ecda2f1a1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentCommand: 
+  children: []
   squadIndex: 2
 --- !u!61 &1992812333
 BoxCollider2D:

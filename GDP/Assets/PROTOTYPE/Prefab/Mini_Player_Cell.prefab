@@ -11,9 +11,10 @@ GameObject:
   - 212: {fileID: 21274110}
   - 61: {fileID: 6104398}
   - 50: {fileID: 5058638}
+  - 114: {fileID: 11403460}
   m_Layer: 0
   m_Name: Mini_Player_Cell
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,6 +60,18 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: .159999996, y: .159999996}
+--- !u!114 &11403460
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 128030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0718ce43349e36439248ada0a4862f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isLeader: 0
 --- !u!212 &21274110
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -103,6 +116,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_Color.b
       value: .37229678
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

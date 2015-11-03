@@ -19,6 +19,15 @@ public class Enemy_Controller : MonoBehaviour
 		StartCoroutine(spawnChildCells());
 	}
 
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            other.gameObject.GetComponent<ChildController>().ReturnSquadManager().ReassignLeader();
+            Destroy(other.gameObject);
+        }
+    }
+
 	IEnumerator spawnChildCells()
 	{
 		while (true)

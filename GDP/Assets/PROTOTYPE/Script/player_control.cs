@@ -22,12 +22,22 @@ public class player_control : MonoBehaviour
 		resources = 100;
 	}
 
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space) && squadSpawnPoints[activeSquad].GetComponent<Squad_Manager>().Empty() == false)
+        {
+            squadSpawnPoints[activeSquad].GetComponent<Squad_Manager>().CommandAttack();
+        }
+    }
+
 	void OnMouseDown()
 	{
 		if (resources > spawnCost)
 		{
-			Instantiate(playerCellPrefab, squadSpawnPoints[activeSquad].position, Quaternion.identity);
-			resources -= spawnCost;
+			GameObject childCell = (GameObject) Instantiate(playerCellPrefab, squadSpawnPoints[activeSquad].position, Quaternion.identity);
+            squadSpawnPoints[activeSquad].gameObject.GetComponent<Squad_Manager>().AddChild(childCell.GetComponent<ChildController>());
+            childCell.GetComponent<ChildController>().setSquadManager(squadSpawnPoints[activeSquad].gameObject.GetComponent<Squad_Manager>());
+            resources -= spawnCost;
 		}
 		else
 		{
