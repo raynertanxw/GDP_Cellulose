@@ -11,24 +11,49 @@ public class Resource_Controller : MonoBehaviour
 	[SerializeField] private float offsetInfluence = 0.5f;
 
 	private Vector3 endPosition;
+    private bool isCollectable = true;        // isCollected: Determines if the current resource can be collected by the player
+    private float clickMagnitude;             // clickMagnitude: The distance between the resource and player when is clicked
+    private Vector3 initialScale;             // <------- REMOVE THIS IN MAIN GAME, SPRITE SHOULD VECTOR.ONE SCALE
+
+    private Transform playerMainTransform;
 
 	// Use this for initialization
 	void Start () 
 	{
 		endPosition = new Vector2 (-transform.position.x, transform.position.y + Random.Range (-5f, 5f) * offsetInfluence);
+        playerMainTransform = GameObject.Find("Player_Cell").transform;
+        initialScale = transform.localScale;
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		transform.position = Vector2.MoveTowards(transform.position, endPosition, ((endPosition - transform.position).magnitude * timeTaken + endingSpeed) * Time.deltaTime);
-		if (transform.position == endPosition)
-			Destroy(this.gameObject);
+        if (isCollectable)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, endPosition, ((endPosition - transform.position).magnitude * timeTaken + endingSpeed) * Time.deltaTime);
+            if (transform.position == endPosition)
+                Destroy(this.gameObject);
+        }
+        else
+        {
+            // distanceMagnitude: The magnitude between the resource and the player's main cell's position
+            float distanceMagnitude = (playerMainTransform.position - transform.position).magnitude;
+            transform.position = Vector2.MoveTowards(transform.position, playerMainTransform.position, (distanceMagnitude * timeTaken + endingSpeed) * 5.0f * Time.deltaTime);
+
+            transform.localScale = initialScale * (distanceMagnitude / clickMagnitude);
+
+            if (distanceMagnitude < 0.1f)
+                Destroy(this.gameObject);
+        }
 	}
 
 	void OnMouseDown()
 	{
-		player_control.resources += 10;
-		Destroy(this.gameObject);
+        if (isCollectable)
+        {
+            player_control.resources += 10;
+            clickMagnitude = (transform.position - playerMainTransform.position).magnitude;
+            isCollectable = false;
+        }
 	}
 }
