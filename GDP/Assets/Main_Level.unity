@@ -1631,6 +1631,7 @@ GameObject:
   - 212: {fileID: 1972632684}
   - 61: {fileID: 1972632686}
   - 114: {fileID: 1972632687}
+  - 114: {fileID: 1972632688}
   m_Layer: 0
   m_Name: Player_Cell
   m_TagString: Player
@@ -1705,6 +1706,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_nSpawnCost: 10
   m_playerCellPrefab: {fileID: 128030, guid: d32df8876c3364bf7b7fd43711c4e8a5, type: 2}
+--- !u!114 &1972632688
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1972632683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 872e55326991c4b188382ba7f3d574f6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_nHealth: 100
 --- !u!1 &1992812329
 GameObject:
   m_ObjectHideFlags: 0
