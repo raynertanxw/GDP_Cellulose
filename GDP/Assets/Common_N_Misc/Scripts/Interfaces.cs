@@ -10,5 +10,5 @@ public abstract class IState
 
 public abstract class IPCState : IState
 {
-	private PlayerChildFSM m_pcFSM = null;
+	protected PlayerChildFSM m_pcFSM = null;
 }
