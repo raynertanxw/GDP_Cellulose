@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class PROTOTYPE_Squad_Manager : MonoBehaviour
 {
-	private player_control playerCtrl;
+	private Player_Control playerCtrl;
 	private PROTOTYPE_ChildController leader;
     private GameObject enemy;
     private float speed;
@@ -19,7 +19,7 @@ public class PROTOTYPE_Squad_Manager : MonoBehaviour
 
 	void Awake()
 	{
-		playerCtrl = transform.parent.GetComponent<player_control>();
+		playerCtrl = transform.parent.GetComponent<Player_Control>();
 		children = new List<PROTOTYPE_ChildController>();
         enemy = GameObject.Find("Enemy_Cell");
         speed = 0.2f;

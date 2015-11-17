@@ -51,7 +51,7 @@ public class Resource_Controller : MonoBehaviour
 	{
         if (isCollectable)
         {
-            player_control.resources += 10;
+            Player_Control.resources += 10;
             clickMagnitude = (transform.position - playerMainTransform.position).magnitude;
             isCollectable = false;
         }
