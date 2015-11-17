@@ -45,8 +45,11 @@ public class Player_Control : MonoBehaviour
 		Debug.Log("Active Squad: " + m_nActiveSquad);
 	}
 
+	
+	#region Actions for UI Buttons to call
 	public void ActionSpawn()
 	{
+		Debug.Log("Spawn Action called");
 		if (s_nResources > m_nSpawnCost)
 		{
 			GameObject childCell = (GameObject) Instantiate(m_playerCellPrefab, m_squadPoints[m_nActiveSquad].position, Quaternion.identity);
@@ -57,4 +60,25 @@ public class Player_Control : MonoBehaviour
 			Debug.Log("Not enough resources");
 		}
 	}
+
+	public void ActionDefend()
+	{
+		Debug.Log("Defend Action called");
+	}
+
+	public void ActionAvoid()
+	{
+		Debug.Log("Avoid Action called");
+	}
+
+	public void ActionChargeMain()
+	{
+		Debug.Log("Charge Main Action Called");
+	}
+
+	public void ActionChargeChild()
+	{
+		Debug.Log("Charge Child Action Called");
+	}
+	#endregion
 }
