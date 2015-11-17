@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Enemy_Movement : MonoBehaviour
+public class PROTOTYPE_Enemy_Movement : MonoBehaviour
 {
 	private float speed = 0.1f;
 	private Vector2 velocity;

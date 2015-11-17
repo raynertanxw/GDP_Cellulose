@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ChildController : MonoBehaviour {
+public class PROTOTYPE_ChildController : MonoBehaviour {
 
     [SerializeField]
     private bool isLeader;
-    private Squad_Manager squadManager;
+	private PROTOTYPE_Squad_Manager squadManager;
 
 	// Use this for initialization
 	void Start ()
@@ -17,12 +17,12 @@ public class ChildController : MonoBehaviour {
 	
 	}
 
-    public void setSquadManager(Squad_Manager SM)
+	public void setSquadManager(PROTOTYPE_Squad_Manager SM)
     {
         squadManager = SM;
     }
 
-    public Squad_Manager ReturnSquadManager()
+	public PROTOTYPE_Squad_Manager ReturnSquadManager()
     {
         return squadManager;
     }

@@ -24,9 +24,9 @@ public class player_control : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && squadSpawnPoints[activeSquad].GetComponent<Squad_Manager>().Empty() == false)
+		if (Input.GetKeyDown(KeyCode.Space) && squadSpawnPoints[activeSquad].GetComponent<PROTOTYPE_Squad_Manager>().Empty() == false)
         {
-            squadSpawnPoints[activeSquad].GetComponent<Squad_Manager>().CommandAttack();
+			squadSpawnPoints[activeSquad].GetComponent<PROTOTYPE_Squad_Manager>().CommandAttack();
         }
     }
 
@@ -35,8 +35,8 @@ public class player_control : MonoBehaviour
 		if (resources > spawnCost)
 		{
 			GameObject childCell = (GameObject) Instantiate(playerCellPrefab, squadSpawnPoints[activeSquad].position, Quaternion.identity);
-            squadSpawnPoints[activeSquad].gameObject.GetComponent<Squad_Manager>().AddChild(childCell.GetComponent<ChildController>());
-            childCell.GetComponent<ChildController>().setSquadManager(squadSpawnPoints[activeSquad].gameObject.GetComponent<Squad_Manager>());
+			squadSpawnPoints[activeSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>().AddChild(childCell.GetComponent<PROTOTYPE_ChildController>());
+			childCell.GetComponent<PROTOTYPE_ChildController>().setSquadManager(squadSpawnPoints[activeSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>());
             resources -= spawnCost;
 		}
 		else

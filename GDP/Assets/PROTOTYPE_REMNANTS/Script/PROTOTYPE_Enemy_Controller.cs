@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Enemy_Controller : MonoBehaviour
+public class PROTOTYPE_Enemy_Controller : MonoBehaviour
 {
-	private Enemy_Movement enemyMovement;
+	private PROTOTYPE_Enemy_Movement enemyMovement;
 	public int NumChildCells = 0;
 
 	[SerializeField]
@@ -11,7 +11,7 @@ public class Enemy_Controller : MonoBehaviour
 
 	private void Awake()
 	{
-		enemyMovement = GetComponent<Enemy_Movement>();
+		enemyMovement = GetComponent<PROTOTYPE_Enemy_Movement>();
 	}
 
 	private void Start()
@@ -23,7 +23,7 @@ public class Enemy_Controller : MonoBehaviour
     {
         if (other.gameObject.tag == "Player")
         {
-            other.gameObject.GetComponent<ChildController>().ReturnSquadManager().ReassignLeader();
+			other.gameObject.GetComponent<PROTOTYPE_ChildController>().ReturnSquadManager().ReassignLeader();
             Destroy(other.gameObject);
         }
     }

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public static class Debugger{
+public static class PROTOTYPE_Debugger{
 
     public static void CheckEmpty<type>(type t)
     {

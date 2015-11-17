@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Squad_Manager : MonoBehaviour
+public class PROTOTYPE_Squad_Manager : MonoBehaviour
 {
 	private player_control playerCtrl;
-    private ChildController leader;
+	private PROTOTYPE_ChildController leader;
     private GameObject enemy;
     private float speed;
     private bool inCommand;
@@ -13,14 +13,14 @@ public class Squad_Manager : MonoBehaviour
     private string currentCommand;
 
     [SerializeField]
-    private List<ChildController> children;
+	private List<PROTOTYPE_ChildController> children;
 
     public int squadIndex;
 
 	void Awake()
 	{
 		playerCtrl = transform.parent.GetComponent<player_control>();
-        children = new List<ChildController>();
+		children = new List<PROTOTYPE_ChildController>();
         enemy = GameObject.Find("Enemy_Cell");
         speed = 0.2f;
         currentCommand = "";
@@ -71,7 +71,7 @@ public class Squad_Manager : MonoBehaviour
         SetLeader();
     }
 
-    public void AddChild(ChildController child)
+	public void AddChild(PROTOTYPE_ChildController child)
     {
         children.Add(child);
         if (CheckSquadForLeader() == false)
@@ -92,7 +92,7 @@ public class Squad_Manager : MonoBehaviour
         return true;
     }
 
-    ChildController ReturnLeader()
+	PROTOTYPE_ChildController ReturnLeader()
     {
         for (int i = 0; i < children.Count; i++)
         {
@@ -104,7 +104,7 @@ public class Squad_Manager : MonoBehaviour
         return null;
     }
 
-    bool CheckCellReachTarget(ChildController child, Vector2 targetPos)
+	bool CheckCellReachTarget(PROTOTYPE_ChildController child, Vector2 targetPos)
     {
         if (child != null && Vector2.Distance(child.transform.position, targetPos) <= 0.1f)
         {
