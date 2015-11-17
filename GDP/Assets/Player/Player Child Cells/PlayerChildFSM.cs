@@ -6,10 +6,9 @@ public class PlayerChildFSM : MonoBehaviour
 {
 	public static EnemyMainFSM s_eMain;
 	public static PlayerMain s_pMain;
-
-	private PCState m_currentState;
-	private IPCState m_currentStateInstance;
-	private Dictionary<string, IPCState> m_statesDictionary;
+	
+	private IPCState m_currentState;
+	private Dictionary<PCState, IPCState> m_statesDictionary;
 	private int m_nIndex;
 	private float m_fSpeed;
 	public bool m_bIsDefending = true;
@@ -19,7 +18,6 @@ public class PlayerChildFSM : MonoBehaviour
 	#region Getter functions
 	public int GetIndex() { return m_nIndex; }
 	public float GetSpeed() { return m_fSpeed; }
-	public PCState GetCurrentState() { return m_currentState; }
 	#endregion
 
 	public void ChangeState(PCState newState)
