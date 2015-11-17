@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class PC_IdleState : IPCState
+public class PC_AvoidState : IPCState
 {
 	public override void Enter()
 	{
@@ -19,7 +19,7 @@ public class PC_IdleState : IPCState
 	}
 	
 	// Constructor.
-	public PC_IdleState(PlayerChildFSM pcFSM)
+	public PC_AvoidState(PlayerChildFSM pcFSM)
 	{
 		m_pcFSM = pcFSM;
 	}
@@ -32,15 +32,15 @@ public class PC_IdleState : IPCState
 
 
 
-
+	private float m_fAvoidRange;
 
 	#region Helper functions
-	private bool DetectEnemyInRange()
+	private bool findClosestEnemy()
 	{
 		return false; // PLACEHOLDER
 	}
 
-	private void MoveAroundNode()
+	private void MoveAwayFromEnemy()
 	{
 
 	}
