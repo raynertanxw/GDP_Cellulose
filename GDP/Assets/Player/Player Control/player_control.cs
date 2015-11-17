@@ -37,26 +37,24 @@ public class Player_Control : MonoBehaviour
 
     }
 
-	void OnMouseDown()
-	{
-		if (s_nResources > m_nSpawnCost)
-		{
-			GameObject childCell = (GameObject) Instantiate(m_playerCellPrefab, m_squadPoints[m_nActiveSquad].position, Quaternion.identity);
-			m_squadPoints[m_nActiveSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>().AddChild(childCell.GetComponent<PROTOTYPE_ChildController>());
-			childCell.GetComponent<PROTOTYPE_ChildController>().setSquadManager(m_squadPoints[m_nActiveSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>());
-            s_nResources -= m_nSpawnCost;
-		}
-		else
-		{
-			Debug.Log("Not enough resources");
-		}
-	}
-
 	public void ChangeActiveSquad(int nNewSquad)
 	{
 		m_squadPointsRen[m_nActiveSquad].color = m_unselectedSquadCol;
 		m_nActiveSquad = nNewSquad;
 		m_squadPointsRen[m_nActiveSquad].color = m_selectedSquadCol;
 		Debug.Log("Active Squad: " + m_nActiveSquad);
+	}
+
+	public void ActionSpawn()
+	{
+		if (s_nResources > m_nSpawnCost)
+		{
+			GameObject childCell = (GameObject) Instantiate(m_playerCellPrefab, m_squadPoints[m_nActiveSquad].position, Quaternion.identity);
+			s_nResources -= m_nSpawnCost;
+		}
+		else
+		{
+			Debug.Log("Not enough resources");
+		}
 	}
 }

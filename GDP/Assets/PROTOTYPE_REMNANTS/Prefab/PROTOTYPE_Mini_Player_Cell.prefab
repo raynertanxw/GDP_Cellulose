@@ -13,7 +13,7 @@ GameObject:
   - 50: {fileID: 5058638}
   - 114: {fileID: 11403460}
   m_Layer: 0
-  m_Name: Mini_Player_Cell
+  m_Name: PROTOTYPE_Mini_Player_Cell
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
