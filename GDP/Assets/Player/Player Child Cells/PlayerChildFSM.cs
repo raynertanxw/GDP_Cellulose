@@ -22,12 +22,25 @@ public class PlayerChildFSM : MonoBehaviour
 
 	public void ChangeState(PCState newState)
 	{
-
+		m_currentState.Exit();
+		m_currentState = m_statesDictionary[newState];
+		m_currentState.Enter();
 	}
 
 	void Awake()
 	{
+		// Set up the m_statesDictionary.
+		m_statesDictionary = new Dictionary<PCState, IPCState>();
+		m_statesDictionary.Add(PCState.Avoid, new PC_AvoidState(this));
+		m_statesDictionary.Add(PCState.ChargeChild, new PC_ChargeChildState(this));
+		m_statesDictionary.Add(PCState.ChargeMain, new PC_ChargeMainState(this));
+		m_statesDictionary.Add(PCState.Dead, new PC_DeadState(this));
+		m_statesDictionary.Add(PCState.Defend, new PC_DefendState(this));
+		m_statesDictionary.Add(PCState.Idle, new PC_IdleState(this));
 
+		// Default Start currentState is dead state.
+		m_currentState = m_statesDictionary[PCState.Dead];
+		m_currentState.Enter();
 	}
 	
 	void Start ()
@@ -37,6 +50,6 @@ public class PlayerChildFSM : MonoBehaviour
 
 	void Update ()
 	{
-	
+		m_currentState.Execute();
 	}
 }
