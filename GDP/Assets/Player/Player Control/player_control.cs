@@ -8,25 +8,35 @@ public class player_control : MonoBehaviour
 
 	[SerializeField]
 	private GameObject playerCellPrefab;
-
-	private Transform[] squadSpawnPoints;
+	
+	private Transform[] squadPoints;
+	private SpriteRenderer[] squadPointsRen;
 	private int activeSquad = 1;
+
+	private Color unselectedSquadCol, selectedSquadCol;
 
 	void Awake()
 	{
-		squadSpawnPoints = new Transform[3];
-		squadSpawnPoints[0] = transform.GetChild(0);
-		squadSpawnPoints[1] = transform.GetChild(1);
-		squadSpawnPoints[2] = transform.GetChild(2);
+		unselectedSquadCol = new Color(0, 1, 0.867f, 1);
+		selectedSquadCol = new Color(0.75f, 1, 0.25f, 1);
+
+		squadPoints = new Transform[transform.childCount];
+		squadPointsRen = new SpriteRenderer[transform.childCount];
+		for (int i = 0; i < transform.childCount; i++)
+		{
+			squadPoints[i] = transform.GetChild(i);
+			squadPointsRen[i] = transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>();
+		}
+		squadPointsRen[activeSquad].color = selectedSquadCol;
 
 		resources = 100;
 	}
 
     void Update()
     {
-		if (Input.GetKeyDown(KeyCode.Space) && squadSpawnPoints[activeSquad].GetComponent<PROTOTYPE_Squad_Manager>().Empty() == false)
+		if (Input.GetKeyDown(KeyCode.Space) && squadPoints[activeSquad].GetComponent<PROTOTYPE_Squad_Manager>().Empty() == false)
         {
-			squadSpawnPoints[activeSquad].GetComponent<PROTOTYPE_Squad_Manager>().CommandAttack();
+			squadPoints[activeSquad].GetComponent<PROTOTYPE_Squad_Manager>().CommandAttack();
         }
     }
 
@@ -34,9 +44,9 @@ public class player_control : MonoBehaviour
 	{
 		if (resources > spawnCost)
 		{
-			GameObject childCell = (GameObject) Instantiate(playerCellPrefab, squadSpawnPoints[activeSquad].position, Quaternion.identity);
-			squadSpawnPoints[activeSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>().AddChild(childCell.GetComponent<PROTOTYPE_ChildController>());
-			childCell.GetComponent<PROTOTYPE_ChildController>().setSquadManager(squadSpawnPoints[activeSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>());
+			GameObject childCell = (GameObject) Instantiate(playerCellPrefab, squadPoints[activeSquad].position, Quaternion.identity);
+			squadPoints[activeSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>().AddChild(childCell.GetComponent<PROTOTYPE_ChildController>());
+			childCell.GetComponent<PROTOTYPE_ChildController>().setSquadManager(squadPoints[activeSquad].gameObject.GetComponent<PROTOTYPE_Squad_Manager>());
             resources -= spawnCost;
 		}
 		else
@@ -47,7 +57,9 @@ public class player_control : MonoBehaviour
 
 	public void ChangeActiveSquad(int newSquad)
 	{
+		squadPointsRen[activeSquad].color = unselectedSquadCol;
 		activeSquad = newSquad;
+		squadPointsRen[activeSquad].color = selectedSquadCol;
 		Debug.Log("Active Squad: " + activeSquad);
 	}
 }
