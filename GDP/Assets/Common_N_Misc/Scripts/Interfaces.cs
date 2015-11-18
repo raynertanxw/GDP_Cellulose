@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class IState
+public abstract class IState : MonoBehaviour
 {
 	public virtual void Enter() {}
 	public virtual void Execute() {}
@@ -16,4 +16,9 @@ public abstract class IPCState : IState
 public abstract class IECState : IState
 {
     protected EnemyChildFSM m_ecFSM = null;
+}
+
+public abstract class IEMState : IState
+{
+	protected EnemyMainFSM m_EMFSM = null;
 }

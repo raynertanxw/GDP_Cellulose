@@ -3,7 +3,7 @@ using System.Collections;
 
 public class EnemyMainFSM : MonoBehaviour 
 {
-	EnemyMainState m_CurrentState = null;
+	IEMState m_CurrentState = null;
 
 	int nDamageNum;
 
@@ -19,7 +19,7 @@ public class EnemyMainFSM : MonoBehaviour
 
 	}
 
-	public void ChangeState (EnemyMainState newState)
+	public void ChangeState (IEMState newState)
 	{
 		if (m_CurrentState != null)
 			m_CurrentState.Exit ();
