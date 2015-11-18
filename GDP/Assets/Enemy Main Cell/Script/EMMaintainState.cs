@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMMaintainState : EnemyMainState
+public class EMMaintainState : IEMState
 {
 	public static EMMaintainState instance;
 

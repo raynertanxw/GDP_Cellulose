@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMProductionState :EnemyMainState
+public class EMProductionState :IEMState
 {
 	public static EMProductionState instance;
 
