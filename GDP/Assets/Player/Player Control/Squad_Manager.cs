@@ -4,12 +4,12 @@ using System.Collections.Generic;
 
 public class Squad_Manager : MonoBehaviour
 {
-	private Player_Control m_playerCtrl;
+	private player_control m_playerCtrl;
     public int m_nSquadIndex;
 
 	void Awake()
 	{
-		m_playerCtrl = transform.parent.GetComponent<Player_Control>();
+		m_playerCtrl = transform.parent.GetComponent<player_control>();
     }
 
 	void OnMouseDown()

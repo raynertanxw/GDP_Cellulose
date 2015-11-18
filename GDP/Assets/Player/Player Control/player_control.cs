@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Player_Control : MonoBehaviour
+public class player_control : MonoBehaviour
 {
 	public static int s_nResources;
 	public int m_nSpawnCost = 10;
