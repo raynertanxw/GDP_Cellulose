@@ -21,4 +21,5 @@ public abstract class IECState : IState
 public abstract class IEMState : IState
 {
 	protected EnemyMainFSM m_EMFSM = null;
+	protected PlayerChildFSM m_PCFSM = null;
 }
