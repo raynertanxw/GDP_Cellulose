@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMCautiousAttackState : EnemyMainState 
+public class EMCautiousAttackState : IEMState
 {
 	public static EMCautiousAttackState instance;
 	
-	public EMCautiousAttackState (EnemyMainFSM EMFSM)
+	public GameObject FSM;
+	
+	void Awake ()
 	{
-		m_EMFSM = EMFSM;
+		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
+		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
 	}
 	
 	// Singleton

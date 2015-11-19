@@ -1,13 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMStunnedState : EnemyMainState
+public class EMStunnedState : IEMState
 {
 	public static EMStunnedState instance;
 	
-	public EMStunnedState (EnemyMainFSM EMFSM)
+	public GameObject FSM;
+	private EMController emController;
+	
+	void Awake ()
 	{
-		m_EMFSM = EMFSM;
+		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
+		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
+		emController = GetComponent<EMController> ();
 	}
 
 	// Singleton
@@ -21,6 +26,9 @@ public class EMStunnedState : EnemyMainState
 	
 	public override void Execute ()
 	{
-		m_EMFSM.ChangeState (EMProductionState.Instance ());
+		if (!emController.bStunned) 
+		{
+			m_EMFSM.ChangeState (EMProductionState.Instance ());
+		}
 	}
 }

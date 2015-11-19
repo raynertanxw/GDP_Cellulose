@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMDieState : EnemyMainState
+public class EMDieState : IEMState
 {
 	public static EMDieState instance;
 	
-	public EMDieState (EnemyMainFSM EMFSM)
+	public GameObject FSM;
+	
+	void Awake ()
 	{
-		m_EMFSM = EMFSM;
+		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
+		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
 	}
 
 	// Singleton
@@ -17,6 +20,11 @@ public class EMDieState : EnemyMainState
 			instance = new EMDieState();
 		
 		return instance;
+	}
+
+	public override void Enter ()
+	{
+		Destroy (this.gameObject);
 	}
 	
 	public override void Execute ()

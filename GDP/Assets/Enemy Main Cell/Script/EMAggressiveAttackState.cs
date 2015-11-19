@@ -1,15 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMAggressiveAttackState : EnemyMainState
+public class EMAggressiveAttackState : IEMState
 {
 	public static EMAggressiveAttackState instance;
-	
-	public EMAggressiveAttackState (EnemyMainFSM EMFSM)
+
+	public GameObject FSM;
+
+	void Awake ()
 	{
-		m_EMFSM = EMFSM;
+		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
+		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
 	}
-	
+
 	// Singleton
 	public static EMAggressiveAttackState Instance()
 	{
@@ -18,7 +21,7 @@ public class EMAggressiveAttackState : EnemyMainState
 		
 		return instance;
 	}
-	
+
 	public override void Execute ()
 	{
 		m_EMFSM.ChangeState (EMProductionState.Instance ());

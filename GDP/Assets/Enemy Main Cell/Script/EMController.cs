@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMController : MonoBehaviour
+public class EMController : MonoBehaviour 
 {
 	public float fSpeed;
 	public float fSpeedFactor;

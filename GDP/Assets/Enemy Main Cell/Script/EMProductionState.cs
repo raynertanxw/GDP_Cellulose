@@ -1,13 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMProductionState :IEMState
+public class EMProductionState : IEMState
 {
 	public static EMProductionState instance;
 
-	public EMProductionState (EnemyMainFSM EMFSM)
+	public GameObject FSM;
+	
+	void Awake ()
 	{
-		m_EMFSM = EMFSM;
+		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
+		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
 	}
 
 	// Singleton
@@ -21,6 +24,6 @@ public class EMProductionState :IEMState
 	
 	public override void Execute ()
 	{
-		m_EMFSM.ChangeState (EMMaintainState.Instance ());
+		StartCoroutine (m_EMFSM.ProduceChild ());
 	}
 }
