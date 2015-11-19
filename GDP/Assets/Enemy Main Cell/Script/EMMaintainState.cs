@@ -5,9 +5,9 @@ public class EMMaintainState : IEMState
 {
 	public static EMMaintainState instance;
 
-	void Start()
+	public EMMaintainState (EnemyMainFSM EMFSM)
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		m_EMFSM = EMFSM;
 	}
 
 	// Singleton

@@ -5,9 +5,9 @@ public class EMCautiousAttackState : EnemyMainState
 {
 	public static EMCautiousAttackState instance;
 	
-	void Start()
+	public EMCautiousAttackState (EnemyMainFSM EMFSM)
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		m_EMFSM = EMFSM;
 	}
 	
 	// Singleton

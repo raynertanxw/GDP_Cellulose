@@ -5,9 +5,9 @@ public class EMProductionState :IEMState
 {
 	public static EMProductionState instance;
 
-	void Start()
+	public EMProductionState (EnemyMainFSM EMFSM)
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		m_EMFSM = EMFSM;
 	}
 
 	// Singleton

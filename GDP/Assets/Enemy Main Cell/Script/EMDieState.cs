@@ -5,9 +5,9 @@ public class EMDieState : EnemyMainState
 {
 	public static EMDieState instance;
 	
-	void Start()
+	public EMDieState (EnemyMainFSM EMFSM)
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		m_EMFSM = EMFSM;
 	}
 
 	// Singleton

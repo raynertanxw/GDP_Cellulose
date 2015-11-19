@@ -5,9 +5,9 @@ public class EMAggressiveAttackState : EnemyMainState
 {
 	public static EMAggressiveAttackState instance;
 	
-	void Start()
+	public EMAggressiveAttackState (EnemyMainFSM EMFSM)
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		m_EMFSM = EMFSM;
 	}
 	
 	// Singleton
