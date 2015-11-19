@@ -1,29 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-// SC_DefendState.cs: Function of script here.
-public class SC_DefendState : MonoBehaviour 
+// SC_DefendState.cs: The defend state of the player squad's captain FSM
+public class SC_DefendState : ISCState 
 {
-	// Public Variables
-	
-	// Private Variables
-	
-	// Component/GameObject Instances
 
-	// Private Methods
-	// Start(): Use this for initialization
-	void Start () 
-	{
-	
-	}
-	
-	// Update(): is called once per frame
-	void Update () 
-	{
-	
-	}
-	
-	// Public Methods
-	
-	// Get-Set Methods
 }
