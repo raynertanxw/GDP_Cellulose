@@ -11,8 +11,8 @@ public class Resource : MonoBehaviour
 	[SerializeField] private float fMinimumSpeed = 0.5f;	// fMinimumSpeed: This to prevent the resource from moving to a complete hault when reaching the endng point
 	[Tooltip("The amount of horizontal offset of the resources when instantiated (The greater the number, the higher the offset)")]
 	[SerializeField] private float fMaximumOffset = 0.5f;
-    [Tooltip("The amount of points for each resource node")]
-    [SerializeField] private static int fPoints = 10f;
+    [Tooltip("The amount of resource for each resource node")]
+    [SerializeField] private static int s_nResource = 10;
 
     // Uneditable Variables
 	private Vector3 endPosition;
@@ -62,12 +62,12 @@ public class Resource : MonoBehaviour
 	{
         if (bIsCollectable)
         {
-            player_control.s_nResources += fPoints;
+            player_control.s_nResources += s_nResource;
             fClickMagnitude = (transform.position - playerMainTransform.position).magnitude;
             bIsCollectable = false;
         }
 	}
 
     // Getter-Setter Functions
-    public static int Points { get { return fPoints; } }
+    public static int Resource { get { return s_nResource; } }
 }
