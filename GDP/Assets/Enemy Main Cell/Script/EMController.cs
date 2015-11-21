@@ -3,6 +3,9 @@ using System.Collections;
 
 public class EMController : MonoBehaviour 
 {
+	public GameObject FSM;
+	private EnemyMainFSM m_EMFSM;
+
 	public float fSpeed;
 	public float fSpeedFactor;
 	public float fSpeedTemp;
@@ -13,29 +16,47 @@ public class EMController : MonoBehaviour
 	public bool bStunned;
 	private bool bCanStun;
 
+	// Size
+	public int nSize;
+	private Vector2 initialScale;
+	private Vector2 currentScale;
+
 	private Rigidbody2D thisRB;
 
 	void Start()
 	{
+		// GetComponent
+		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
 		thisRB = GetComponent<Rigidbody2D> ();
+
+		// Speed
 		fSpeed = .25f;
 		fSpeedFactor = 1f;
 		fSpeedTemp = fSpeed;
+		// Velocity
 		velocity = new Vector2 (0, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
+		// Damage
 		nDamageNum = 0;
+		// State
 		bPushed = false;
 		bStunned = false;
 		bCanStun = true;
+		// Size
+		nSize = 50;
+		initialScale = gameObject.transform.localScale;
+		currentScale = initialScale * Mathf.Sqrt(nSize);
 	}
 
 	void Update()
 	{
+		// Force back the enemy main cell when received damage and not forced back
 		if (nDamageNum > 0 && !bPushed) 
 		{
 			StartCoroutine(ForceBack());
 		}
 
+		// Stun the enemy main cell when received certain amount of hits, can be stunned but not stunned
 		if (nDamageNum > 5 && !bStunned && bCanStun) 
 		{
 			StartCoroutine(Stun ());
@@ -45,8 +66,15 @@ public class EMController : MonoBehaviour
 		{
 
 		}
+
+		// Check size
+		if (currentScale != initialScale * Mathf.Sqrt(nSize)) 
+		{
+			currentScale = initialScale * Mathf.Sqrt(nSize);
+		}
 	}
 
+	// Push back the enemy main cell when received attack
 	IEnumerator ForceBack()
 	{
 		Vector2 velocityTemp = new Vector2 (0f, -velocity.y * 2.5f);
@@ -62,6 +90,7 @@ public class EMController : MonoBehaviour
 		bPushed = false;
 	}
 
+	// Auto regain velocity
 	void RegainVelocity ()
 	{
 		velocity = new Vector2(0, fSpeed * fSpeedFactor);
@@ -69,6 +98,7 @@ public class EMController : MonoBehaviour
 		fSpeedTemp = fSpeed;
 	}
 
+	// Stun the enemy main cell after receiving certain amount of hits within certain period of time
 	IEnumerator Stun()
 	{
 		bStunned = true;

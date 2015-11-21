@@ -4,36 +4,35 @@ using System.Collections.Generic;
 
 public class EnemyMainFSM : MonoBehaviour 
 {
-	IEMState m_CurrentState = null;
+	public EMController emController;
+
+	public IEMState m_CurrentState = null;
 
 	public GameObject enemyMain;
+	// Enemy Child
 	public GameObject ecPrefab;
 	List<GameObject> ecList = new List<GameObject>();
-	private int nAvailableChild;
+	public int nAvailableChildNum;
 
-	private int nSize;
-	private Vector2 initialScale;
-	private Vector2 currentScale;
+	// Damage
 	private int nDamageNum;
-
-	public bool bCanSpawn;
-
-	EMController emController;
+	// Aggressiveness
+	public int nAggressiveness;
+	// Production State
+	public bool bCanSpawn; 
 
 	void Start()
 	{
+		emController = enemyMain.GetComponent<EMController> ();
+
 		m_CurrentState = EMProductionState.Instance ();
 
-		nAvailableChild = 0;
+		nAvailableChildNum = 0;
 
-		nSize = 50;
-		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * nSize;
 		nDamageNum = 0;
+		nAggressiveness = 10;
 
 		bCanSpawn = true;
-
-		emController = enemyMain.GetComponent<EMController> ();
 	}
 
 	void Update()
@@ -56,46 +55,11 @@ public class EnemyMainFSM : MonoBehaviour
 		{
 			GameObject newChild = (GameObject)Instantiate (ecPrefab, transform.position, Quaternion.identity);
 			ecList.Add (newChild);
+			emController.nSize--;
 
 			bCanSpawn = false;
 			yield return new WaitForSeconds (2);
 			bCanSpawn = true;
-		}
-	}
-
-	void ProductionTransition ()
-	{
-		if (nAvailableChild < 10) 
-		{
-			if (m_CurrentState != null)
-				m_CurrentState.Exit ();
-
-			m_CurrentState = EMProductionState.Instance();
-			m_CurrentState.Enter ();
-		}
-	}
-
-	void StunnedTransition ()
-	{
-		if (emController.bStunned) 
-		{
-			if (m_CurrentState != null)
-				m_CurrentState.Exit ();
-			
-			m_CurrentState = EMStunnedState.Instance();
-			m_CurrentState.Enter ();
-		}
-	}
-
-	void DieTransition ()
-	{
-		if (nSize <= 0) 
-		{
-			if (m_CurrentState != null)
-				m_CurrentState.Exit ();
-			
-			m_CurrentState = EMDieState.Instance();
-			m_CurrentState.Enter ();
 		}
 	}
 }
