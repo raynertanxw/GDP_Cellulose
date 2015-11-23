@@ -1,15 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ECTrickAttackState : MonoBehaviour {
+public class ECTrickAttackState : IECState {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public ECTrickAttackState(GameObject childCell, EnemyChildFSM ecFSM)
+    {
+        child = childCell;
+        m_ecFSM = ecFSM;
+    }
+    public override void Enter()
+    {
+
+    }
+
+    public override void Execute()
+    {
+
+    }
+
+    public override void Exit()
+    {
+
+    }
 }

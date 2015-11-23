@@ -15,6 +15,7 @@ public abstract class IPCState : IState
 
 public abstract class IECState : IState
 {
+    protected GameObject child = null;
     protected EnemyChildFSM m_ecFSM = null;
 }
 
