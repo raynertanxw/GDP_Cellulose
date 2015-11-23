@@ -46,7 +46,7 @@ public class PlayerChildFSM : MonoBehaviour
 
 	public static EnemyMainFSM s_eMain;
 	public static PlayerMain s_pMain;
-	public static int s_nActiveChildCount = 0;
+	private static int s_nActiveChildCount = 0;
 	private static int s_nIndex = 0;
 	
 	private PCState m_currentEnumState;
@@ -69,6 +69,18 @@ public class PlayerChildFSM : MonoBehaviour
 	public int GetIndex() { return m_nIndex; }
 	public float GetSpeed() { return m_fSpeed; }
 	public PCState GetCurrentState() { return m_currentEnumState; }
+
+	public static int GetActiveChildCount() { return s_nActiveChildCount; }
+	#endregion
+
+	#region Setter functions
+	public static void SetActiveChildCount(bool increase)
+	{
+		if (increase)
+			s_nActiveChildCount++;
+		else
+			s_nActiveChildCount--;
+	}
 	#endregion
 
 	public void ChangeState(PCState newState)

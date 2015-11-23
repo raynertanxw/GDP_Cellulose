@@ -17,7 +17,7 @@ public class PC_DeadState : IPCState
 		m_pcFSM.transform.position = Constants.s_farfarAwayVector;
 
 		// Update active Child Count.
-		PlayerChildFSM.s_nActiveChildCount++;
+		PlayerChildFSM.SetActiveChildCount(true);
 	}
 
 	public override void Execute()
@@ -40,7 +40,7 @@ public class PC_DeadState : IPCState
 		m_bIsCalledFromPool = false;
 
 		// Update active Child Count.
-		PlayerChildFSM.s_nActiveChildCount--;
+		PlayerChildFSM.SetActiveChildCount(false);
 	}
 
 	// Constructor.
