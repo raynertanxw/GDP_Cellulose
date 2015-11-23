@@ -7,6 +7,7 @@ public class PlayerChildFSM : MonoBehaviour
 	public static EnemyMainFSM s_eMain;
 	public static PlayerMain s_pMain;
 	
+	private PCState m_currentEnumState;
 	private IPCState m_currentState;
 	private Dictionary<PCState, IPCState> m_statesDictionary;
 	private int m_nIndex;
@@ -18,6 +19,7 @@ public class PlayerChildFSM : MonoBehaviour
 	#region Getter functions
 	public int GetIndex() { return m_nIndex; }
 	public float GetSpeed() { return m_fSpeed; }
+	public PCState GetCurrentState() { return m_currentEnumState; }
 	#endregion
 
 	public void ChangeState(PCState newState)
@@ -25,6 +27,7 @@ public class PlayerChildFSM : MonoBehaviour
 		m_currentState.Exit();
 		m_currentState = m_statesDictionary[newState];
 		m_currentState.Enter();
+		m_currentEnumState = newState;
 	}
 
 	void Awake()
@@ -41,6 +44,7 @@ public class PlayerChildFSM : MonoBehaviour
 		// Default Start currentState is dead state.
 		m_currentState = m_statesDictionary[PCState.Dead];
 		m_currentState.Enter();
+		m_currentEnumState = PCState.Dead;
 	}
 	
 	void Start ()
