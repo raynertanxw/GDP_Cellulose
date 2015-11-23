@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ECChargeCstate : MonoBehaviour {
+public class ECChargeCState : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
