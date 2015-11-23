@@ -46,6 +46,7 @@ public class PlayerChildFSM : MonoBehaviour
 
 	public static EnemyMainFSM s_eMain;
 	public static PlayerMain s_pMain;
+	public static int s_nActiveChildCount = 0;
 	private static int s_nIndex = 0;
 	
 	private PCState m_currentEnumState;

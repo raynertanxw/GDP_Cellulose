@@ -15,6 +15,9 @@ public class PC_DeadState : IPCState
 
 		// Teleport far away.
 		m_pcFSM.transform.position = Constants.s_farfarAwayVector;
+
+		// Update active Child Count.
+		PlayerChildFSM.s_nActiveChildCount++;
 	}
 
 	public override void Execute()
@@ -35,6 +38,9 @@ public class PC_DeadState : IPCState
 
 		// Reset State.
 		m_bIsCalledFromPool = false;
+
+		// Update active Child Count.
+		PlayerChildFSM.s_nActiveChildCount--;
 	}
 
 	// Constructor.
