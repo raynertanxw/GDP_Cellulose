@@ -5,12 +5,14 @@ public class EMTransition : MonoBehaviour
 {
 	public GameObject FSM;
 	EnemyMainFSM m_EMFSM;
+	private EMController controller;
 
 	public bool bCanTransit;
 
 	void Start ()
 	{
 		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
+		controller = GetComponent<EMController> ();
 
 		bCanTransit = true;
 	}
@@ -26,24 +28,24 @@ public class EMTransition : MonoBehaviour
 	public void Transition (float nChanceFactor, IEMState state)
 	{
 		float nChance = 0f;
-		float nEnemyChildFactor = m_EMFSM.nSize / 10;
+		float nEnemyChildFactor = controller.nSize / 10;
 		float nPlayerChildFactor;
 
-		if (nChanceFactor <= 0f)
+		if (nChanceFactor <= 10f)
 			m_EMFSM.ChangeState (state);
 		else
 		{
 			nChance = Random.Range (0f, nChanceFactor);
-			if (nChance == 0f)
+			if (nChance <= 1f)
 				m_EMFSM.ChangeState (state);
 		}
 	}
 
 	// Universal function for pausing transition availability
-	public IEnumerator TransitionAvailability ()
+	public IEnumerator TransitionAvailability (float fTIme)
 	{
 		bCanTransit = false;
-		yield return new WaitForSeconds (0.25f);
+		yield return new WaitForSeconds (fTIme);
 		bCanTransit = true;
 	}
 
@@ -67,7 +69,7 @@ public class EMTransition : MonoBehaviour
 	// Immediate Transition for DieState
 	void DieTransition ()
 	{
-		if (m_EMFSM.nSize <= 0 && m_EMFSM.m_CurrentState != EMDieState.Instance()) 
+		if (controller.nSize <= 0 && m_EMFSM.m_CurrentState != EMDieState.Instance()) 
 		{
 			m_EMFSM.ChangeState (EMDieState.Instance());
 		}

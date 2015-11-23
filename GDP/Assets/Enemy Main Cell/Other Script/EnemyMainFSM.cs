@@ -11,7 +11,7 @@ public class EnemyMainFSM : MonoBehaviour
 	public GameObject enemyMain;
 	// Enemy Child
 	public GameObject ecPrefab;
-	List<GameObject> ecList = new List<GameObject>();
+	public List<GameObject> ecList = new List<GameObject>();
 	public int nAvailableChildNum;
 
 	// Damage
