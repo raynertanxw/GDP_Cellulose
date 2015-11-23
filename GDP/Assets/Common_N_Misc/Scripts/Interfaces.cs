@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public abstract class IState : MonoBehaviour
+public abstract class IState
 {
 	public virtual void Enter() {}
 	public virtual void Execute() {}

@@ -9,11 +9,11 @@ GameObject:
   m_Component:
   - 4: {fileID: 450752}
   - 212: {fileID: 21274110}
-  - 61: {fileID: 6104398}
   - 50: {fileID: 5058638}
-  - 114: {fileID: 11403460}
+  - 58: {fileID: 5889786}
+  - 114: {fileID: 11406408}
   m_Layer: 0
-  m_Name: PROTOTYPE_Mini_Player_Cell
+  m_Name: Player_Child_Cell
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26,7 +26,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 128030}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -3, z: 0}
+  m_LocalPosition: {x: -13.7756767, y: 239.523376, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -47,8 +47,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &6104398
-BoxCollider2D:
+--- !u!58 &5889786
+CircleCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -59,8 +59,8 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Size: {x: .159999996, y: .159999996}
---- !u!114 &11403460
+  m_Radius: .0799999982
+--- !u!114 &11406408
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -68,10 +68,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 128030}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c0718ce43349e36439248ada0a4862f6, type: 3}
+  m_Script: {fileID: 11500000, guid: e52962725aaa041bbbee19ef6ac52bab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isLeader: 0
+  m_nIndex: 0
+  m_bIsDefending: 1
+  m_assignedNode: {fileID: 0}
+  m_currentTarget: {fileID: 0}
 --- !u!212 &21274110
 SpriteRenderer:
   m_ObjectHideFlags: 1

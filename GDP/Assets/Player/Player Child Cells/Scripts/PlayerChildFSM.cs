@@ -2,19 +2,30 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof (Rigidbody2D))]
+[RequireComponent (typeof (CircleCollider2D))]
+[RequireComponent (typeof (SpriteRenderer))]
 public class PlayerChildFSM : MonoBehaviour
 {
 	public static EnemyMainFSM s_eMain;
 	public static PlayerMain s_pMain;
+	private static int s_nIndex = 0;
 	
 	private PCState m_currentEnumState;
 	private IPCState m_currentState;
 	private Dictionary<PCState, IPCState> m_statesDictionary;
+	[SerializeField]
 	private int m_nIndex;
 	private float m_fSpeed;
 	public bool m_bIsDefending = true;
 	public Transform m_assignedNode;
 	public Transform m_currentTarget;
+
+
+	// Component Cache.
+	public Rigidbody2D rigidbody2D;
+	public CircleCollider2D collider2D;
+	public SpriteRenderer spriteRen;
 
 	#region Getter functions
 	public int GetIndex() { return m_nIndex; }
@@ -32,6 +43,14 @@ public class PlayerChildFSM : MonoBehaviour
 
 	void Awake()
 	{
+		// Initialise the index.
+		m_nIndex = s_nIndex++; // Assigns the variable first before incrementing it.
+
+		// Cache components
+		rigidbody2D = GetComponent<Rigidbody2D>();
+		collider2D = GetComponent<CircleCollider2D>();
+		spriteRen = GetComponent<SpriteRenderer>();
+
 		// Set up the m_statesDictionary.
 		m_statesDictionary = new Dictionary<PCState, IPCState>();
 		m_statesDictionary.Add(PCState.Avoid, new PC_AvoidState(this));
