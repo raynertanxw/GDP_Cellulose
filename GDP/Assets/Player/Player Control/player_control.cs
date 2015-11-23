@@ -5,9 +5,6 @@ public class player_control : MonoBehaviour
 {
 	public static int s_nResources;
 	public int m_nSpawnCost = 10;
-
-	[SerializeField]
-	private GameObject m_playerCellPrefab;
 	
 	private Transform[] m_squadPoints;
 	private SpriteRenderer[] m_squadPointsRen;
@@ -52,7 +49,7 @@ public class player_control : MonoBehaviour
 		Debug.Log("Spawn Action called");
 		if (s_nResources > m_nSpawnCost)
 		{
-			GameObject childCell = (GameObject) Instantiate(m_playerCellPrefab, m_squadPoints[m_nActiveSquad].position, Quaternion.identity);
+			PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position);
 			s_nResources -= m_nSpawnCost;
 		}
 		else

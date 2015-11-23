@@ -7,6 +7,43 @@ using System.Collections.Generic;
 [RequireComponent (typeof (SpriteRenderer))]
 public class PlayerChildFSM : MonoBehaviour
 {
+	#region Pool Control
+	// singleton list to hold all out playerChildPoolControllers.
+	static private List<PlayerChildFSM> s_playerChildFSMPool;
+	
+	static public PlayerChildFSM Spawn(Vector3 spawnPoint)
+	{
+		foreach (PlayerChildFSM currentPCFSM in s_playerChildFSMPool)
+		{
+			// If disabled, thn it's available.
+			if (currentPCFSM.m_currentEnumState == PCState.Dead)
+			{
+				// Set it up
+				(currentPCFSM.m_statesDictionary[PCState.Dead] as PC_DeadState).CallFromPool(spawnPoint);
+				
+				// return a reference to the caller.
+				return currentPCFSM;
+			}
+		}
+		
+		// If we get here we haven't pooled enough.
+		Debug.Log("Exhausted Player Child pool --> Increase pool size");
+		
+		return null;
+	}
+
+	void OnDestroy()
+	{
+		// remove myself from the pool
+		s_playerChildFSMPool.Remove(this);
+		// was I the last one?
+		if (s_playerChildFSMPool.Count == 0)
+		{
+			s_playerChildFSMPool = null;
+		}
+	}
+	#endregion
+
 	public static EnemyMainFSM s_eMain;
 	public static PlayerMain s_pMain;
 	private static int s_nIndex = 0;
@@ -43,6 +80,17 @@ public class PlayerChildFSM : MonoBehaviour
 
 	void Awake()
 	{
+		// does the pool exist yet
+		if (s_playerChildFSMPool == null)
+		{
+			// lazy initialize it
+			s_playerChildFSMPool = new List<PlayerChildFSM>();
+		}
+		// add myself
+		s_playerChildFSMPool.Add(this);
+
+
+
 		// Initialise the index.
 		m_nIndex = s_nIndex++; // Assigns the variable first before incrementing it.
 
