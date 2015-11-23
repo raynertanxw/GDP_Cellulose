@@ -52,4 +52,4 @@ public class ECChargeMState : IECState {
         child.transform.Translate(direction * m_ecFSM.fSpeed);
     }
 }
-}
+

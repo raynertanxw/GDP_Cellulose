@@ -23,26 +23,27 @@ public class EnemyChildFSM : MonoBehaviour {
 
     void Start()
     {
-        fSpeed = 0.5f;
+        fSpeed = 0.01f;
         bIsMine = false;
         pMain = GameObject.Find("Player_Cell");
         eMain = GameObject.Find("Enemy_Cell");
-        idleState = new ECIdleState(this);
-        defendState = new ECDefendState(this);
-        avoidState = new ECAvoidState(this);
-        attackState = new ECAttackState(this);
-        chargeCState = new ECChargeCState(this);
-        chargeMState = new ECChargeMState(this);
-        tAttackState = new ECTrickAttackState(this);
-        deadState = new ECDeadState(this);
-        mineState = new ECMineState(this);
+        idleState = new ECIdleState(gameObject,this);
+        defendState = new ECDefendState(gameObject,this);
+        avoidState = new ECAvoidState(gameObject,this);
+        attackState = new ECAttackState(gameObject,this);
+        chargeCState = new ECChargeCState(gameObject,this);
+        chargeMState = new ECChargeMState(gameObject,this);
+        tAttackState = new ECTrickAttackState(gameObject,this);
+        deadState = new ECDeadState(gameObject,this);
+        mineState = new ECMineState(gameObject,this);
         currentState = deadState;
-        currentCommand = MessageType.Empty;
+        currentCommand = MessageType.Idle;
     }
 
     void Update()
     {
         currentState.Execute();
+        Debug.Log(currentCommand.ToString());
         UpdateState();
     }
 
@@ -77,13 +78,9 @@ public class EnemyChildFSM : MonoBehaviour {
         {
             ChangeState(avoidState);
         }
-        else if (currentCommand == MessageType.ChargeChild)
+        else if (currentCommand == MessageType.Attack)
         {
-            ChangeState(chargeCState);
-        }
-        else if (currentCommand == MessageType.ChargeMain)
-        {
-            ChangeState(chargeMState);
+            ChangeState(attackState);
         }
         else if (currentCommand == MessageType.Dead)
         {

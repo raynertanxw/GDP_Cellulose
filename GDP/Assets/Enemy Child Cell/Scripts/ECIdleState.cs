@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ECIdleState : IECState {
+public class ECIdleState : IECState
+{
 
     private float fWanderRadius;//radius of constraining circle
     private float fProjectDistance;//distance that the circle is projected in front of the agent
     private float fWanderJitter;//max amount of displacement for the target position each timestep 
     private Vector2 WanderTarget;
+    private Vector2 PreviousKnownMainPos;
 
     public ECIdleState(GameObject childCell, EnemyChildFSM ecFSM)
     {
@@ -26,6 +28,7 @@ public class ECIdleState : IECState {
         }
         WanderTarget = child.transform.position;
         WanderTarget = Wander();
+        PreviousKnownMainPos = m_ecFSM.eMain.transform.position;
     }
 
     public override void Execute()
@@ -33,10 +36,12 @@ public class ECIdleState : IECState {
         if (HasCellReachTargetPos(WanderTarget) == false)
         {
             MoveTowards(WanderTarget);
+            Debug.Log("Move towards: " + WanderTarget);
         }
         else
         {
             WanderTarget = Wander();
+            Debug.Log("reset");
         }
 
         //add an if statement to check if the enemy main cell had received heavy damage
@@ -70,12 +75,19 @@ public class ECIdleState : IECState {
             child.transform.Translate(direction * m_ecFSM.fSpeed);
             Vector2 nextPos = child.transform.position;
             fDistanceTraveled += Vector2.Distance(previousPos, nextPos);
+            Debug.Log("Travel to idle Area");
         }
     }
 
     private Vector2 Wander()
     {
         WanderTarget += new Vector2(Random.Range(-1, 1) * fWanderJitter, Random.Range(-1, 1) * fWanderJitter);
+        if (PreviousKnownMainPos.y != m_ecFSM.transform.position.y)
+        {
+            float diffY = m_ecFSM.eMain.transform.position.y - child.transform.position.y;
+            WanderTarget.y += diffY;
+        }
+
         WanderTarget.Normalize();
         WanderTarget *= fWanderRadius;
 
@@ -100,7 +112,8 @@ public class ECIdleState : IECState {
         return false;
     }
 
-     /*private int ReturnEMHealth()
-     {
-         return m_ecFSM.eMain.nDamageNum;
-     }*/
+    /*private int ReturnEMHealth()
+    {
+        return m_ecFSM.eMain.nDamageNum;
+    }*/
+}
