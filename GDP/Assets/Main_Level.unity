@@ -345,7 +345,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671de6a80b03940c6b01bfc7d9689013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nSquadIndex: 0
+  m_nSquadIndex: 1
 --- !u!61 &691526629
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1785,7 +1785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 671de6a80b03940c6b01bfc7d9689013, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nSquadIndex: 0
+  m_nSquadIndex: 2
 --- !u!61 &1992812333
 BoxCollider2D:
   m_ObjectHideFlags: 0
