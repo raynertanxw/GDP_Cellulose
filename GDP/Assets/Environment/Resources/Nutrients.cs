@@ -2,7 +2,7 @@
 using System.Collections;
 
 // Resource.cs: The main controller for each resource node
-public class Resource : MonoBehaviour
+public class Nutrients : MonoBehaviour
 {
     // Editable Variables
 	[Tooltip("The time taken for the resource to travel from the start to end IF THERE IS NO DECELERATION")]
@@ -12,7 +12,7 @@ public class Resource : MonoBehaviour
 	[Tooltip("The amount of horizontal offset of the resources when instantiated (The greater the number, the higher the offset)")]
 	[SerializeField] private float fMaximumOffset = 0.5f;
     [Tooltip("The amount of resource for each resource node")]
-    [SerializeField] private static int s_nResource = 10;
+    [SerializeField] private static int s_nNutrients = 10;
 
     // Uneditable Variables
 	private Vector3 endPosition;
@@ -62,12 +62,12 @@ public class Resource : MonoBehaviour
 	{
         if (bIsCollectable)
         {
-            player_control.s_nResources += s_nResource;
+            player_control.s_nResources += s_nNutrients;
             fClickMagnitude = (transform.position - playerMainTransform.position).magnitude;
             bIsCollectable = false;
         }
 	}
 
     // Getter-Setter Functions
-    public static int Resource { get { return s_nResource; } }
+    public static int Nutrient { get { return s_nNutrients; } }
 }
