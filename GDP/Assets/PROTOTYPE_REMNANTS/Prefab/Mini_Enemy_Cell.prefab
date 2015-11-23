@@ -11,9 +11,10 @@ GameObject:
   - 212: {fileID: 21292564}
   - 61: {fileID: 6171802}
   - 50: {fileID: 5017822}
+  - 114: {fileID: 11488050}
   m_Layer: 0
   m_Name: Mini_Enemy_Cell
-  m_TagString: Untagged
+  m_TagString: EnemyChild
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -59,6 +60,17 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: .159999996, y: .159999996}
+--- !u!114 &11488050
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 129788}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e2d2d48c14bfd845813353be39cf341, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!212 &21292564
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -91,7 +103,11 @@ Prefab:
   serializedVersion: 2
   m_Modification:
     m_TransformParent: {fileID: 0}
-    m_Modifications: []
+    m_Modifications:
+    - target: {fileID: 0}
+      propertyPath: m_TagString
+      value: EnemyChild
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 129788}

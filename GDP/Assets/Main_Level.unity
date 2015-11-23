@@ -1746,7 +1746,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!1001 &976993690
 Prefab:
   m_ObjectHideFlags: 0
@@ -1959,7 +1959,7 @@ RectTransform:
   - {fileID: 385003838}
   - {fileID: 1875815790}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -2341,7 +2341,7 @@ Transform:
   m_Children:
   - {fileID: 416917435}
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
 --- !u!50 &1095421899
 Rigidbody2D:
   serializedVersion: 2
@@ -4315,7 +4315,7 @@ Transform:
   - {fileID: 691526627}
   - {fileID: 1992812331}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 1
 --- !u!61 &1972632686
 BoxCollider2D:
   m_ObjectHideFlags: 0
