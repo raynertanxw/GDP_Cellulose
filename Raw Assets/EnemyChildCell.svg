@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="293mm"
+   viewBox="0 0 744.09449 1038.189"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerCell_TypeB.png"
+   inkscape:export-xdpi="12.554676"
+   inkscape:export-ydpi="12.554676"
+   sodipodi:docname="EnemyChildCell.svg">
+  <defs
+     id="defs4">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4201"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4168"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4160"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4152"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4140"
+       is_visible="true" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="67.002912"
+     inkscape:cy="581.37781"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Body"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-14.173228)">
+    <path
+       sodipodi:type="star"
+       style="fill:none;fill-opacity:1;stroke:#ffc1c4;stroke-width:28.02728653;stroke-linecap:round;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4203"
+       sodipodi:sides="6"
+       sodipodi:cx="366.9895"
+       sodipodi:cy="516.98132"
+       sodipodi:r1="253.37189"
+       sodipodi:r2="126.68594"
+       sodipodi:arg1="0.73480845"
+       sodipodi:arg2="1.2584072"
+       inkscape:flatsided="false"
+       inkscape:rounded="0.1"
+       inkscape:randomized="0"
+       d="m 554.9811,686.85325 c -10.52623,11.64903 -134.11633,-54.14256 -149.05683,-49.31733 -14.94049,4.82524 -76.7009,130.47834 -92.05237,127.18687 -15.35147,-3.29147 -20.16933,-143.21943 -31.81836,-153.74566 -11.64903,-10.52623 -151.348,-1.18577 -156.17324,-16.12627 -4.82524,-14.94049 113.947,-89.07687 117.23847,-104.42834 3.29147,-15.35146 -74.6471,-131.66409 -64.12087,-143.31312 10.52623,-11.64903 134.11633,54.14256 149.05683,49.31732 14.9405,-4.82524 76.70091,-130.47833 92.05238,-127.18686 15.35146,3.29147 20.16932,143.21943 31.81835,153.74566 11.64903,10.52623 151.34801,1.18577 156.17325,16.12626 4.82524,14.9405 -113.94701,89.07687 -117.23847,104.42834 -3.29147,15.35147 74.64709,131.6641 64.12086,143.31313 z"
+       inkscape:transform-center-x="15.663041"
+       inkscape:transform-center-y="-7.8412555"
+       transform="matrix(0.98492141,0,0,0.95590439,11.64749,32.190651)"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\EnemyChildCell_TypeB.png"
+       inkscape:export-xdpi="91.688576"
+       inkscape:export-ydpi="91.688576" />
+    <circle
+       style="fill:#a74140;fill-opacity:1;stroke:#ffc1c4;stroke-width:50;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4136"
+       cx="375"
+       cy="527.36218"
+       r="204.39662"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\EnemyChildCell_TypeB.png"
+       inkscape:export-xdpi="91.688576"
+       inkscape:export-ydpi="91.688576" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#ffc1c4;stroke-width:25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
+       d="m 365.76959,435.1705 c -6.42089,-2.14989 -11.95348,-6.83766 -15.12848,-12.8184 -3.175,-5.98074 -3.95813,-13.18986 -2.14142,-19.71286 1.81672,-6.52299 6.21366,-12.28941 12.02314,-15.76789 5.80948,-3.47848 12.96876,-4.63146 19.57658,-3.15273 6.77246,1.51557 12.88658,5.78387 16.64356,11.61895 3.75699,5.83509 5.11212,13.16752 3.68889,19.95998 -1.42324,6.79246 -5.60791,12.96412 -11.39131,16.80019 -5.7834,3.83607 -13.0967,5.29089 -19.90791,3.96025 -3.32044,0.63425 -6.45778,2.20031 -8.96048,4.47277 -2.5027,2.27246 -4.36333,5.24458 -5.31409,8.4886 -0.95076,3.24402 -0.98884,6.7503 -0.10874,10.0142 0.8801,3.2639 2.67574,6.27572 5.12851,8.60199 3.98498,3.77947 9.56613,5.62253 15.05804,5.68091 5.4919,0.0584 10.90257,-1.55536 15.84305,-3.95456 9.88096,-4.79839 17.97623,-12.61879 27.50498,-18.08329 10.32684,-5.92219 22.29032,-8.95588 34.19135,-8.67021 11.90102,0.28566 23.70517,3.88986 33.73598,10.3007 10.03081,6.41084 18.25926,15.60979 23.51673,26.29038 5.25747,10.68059 7.52875,22.81193 6.49127,34.67109 -1.03749,11.85915 -5.38074,23.41183 -12.41291,33.01727 -7.03217,9.60545 -16.73293,17.23587 -27.72453,21.80759 -10.99161,4.57172 -23.24227,6.07151 -35.01212,4.28635 -11.76984,-1.78515 -23.02482,-6.85008 -32.16647,-14.47545"
+       id="path4158"
+       inkscape:path-effect="#path-effect4160"
+       inkscape:original-d="m 365.76959,435.1705 c 0,0 -43.25209,-29.37097 14.32982,-51.45188 45.29245,-17.36827 -10.96677,52.33937 -10.96677,52.33937 0,0 -5.2658,16.09285 -9.2548,31.57756 -3.989,15.48472 53.29882,-13.92441 58.40607,-16.35694 10.74791,-5.11912 -9.3807,107.22772 -9.3807,107.22772"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cscssc"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\EnemyChildCell_TypeB.png"
+       inkscape:export-xdpi="91.688576"
+       inkscape:export-ydpi="91.688576" />
+    <path
+       style="fill:#34243b;fill-opacity:1;fill-rule:evenodd;stroke:#ffc1c4;stroke-width:25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 278.90318,593.67513 c -2.52314,12.02876 0.32377,25.08176 7.62654,34.96744 7.30277,9.88569 18.94257,16.44319 31.18164,17.56678 12.23907,1.12359 24.87824,-3.20502 33.85886,-11.59583 8.98062,-8.39081 14.15654,-20.70729 13.86568,-32.99438 -0.17522,-7.40188 -2.26908,-14.75024 -6.02162,-21.13279 -3.75255,-6.38255 -9.15558,-11.78532 -15.5383,-15.53757 -6.38273,-3.75225 -13.73119,-5.84576 -21.13308,-6.02063 -7.40189,-0.17487 -14.84101,1.56928 -21.39381,5.01593 -0.12301,-5.82367 -1.98348,-11.59975 -5.28255,-16.40042 -3.29908,-4.80066 -8.02443,-8.60796 -13.417,-10.81031 -5.39258,-2.20236 -11.43223,-2.79154 -17.14878,-1.6729 -5.71654,1.11864 -11.08862,3.94091 -15.2533,8.01347 -4.70198,4.59798 -7.83002,10.77709 -8.75197,17.28863 -0.92195,6.51153 0.36775,13.31613 3.60847,19.03871 3.24072,5.72257 8.41287,10.32852 14.47125,12.88705 6.05839,2.55854 12.96637,3.0542 19.32797,1.38682 z"
+       id="path4199"
+       inkscape:path-effect="#path-effect4201"
+       inkscape:original-d="m 278.90318,593.67513 c 64.39738,87.22751 136.8969,31.74221 86.53272,7.94401 -56.34481,-25.92685 -64.08681,-37.67506 -64.08681,-37.67506 0,0 15.07686,-20.87951 -51.10163,-20.87016 -66.17847,0.009 28.65572,50.60121 28.65572,50.60121 z"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccsc"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\EnemyChildCell_TypeB.png"
+       inkscape:export-xdpi="91.688576"
+       inkscape:export-ydpi="91.688576" />
+  </g>
+</svg>

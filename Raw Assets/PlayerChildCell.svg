@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="293mm"
+   viewBox="0 0 744.09449 1038.189"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerCell_TypeB.png"
+   inkscape:export-xdpi="12.554676"
+   inkscape:export-ydpi="12.554676"
+   sodipodi:docname="PlayerChildCell_TypeB.svg">
+  <defs
+     id="defs4">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4168"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4160"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4152"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4140"
+       is_visible="true" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.49497475"
+     inkscape:cx="-239.9938"
+     inkscape:cy="577.00159"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Body"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-14.173228)">
+    <circle
+       style="fill:#5bd55b;fill-opacity:1;stroke:#d2ffcb;stroke-width:50;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4136"
+       cx="375"
+       cy="527.36218"
+       r="204.39662"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerChildCell_TypeB.png"
+       inkscape:export-xdpi="100.43741"
+       inkscape:export-ydpi="100.43741" />
+    <path
+       style="fill:#84bc83;fill-opacity:1;fill-rule:evenodd;stroke:#b8ffb8;stroke-width:25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 304.26504,514.12242 42.52728,48.24234 c 5.82922,6.65237 8.74349,15.77295 7.85169,24.57286 -0.89179,8.79991 -5.57661,17.15039 -12.62192,22.49804 -6.11457,4.64118 -13.92248,6.9983 -21.5838,6.51591 -7.66131,-0.48238 -15.11191,-3.80024 -20.59604,-9.17172 l -43.65413,-49.52063 c -6.94831,-6.78953 -10.57632,-16.83049 -9.57256,-26.49327 0.66115,-6.36466 3.26185,-12.51478 7.36758,-17.42283 4.10573,-4.90805 9.69984,-8.55411 15.84766,-10.329 6.14782,-1.77489 12.82442,-1.67141 18.91429,0.29315 6.08987,1.96456 11.56829,5.78222 15.51995,10.81515 z"
+       id="path4138"
+       inkscape:path-effect="#path-effect4140"
+       inkscape:original-d="m 304.26504,514.12242 42.52728,48.24234 c 0,0 -2.71338,38.50412 -4.77023,47.0709 -4.56979,19.03329 -42.17984,-2.65581 -42.17984,-2.65581 l -43.65413,-49.52063 c 0,0 -21.79743,-8.09527 -9.57256,-26.49327 12.22488,-18.398 57.64948,-16.64353 57.64948,-16.64353 z"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccsccsc"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerChildCell_TypeB.png"
+       inkscape:export-xdpi="100.43741"
+       inkscape:export-ydpi="100.43741" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#b8ffb8;stroke-width:25;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 353.40269,434.58833 c 0.30969,-1.86058 0.8267,-3.68658 1.53839,-5.43334 2.44703,-6.00591 7.2773,-11.00228 13.19708,-13.65089 5.91978,-2.64861 12.86395,-2.92031 18.97257,-0.74234 6.10863,2.17797 11.31453,6.78166 14.22334,12.57801 2.90881,5.79635 3.48855,12.72161 1.58393,18.92091 -1.31881,6.41404 -0.52077,13.24521 2.24096,19.18255 2.76173,5.93734 7.47217,10.94867 13.22737,14.07227 5.21913,2.83265 11.27043,4.10913 17.18902,3.6259 5.91859,-0.48324 11.68269,-2.7244 16.37321,-6.36615 4.69051,-3.64174 8.29019,-8.67066 10.22504,-14.28488 1.93486,-5.61423 2.19778,-11.79311 0.74685,-17.55141"
+       id="path4158"
+       inkscape:path-effect="#path-effect4160"
+       inkscape:original-d="m 353.40269,434.58833 c 0,0 -46.07851,-14.69015 1.53839,-5.43334 47.61696,9.2568 47.97692,17.10569 47.97692,17.10569 0,0 7.29301,41.07589 15.46833,33.25482 8.60226,-8.22947 44.53412,-34.57654 44.53412,-34.57654"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cscsc"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerChildCell_TypeB.png"
+       inkscape:export-xdpi="100.43741"
+       inkscape:export-ydpi="100.43741" />
+    <circle
+       style="fill:#b8ffb8;fill-opacity:1;stroke:none;stroke-width:13.18200016;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4170-6"
+       cx="445.96808"
+       cy="600.03375"
+       r="21.705658"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerChildCell_TypeB.png"
+       inkscape:export-xdpi="100.43741"
+       inkscape:export-ydpi="100.43741" />
+  </g>
+</svg>

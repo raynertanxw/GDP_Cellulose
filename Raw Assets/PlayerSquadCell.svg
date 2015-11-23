@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="293mm"
+   viewBox="0 0 744.09449 1038.189"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerCell_TypeB.png"
+   inkscape:export-xdpi="12.554676"
+   inkscape:export-ydpi="12.554676"
+   sodipodi:docname="PlayerSquadCell_TypeB.svg">
+  <defs
+     id="defs4">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4712"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4708"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4704"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4168"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4160"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4152"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect4140"
+       is_visible="true" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.36506767"
+     inkscape:cx="672.17106"
+     inkscape:cy="589.18417"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="705"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Body"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-14.173228)">
+    <path
+       sodipodi:type="star"
+       style="fill:#5ed2ed;fill-opacity:1;stroke:#cbf5ff;stroke-width:54.69695663;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       id="path4700"
+       sodipodi:sides="5"
+       sodipodi:cx="373.75644"
+       sodipodi:cy="533.1438"
+       sodipodi:r1="228.76093"
+       sodipodi:r2="128.93599"
+       sodipodi:arg1="-1.8651074"
+       sodipodi:arg2="-1.2367889"
+       inkscape:flatsided="true"
+       inkscape:rounded="0.1"
+       inkscape:randomized="0"
+       d="m 307.39733,314.21909 c 25.73614,-7.80098 238.69071,66.0961 254.06279,88.16199 15.37208,22.06589 10.89836,247.43317 -5.33732,268.87163 -16.23567,21.43845 -231.95515,86.82601 -257.36143,78.00981 -25.40628,-8.8162 -154.25453,-193.77175 -153.7208,-220.65891 0.53373,-26.88717 136.62062,-206.58354 162.35676,-214.38452 z"
+       inkscape:transform-center-x="-1.6933978"
+       inkscape:transform-center-y="-21.919337"
+       transform="matrix(-0.89513744,0.27090679,-0.25881743,-0.85519148,851.59061,871.03332)"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerSquadCell_TypeB.png"
+       inkscape:export-xdpi="100.58231"
+       inkscape:export-ydpi="100.58231" />
+    <path
+       style="fill:none;fill-rule:evenodd;stroke:#cbf5ff;stroke-width:27.3746891;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 297.34453,421.12561 96.53559,-41.63122 36.32661,32.22371 -92.0793,43.26243 42.33996,28.11604 88.78271,-41.94562"
+       id="path4702"
+       inkscape:path-effect="#path-effect4704"
+       inkscape:original-d="m 297.34453,421.12561 96.53559,-41.63122 36.32661,32.22371 -92.0793,43.26243 42.33996,28.11604 88.78271,-41.94562"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerSquadCell_TypeB.png"
+       inkscape:export-xdpi="100.58231"
+       inkscape:export-ydpi="100.58231" />
+    <path
+       style="fill:#27798c;fill-opacity:1;fill-rule:evenodd;stroke:#cbf5ff;stroke-width:25;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       d="m 348.93801,577.74617 56.38207,-20.6496 c 4.98517,-2.08591 10.53918,-2.79286 15.88793,-2.02231 5.34876,0.77054 10.47738,3.01643 14.67106,6.42465 4.19368,3.40822 7.44076,7.96929 9.28866,13.04749 1.8479,5.07821 2.2915,10.65943 1.26895,15.96578 -1.85389,9.62046 -8.72456,18.12891 -17.73883,21.96728 l -60.92902,22.31489 c -6.55556,1.74556 -13.70056,1.18743 -19.90554,-1.55492 -6.20499,-2.74234 -11.4276,-7.65017 -14.54989,-13.67293 -3.85832,-7.44253 -4.40727,-16.52639 -1.47329,-24.37938 2.93398,-7.853 9.30473,-14.35157 17.0979,-17.44095 z"
+       id="path4710"
+       inkscape:path-effect="#path-effect4712"
+       inkscape:original-d="m 348.93801,577.74617 56.38207,-20.6496 c 0,0 56.49305,19.02474 41.1166,33.41561 -25.347,23.72236 -17.73883,21.96728 -17.73883,21.96728 l -60.92902,22.31489 c 0,0 -52.43753,8.89126 -34.45543,-15.22785 17.9821,-24.1191 15.62461,-41.82033 15.62461,-41.82033 z"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccsccsc"
+       inkscape:export-filename="C:\Users\Nyan Kai\Pictures\Vector Images\Exports\PlayerSquadCell_TypeB.png"
+       inkscape:export-xdpi="100.58231"
+       inkscape:export-ydpi="100.58231" />
+  </g>
+</svg>
