@@ -11,7 +11,7 @@ GameObject:
   - 212: {fileID: 21216358}
   - 58: {fileID: 5877926}
   m_Layer: 0
-  m_Name: Enemy_Resource
+  m_Name: Enemy_Nutrient_Main
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

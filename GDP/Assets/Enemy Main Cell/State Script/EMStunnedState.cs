@@ -6,13 +6,13 @@ public class EMStunnedState : IEMState
 	public static EMStunnedState instance;
 	
 	public GameObject FSM;
-	private EMController emController;
+	private EMController controller;
 	
 	void Awake ()
 	{
 		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
 		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
-		emController = GetComponent<EMController> ();
+		controller = GetComponent<EMController> ();
 	}
 
 	// Singleton
@@ -27,9 +27,9 @@ public class EMStunnedState : IEMState
 	public override void Execute ()
 	{
 		// If the enemy main cell is not stunned any more, transit to Maintain State
-		if (!emController.bStunned) 
+		if (!controller.bStunned) 
 		{
-			m_EMFSM.ChangeState (EMMaintainState.Instance ());
+			m_EMFSM.ChangeState (EMDefendState.Instance ());
 		}
 	}
 }

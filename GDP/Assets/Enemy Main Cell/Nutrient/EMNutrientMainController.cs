@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMResourceMainController : MonoBehaviour 
+public class EMNutrientMainController : MonoBehaviour 
 {
 	// Size
 	private int nSize;

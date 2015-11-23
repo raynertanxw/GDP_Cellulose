@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyMainState : MonoBehaviour 
+public class IEMState : MonoBehaviour 
 {
 	protected EnemyMainFSM m_EMFSM = null;
 	protected PlayerChildFSM m_PCFSM = null;
