@@ -18,13 +18,26 @@ public abstract class IECState : IState
     protected EnemyChildFSM m_ecFSM = null;
 }
 
-public abstract class IEMState : IState
-{
-	protected EnemyMainFSM m_EMFSM = null;
-	protected PlayerChildFSM m_PCFSM = null;
-}
-
 public abstract class ISCState : IState
 {
     protected PlayerSquadFSM m_scFSM = null;
+}
+
+
+
+
+
+
+
+
+
+
+public class IEMState : MonoBehaviour 
+{
+	protected EnemyMainFSM m_EMFSM = null;
+	protected PlayerChildFSM m_PCFSM = null;
+	
+	public virtual void Enter () {}
+	public virtual void Execute () {}
+	public virtual void Exit () {}
 }
