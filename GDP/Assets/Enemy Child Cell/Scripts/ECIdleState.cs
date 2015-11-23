@@ -81,19 +81,27 @@ public class ECIdleState : IECState
 
     private Vector2 Wander()
     {
-        WanderTarget += new Vector2(Random.Range(-1, 1) * fWanderJitter, Random.Range(-1, 1) * fWanderJitter);
-        if (PreviousKnownMainPos.y != m_ecFSM.transform.position.y)
+        WanderTarget += new Vector2(Random.Range(-0.5f, 0.5f) * fWanderJitter, Random.Range(-0.5f, 0.5f) * fWanderJitter);
+        if (PreviousKnownMainPos.y != m_ecFSM.eMain.transform.position.y)
         {
             float diffY = m_ecFSM.eMain.transform.position.y - child.transform.position.y;
             WanderTarget.y += diffY;
         }
+        /* Debug.Log("previous: " + PreviousKnownMainPos.y + "   eMain: " + m_ecFSM.eMain.transform.position.y);
 
-        WanderTarget.Normalize();
-        WanderTarget *= fWanderRadius;
 
-        Vector2 targetLocal = WanderTarget + new Vector2(fProjectDistance, fProjectDistance);
+         WanderTarget.Normalize();
+         WanderTarget *= fWanderRadius;
 
-        return targetLocal;
+         Vector2 targetLocal = WanderTarget + new Vector2(fProjectDistance, fProjectDistance);
+         if (PreviousKnownMainPos.y != m_ecFSM.eMain.transform.position.y)
+         {
+             float diffY = m_ecFSM.eMain.transform.position.y - child.transform.position.y;
+             targetLocal.y += diffY;            
+             // WanderTarget.y += diffY;
+         }*/
+
+        return WanderTarget;
     }
 
     private void MoveTowards(Vector2 target)
