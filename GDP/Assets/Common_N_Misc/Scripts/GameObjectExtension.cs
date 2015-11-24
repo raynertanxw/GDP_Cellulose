@@ -15,6 +15,7 @@ public static class GameObjectExtension
         if (GO.tag == "EnemyChild")
         {
             GO.GetComponent<EnemyChildFSM>().Command = telegram.msg;
+            Debug.Log(GO.GetComponent<EnemyChildFSM>().Command.ToString());
         }
 
         return true;

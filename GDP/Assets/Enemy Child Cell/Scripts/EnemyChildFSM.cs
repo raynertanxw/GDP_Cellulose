@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemyChildFSM : MonoBehaviour {
 
@@ -19,6 +20,7 @@ public class EnemyChildFSM : MonoBehaviour {
     private ECDeadState deadState;
     private ECMineState mineState;
 
+    private ECStatus type;
     private MessageType currentCommand;
 
     void Start()
@@ -38,6 +40,7 @@ public class EnemyChildFSM : MonoBehaviour {
         mineState = new ECMineState(gameObject,this);
         currentState = deadState;
         currentCommand = MessageType.Idle;
+        type = GetType();
     }
 
     void Update()
@@ -51,6 +54,12 @@ public class EnemyChildFSM : MonoBehaviour {
     {
         get { return nIndex; }
         set { nIndex = value; }
+    }
+
+    public ECStatus Type
+    {
+        get { return type; }
+        set { type = value; }
     }
 
     public MessageType Command
@@ -112,6 +121,19 @@ public class EnemyChildFSM : MonoBehaviour {
             }
         }
         return count;
+    }
+
+    private ECStatus GetType()
+    {
+        List<GameObject> childList = eMain.GetComponent<EnemyMainFSM>().ecList;
+        for (int i = 0; i < childList.Count; i++)
+        {
+            if (childList[i].GetComponent<EnemyChildFSM>().Type == ECStatus.Leader)
+            {
+                return ECStatus.Member;
+            }
+        }
+        return ECStatus.Leader;
     }
 
     /*private bool IsUnderAttack()

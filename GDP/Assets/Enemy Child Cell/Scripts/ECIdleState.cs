@@ -3,7 +3,6 @@ using System.Collections;
 
 public class ECIdleState : IECState
 {
-
     private float fWanderRadius;//radius of constraining circle
     private float fProjectDistance;//distance that the circle is projected in front of the agent
     private float fWanderJitter;//max amount of displacement for the target position each timestep 
@@ -81,27 +80,7 @@ public class ECIdleState : IECState
 
     private Vector2 Wander()
     {
-        WanderTarget += new Vector2(Random.Range(-0.5f, 0.5f) * fWanderJitter, Random.Range(-0.5f, 0.5f) * fWanderJitter);
-        if (PreviousKnownMainPos.y != m_ecFSM.eMain.transform.position.y)
-        {
-            float diffY = m_ecFSM.eMain.transform.position.y - child.transform.position.y;
-            WanderTarget.y += diffY;
-        }
-        /* Debug.Log("previous: " + PreviousKnownMainPos.y + "   eMain: " + m_ecFSM.eMain.transform.position.y);
-
-
-         WanderTarget.Normalize();
-         WanderTarget *= fWanderRadius;
-
-         Vector2 targetLocal = WanderTarget + new Vector2(fProjectDistance, fProjectDistance);
-         if (PreviousKnownMainPos.y != m_ecFSM.eMain.transform.position.y)
-         {
-             float diffY = m_ecFSM.eMain.transform.position.y - child.transform.position.y;
-             targetLocal.y += diffY;            
-             // WanderTarget.y += diffY;
-         }*/
-
-        return WanderTarget;
+        
     }
 
     private void MoveTowards(Vector2 target)
