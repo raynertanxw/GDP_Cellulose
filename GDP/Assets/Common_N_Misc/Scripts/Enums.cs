@@ -7,4 +7,3 @@ public enum SCState {Idle, Attack, Defend, Produce, FindResource, Dead };
 
 public enum MessageType {Empty, Idle, Attack, Defend, Avoid, Landmine, Dead};
 
-public enum ECStatus { Empty, Member, Leader };

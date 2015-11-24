@@ -10,8 +10,8 @@ GameObject:
   - 4: {fileID: 448672}
   - 212: {fileID: 21292564}
   - 61: {fileID: 6171802}
-  - 50: {fileID: 5017822}
   - 114: {fileID: 11488050}
+  - 50: {fileID: 5017822}
   m_Layer: 8
   m_Name: Mini_Enemy_Cell
   m_TagString: EnemyChild

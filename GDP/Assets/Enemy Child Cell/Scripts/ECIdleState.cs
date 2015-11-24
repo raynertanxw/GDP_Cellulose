@@ -1,55 +1,109 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class ECIdleState : IECState
 {
-    private float fWanderRadius;//radius of constraining circle
-    private float fProjectDistance;//distance that the circle is projected in front of the agent
-    private float fWanderJitter;//max amount of displacement for the target position each timestep 
-    private Vector2 WanderTarget;
-    private Vector2 PreviousKnownMainPos;
+    private Vector2 targetPos;
+    private float timer;
+    private float height;
+    private bool foundInitialPos;
 
     public ECIdleState(GameObject childCell, EnemyChildFSM ecFSM)
     {
         child = childCell;
         m_ecFSM = ecFSM;
-        fWanderRadius = 2f;
-        fProjectDistance = 3 * (child.GetComponent<SpriteRenderer>().bounds.size.x / 2);
-        fWanderJitter = 0.5f;
-        WanderTarget = new Vector2(0, 0);
     }
 
     public override void Enter()
     {
-        if (IsWithinIdleRange() == false)
-        {
-            TravelToIdleArea();
-        }
-        WanderTarget = child.transform.position;
-        WanderTarget = Wander();
-        PreviousKnownMainPos = m_ecFSM.eMain.transform.position;
+        timer = 0.0f;
+        
+        foundInitialPos = false;
+
+        targetPos = GenerateInitialPos();
+        Debug.Log(targetPos);
     }
 
     public override void Execute()
     {
-        if (HasCellReachTargetPos(WanderTarget) == false)
+        Debug.Log(timer);
+        Debug.Log(foundInitialPos);
+
+        if (!foundInitialPos)
         {
-            MoveTowards(WanderTarget);
-            Debug.Log("Move towards: " + WanderTarget);
-        }
-        else
-        {
-            WanderTarget = Wander();
-            Debug.Log("reset");
+            MoveTowards(targetPos);
+            if (HasCellReachTargetPos(targetPos))
+            {
+                foundInitialPos = true;
+            }
         }
 
-        //add an if statement to check if the enemy main cell had received heavy damage
-        //if it is, change the child state to defend
+        if (timer <= 4f)
+        {
+            Seperation();
+        }
+
+        if (timer > 4f && timer <= 8f)
+        {
+            Cohesion();
+        }
+
+        if (timer > 8f)
+        {
+            timer = 0.0f;
+            height = GenerateYPoint();
+        }
+
+        timer += Time.deltaTime;
     }
 
     public override void Exit()
     {
 
+    }
+
+    private float GenerateYPoint()
+    {
+        float minY = -m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 - (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
+        float maxY = m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 + (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
+        return Random.Range(minY, maxY);
+    }
+
+    private Vector2 GenerateInitialPos()
+    {
+        float maxX = GameObject.Find("Right Wall").transform.position.x - GameObject.Find("Right Wall").GetComponent<SpriteRenderer>().bounds.size.x/2 - child.GetComponent<SpriteRenderer>().bounds.size.x / 2;
+        float minX = GameObject.Find("Left Wall").transform.position.x + GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x / 2 + child.GetComponent<SpriteRenderer>().bounds.size.x / 2;
+        float minY = -m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 - (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
+        float maxY = m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 + (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
+        float Y = m_ecFSM.eMain.transform.position.y + Random.Range(minY, maxY);
+        return new Vector2(Random.Range(minX, maxX), Y);
+    }
+
+    private void ProjectPosToMain(Vector2 pos)
+    {
+        if (!HasCellReachTargetPos(new Vector2(child.transform.position.x, height)))
+        {
+            child.transform.Translate(Vector2.up * m_ecFSM.fSpeed);
+        }
+    }
+
+    private void Seperation()
+    {
+        Vector2 steering = new Vector2(0f, 0f);
+        Vector2 diff = new Vector2(m_ecFSM.eMain.transform.position.x - child.transform.position.x, m_ecFSM.eMain.transform.position.y - child.transform.position.y);
+        steering = -diff.normalized;
+        child.transform.Translate(steering * m_ecFSM.fSpeed);
+        ProjectPosToMain(child.transform.position);
+    }
+
+    private void Cohesion()
+    {
+        Vector2 steering = new Vector2(0f, 0f);
+        Vector2 diff = new Vector2(m_ecFSM.eMain.transform.position.x - child.transform.position.x, m_ecFSM.eMain.transform.position.y - child.transform.position.y);
+        steering = diff.normalized;
+        child.transform.Translate(steering * m_ecFSM.fSpeed);
+        ProjectPosToMain(child.transform.position);
     }
 
     private bool IsWithinIdleRange()
@@ -59,28 +113,6 @@ public class ECIdleState : IECState
             return true;
         }
         return false;
-    }
-
-    public void TravelToIdleArea()
-    {
-        Vector2 currentPos = child.transform.position;
-        Vector2 heading = new Vector2(child.transform.position.x - m_ecFSM.eMain.transform.position.x, child.transform.position.y - m_ecFSM.eMain.transform.position.y);
-        Vector2 direction = heading.normalized;
-        float fDistanceDiff = Vector2.Distance(child.transform.position, m_ecFSM.eMain.transform.position) - (m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.x / 2 + (3 * child.GetComponent<SpriteRenderer>().bounds.size.x / 2));
-        float fDistanceTraveled = 0f;
-        while (fDistanceTraveled < fDistanceDiff)
-        {
-            Vector2 previousPos = child.transform.position;
-            child.transform.Translate(direction * m_ecFSM.fSpeed);
-            Vector2 nextPos = child.transform.position;
-            fDistanceTraveled += Vector2.Distance(previousPos, nextPos);
-            Debug.Log("Travel to idle Area");
-        }
-    }
-
-    private Vector2 Wander()
-    {
-        
     }
 
     private void MoveTowards(Vector2 target)
