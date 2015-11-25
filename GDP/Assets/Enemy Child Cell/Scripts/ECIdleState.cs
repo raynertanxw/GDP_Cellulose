@@ -4,58 +4,26 @@ using System.Collections.Generic;
 
 public class ECIdleState : IECState
 {
-    private Vector2 targetPos;
-    private float timer;
-    private float height;
-    private bool foundInitialPos;
-
+ 
     public ECIdleState(GameObject childCell, EnemyChildFSM ecFSM)
     {
         child = childCell;
         m_ecFSM = ecFSM;
+
     }
 
     public override void Enter()
     {
-        timer = 0.0f;
-        
-        foundInitialPos = false;
 
-        targetPos = GenerateInitialPos();
-        Debug.Log(targetPos);
     }
 
     public override void Execute()
     {
-        Debug.Log(timer);
-        Debug.Log(foundInitialPos);
+        child.GetComponent<Rigidbody2D>().velocity = Seperation();
 
-        if (!foundInitialPos)
-        {
-            MoveTowards(targetPos);
-            if (HasCellReachTargetPos(targetPos))
-            {
-                foundInitialPos = true;
-            }
-        }
-
-        if (timer <= 4f)
-        {
-            Seperation();
-        }
-
-        if (timer > 4f && timer <= 8f)
-        {
-            Cohesion();
-        }
-
-        if (timer > 8f)
-        {
-            timer = 0.0f;
-            height = GenerateYPoint();
-        }
-
-        timer += Time.deltaTime;
+        /*Vector2 velocity = new Vector2(Alignment().x + Cohesion().x + Seperation().x, Alignment().y + Cohesion().y + Seperation().y);
+        velocity.Normalize();
+        child.GetComponent<Rigidbody2D>().velocity = velocity * m_ecFSM.fSpeed;*/
     }
 
     public override void Exit()
@@ -63,76 +31,105 @@ public class ECIdleState : IECState
 
     }
 
-    private float GenerateYPoint()
+    private GameObject[] TagNeighbours()
     {
-        float minY = -m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 - (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
-        float maxY = m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 + (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
-        return Random.Range(minY, maxY);
-    }
-
-    private Vector2 GenerateInitialPos()
-    {
-        float maxX = GameObject.Find("Right Wall").transform.position.x - GameObject.Find("Right Wall").GetComponent<SpriteRenderer>().bounds.size.x/2 - child.GetComponent<SpriteRenderer>().bounds.size.x / 2;
-        float minX = GameObject.Find("Left Wall").transform.position.x + GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x / 2 + child.GetComponent<SpriteRenderer>().bounds.size.x / 2;
-        float minY = -m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 - (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
-        float maxY = m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.y / 2 + (3 * child.GetComponent<SpriteRenderer>().bounds.size.y / 2);
-        float Y = m_ecFSM.eMain.transform.position.y + Random.Range(minY, maxY);
-        return new Vector2(Random.Range(minX, maxX), Y);
-    }
-
-    private void ProjectPosToMain(Vector2 pos)
-    {
-        if (!HasCellReachTargetPos(new Vector2(child.transform.position.x, height)))
+        Collider2D[] GOaround = Physics2D.OverlapCircleAll(child.transform.position, 5 * child.GetComponent<SpriteRenderer>().bounds.size.x);
+        GameObject[] neighbours = new GameObject[GOaround.Length];
+        int count = 0;
+        for (int i = 0; i < GOaround.Length; i++)
         {
-            child.transform.Translate(Vector2.up * m_ecFSM.fSpeed);
+            if (GOaround[i].gameObject.tag == "EnemyChild")
+            {
+                neighbours[count] = GOaround[i].gameObject;
+                count++;
+            }
         }
+        return neighbours;
     }
 
-    private void Seperation()
+    private Vector2 Alignment()
     {
+        GameObject[] neighbours = TagNeighbours();
+        int neighbourCount = 0;
         Vector2 steering = new Vector2(0f, 0f);
-        Vector2 diff = new Vector2(m_ecFSM.eMain.transform.position.x - child.transform.position.x, m_ecFSM.eMain.transform.position.y - child.transform.position.y);
-        steering = -diff.normalized;
-        child.transform.Translate(steering * m_ecFSM.fSpeed);
-        ProjectPosToMain(child.transform.position);
+
+        foreach (GameObject cell in neighbours)
+        {
+            if (cell != null && cell != child)
+            {
+                steering.x += cell.GetComponent<Rigidbody2D>().velocity.x;
+                steering.y += cell.GetComponent<Rigidbody2D>().velocity.y;
+                neighbourCount++;
+            }
+        }
+
+        if (neighbourCount <= 0)
+        {
+            return steering;
+        }
+        else
+        {
+            steering /= neighbourCount;
+            steering.Normalize();
+            return steering;
+        }
     }
 
-    private void Cohesion()
+    private Vector2 Seperation()
     {
+        GameObject[] neighbours = TagNeighbours();
+        int neighbourCount = 0;
         Vector2 steering = new Vector2(0f, 0f);
-        Vector2 diff = new Vector2(m_ecFSM.eMain.transform.position.x - child.transform.position.x, m_ecFSM.eMain.transform.position.y - child.transform.position.y);
-        steering = diff.normalized;
-        child.transform.Translate(steering * m_ecFSM.fSpeed);
-        ProjectPosToMain(child.transform.position);
-    }
 
-    private bool IsWithinIdleRange()
-    {
-        if (Vector2.Distance(child.transform.position, m_ecFSM.eMain.transform.position) < (m_ecFSM.eMain.GetComponent<SpriteRenderer>().bounds.size.x / 2 + (3 * child.GetComponent<SpriteRenderer>().bounds.size.x / 2)))
+        foreach (GameObject cell in neighbours)
         {
-            return true;
+            if (cell != null && cell != child)
+            {
+                steering.x += cell.transform.position.x - child.transform.position.x;
+                steering.y += cell.transform.position.y - child.transform.position.y;
+                neighbourCount++;
+            }
         }
-        return false;
-    }
 
-    private void MoveTowards(Vector2 target)
-    {
-        Vector2 diff = new Vector2(target.x - child.transform.position.x, target.y - child.transform.position.y);
-        Vector2 direction = diff.normalized;
-        child.transform.Translate(direction * m_ecFSM.fSpeed);
-    }
-
-    private bool HasCellReachTargetPos(Vector2 pos)
-    {
-        if (Vector2.Distance(child.transform.position, pos) <= 0.1f)
+        if (neighbourCount <= 0)
         {
-            return true;
+            return steering;
         }
-        return false;
+        else
+        {
+            steering /= neighbourCount;
+            steering *= -1f;
+            steering.Normalize();
+            return steering;
+        }
     }
 
-    /*private int ReturnEMHealth()
+    private Vector2 Cohesion()
     {
-        return m_ecFSM.eMain.nDamageNum;
-    }*/
+        GameObject[] neighbours = TagNeighbours();
+        int neighbourCount = 0;
+        Vector2 steering = new Vector2(0f, 0f);
+
+        foreach (GameObject cell in neighbours)
+        {
+            if (cell != null && cell != child)
+            {
+                steering.x += cell.transform.position.x;
+                steering.y += cell.transform.position.y;
+                neighbourCount++;
+            }
+        }
+
+        if (neighbourCount <= 0)
+        {
+            return steering;
+        }
+        else
+        {
+            steering /= neighbourCount;
+            steering = new Vector2(steering.x - child.transform.position.x, steering.y - child.transform.position.y);
+            steering.Normalize();
+            return steering;
+        }
+    }
 }
