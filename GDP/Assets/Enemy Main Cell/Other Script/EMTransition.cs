@@ -7,8 +7,7 @@ public class EMTransition : MonoBehaviour
 	EnemyMainFSM m_EMFSM;
 	private EMController controller;
 
-	private bool bCanTransit;
-	public bool CanTransit { get { return bCanTransit; } }
+	public bool bCanTransit;
 
 	void Start ()
 	{

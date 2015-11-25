@@ -13,8 +13,7 @@ public class EMController : MonoBehaviour
 	// Temporary speed
 	private float fSpeedTemp;
 	// Slow down the enemy main cell if in Defend state
-	private bool bIsDefend;
-	public bool IsDefend { get { return bIsDefend; } }
+	public bool bIsDefend;
 	private float fDefendFactor;
 	// Velocity
 	private Vector2 velocity;
@@ -36,7 +35,7 @@ public class EMController : MonoBehaviour
 	#region Size
 	private int nInitialSize;
 	private int nNutrientNum;
-	public int Nutrient { get { return nNutrientNum; } }
+	public int NutrientNum { get { return nNutrientNum; } }
 	private Vector2 initialScale;
 	private Vector2 currentScale;
 	#endregion
@@ -47,7 +46,6 @@ public class EMController : MonoBehaviour
 	{
 		// GetComponent
 		thisRB = GetComponent<Rigidbody2D> ();
-
 		// Speed
 		fSpeed = .25f;
 		fSpeedFactor = 1f;
@@ -157,10 +155,10 @@ public class EMController : MonoBehaviour
 		bCanChangeHori = false;
 		int bDirection = Random.Range (0, 2);
 		float fTime = Random.Range (0f, 5f);
-		float fSpeed = Random.Range (0f + 1f / Mathf.Sqrt (nNutrientNum));
+		float fSpeed = Random.Range (0f, 1f / Mathf.Sqrt (nNutrientNum));
 
 		if (bDirection == 0) 
-			bMovingLeft = -bMovingLeft;
+			bMovingLeft = !bMovingLeft;
 
 		fHoriSpeed = fSpeed;
 		yield return new WaitForSeconds (fTime);
@@ -194,7 +192,7 @@ public class EMController : MonoBehaviour
 
 	public void ChangeDirection ()
 	{
-		bMovingLeft = -bMovingLeft;
+		bMovingLeft = !bMovingLeft;
 	}
 
 	void OnTriggerEnter2D (Collider2D collision)

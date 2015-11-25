@@ -29,11 +29,14 @@ public class EMProductionState : IEMState
 	
 	public override void Execute ()
 	{
-		// Produce enemy mini cell
-		StartCoroutine (m_EMFSM.ProduceChild ());
+		// Produce enemy mini cell if has nutrient
+		if (controller.NutrientNum > 0)
+			StartCoroutine (m_EMFSM.ProduceChild ());
+		else
+			m_EMFSM.ChangeState (EMMaintainState.Instance ());
 
-		// Start checking transition only when there are more than 10 available enemy mini cells and transition is allowed
-		if (m_EMFSM.AvailableChildNum > 10 && transition.CanTransit) 
+		// Start checking transition only when there are more than 10 available enemy mini cells, transition is allowed and has nutrient
+		if (m_EMFSM.AvailableChildNum > 10 && transition.bCanTransit && controller.NutrientNum > 0) 
 		{
 			// If there are more than 10  and less than 25 available enemy mini cells
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25) 
