@@ -7,7 +7,8 @@ public class EMTransition : MonoBehaviour
 	EnemyMainFSM m_EMFSM;
 	private EMController controller;
 
-	public bool bCanTransit;
+	private bool bCanTransit;
+	public bool CanTransit { get { return bCanTransit; } }
 
 	void Start ()
 	{
@@ -28,7 +29,7 @@ public class EMTransition : MonoBehaviour
 	public void Transition (float nChanceFactor, IEMState state)
 	{
 		float nChance = 0f;
-		float nEnemyChildFactor = controller.nSize / 10;
+		float nEnemyChildFactor = m_EMFSM.AvailableChildNum / 10;
 		float nPlayerChildFactor;
 
 		if (nChanceFactor <= 10f)
@@ -53,7 +54,7 @@ public class EMTransition : MonoBehaviour
 	// Immediate Transition for ProductionState
 	void ProductionTransition ()
 	{
-		if (m_EMFSM.nAvailableChildNum <= 10 && m_EMFSM.m_CurrentState != EMProductionState.Instance()) 
+		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentState != EMProductionState.Instance()) 
 		{
 			m_EMFSM.ChangeState (EMProductionState.Instance());
 		}
@@ -61,7 +62,7 @@ public class EMTransition : MonoBehaviour
 	// Immediate Transition for StunnedState
 	void StunnedTransition ()
 	{
-		if (m_EMFSM.emController.bStunned && m_EMFSM.m_CurrentState != EMStunnedState.Instance()) 
+		if (m_EMFSM.emController.Stunned && m_EMFSM.CurrentState != EMStunnedState.Instance()) 
 		{
 			m_EMFSM.ChangeState (EMStunnedState.Instance());
 		}
@@ -69,7 +70,7 @@ public class EMTransition : MonoBehaviour
 	// Immediate Transition for DieState
 	void DieTransition ()
 	{
-		if (controller.nSize <= 0 && m_EMFSM.m_CurrentState != EMDieState.Instance()) 
+		if (m_EMFSM.Health <= 0 && m_EMFSM.CurrentState != EMDieState.Instance()) 
 		{
 			m_EMFSM.ChangeState (EMDieState.Instance());
 		}

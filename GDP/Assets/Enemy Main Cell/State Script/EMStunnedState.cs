@@ -27,7 +27,7 @@ public class EMStunnedState : IEMState
 	public override void Execute ()
 	{
 		// If the enemy main cell is not stunned any more, transit to Maintain State
-		if (!controller.bStunned) 
+		if (!controller.Stunned) 
 		{
 			m_EMFSM.ChangeState (EMDefendState.Instance ());
 		}

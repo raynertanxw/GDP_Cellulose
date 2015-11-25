@@ -2,40 +2,65 @@
 using System.Collections;
 
 public class EMController : MonoBehaviour 
-{
-	public GameObject FSM;
-	private EnemyMainFSM m_EMFSM;
-
-	public float fSpeed;
-	public float fSpeedFactor;
-	public float fSpeedTemp;
+{	
+	#region Speed & Velocity
+	// Speed
+	private float fSpeed;
+	public float Speed{ get { return fSpeed; } }
+	// Speed factor that changes speed
+	private float fSpeedFactor;
+	public float SpeedFactor { get { return fSpeedFactor; } }
+	// Temporary speed
+	private float fSpeedTemp;
+	// Slow down the enemy main cell if in Defend state
+	private bool bIsDefend;
+	public bool IsDefend { get { return bIsDefend; } }
+	private float fDefendFactor;
+	// Velocity
 	private Vector2 velocity;
+	// Horizontal movement
+	private bool bMovingLeft;
+	public bool MovingLeft { get { return bMovingLeft; } }
+	private bool bCanChangeHori;
+	float fHoriSpeed;
+	#endregion
 
-	public int nDamageNum;
-	public bool bPushed;
-	public bool bStunned;
+	#region Status
+	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
+	private bool bPushed; 
+	private bool bStunned;
+	public bool Stunned { get { return bStunned; } }
 	private bool bCanStun;
+	#endregion
 
-	// Size
-	public int nSize;
+	#region Size
+	private int nInitialSize;
+	private int nNutrientNum;
+	public int Nutrient { get { return nNutrientNum; } }
 	private Vector2 initialScale;
 	private Vector2 currentScale;
+	#endregion
 
 	private Rigidbody2D thisRB;
 
 	void Start()
 	{
 		// GetComponent
-		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
 		thisRB = GetComponent<Rigidbody2D> ();
 
 		// Speed
 		fSpeed = .25f;
 		fSpeedFactor = 1f;
 		fSpeedTemp = fSpeed;
+		bIsDefend = false;
+		fDefendFactor = 0.9f;
 		// Velocity
 		velocity = new Vector2 (0, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
+		// Horizontal movement
+		bMovingLeft = true;
+		bCanChangeHori = true;
+		fHoriSpeed = 1f / Mathf.Sqrt (nNutrientNum);
 		// Damage
 		nDamageNum = 0;
 		// State
@@ -43,9 +68,10 @@ public class EMController : MonoBehaviour
 		bStunned = false;
 		bCanStun = true;
 		// Size
-		nSize = 50;
+		nInitialSize = 150;
+		nNutrientNum = 50;
 		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * Mathf.Sqrt(nSize);
+		currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
 	}
 
 	void Update()
@@ -62,15 +88,25 @@ public class EMController : MonoBehaviour
 			StartCoroutine(Stun ());
 		}
 
-		if (thisRB.velocity.y < fSpeed * fSpeedFactor && !bStunned) 
-		{
-
+		// Reset velocity when current velocity is incorrect
+		if (bIsDefend) {
+			if (thisRB.velocity.y != fSpeed * fSpeedFactor * fDefendFactor)
+				ResetVelocity ();
+		} else {
+			if (thisRB.velocity.y != fSpeed * fSpeedFactor)
+				ResetVelocity ();
 		}
 
+		if (bCanChangeHori) {
+			StartCoroutine (MovingHorizontally ());
+		}
+
+		HorizontalCheck ();
+
 		// Check size
-		if (currentScale != initialScale * Mathf.Sqrt(nSize)) 
+		if (currentScale != initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum))) 
 		{
-			currentScale = initialScale * Mathf.Sqrt(nSize);
+			currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
 		}
 	}
 
@@ -84,18 +120,10 @@ public class EMController : MonoBehaviour
 		
 		nDamageNum--;
 		if (!bStunned)
-			RegainVelocity ();
+			ResetVelocity ();
 
 		yield return new WaitForSeconds (.5f);
 		bPushed = false;
-	}
-
-	// Auto regain velocity
-	void RegainVelocity ()
-	{
-		velocity = new Vector2(0, fSpeed * fSpeedFactor);
-		thisRB.velocity = velocity;
-		fSpeedTemp = fSpeed;
 	}
 
 	// Stun the enemy main cell after receiving certain amount of hits within certain period of time
@@ -109,18 +137,64 @@ public class EMController : MonoBehaviour
 		bCanStun = true;
 	}
 
+	// Auto reset velocity
+	void ResetVelocity ()
+	{
+		if (bIsDefend) {
+			velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor * fDefendFactor);
+			thisRB.velocity = velocity;
+			fSpeedTemp = fSpeed;
+		} else {
+			velocity = new Vector2(fHoriSpeed, fSpeed * fSpeedFactor);
+			thisRB.velocity = velocity;
+			fSpeedTemp = fSpeed;
+		}
+	}
+
+	// Move the enemy main cell left or right
+	IEnumerator MovingHorizontally ()
+	{
+		bCanChangeHori = false;
+		int bDirection = Random.Range (0, 2);
+		float fTime = Random.Range (0f, 5f);
+		float fSpeed = Random.Range (0f + 1f / Mathf.Sqrt (nNutrientNum));
+
+		if (bDirection == 0) 
+			bMovingLeft = -bMovingLeft;
+
+		fHoriSpeed = fSpeed;
+		yield return new WaitForSeconds (fTime);
+		bCanChangeHori = true;
+	}
+
+	// Check the direction of horizontal movement is correct
+	void HorizontalCheck ()
+	{
+		if (bMovingLeft && fHoriSpeed > 0)
+			fHoriSpeed = -fHoriSpeed;
+		else if (!bMovingLeft && fHoriSpeed < 0)
+			fHoriSpeed = -fHoriSpeed;
+	}
+
 	public void ChangeSpeed(float changeInSpeed)
 	{
 		fSpeedTemp += changeInSpeed;
-		velocity = new Vector2(0, fSpeed * fSpeedFactor);
+		velocity = new Vector2(fHoriSpeed, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
 	}
 	
 	public void ChangeSpeedFactor(float changeInSpeedF)
 	{
+		// Change speed factor
 		fSpeedFactor += changeInSpeedF;
+		// Reset velocity
 		velocity = new Vector2(0, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
+	}
+
+	public void ChangeDirection ()
+	{
+		bMovingLeft = -bMovingLeft;
 	}
 
 	void OnTriggerEnter2D (Collider2D collision)
