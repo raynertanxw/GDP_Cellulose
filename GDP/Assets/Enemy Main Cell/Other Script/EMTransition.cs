@@ -7,7 +7,9 @@ public class EMTransition : MonoBehaviour
 	EnemyMainFSM m_EMFSM;
 	private EMController controller;
 
+	// Transition availability
 	public bool bCanTransit;
+	public bool CanTransit { get { return bCanTransit; } set { bCanTransit = value; } }
 
 	void Start ()
 	{
@@ -19,12 +21,13 @@ public class EMTransition : MonoBehaviour
 
 	void Update ()
 	{
+        // External transition
 		ProductionTransition ();
 		StunnedTransition ();
 		DieTransition ();
 	}
 
-	// Universal transition checking function
+	// Universal transition probability checking function
 	public void Transition (float nChanceFactor, IEMState state)
 	{
 		float nChance = 0f;
@@ -49,24 +52,30 @@ public class EMTransition : MonoBehaviour
 		bCanTransit = true;
 	}
 
-	// Immediate Transitions checking
-	// Immediate Transition for ProductionState
+	#region Exteral Transitions
+	// Immediate transition to ProductionState
 	void ProductionTransition ()
 	{
 		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentState != EMProductionState.Instance()) 
 		{
 			m_EMFSM.ChangeState (EMProductionState.Instance());
 		}
+
+		// Reset transition availability
+		bCanTransit = true;
 	}
-	// Immediate Transition for StunnedState
+	// Immediate transition to StunnedState
 	void StunnedTransition ()
 	{
 		if (m_EMFSM.emController.Stunned && m_EMFSM.CurrentState != EMStunnedState.Instance()) 
 		{
 			m_EMFSM.ChangeState (EMStunnedState.Instance());
 		}
+
+		// Reset transition availability
+		bCanTransit = true;
 	}
-	// Immediate Transition for DieState
+	// Transition to DieState
 	void DieTransition ()
 	{
 		if (m_EMFSM.Health <= 0 && m_EMFSM.CurrentState != EMDieState.Instance()) 
@@ -74,4 +83,5 @@ public class EMTransition : MonoBehaviour
 			m_EMFSM.ChangeState (EMDieState.Instance());
 		}
 	}
+	#endregion
 }

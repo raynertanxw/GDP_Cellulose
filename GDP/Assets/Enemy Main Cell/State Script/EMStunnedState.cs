@@ -6,13 +6,18 @@ public class EMStunnedState : IEMState
 	public static EMStunnedState instance;
 	
 	public GameObject FSM;
+	
+	private EMTransition transition;
 	private EMController controller;
+	private EMHelper helper;
 	
 	void Awake ()
 	{
+		transition = GetComponent<EMTransition> ();
+		controller = GetComponent<EMController> ();
+		helper = GetComponent<EMHelper> ();
 		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
 		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
-		controller = GetComponent<EMController> ();
 	}
 
 	// Singleton
@@ -23,7 +28,13 @@ public class EMStunnedState : IEMState
 		
 		return instance;
 	}
-	
+
+	public override void Enter ()
+	{
+		// Reset transition availability
+		transition.bCanTransit = true;
+	}
+
 	public override void Execute ()
 	{
 		// If the enemy main cell is not stunned any more, transit to Maintain State
@@ -31,5 +42,11 @@ public class EMStunnedState : IEMState
 		{
 			m_EMFSM.ChangeState (EMDefendState.Instance ());
 		}
+	}
+
+	public override void Exit ()
+	{
+		// Reset transition availability
+		transition.bCanTransit = true;
 	}
 }

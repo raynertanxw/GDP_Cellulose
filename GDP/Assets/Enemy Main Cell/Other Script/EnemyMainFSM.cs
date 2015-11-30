@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class EnemyMainFSM : MonoBehaviour 
 {
@@ -10,7 +11,7 @@ public class EnemyMainFSM : MonoBehaviour
 	public IEMState CurrentState { get { return m_CurrentState; } }
 
 	public GameObject enemyMain;
-	public GameObject enemyChild;
+
 	// Enemy Child
 	private List<EnemyChildFSM> ecList = new List<EnemyChildFSM>();
 	public List<EnemyChildFSM> ECList { get { return ecList; } }
@@ -33,7 +34,8 @@ public class EnemyMainFSM : MonoBehaviour
 	{
 		// Get the enemy main controller
 		emController = enemyMain.GetComponent<EMController> ();
-		// Initialise the enemy child list
+        // Initialise the enemy child list
+        /*
 		EnemyChildFSM[] ecClasses = (EnemyChildFSM[])Object.FindObjectsOfType (typeof(EnemyChildFSM));
 		foreach (EnemyChildFSM ecClass in ecClasses) 
 		{
@@ -41,8 +43,10 @@ public class EnemyMainFSM : MonoBehaviour
 				ecList.Add (ecClass);
 		}
 		ecList = new List<EnemyChildFSM>();
-		// Count the number of child cells in list
-		nAvailableChildNum = ecList.Count;
+        */
+        ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>());    
+        // Count the number of child cells in list
+        nAvailableChildNum = ecList.Count;
 		// Initialise the default to Production
 		m_CurrentState = EMProductionState.Instance ();
 		// Initialise num of damages and aggressiveness

@@ -26,7 +26,15 @@ public class EMProductionState : IEMState
 		
 		return instance;
 	}
-	
+
+	public override void Enter ()
+	{
+		// Reset transition availability
+		transition.bCanTransit = true;
+		// Pause the transition for 1 second
+		StartCoroutine (transition.TransitionAvailability (1f));
+	}
+
 	public override void Execute ()
 	{
 		// Produce enemy mini cell if has nutrient
@@ -42,7 +50,7 @@ public class EMProductionState : IEMState
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25) 
 			{
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)(PlayerChildFSM.GetActiveChildCount ()) / 10f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
 
 				// Transition to Defend
 				if (nEnemyChildFactor > nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
@@ -72,7 +80,7 @@ public class EMProductionState : IEMState
 			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50) 
 			{
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)(PlayerChildFSM.GetActiveChildCount ()) / 10f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
 
 				// Transition to Defend
 				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 8f && (nPlayerChildFactor - nEnemyChildFactor) > 2f) {
@@ -102,7 +110,7 @@ public class EMProductionState : IEMState
 			else if (m_EMFSM.AvailableChildNum > 50)
 			{
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)(PlayerChildFSM.GetActiveChildCount ()) / 10f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
@@ -126,7 +134,14 @@ public class EMProductionState : IEMState
 			}
 
 			// Check transition every 0.1 second to save computing power
-			StartCoroutine (transition.TransitionAvailability (.1f));
+			if (transition.bCanTransit)
+				StartCoroutine (transition.TransitionAvailability (.1f));
 		}
+	}
+
+	public override void Exit ()
+	{
+		// Reset transition availability
+		transition.bCanTransit = true;
 	}
 }
