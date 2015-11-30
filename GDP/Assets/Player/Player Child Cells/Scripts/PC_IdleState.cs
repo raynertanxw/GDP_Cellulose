@@ -10,6 +10,7 @@ public class PC_IdleState : IPCState
 	private Vector3 m_currentTarget;
 
 	private Vector3 m_currentVelocity;
+	private static float s_fPlayerChildIdleSpeed = 0.1f;
 
 	public override void Enter()
 	{
@@ -59,7 +60,7 @@ public class PC_IdleState : IPCState
 		{
 			// Calculate "force" vector.
 			Vector3 direction = m_currentTarget - m_pcFSM.transform.position;
-			float scalar = Mathf.Pow(m_pcFSM.GetSpeed(), 2) / direction.sqrMagnitude;
+			float scalar = Mathf.Pow(s_fPlayerChildIdleSpeed, 2) / direction.sqrMagnitude;
 			m_currentVelocity += direction * scalar;
 			CapSpeed();
 		}
@@ -83,9 +84,9 @@ public class PC_IdleState : IPCState
 	private void CapSpeed()
 	{
 		float sqrMag = m_currentVelocity.sqrMagnitude;
-		if (sqrMag > Mathf.Pow(m_pcFSM.GetSpeed(), 2))
+		if (sqrMag > Mathf.Pow(s_fPlayerChildIdleSpeed, 2))
 		{
-			float scalar = Mathf.Pow(m_pcFSM.GetSpeed(), 2) / sqrMag;
+			float scalar = Mathf.Pow(s_fPlayerChildIdleSpeed, 2) / sqrMag;
 			m_currentVelocity *= scalar;
 		}
 	}

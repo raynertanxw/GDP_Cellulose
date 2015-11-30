@@ -53,7 +53,6 @@ public class PlayerChildFSM : MonoBehaviour
 	private IPCState m_currentState;
 	private Dictionary<PCState, IPCState> m_statesDictionary;
 	[SerializeField]
-	private float m_fSpeed;
 	public bool m_bIsDefending = true;
 	public Transform m_assignedNode;
 	public Transform m_currentTarget;
@@ -65,7 +64,6 @@ public class PlayerChildFSM : MonoBehaviour
 	public SpriteRenderer spriteRen;
 
 	#region Getter functions
-	public float GetSpeed() { return m_fSpeed; }
 	public PCState GetCurrentState() { return m_currentEnumState; }
 
 	public static int GetActiveChildCount() { return s_nActiveChildCount; }
@@ -99,9 +97,6 @@ public class PlayerChildFSM : MonoBehaviour
 		}
 		// add myself
 		s_playerChildFSMPool.Add(this);
-
-		// Set player speed.
-		m_fSpeed = Constants.s_fPlayerChildSpeed;
 
 
 		// Cache components
