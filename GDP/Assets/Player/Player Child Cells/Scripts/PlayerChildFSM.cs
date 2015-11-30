@@ -100,7 +100,8 @@ public class PlayerChildFSM : MonoBehaviour
 		// add myself
 		s_playerChildFSMPool.Add(this);
 
-
+		// Set player speed.
+		m_fSpeed = Constants.s_fPlayerChildSpeed;
 
 
 		// Cache components

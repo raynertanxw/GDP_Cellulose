@@ -44,7 +44,8 @@ public class player_control : MonoBehaviour
 		Debug.Log("Spawn Action called");
 		if (s_nResources > m_nSpawnCost)
 		{
-			PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position + (Vector3)Random.insideUnitCircle*0.5f);
+			// Call a child cell from object pool and set its m_assignedNode to assigned node.
+			PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position + (Vector3)Random.insideUnitCircle*0.5f).m_assignedNode = m_squadPoints[m_nActiveSquad];
 			s_nResources -= m_nSpawnCost;
 		}
 		else
