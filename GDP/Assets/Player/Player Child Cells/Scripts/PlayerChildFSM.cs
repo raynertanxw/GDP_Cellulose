@@ -47,13 +47,12 @@ public class PlayerChildFSM : MonoBehaviour
 	public static EnemyMainFSM s_eMain;
 	public static PlayerMain s_pMain;
 	private static int s_nActiveChildCount = 0;
-	private static int s_nIndex = 0;
+
 	
 	private PCState m_currentEnumState;
 	private IPCState m_currentState;
 	private Dictionary<PCState, IPCState> m_statesDictionary;
 	[SerializeField]
-	private int m_nIndex;
 	private float m_fSpeed;
 	public bool m_bIsDefending = true;
 	public Transform m_assignedNode;
@@ -66,7 +65,6 @@ public class PlayerChildFSM : MonoBehaviour
 	public SpriteRenderer spriteRen;
 
 	#region Getter functions
-	public int GetIndex() { return m_nIndex; }
 	public float GetSpeed() { return m_fSpeed; }
 	public PCState GetCurrentState() { return m_currentEnumState; }
 
@@ -104,8 +102,6 @@ public class PlayerChildFSM : MonoBehaviour
 
 
 
-		// Initialise the index.
-		m_nIndex = s_nIndex++; // Assigns the variable first before incrementing it.
 
 		// Cache components
 		rigidbody2D = GetComponent<Rigidbody2D>();
