@@ -18,7 +18,7 @@ public class SquadCaptain : MonoBehaviour
 
     // Static Fields
     private static int s_nMaximumChildCount = 50;   // s_nMaximumChildCount: THe maximum number of child count in the squad
-    private static bool isAlive = false;            // isAlive: Returns if the squad captain is alive
+    private static bool s_isAlive = false;            // isAlive: Returns if the squad captain is alive
 
 	// Editables Fields
     [Header("Costs")]
@@ -65,7 +65,7 @@ public class SquadCaptain : MonoBehaviour
     // GetProductionChildCount(): Returns the number of child cells in production state
     private int GetProductionChildCount()
     {
-        return PlayerSquadFSM.StateCount(typeof(SC_ProduceState));
+        return PlayerSquadFSM.StateCount(SCState.Produce);
     }
 
 	// Start(): Use this for initialization
@@ -119,7 +119,7 @@ public class SquadCaptain : MonoBehaviour
 
     // Public Static Functions
     public static int MaximumCount { get { return s_nMaximumChildCount; } }
-    public static bool IsAlive { get { return isAlive; } }
+    public static bool IsAlive { get { return s_isAlive; } }
 
 	// Getter-Setter Functions
     public int Nutrient { get { return nNutrient; } }

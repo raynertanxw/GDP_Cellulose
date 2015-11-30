@@ -7,19 +7,20 @@ using System.Collections.Generic;
 public class PlayerSquadFSM : MonoBehaviour 
 {
     // Static Fields
-    private static PlayerSquadFSM[] array_PlayerSquadFSM;   // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
+    private static PlayerSquadFSM[] s_array_PlayerSquadFSM;   // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
 
     // Editable Fields
 
     // Uneditable Fields
     private Dictionary<SCState, ISCState> dict_States;
-    private ISCState currentState;                          // currentState: The current state of the FSM
+    private SCState m_currentEnumState;                          // m_currentEnumState: The current enum state of the FSM
+    private ISCState m_currentState;                             // m_currentState: the current state (as of type ISCState)
 
     // Private Functions
     // Start(): Use this for initialisation
     void Start()
     {
-        array_PlayerSquadFSM = new PlayerSquadFSM[SquadCaptain.MaximumCount];
+        s_array_PlayerSquadFSM = new PlayerSquadFSM[SquadCaptain.MaximumCount];
 
         // Initialisation of Dictionary
         dict_States = new Dictionary<SCState, ISCState>();
@@ -29,18 +30,44 @@ public class PlayerSquadFSM : MonoBehaviour
         dict_States.Add(SCState.Defend, new SC_DefendState(this));
         dict_States.Add(SCState.Produce, new SC_ProduceState(this));
         dict_States.Add(SCState.FindResource, new SC_FindResourceState(this));
+
+        // Initialisation of first state
+        m_currentEnumState = SCState.Dead;
+        m_currentState = dict_States[m_currentEnumState];
+        m_currentState.Enter();
+    }
+
+    // Private Functions
+    void Update()
+    {
+        m_currentState.Execute();
     }
 
     // Public Functions
+    public bool Advance(SCState _enumState) 
+    {
+        if (_enumState.Equals(m_currentEnumState))
+        {
+            Debug.LogWarning(this.name + ".PlayerSquadFSM.Advance(): Tried to advance to same state! m_currentEnumState = SC.State." + m_currentEnumState.ToString());
+            return false;
+        }
+
+        m_currentState.Exit();
+
+        m_currentEnumState = _enumState;
+        m_currentState = dict_States[m_currentEnumState];
+        m_currentState.Enter();
+        return true;
+    }
 
     // Public Static Functions
     // StateCount(): The number of cells that is in _state;
-    public static int StateCount(Type m_StateType)
+    public static int StateCount(SCState _enumState)
     {
         int nStateCount = 0;
-        foreach (PlayerSquadFSM m_playerSquadFSM in array_PlayerSquadFSM)
+        foreach (PlayerSquadFSM m_playerSquadFSM in s_array_PlayerSquadFSM)
         {
-            if (m_playerSquadFSM.State.GetType().Equals(m_StateType))
+            if (m_playerSquadFSM.EnumState.Equals(_enumState))
                 nStateCount++;
         }
         return nStateCount;
@@ -50,15 +77,16 @@ public class PlayerSquadFSM : MonoBehaviour
     public static int GetAliveCount()
     {
         int nAliveCount = 0;
-        foreach (PlayerSquadFSM m_playerSquadFSM in array_PlayerSquadFSM)
+        foreach (PlayerSquadFSM m_playerSquadFSM in s_array_PlayerSquadFSM)
         {
             // if: The current element m_playerSquadFSM's state is not in SC_DeadState
-            if (!m_playerSquadFSM.State.GetType().Equals(typeof(SC_DeadState)))
+            if (!m_playerSquadFSM.EnumState.Equals(SCState.Dead))
                 nAliveCount++;
         }
         return nAliveCount;
     }
 
     // Getter-Setter Functions
-    public ISCState State { get { return currentState; } }
+    public SCState EnumState { get { return m_currentEnumState; } }
+    public ISCState State { get { return m_currentState; } }
 }
