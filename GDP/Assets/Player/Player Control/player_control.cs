@@ -45,7 +45,9 @@ public class player_control : MonoBehaviour
 		if (s_nResources > m_nSpawnCost)
 		{
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
-			PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position + (Vector3)Random.insideUnitCircle*0.5f).m_assignedNode = m_squadPoints[m_nActiveSquad];
+			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position + (Vector3)Random.insideUnitCircle*0.5f);
+			currentChild.m_assignedNode = m_squadPoints[m_nActiveSquad];
+			currentChild.m_assignedSquad = Squad_Manager.GetSquad(m_nActiveSquad);
 			s_nResources -= m_nSpawnCost;
 		}
 		else

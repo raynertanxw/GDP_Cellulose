@@ -56,6 +56,7 @@ public class PlayerChildFSM : MonoBehaviour
 	public bool m_bIsDefending = true;
 	public Transform m_assignedNode;
 	public Transform m_currentTarget;
+	public Squad_Manager m_assignedSquad;
 
 
 	// Component Cache.
