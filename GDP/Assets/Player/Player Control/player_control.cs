@@ -29,11 +29,6 @@ public class player_control : MonoBehaviour
 		s_nResources = 100;
 	}
 
-    void Update()
-    {
-
-    }
-
 	public void ChangeActiveSquad(int nNewSquad)
 	{
 		m_squadPointsRen[m_nActiveSquad].color = m_unselectedSquadCol;
@@ -49,7 +44,7 @@ public class player_control : MonoBehaviour
 		Debug.Log("Spawn Action called");
 		if (s_nResources > m_nSpawnCost)
 		{
-			PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position);
+			PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position + (Vector3)Random.insideUnitCircle*0.5f);
 			s_nResources -= m_nSpawnCost;
 		}
 		else
