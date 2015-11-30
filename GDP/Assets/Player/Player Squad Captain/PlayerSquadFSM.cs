@@ -7,20 +7,22 @@ using System.Collections.Generic;
 public class PlayerSquadFSM : MonoBehaviour 
 {
     // Static Fields
-    private static PlayerSquadFSM[] s_array_PlayerSquadFSM;   // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
-
-    // Editable Fields
+    private static List<PlayerSquadFSM> s_List_PlayerSquadFSM;   // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
 
     // Uneditable Fields
-    private Dictionary<SCState, ISCState> dict_States;
-    private SCState m_currentEnumState;                          // m_currentEnumState: The current enum state of the FSM
-    private ISCState m_currentState;                             // m_currentState: the current state (as of type ISCState)
+    private Dictionary<SCState, ISCState> dict_States;          // dict_States: The dictionary to store all the states
+    private SCState m_currentEnumState;                         // m_currentEnumState: The current enum state of the FSM
+    private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
+
+    // GameObject/Component References
+    public SpriteRenderer m_SpriteRenderer;                    // m_SpriteRenderer: It is public so that states can reference to it
 
     // Private Functions
     // Start(): Use this for initialisation
     void Start()
     {
-        s_array_PlayerSquadFSM = new PlayerSquadFSM[SquadCaptain.MaximumCount];
+        // Initialisation of Array
+        s_List_PlayerSquadFSM = new List<PlayerSquadFSM>();
 
         // Initialisation of Dictionary
         dict_States = new Dictionary<SCState, ISCState>();
@@ -35,6 +37,10 @@ public class PlayerSquadFSM : MonoBehaviour
         m_currentEnumState = SCState.Dead;
         m_currentState = dict_States[m_currentEnumState];
         m_currentState.Enter();
+
+        // Object Pooling: Putting all child into array
+        s_List_PlayerSquadFSM.Add(this);
+
     }
 
     // Private Functions
@@ -44,6 +50,7 @@ public class PlayerSquadFSM : MonoBehaviour
     }
 
     // Public Functions
+    // Advance(): Advance to the next state, which is defined by _enumState
     public bool Advance(SCState _enumState) 
     {
         if (_enumState.Equals(m_currentEnumState))

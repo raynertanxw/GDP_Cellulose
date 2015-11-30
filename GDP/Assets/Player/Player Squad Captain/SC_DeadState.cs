@@ -9,4 +9,14 @@ public class SC_DeadState : ISCState
     {
         m_scFSM = m_PlayerSquadFSM;
     }
+
+    public override void Enter()
+    {
+        m_scFSM.m_SpriteRenderer.enabled = false;
+    }
+
+    public override void Exit()
+    {
+        m_scFSM.m_SpriteRenderer.enabled = true;
+    }
 }
