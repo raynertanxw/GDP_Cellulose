@@ -16,6 +16,10 @@ public class SquadCaptain : MonoBehaviour
      * ------------------------------------------------------------------------------------------------------------------------------
      */
 
+    // Static Fields
+    private static int s_nMaximumChildCount = 50;   // s_nMaximumChildCount: THe maximum number of child count in the squad
+    private static bool isAlive = false;            // isAlive: Returns if the squad captain is alive
+
 	// Editables Fields
     [Header("Costs")]
     [Tooltip("The cost to initiate a squad")]
@@ -24,8 +28,6 @@ public class SquadCaptain : MonoBehaviour
     [SerializeField] private int nChildCost = 10;
 
     [Header("Child Spawn: Generic")]
-    [Tooltip("The maximum amount of child cells it can produce")]
-    [SerializeField] private int nMaximumChildCount = 50;
     [Tooltip("The squad child transform")]
     [SerializeField] private Transform m_transformSquadChild;
 
@@ -63,13 +65,13 @@ public class SquadCaptain : MonoBehaviour
     // GetProductionChildCount(): Returns the number of child cells in production state
     private int GetProductionChildCount()
     {
-        return 0;
+        return PlayerSquadFSM.StateCount(typeof(SC_ProduceState));
     }
 
 	// Start(): Use this for initialization
 	void Start () 
 	{
-        arraySquadChild = new PlayerSquadFSM[nMaximumChildCount];
+        arraySquadChild = new PlayerSquadFSM[s_nMaximumChildCount];
         // for: Initialises the squad child and insert them into an array
         //for (int i = 0; i < arraySquadChild.Length; i++)
         //{
@@ -90,13 +92,13 @@ public class SquadCaptain : MonoBehaviour
     public bool CalculateCooldown()
     {
         // if: There is max number of production (all cells are alive)
-        if (x == nMaximumChildCount)
+        if (x == s_nMaximumChildCount)
         {
             fNextCooldown = fMinimumCooldown;
             return true;
         }
 
-        fNextCooldown = (fMaximumCooldown - fMinimumCooldown) * ((nMaximumChildCount - x) / nMaximumChildCount) + fMinimumCooldown;
+        fNextCooldown = (fMaximumCooldown - fMinimumCooldown) * ((s_nMaximumChildCount - x) / s_nMaximumChildCount) + fMinimumCooldown;
 
         if (fNextCooldown <= 0f)
         {
@@ -109,12 +111,16 @@ public class SquadCaptain : MonoBehaviour
             return true;
     }
 
-    // GetActiveChildCount(): Returns the number of squad child cells that is alive <--------------------------------------------- EDIT
-    public int GetActiveChildCount()
+    // GetAliveChildCount(): Returns the number of squad child cells that is alive <--------------------------------------------- EDIT
+    public int GetAliveChildCount()
     {
-        return 0;
+        return PlayerSquadFSM.GetAliveCount();
     }
-	
+
+    // Public Static Functions
+    public static int MaximumCount { get { return s_nMaximumChildCount; } }
+    public static bool IsAlive { get { return isAlive; } }
+
 	// Getter-Setter Functions
     public int Nutrient { get { return nNutrient; } }
     public float Cooldown { get { return fNextCooldown; } }

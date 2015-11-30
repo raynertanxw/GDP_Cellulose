@@ -4,6 +4,9 @@ using System.Collections;
 // Resource.cs: The main controller for each resource node
 public class Nutrients : MonoBehaviour
 {
+    // Static Variables
+    private static int s_nNutrients = 10;   // s_nNutrients: The default amount of nutrients of each nutrients node
+
     // Editable Variables
 	[Tooltip("The time taken for the resource to travel from the start to end IF THERE IS NO DECELERATION")]
 	[SerializeField] private float fTimeTaken = 0.5f;
@@ -11,8 +14,6 @@ public class Nutrients : MonoBehaviour
 	[SerializeField] private float fMinimumSpeed = 0.5f;	// fMinimumSpeed: This to prevent the resource from moving to a complete hault when reaching the endng point
 	[Tooltip("The amount of horizontal offset of the resources when instantiated (The greater the number, the higher the offset)")]
 	[SerializeField] private float fMaximumOffset = 0.5f;
-    [Tooltip("The amount of resource for each resource node")]
-    [SerializeField] private static int s_nNutrients = 10;
 
     // Uneditable Variables
 	private Vector3 endPosition;
