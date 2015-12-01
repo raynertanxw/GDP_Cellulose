@@ -10,4 +10,11 @@ public class Constants : MonoBehaviour
 	public static LayerMask s_onlyEnemeyChildLayer = 1 << LayerMask.NameToLayer("EnemyChild");
 	public static LayerMask s_onlyPlayerChildLayer = 1 << LayerMask.NameToLayer("PlayerChild");
 	#endregion
+
+	#region Tags
+	public static string s_strPlayerTag = "Player";
+	public static string s_strPlayerChildTag = "PlayerChild";
+	public static string s_strEnemyTag = "Enemy";
+	public static string s_strEnemyChildTag = "EnemyChild";
+	#endregion
 }
