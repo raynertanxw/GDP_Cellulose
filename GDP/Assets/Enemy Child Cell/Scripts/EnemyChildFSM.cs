@@ -63,6 +63,7 @@ public class EnemyChildFSM : MonoBehaviour
     public IECState CurrentState
     {
         get { return currentState; }
+        
     }
 
     public void ChangeState(IECState state)
