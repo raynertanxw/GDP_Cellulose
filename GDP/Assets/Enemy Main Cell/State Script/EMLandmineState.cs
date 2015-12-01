@@ -4,13 +4,10 @@ using System.Collections;
 public class EMLandmineState : IEMState
 {
 	public static EMLandmineState instance;
-	
-	public GameObject FSM;
-	
+
 	void Awake ()
 	{
-		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
-		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
 	}
 
 	// Singleton

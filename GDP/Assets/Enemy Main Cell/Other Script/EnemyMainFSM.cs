@@ -5,6 +5,15 @@ using System.Linq;
 
 public class EnemyMainFSM : MonoBehaviour 
 {
+	public static EnemyMainFSM instance;
+	// Singleton
+	public static EnemyMainFSM Instance() {
+		if (instance == null)
+			instance = new EnemyMainFSM();
+		
+		return instance;
+	}
+
 	public EMController emController;
 
 	private IEMState m_CurrentState = null;

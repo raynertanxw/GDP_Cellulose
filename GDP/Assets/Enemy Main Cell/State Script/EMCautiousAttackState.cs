@@ -5,8 +5,6 @@ public class EMCautiousAttackState : IEMState
 {
 	public static EMCautiousAttackState instance;
 	
-	public GameObject FSM;
-	
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
@@ -16,8 +14,7 @@ public class EMCautiousAttackState : IEMState
 		transition = GetComponent<EMTransition> ();
 		controller = GetComponent<EMController> ();
 		helper = GetComponent<EMHelper> ();
-		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
-		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
 	}
 	
 	// Singleton

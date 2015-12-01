@@ -5,8 +5,6 @@ public class EMProductionState : IEMState
 {
 	public static EMProductionState instance;
 
-	public GameObject FSM;
-
 	private EMTransition transition;
 	private EMController controller;
 	
@@ -14,8 +12,7 @@ public class EMProductionState : IEMState
 	{
 		transition = GetComponent<EMTransition> ();
 		controller = GetComponent<EMController> ();
-		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
-		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
 	}
 
 	// Singleton

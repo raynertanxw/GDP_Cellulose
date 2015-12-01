@@ -4,9 +4,7 @@ using System.Collections;
 public class EMStunnedState : IEMState
 {
 	public static EMStunnedState instance;
-	
-	public GameObject FSM;
-	
+
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
@@ -16,8 +14,7 @@ public class EMStunnedState : IEMState
 		transition = GetComponent<EMTransition> ();
 		controller = GetComponent<EMController> ();
 		helper = GetComponent<EMHelper> ();
-		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
-		m_PCFSM = FSM.GetComponent<PlayerChildFSM> ();
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
 	}
 
 	// Singleton
