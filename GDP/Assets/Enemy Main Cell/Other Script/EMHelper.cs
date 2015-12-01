@@ -3,10 +3,10 @@ using System.Collections;
 
 public class EMHelper : MonoBehaviour 
 {
-	private float leftLimit;
-    private float rightLimit;
-    private float topLimit;
-    private float bottomLimit;
+	public static float leftLimit;
+	public static float rightLimit;
+	public static float topLimit;
+	public static float bottomLimit;
 
 	private float width;
 

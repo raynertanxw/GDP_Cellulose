@@ -44,7 +44,7 @@ public class EnemyMainFSM : MonoBehaviour
 		}
 		ecList = new List<EnemyChildFSM>();
         */
-        ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>());    
+        ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>()).ToList();    
         // Count the number of child cells in list
         nAvailableChildNum = ecList.Count;
 		// Initialise the default to Production
