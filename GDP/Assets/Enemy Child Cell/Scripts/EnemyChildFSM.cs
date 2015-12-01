@@ -2,7 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class EnemyChildFSM : MonoBehaviour {
+public class EnemyChildFSM : MonoBehaviour
+{
 
     private int nIndex;
     public float fSpeed;
@@ -28,15 +29,15 @@ public class EnemyChildFSM : MonoBehaviour {
         bIsMine = false;
         pMain = GameObject.Find("Player_Cell");
         eMain = GameObject.Find("Enemy_Cell");
-        idleState = new ECIdleState(gameObject,this);
-        defendState = new ECDefendState(gameObject,this);
-        avoidState = new ECAvoidState(gameObject,this);
-        attackState = new ECAttackState(gameObject,this);
-        chargeCState = new ECChargeCState(gameObject,this);
-        chargeMState = new ECChargeMState(gameObject,this);
-        tAttackState = new ECTrickAttackState(gameObject,this);
-        deadState = new ECDeadState(gameObject,this);
-        mineState = new ECMineState(gameObject,this);
+        idleState = new ECIdleState(gameObject, this);
+        defendState = new ECDefendState(gameObject, this);
+        avoidState = new ECAvoidState(gameObject, this);
+        attackState = new ECAttackState(gameObject, this);
+        chargeCState = new ECChargeCState(gameObject, this);
+        chargeMState = new ECChargeMState(gameObject, this);
+        tAttackState = new ECTrickAttackState(gameObject, this);
+        deadState = new ECDeadState(gameObject, this);
+        mineState = new ECMineState(gameObject, this);
         currentState = deadState;
         currentCommand = MessageType.Idle;
     }
@@ -114,11 +115,21 @@ public class EnemyChildFSM : MonoBehaviour {
         return count;
     }
 
-     /*IEnumerator CountToDeath()
+    public void StartChildCorountine(IEnumerator childCorountine)
     {
-        yield return new WaitForSeconds(10f);
-        ChangeState(deadState);
-    }*/
+        StartCoroutine(childCorountine);
+    }
+
+    public void StopChildCorountine()
+    {
+        StopCoroutine(idleState.Wandering());
+    }
+
+    /*IEnumerator CountToDeath()
+   {
+       yield return new WaitForSeconds(10f);
+       ChangeState(deadState);
+   }*/
 
     /*private bool IsUnderAttack()
     {
