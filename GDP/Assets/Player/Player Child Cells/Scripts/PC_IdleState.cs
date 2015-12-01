@@ -11,6 +11,7 @@ public class PC_IdleState : IPCState
 
 	private Vector3 m_currentVelocity;
 	private static float s_fPlayerChildIdleSpeed = 0.1f;
+	private static float s_fDetectionRangeRadius = 0.6f;
 
 	public override void Enter()
 	{
@@ -23,6 +24,19 @@ public class PC_IdleState : IPCState
 	public override void Execute()
 	{
 		MoveAroundNode();
+		if (DetectedEnemyInRange() == true)
+		{
+			if (m_pcFSM.m_bIsDefending == true)
+			{
+				// Switch to defending mode.
+				m_pcFSM.ChangeState(PCState.Defend);
+			}
+			else
+			{
+				// Switch to avoid mode.
+				m_pcFSM.ChangeState(PCState.Avoid);
+			}
+		}
 	}
 	
 	public override void Exit()
@@ -47,9 +61,20 @@ public class PC_IdleState : IPCState
 
 
 	#region Helper functions
-	private bool DetectEnemyInRange()
+	private bool DetectedEnemyInRange()
 	{
-		return false; // PLACEHOLDER
+		Collider2D enemyCell = Physics2D.OverlapCircle(m_pcFSM.transform.position, s_fDetectionRangeRadius, Constants.s_onlyEnemeyChildLayer);
+		if (enemyCell != null)
+		{
+			// Assign the currentEnemyCellTarget in the FSM to the returned enemy cell.
+			m_pcFSM.m_currentEnemyCellTarget = enemyCell.transform;
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
 	private void MoveAroundNode()

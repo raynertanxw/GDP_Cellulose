@@ -5,7 +5,7 @@ public class PC_DefendState : IPCState
 {
 	public override void Enter()
 	{
-		
+		Debug.Log("Enter Defend State");
 	}
 	
 	public override void Execute()

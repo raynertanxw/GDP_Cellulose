@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class player_control : MonoBehaviour
 {
@@ -59,11 +60,23 @@ public class player_control : MonoBehaviour
 	public void ActionDefend()
 	{
 		Debug.Log("Defend Action called");
+
+		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		for (int i = 0; i < listOfChildCells.Count; i++)
+		{
+			listOfChildCells[i].m_bIsDefending = true;
+		}
 	}
 
 	public void ActionAvoid()
 	{
 		Debug.Log("Avoid Action called");
+
+		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		for (int i = 0; i < listOfChildCells.Count; i++)
+		{
+			listOfChildCells[i].m_bIsDefending = false;
+		}
 	}
 
 	public void ActionChargeMain()
