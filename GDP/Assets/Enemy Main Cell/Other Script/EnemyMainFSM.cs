@@ -13,13 +13,32 @@ public class EnemyMainFSM : MonoBehaviour
 		
 		return instance;
 	}
-
+	#region Classes for help
 	public EMController emController;
-
+	public EMHelper emHelper;
+	public EMTransition emTransition;
+	#endregion
+	#region State classes
+	IEMState m_ProdctionState = null;
+	public IEMState ProductionState { get { return m_ProdctionState; } }
+	IEMState m_DefendState = null;
+	public IEMState DefendState { get { return m_DefendState; } }
+	IEMState m_MaintainState = null;
+	public IEMState MaintainState { get { return m_MaintainState; } }
+	IEMState m_AggressiveAttackState = null;
+	public IEMState AggressiveAttackState { get { return m_AggressiveAttackState; } }
+	IEMState m_CautiousAttackState = null;
+	public IEMState CautiousAttackState { get { return m_CautiousAttackState; } }
+	IEMState m_LandmineState = null;
+	public IEMState LandmineState { get { return m_LandmineState; } }
+	IEMState m_StunnedState = null;
+	public IEMState StunnedState { get { return m_StunnedState; } }
+	IEMState m_DieState = null;
+	public IEMState DieState { get { return m_DieState; } }
+	#endregion
+	private Dictionary<EMState, IEMState> m_statesDictionary;
 	private IEMState m_CurrentState = null;
 	public IEMState CurrentState { get { return m_CurrentState; } }
-
-	public GameObject enemyMain;
 
 	// Enemy Child
 	private List<EnemyChildFSM> ecList = new List<EnemyChildFSM>();
@@ -39,10 +58,30 @@ public class EnemyMainFSM : MonoBehaviour
 	private bool bCanSpawn; 
 	public bool CanSpawn { get { return bCanSpawn; } }
 
-	void Start()
+	void Awake ()
 	{
-		// Get the enemy main controller
-		emController = enemyMain.GetComponent<EMController> ();
+		m_statesDictionary = new Dictionary<PCState, IPCState>();
+		m_statesDictionary.Add(EMState.Production, new EMProductionState(this));
+		m_statesDictionary.Add (EMState.Maintain, new EMMaintainState (this));
+	}
+
+	void Start ()
+	{
+		#region State classes
+		m_ProdctionState = new EMProductionState (this);
+		m_DefendState = new EMDefendState (this);
+		m_MaintainState = new EMMaintainState (this);
+		m_AggressiveAttackState = new EMAggressiveAttackState (this);
+		m_CautiousAttackState = new EMCautiousAttackState (this);
+		m_LandmineState = new EMLandmineState (this);
+		m_StunnedState = new EMStunnedState (this);
+		m_DieState = new EMDieState (this);
+		#endregion
+
+		// Get the enemy main controller, helper class and transition class
+		emController = GetComponent<EMController> ();
+		emHelper = GetComponent<EMHelper> ();
+		emTransition = GetComponent<EMTransition> ();
         // Initialise the enemy child list
         /*
 		EnemyChildFSM[] ecClasses = (EnemyChildFSM[])Object.FindObjectsOfType (typeof(EnemyChildFSM));
@@ -57,7 +96,7 @@ public class EnemyMainFSM : MonoBehaviour
         // Count the number of child cells in list
         nAvailableChildNum = ecList.Count;
 		// Initialise the default to Production
-		m_CurrentState = EMProductionState.Instance ();
+		m_CurrentState = m_ProdctionState;
 		// Initialise num of damages and aggressiveness
 		nDamageNum = 0;
 		nAggressiveness = 10;
@@ -92,4 +131,16 @@ public class EnemyMainFSM : MonoBehaviour
 			bCanSpawn = true;
 		}
 	}
+
+	#region Coroutine functions
+	public void StartProduceChild ()
+	{
+		StartCoroutine (ProduceChild ());
+	}
+
+	public void StartPauseTransition (float fTime)
+	{
+		StartCoroutine (emTransition.TransitionAvailability (fTime));
+	}
+	#endregion
 }

@@ -3,28 +3,17 @@ using System.Collections;
 
 public class EMCautiousAttackState : IEMState
 {
-	public static EMCautiousAttackState instance;
+	public EMCautiousAttackState (EnemyMainFSM EMFSM)
+	{
+		m_EMFSM = EMFSM;
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+	}
 	
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
-	
-	void Awake ()
-	{
-		transition = GetComponent<EMTransition> ();
-		controller = GetComponent<EMController> ();
-		helper = GetComponent<EMHelper> ();
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
-	}
-	
-	// Singleton
-	public static EMCautiousAttackState Instance()
-	{
-		if (instance == null)
-			instance = new EMCautiousAttackState();
-		
-		return instance;
-	}
 
 	public override void Enter ()
 	{
@@ -91,7 +80,7 @@ public class EMCautiousAttackState : IEMState
 
 		// Check transition every 0.1 second to save computing power
 		if (transition.bCanTransit)
-			StartCoroutine (transition.TransitionAvailability (.1f));
+			m_EMFSM.StartPauseTransition (.1f);
 	}
 
 	public override void Exit ()

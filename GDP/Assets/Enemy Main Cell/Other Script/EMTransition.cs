@@ -3,7 +3,6 @@ using System.Collections;
 
 public class EMTransition : MonoBehaviour 
 {
-	public GameObject FSM;
 	EnemyMainFSM m_EMFSM;
 	private EMController controller;
 
@@ -13,7 +12,7 @@ public class EMTransition : MonoBehaviour
 
 	void Start ()
 	{
-		m_EMFSM = FSM.GetComponent<EnemyMainFSM> ();
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		controller = GetComponent<EMController> ();
 
 		bCanTransit = true;
@@ -32,7 +31,6 @@ public class EMTransition : MonoBehaviour
 	{
 		float nChance = 0f;
 		float nEnemyChildFactor = m_EMFSM.AvailableChildNum / 10;
-		float nPlayerChildFactor;
 
 		if (nChanceFactor <= 10f)
 			m_EMFSM.ChangeState (state);
@@ -56,9 +54,9 @@ public class EMTransition : MonoBehaviour
 	// Immediate transition to ProductionState
 	void ProductionTransition ()
 	{
-		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentState != EMProductionState.Instance()) 
+		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentState != m_EMFSM.ProductionState) 
 		{
-			m_EMFSM.ChangeState (EMProductionState.Instance());
+			m_EMFSM.ChangeState (m_EMFSM.ProductionState);
 		}
 
 		// Reset transition availability
@@ -67,9 +65,9 @@ public class EMTransition : MonoBehaviour
 	// Immediate transition to StunnedState
 	void StunnedTransition ()
 	{
-		if (m_EMFSM.emController.Stunned && m_EMFSM.CurrentState != EMStunnedState.Instance()) 
+		if (controller.Stunned && m_EMFSM.CurrentState != m_EMFSM.StunnedState) 
 		{
-			m_EMFSM.ChangeState (EMStunnedState.Instance());
+			m_EMFSM.ChangeState (m_EMFSM.ProductionState);
 		}
 
 		// Reset transition availability
@@ -78,9 +76,9 @@ public class EMTransition : MonoBehaviour
 	// Transition to DieState
 	void DieTransition ()
 	{
-		if (m_EMFSM.Health <= 0 && m_EMFSM.CurrentState != EMDieState.Instance()) 
+		if (m_EMFSM.Health <= 0 && m_EMFSM.CurrentState != m_EMFSM.DieState) 
 		{
-			m_EMFSM.ChangeState (EMDieState.Instance());
+			m_EMFSM.ChangeState (m_EMFSM.DieState);
 		}
 	}
 	#endregion

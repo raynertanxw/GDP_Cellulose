@@ -26,6 +26,8 @@ public class EMController : MonoBehaviour
 
 	#region Status
 	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
+	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum += value; } }
+	public void CauseDamageOne () { nDamageNum++; }
 	private bool bPushed; 
 	private bool bStunned;
 	public bool Stunned { get { return bStunned; } }
@@ -210,15 +212,7 @@ public class EMController : MonoBehaviour
 	{
 		bMovingLeft = !bMovingLeft;
 	}
-    // Receive damage from incoming player mini cells and destroy the mini cell
-	void OnTriggerEnter2D (Collider2D collision)
-	{
-		if (collision.gameObject.tag == "Player") 
-		{
-			nDamageNum++;
-			Destroy (collision.gameObject);
-		}
-	}
+    
     // Recevice nutrient from incoming enemy mini nutrient and destroy the mini nutrient
 	void OnCollisionEnter2D (Collision2D collision)
 	{

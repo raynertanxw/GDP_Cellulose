@@ -3,24 +3,24 @@ using System.Collections;
 
 public class EMLandmineState : IEMState
 {
-	public static EMLandmineState instance;
-
-	void Awake ()
+	public EMLandmineState (EnemyMainFSM EMFSM)
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		m_EMFSM = EMFSM;
 	}
-
-	// Singleton
-	public static EMLandmineState Instance()
+	
+	private EMTransition transition;
+	private EMController controller;
+	private EMHelper helper;
+	
+	void GetData ()
 	{
-		if (instance == null)
-			instance = new EMLandmineState();
-		
-		return instance;
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
 	}
 	
 	public override void Execute ()
 	{
-		m_EMFSM.ChangeState (EMProductionState.Instance ());
+		m_EMFSM.ChangeState (m_EMFSM.ProductionState);
 	}
 }

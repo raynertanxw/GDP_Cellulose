@@ -3,27 +3,20 @@ using System.Collections;
 
 public class EMStunnedState : IEMState
 {
-	public static EMStunnedState instance;
-
+	public EMStunnedState (EnemyMainFSM EMFSM)
+	{
+		m_EMFSM = EMFSM;
+	}
+	
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
 	
-	void Awake ()
+	void GetData ()
 	{
-		transition = GetComponent<EMTransition> ();
-		controller = GetComponent<EMController> ();
-		helper = GetComponent<EMHelper> ();
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
-	}
-
-	// Singleton
-	public static EMStunnedState Instance()
-	{
-		if (instance == null)
-			instance = new EMStunnedState();
-		
-		return instance;
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
 	}
 
 	public override void Enter ()
@@ -37,7 +30,7 @@ public class EMStunnedState : IEMState
 		// If the enemy main cell is not stunned any more, transit to Maintain State
 		if (!controller.Stunned) 
 		{
-			m_EMFSM.ChangeState (EMDefendState.Instance ());
+			m_EMFSM.ChangeState (m_EMFSM.MaintainState);
 		}
 	}
 

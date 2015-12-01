@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (BoxCollider2D))]
 public class EMHelper : MonoBehaviour 
 {
 	public static float leftLimit;
@@ -20,7 +21,7 @@ public class EMHelper : MonoBehaviour
 
 	void Start () 
 	{
-		width = GetComponent<CircleCollider2D> ().bounds.size.x;
+		width = GetComponent<BoxCollider2D> ().bounds.size.x;
 
 		bCanAddDefend = true;
 	}
@@ -66,7 +67,19 @@ public class EMHelper : MonoBehaviour
     // Update width of enemy main cell
 	void widthUpdate ()
 	{
-		if (width != GetComponent<CircleCollider2D> ().bounds.size.x)
-			width = GetComponent<CircleCollider2D> ().bounds.size.x;
+		if (width != GetComponent<BoxCollider2D> ().bounds.size.x)
+			width = GetComponent<BoxCollider2D> ().bounds.size.x;
 	}
+
+	#region Math
+	public float Pow (float value, float power)
+	{
+		return Mathf.Pow (value, power);
+	}
+
+	public float Abs (float value)
+	{
+		return Mathf.Abs (value);
+	}
+	#endregion
 }

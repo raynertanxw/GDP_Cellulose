@@ -3,27 +3,21 @@ using System.Collections;
 
 public class EMAggressiveAttackState : IEMState
 {
-	public static EMAggressiveAttackState instance;
+	public EMAggressiveAttackState (EnemyMainFSM EMFSM)
+	{
+		m_EMFSM = EMFSM;
+	}
 	
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
 	
-	void Awake ()
+	void GetData ()
 	{
-		transition = GetComponent<EMTransition> ();
-		controller = GetComponent<EMController> ();
-		helper = GetComponent<EMHelper> ();
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
-	}
-
-	// Singleton
-	public static EMAggressiveAttackState Instance()
-	{
-		if (instance == null)
-			instance = new EMAggressiveAttackState();
-		
-		return instance;
 	}
 
 	public override void Enter ()

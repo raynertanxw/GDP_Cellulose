@@ -3,20 +3,20 @@ using System.Collections;
 
 public class EMDieState : IEMState
 {
-	public static EMDieState instance;
-
-	void Awake ()
+	public EMDieState (EnemyMainFSM EMFSM)
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		m_EMFSM = EMFSM;
 	}
-
-	// Singleton
-	public static EMDieState Instance()
+	
+	private EMTransition transition;
+	private EMController controller;
+	private EMHelper helper;
+	
+	void GetData ()
 	{
-		if (instance == null)
-			instance = new EMDieState();
-		
-		return instance;
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
 	}
 
 	public override void Enter ()
@@ -26,6 +26,6 @@ public class EMDieState : IEMState
 	
 	public override void Execute ()
 	{
-		m_EMFSM.ChangeState (EMProductionState.Instance ());
+		m_EMFSM.ChangeState (m_EMFSM.ProductionState);
 	}
 }

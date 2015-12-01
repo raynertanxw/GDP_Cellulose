@@ -3,27 +3,16 @@ using System.Collections;
 
 public class EMDefendState : IEMState
 {
-	public static EMDefendState instance;
-
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
-	
-	void Awake ()
-	{
-		transition = GetComponent<EMTransition> ();
-		controller = GetComponent<EMController> ();
-		helper = GetComponent<EMHelper> ();
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
-	}
 
-	// Singleton
-	public static EMDefendState Instance()
+	public EMDefendState (EnemyMainFSM EMFSM)
 	{
-		if (instance == null)
-			instance = new EMDefendState();
-		
-		return instance;
+		m_EMFSM = EMFSM;
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
 	}
 
 	public override void Enter ()
@@ -94,17 +83,17 @@ public class EMDefendState : IEMState
 				// Transit to Production only if has less than 25 mini cells and has nutrient
 				if (m_EMFSM.AvailableChildNum < 25 && controller.NutrientNum > 0)
 				{
-					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f)/2f, EMDefendState.Instance ());
+					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f)/2f, m_EMFSM.DefendState);
 				}
 
 				// If not transit to Production state, then transit to Maintain state
-				m_EMFSM.ChangeState (EMMaintainState.Instance ());
+				m_EMFSM.ChangeState (m_EMFSM.MaintainState);
 			}
 		}
 
 		// Check transition every 0.1 second to save computing power
 		if (transition.bCanTransit)
-			StartCoroutine (transition.TransitionAvailability (.1f));
+			m_EMFSM.StartPauseTransition (.1f);
 	}
 
 	public override void Exit ()
