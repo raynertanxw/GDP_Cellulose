@@ -72,7 +72,7 @@ public class PlayerSquadFSM : MonoBehaviour
     public static int StateCount(SCState _enumState)
     {
         int nStateCount = 0;
-        foreach (PlayerSquadFSM m_playerSquadFSM in s_array_PlayerSquadFSM)
+        foreach (PlayerSquadFSM m_playerSquadFSM in s_List_PlayerSquadFSM)
         {
             if (m_playerSquadFSM.EnumState.Equals(_enumState))
                 nStateCount++;
@@ -84,7 +84,7 @@ public class PlayerSquadFSM : MonoBehaviour
     public static int GetAliveCount()
     {
         int nAliveCount = 0;
-        foreach (PlayerSquadFSM m_playerSquadFSM in s_array_PlayerSquadFSM)
+        foreach (PlayerSquadFSM m_playerSquadFSM in s_List_PlayerSquadFSM)
         {
             // if: The current element m_playerSquadFSM's state is not in SC_DeadState
             if (!m_playerSquadFSM.EnumState.Equals(SCState.Dead))
