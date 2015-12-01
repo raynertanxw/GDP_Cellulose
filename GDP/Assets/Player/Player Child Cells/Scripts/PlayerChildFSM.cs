@@ -129,4 +129,18 @@ public class PlayerChildFSM : MonoBehaviour
 	{
 		m_currentState.Execute();
 	}
+
+	void OnCollisionEnter2D(Collision2D col)
+	{
+		// Hit Enemy Child
+		if (col.gameObject.tag == Constants.s_strEnemyChildTag)
+		{
+			Debug.Log("Hit Enemy Child");
+		}
+		// Hit Enemy Main.
+		else if (col.gameObject.tag == Constants.s_strEnemyTag)
+		{
+			Debug.Log("Hit Enemy Main");
+		}
+	}
 }
