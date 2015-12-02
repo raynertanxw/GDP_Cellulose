@@ -56,7 +56,6 @@ public class SquadCaptain : MonoBehaviour
             else
             {
                 PlayerSquadFSM.Spawn(transform.position);
-                Debug.Log(fNextCooldown + " seconds to next, currently " + PlayerSquadFSM.AliveCount() + " cells");
             }
         }
     }

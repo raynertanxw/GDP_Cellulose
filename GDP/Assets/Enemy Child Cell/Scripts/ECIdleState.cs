@@ -115,7 +115,7 @@ public class ECIdleState : IECState
 
     private Vector2 GenerateInverseVelo(Vector2 velo)
     {
-        Debug.Log("current velo: " + child.GetComponent<Rigidbody2D>().velocity);
+        //Debug.Log("current velo: " + child.GetComponent<Rigidbody2D>().velocity);
 
         Vector2 inverse = velo;
 
