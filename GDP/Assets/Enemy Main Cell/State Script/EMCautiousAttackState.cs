@@ -3,20 +3,20 @@ using System.Collections;
 
 public class EMCautiousAttackState : IEMState
 {
-	public EMCautiousAttackState (EnemyMainFSM EMFSM)
-	{
-		m_EMFSM = EMFSM;
-		transition = m_EMFSM.emTransition;
-		controller = m_EMFSM.emController;
-		helper = m_EMFSM.emHelper;
-	}
-	
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
 
+	public EMCautiousAttackState (EnemyMainFSM EMFSM)
+	{
+		m_EMFSM = EMFSM;
+	}
+
 	public override void Enter ()
 	{
+		transition = m_EMFSM.emTransition;
+		helper = m_EMFSM.emHelper;
+
 		// Reset availability to command mini cell to Attack state
 		if (!helper.CanAddAttack)
 			helper.CanAddAttack = true;
@@ -24,11 +24,15 @@ public class EMCautiousAttackState : IEMState
 		// Reset transition availability
 		transition.bCanTransit = true;
 		// Pause the transition for 1 second
-		StartCoroutine (transition.TransitionAvailability (1f));
+		m_EMFSM.StartPauseTransition (1f);
 	}
 	
 	public override void Execute ()
 	{
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+
 		#region Attack only when there are more enemy mini cells than player's 
 		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount ()) 
 		{
@@ -42,7 +46,7 @@ public class EMCautiousAttackState : IEMState
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
-						MessageDispatcher.Instance.DispatchMessage(this.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
 						helper.CanAddAttack = false;
 					}
 				}
@@ -54,7 +58,7 @@ public class EMCautiousAttackState : IEMState
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
-						MessageDispatcher.Instance.DispatchMessage(this.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
 						helper.CanAddAttack = false;
 					}
 				}
@@ -66,7 +70,7 @@ public class EMCautiousAttackState : IEMState
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
-						MessageDispatcher.Instance.DispatchMessage(this.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
 						helper.CanAddAttack = false;
 					}
 				}
@@ -74,7 +78,7 @@ public class EMCautiousAttackState : IEMState
 
 			// Pause commanding enemy mini cells to Attack state
 			// Pause duration depends on the difference in cell numbers
-			StartCoroutine (helper.PauseAddAttack (1.5f - (nEnemyChildFactor - nPlayerChildFactor)/10f));
+			m_EMFSM.StartPauseAddAttack (1.5f - (nEnemyChildFactor - nPlayerChildFactor)/10f);
 		}
 		#endregion
 
@@ -85,6 +89,9 @@ public class EMCautiousAttackState : IEMState
 
 	public override void Exit ()
 	{
+		transition = m_EMFSM.emTransition;
+		helper = m_EMFSM.emHelper;
+
 		// Reset availability to command mini cell to Attack state
 		if (!helper.CanAddAttack)
 			helper.CanAddAttack = true;

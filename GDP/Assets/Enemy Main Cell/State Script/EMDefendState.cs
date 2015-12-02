@@ -10,13 +10,14 @@ public class EMDefendState : IEMState
 	public EMDefendState (EnemyMainFSM EMFSM)
 	{
 		m_EMFSM = EMFSM;
-		transition = m_EMFSM.emTransition;
-		controller = m_EMFSM.emController;
-		helper = m_EMFSM.emHelper;
 	}
 
 	public override void Enter ()
 	{
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+
 		// Reset availability to command mini cell to Defend state
 		if (!helper.CanAddDefend)
 			helper.CanAddDefend = true;
@@ -26,11 +27,15 @@ public class EMDefendState : IEMState
 		// Reset transition availability
 		transition.bCanTransit = true;
 		// Pause the transition for 1 second
-		StartCoroutine (transition.TransitionAvailability (1f));
+		m_EMFSM.StartPauseTransition (1f);
 	}
 	
 	public override void Execute ()
 	{
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+
 		#region Command child cells to transit to Defend state only when there are more player mini cells than enemy mini cells
 		if (m_EMFSM.AvailableChildNum < PlayerChildFSM.GetActiveChildCount() && helper.CanAddDefend)
 		{
@@ -45,13 +50,13 @@ public class EMDefendState : IEMState
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECDefendState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
-						MessageDispatcher.Instance.DispatchMessage(this.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Defend,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Defend,0.0);
 						helper.CanAddDefend = false;
 					}
 				}
 
 				if (helper.CanAddDefend)
-					StartCoroutine (helper.PauseAddDefend (0.25f));
+					m_EMFSM.StartPauseAddDefend (0.25f);
 			}
 			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50 && helper.CanAddDefend)
 			{
@@ -60,14 +65,14 @@ public class EMDefendState : IEMState
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECDefendState(m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
-						MessageDispatcher.Instance.DispatchMessage(this.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Defend,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Defend,0.0);
 						helper.CanAddDefend = false;
 					}
 				}
 			}
 
 			// Pause commanding enemy mini cells to defend state
-			StartCoroutine (helper.PauseAddDefend (2f));
+			m_EMFSM.StartPauseTransition (2f);
 		}
 		#endregion
 		
@@ -98,6 +103,10 @@ public class EMDefendState : IEMState
 
 	public override void Exit ()
 	{
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+
 		// Reset availability to command mini cell to Defend state
 		if (!helper.CanAddDefend)
 			helper.CanAddDefend = true;

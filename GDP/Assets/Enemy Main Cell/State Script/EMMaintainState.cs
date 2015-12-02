@@ -3,24 +3,21 @@ using System.Collections;
 
 public class EMMaintainState : IEMState
 {
+	private EMTransition transition;
+	private EMController controller;
+	private EMHelper helper;
+
 	public EMMaintainState (EnemyMainFSM EMFSM)
 	{
 		m_EMFSM = EMFSM;
 	}
-	
-	private EMTransition transition;
-	private EMController controller;
-	private EMHelper helper;
-	
-	void GetData ()
-	{
-		transition = m_EMFSM.emTransition;
-		controller = m_EMFSM.emController;
-		helper = m_EMFSM.emHelper;
-	}
 
 	public override void Enter ()
 	{
+		transition = m_EMFSM.emTransition;
+		helper = m_EMFSM.emHelper;
+
+		Debug.Log ("Enter EMMaintainState");
 		transition = m_EMFSM.emTransition;
 		// Reset transition availability
 		transition.bCanTransit = true;
@@ -30,6 +27,10 @@ public class EMMaintainState : IEMState
 
 	public override void Execute ()
 	{
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+
 		// Start checking transition only when there are more than 10 available enemy mini cells and transition is allowed 
 		if (m_EMFSM.AvailableChildNum > 10 && transition.bCanTransit) {
 			// If there are more than 10  and less than 25 available enemy mini cells
@@ -132,6 +133,9 @@ public class EMMaintainState : IEMState
 
 	public override void Exit ()
 	{
+		transition = m_EMFSM.emTransition;
+
+		Debug.Log ("Exit EMMaintainState");
 		// Reset transition availability
 		transition.bCanTransit = true;
 	}

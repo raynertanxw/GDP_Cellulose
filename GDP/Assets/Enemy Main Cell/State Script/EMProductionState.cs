@@ -3,24 +3,23 @@ using System.Collections;
 
 public class EMProductionState : IEMState
 {
-	public EMProductionState (EnemyMainFSM EMFSM)
-	{
-		m_EMFSM = EMFSM;
-		transition = m_EMFSM.emTransition;
-		controller = m_EMFSM.emController;
-		helper = m_EMFSM.emHelper;
-	}
-
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
 
+	public EMProductionState (EnemyMainFSM EMFSM)
+	{
+		m_EMFSM = EMFSM;
+	}
+
 	public override void Enter ()
 	{
+		transition = m_EMFSM.emTransition;
+		//Debug.Log ("Enter EMProductionState");
 		// Reset transition availability
 		transition.bCanTransit = true;
 		// Pause the transition for 1 second
-		StartCoroutine (transition.TransitionAvailability (1f));
+		m_EMFSM.StartPauseTransition (1f);
 	}
 
 	public override void Execute ()
@@ -31,8 +30,8 @@ public class EMProductionState : IEMState
 
 		// Produce enemy mini cell if has nutrient and can spawn
 		if (controller.NutrientNum > 0 && m_EMFSM.CanSpawn)
-			m_EMFSM.StartProduceChild ();
-		else
+			m_EMFSM.ProduceChild ();
+		else if (controller.NutrientNum == 0 && m_EMFSM.CanSpawn)
 			m_EMFSM.ChangeState (m_EMFSM.MaintainState);
 
 		// Start checking transition only when there are more than 10 available enemy mini cells, transition is allowed and has nutrient
@@ -133,6 +132,9 @@ public class EMProductionState : IEMState
 
 	public override void Exit ()
 	{
+		transition = m_EMFSM.emTransition;
+
+		//Debug.Log ("Exit EMProductionState");
 		// Reset transition availability
 		transition.bCanTransit = true;
 	}

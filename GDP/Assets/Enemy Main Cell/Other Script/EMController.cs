@@ -38,11 +38,13 @@ public class EMController : MonoBehaviour
 	private int nInitialSize;
 	private int nNutrientNum;
 	public int NutrientNum { get { return nNutrientNum; } }
+	public void ReduceNutrient () { nNutrientNum--; }
 	private Vector2 initialScale;
 	private Vector2 currentScale;
 	#endregion
 
 	private Rigidbody2D thisRB;
+	public Rigidbody2D Rigibody { get { return thisRB; } }
 
 	void Start()
 	{

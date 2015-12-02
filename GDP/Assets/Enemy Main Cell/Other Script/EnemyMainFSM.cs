@@ -13,14 +13,21 @@ public class EnemyMainFSM : MonoBehaviour
 		
 		return instance;
 	}
+	[SerializeField]
+	private GameObject enemyCellPrefab;
+	private GameObject enemyMainObject;
+	public GameObject EnemyMainObject { get { return enemyMainObject; } }
 	#region Classes for help
+	[HideInInspector]
 	public EMController emController;
+	[HideInInspector]
 	public EMHelper emHelper;
+	[HideInInspector]
 	public EMTransition emTransition;
 	#endregion
 	#region State classes
-	IEMState m_ProdctionState = null;
-	public IEMState ProductionState { get { return m_ProdctionState; } }
+	IEMState m_ProductionState = null;
+	public IEMState ProductionState { get { return m_ProductionState; } }
 	IEMState m_DefendState = null;
 	public IEMState DefendState { get { return m_DefendState; } }
 	IEMState m_MaintainState = null;
@@ -36,7 +43,6 @@ public class EnemyMainFSM : MonoBehaviour
 	IEMState m_DieState = null;
 	public IEMState DieState { get { return m_DieState; } }
 	#endregion
-	private Dictionary<EMState, IEMState> m_statesDictionary;
 	private IEMState m_CurrentState = null;
 	public IEMState CurrentState { get { return m_CurrentState; } }
 
@@ -58,17 +64,12 @@ public class EnemyMainFSM : MonoBehaviour
 	private bool bCanSpawn; 
 	public bool CanSpawn { get { return bCanSpawn; } }
 
-	void Awake ()
-	{
-		m_statesDictionary = new Dictionary<PCState, IPCState>();
-		m_statesDictionary.Add(EMState.Production, new EMProductionState(this));
-		m_statesDictionary.Add (EMState.Maintain, new EMMaintainState (this));
-	}
-
 	void Start ()
 	{
+		enemyMainObject = this.gameObject;
+
 		#region State classes
-		m_ProdctionState = new EMProductionState (this);
+		m_ProductionState = new EMProductionState (this);
 		m_DefendState = new EMDefendState (this);
 		m_MaintainState = new EMMaintainState (this);
 		m_AggressiveAttackState = new EMAggressiveAttackState (this);
@@ -77,6 +78,8 @@ public class EnemyMainFSM : MonoBehaviour
 		m_StunnedState = new EMStunnedState (this);
 		m_DieState = new EMDieState (this);
 		#endregion
+		// Initialise the default to Production
+		m_CurrentState = m_MaintainState;
 
 		// Get the enemy main controller, helper class and transition class
 		emController = GetComponent<EMController> ();
@@ -95,8 +98,6 @@ public class EnemyMainFSM : MonoBehaviour
         ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>()).ToList();    
         // Count the number of child cells in list
         nAvailableChildNum = ecList.Count;
-		// Initialise the default to Production
-		m_CurrentState = m_ProdctionState;
 		// Initialise num of damages and aggressiveness
 		nDamageNum = 0;
 		nAggressiveness = 10;
@@ -127,6 +128,16 @@ public class EnemyMainFSM : MonoBehaviour
 			//emController.nNutrientNum--;
 
 			bCanSpawn = false;
+			while (true)
+			{
+				yield return new WaitForSeconds(Random.Range(1f, 5f));
+				
+				GameObject newChild = (GameObject) Instantiate(enemyCellPrefab, transform.position, Quaternion.identity);
+				newChild.transform.SetParent(this.transform);
+				ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
+				newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
+				emController.ReduceNutrient ();
+			}
 			yield return new WaitForSeconds (2);
 			bCanSpawn = true;
 		}
@@ -141,6 +152,16 @@ public class EnemyMainFSM : MonoBehaviour
 	public void StartPauseTransition (float fTime)
 	{
 		StartCoroutine (emTransition.TransitionAvailability (fTime));
+	}
+
+	public void StartPauseAddAttack (float fTime)
+	{
+		StartCoroutine (emHelper.PauseAddAttack (fTime));
+	}
+
+	public void StartPauseAddDefend (float fTime)
+	{
+		StartCoroutine (emHelper.PauseAddDefend (fTime));
 	}
 	#endregion
 }

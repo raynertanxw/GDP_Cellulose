@@ -3,30 +3,29 @@ using System.Collections;
 
 public class EMStunnedState : IEMState
 {
+	private EMTransition transition;
+	private EMController controller;
+	private EMHelper helper;
+
 	public EMStunnedState (EnemyMainFSM EMFSM)
 	{
 		m_EMFSM = EMFSM;
 	}
-	
-	private EMTransition transition;
-	private EMController controller;
-	private EMHelper helper;
-	
-	void GetData ()
-	{
-		transition = m_EMFSM.emTransition;
-		controller = m_EMFSM.emController;
-		helper = m_EMFSM.emHelper;
-	}
 
 	public override void Enter ()
 	{
+		transition = m_EMFSM.emTransition;
+
 		// Reset transition availability
 		transition.bCanTransit = true;
 	}
 
 	public override void Execute ()
 	{
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+
 		// If the enemy main cell is not stunned any more, transit to Maintain State
 		if (!controller.Stunned) 
 		{
@@ -36,6 +35,8 @@ public class EMStunnedState : IEMState
 
 	public override void Exit ()
 	{
+		transition = m_EMFSM.emTransition;
+
 		// Reset transition availability
 		transition.bCanTransit = true;
 	}

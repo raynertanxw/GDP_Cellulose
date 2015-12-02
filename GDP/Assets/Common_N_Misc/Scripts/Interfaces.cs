@@ -24,7 +24,7 @@ public abstract class ISCState : IState
     protected PlayerSquadFSM m_scFSM = null;
 }
 
-public abstract class IEMState : MonoBehaviour 
+public abstract class IEMState : IState
 {
 	protected EnemyMainFSM m_EMFSM = null;
 	
