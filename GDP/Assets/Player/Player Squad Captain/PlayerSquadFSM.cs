@@ -7,15 +7,17 @@ using System.Collections.Generic;
 public class PlayerSquadFSM : MonoBehaviour 
 {
     // Static Fields
-    private static PlayerSquadFSM[] s_array_PlayerSquadFSM;   // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
+    private static PlayerSquadFSM[] s_array_PlayerSquadFSM;     // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
 
     // Uneditable Fields
+    [HideInInspector] public float fStrafingOffsetAngle = 0f;   // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
+
     private Dictionary<SCState, ISCState> dict_States;          // dict_States: The dictionary to store all the states
     private SCState m_currentEnumState;                         // m_currentEnumState: The current enum state of the FSM
     private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
 
     // GameObject/Component References
-    public SpriteRenderer m_SpriteRenderer;                    // m_SpriteRenderer: It is public so that states can reference to it
+    public SpriteRenderer m_SpriteRenderer;                     // m_SpriteRenderer: It is public so that states can reference to it
 
     // Private Functions
     // Start(): Use this for initialisation
@@ -54,7 +56,7 @@ public class PlayerSquadFSM : MonoBehaviour
     // Private Functions
     void Update()
     {
-        transform.Translate(new Vector2(UnityEngine.Random.Range(-2f, 2f), UnityEngine.Random.Range(-2f, 2f)) * Time.deltaTime);
+        //transform.Translate(new Vector2(UnityEngine.Random.Range(-2f, 2f), UnityEngine.Random.Range(-2f, 2f)) * Time.deltaTime);
         m_currentState.Execute();
     }
 
@@ -75,6 +77,21 @@ public class PlayerSquadFSM : MonoBehaviour
         m_currentState = dict_States[m_currentEnumState];
 
         m_currentState.Enter();
+        return true;
+    }
+
+    // Strafing(): Handles the movement when the cells are in production state
+    public bool Strafing()
+    {
+        if (m_currentEnumState != SCState.Produce)
+        {
+            Debug.LogWarning(gameObject.name + ".PlayerSquadFSM.Strafing(): Current state is not SCState.Produce! Ignore Strafing!");
+            return false;
+        }
+        Vector3 targetPosition = Quaternion.Euler(Vector3.forward * fStrafingOffsetAngle) * SquadCaptain.Instance.StrafingVector() + SquadCaptain.Instance.transform.position;
+        
+        transform.position = Vector3.Lerp(transform.position, targetPosition, 3f * Time.deltaTime);
+
         return true;
     }
 
@@ -112,13 +129,34 @@ public class PlayerSquadFSM : MonoBehaviour
         {
             if (s_array_PlayerSquadFSM[i].EnumState.Equals(SCState.Dead))
             {
-                s_array_PlayerSquadFSM[i].Advance(SCState.Idle);
+                s_array_PlayerSquadFSM[i].Advance(SCState.Produce);
                 s_array_PlayerSquadFSM[i].transform.position = _position;
                 return s_array_PlayerSquadFSM[i];
             }
         }
         Debug.LogWarning("PlayerSquadFSM.Spawn(): Cannot spawn child. All child is alive.");
         return null;
+    }
+
+    // CalculateStrafingOffset(): Recalculates all the offset angle that is used in strafing. This is called in SC_ProduceState.cs, within Enter() and Exit() functions
+    public static bool CalculateStrafingOffset()
+    {
+        // if: There is no squad child cells in produce state
+        if (StateCount(SCState.Produce) == 0)
+            return false;
+
+        // Resets all the strafing offset to 0
+        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+            s_array_PlayerSquadFSM[i].fStrafingOffsetAngle = 0f;
+
+        // for: Calculates strafing angle for squad child cells that are in production state
+        // Calculation: Angles are split equally among each cells, which is also based on the number of production cells
+        //              1 cell = 360 deg apart, 2 cells = 180 deg apart, 3 cells = 120 deg apart, 4 cells = 90 deg apart...
+        for (int i = 0; i < PlayerSquadFSM.StateCount(SCState.Produce); i++)
+            if (s_array_PlayerSquadFSM[i].EnumState.Equals(SCState.Produce))
+                s_array_PlayerSquadFSM[i].fStrafingOffsetAngle = 360f / PlayerSquadFSM.StateCount(SCState.Produce) * i;
+
+        return true;
     }
 
     public static PlayerSquadFSM[] ChildArray { get { return s_array_PlayerSquadFSM; } }

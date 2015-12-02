@@ -17,7 +17,7 @@ public class SquadCaptain : MonoBehaviour
      */
 
     // Static Fields
-    private static SquadCaptain m_Instance;     // m_Instance: Stores this instance in this variable, used for singleton purposes
+    private static SquadCaptain s_m_Instance;     // m_Instance: Stores this instance in this variable, used for singleton purposes
 
 	// Editables Fields
     [Header("Costs")]
@@ -35,11 +35,20 @@ public class SquadCaptain : MonoBehaviour
     [SerializeField] private float fMinimumCooldown = 3f;
     [Tooltip("The maximum amount of cooldown for each child spawn")]
     [SerializeField] private float fMaximumCooldown = 10f;
+
+    [Header("Child State: Production")]
+    // Strafing is used to rotate around the squad captain, used in production state
+    [Tooltip("The radius of the circle from the center in which the cells are travelling")]
+    [SerializeField] private float fStrafingRadius = 1.0f;
+    [Tooltip("The speed of the rotation for strafing")]
+    [SerializeField] private float fStrafingSpeed = 0.5f;
 	
 	// Uneditables Fields
     private int nNutrient = 0;                  // nNutrient: The number of nutrient the squad currently has
     private float fNextCooldown = 0.0f;         // fNextCooldown: Stores the time of the cooldown
     private bool bIsAlive = false;              // bIsAlive: Returns if the squad captain is alive
+    private Vector3 m_strafingVector;           // m_strafingVector: The current direction of the strafing vector
+    private bool isStrafeVectorUpdated = true;  // isStrafeVectorUpdated: Checks if the strafing vector is updated
 
     private PlayerSquadFSM[] array_SquadChild;  // array_SquadChild: An array to store all the squad child
 
@@ -64,8 +73,8 @@ public class SquadCaptain : MonoBehaviour
     void OnEnable()
     {
         // Singleton Implementation
-        if (m_Instance == null)
-            m_Instance = this;
+        if (s_m_Instance == null)
+            s_m_Instance = this;
         else
             Destroy(this.gameObject);
     }
@@ -74,8 +83,24 @@ public class SquadCaptain : MonoBehaviour
     void Start()
     {
         // Variable Initialisation
+        m_strafingVector = Vector3.up;
+
         array_SquadChild = new PlayerSquadFSM[nMaximumChildCount];
         StartCoroutine(SpawnRoutine());
+    }
+
+    // Update(): is called once every frame
+    void Update()
+    {
+        if (!isStrafeVectorUpdated)
+        {
+            float fCurrentRadius = Mathf.PingPong(Time.time * 0.5f, fStrafingRadius);
+            if (fCurrentRadius < 0.4f)
+                fCurrentRadius = 0.4f;
+            // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE
+            m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
+            isStrafeVectorUpdated = true;
+        }
     }
 
     // GetProductionChildCount(): Returns the number of child cells in production state
@@ -120,8 +145,15 @@ public class SquadCaptain : MonoBehaviour
         return PlayerSquadFSM.AliveCount();
     }
 
+    // StrafingVector(): calculates and return the strafing vector
+    public Vector3 StrafingVector()
+    {
+        isStrafeVectorUpdated = false;
+        return m_strafingVector;
+    }
+
     // Public Static Functions
-    public static SquadCaptain Instance { get { return m_Instance; } }
+    public static SquadCaptain Instance { get { return s_m_Instance; } }
 
 	// Getter-Setter Functions
     public int Nutrient { get { return nNutrient; } }
