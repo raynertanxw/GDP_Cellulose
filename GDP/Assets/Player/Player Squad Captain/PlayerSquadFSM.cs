@@ -7,7 +7,7 @@ using System.Collections.Generic;
 public class PlayerSquadFSM : MonoBehaviour 
 {
     // Static Fields
-    private static List<PlayerSquadFSM> s_List_PlayerSquadFSM;   // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
+    private static PlayerSquadFSM[] s_array_PlayerSquadFSM;   // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
 
     // Uneditable Fields
     private Dictionary<SCState, ISCState> dict_States;          // dict_States: The dictionary to store all the states
@@ -22,7 +22,8 @@ public class PlayerSquadFSM : MonoBehaviour
     void Start()
     {
         // Initialisation of Array
-        s_List_PlayerSquadFSM = new List<PlayerSquadFSM>();
+        if (s_array_PlayerSquadFSM == null)
+            s_array_PlayerSquadFSM = new PlayerSquadFSM[SquadCaptain.Instance.MaximumCount];
 
         // Initialisation of Dictionary
         dict_States = new Dictionary<SCState, ISCState>();
@@ -38,14 +39,22 @@ public class PlayerSquadFSM : MonoBehaviour
         m_currentState = dict_States[m_currentEnumState];
         m_currentState.Enter();
 
-        // Object Pooling: Putting all child into array
-        s_List_PlayerSquadFSM.Add(this);
-
+        // Object Pooling: Putting all child into array (THIS SHOULD BE THE LAST ELEMENT IN THE void Start(), CAZ IT returns;)
+        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        {
+            // if: The current element of the array is empty
+            if (s_array_PlayerSquadFSM[i] == null)
+            {
+                s_array_PlayerSquadFSM[i] = this;
+                return;
+            }
+        }
     }
 
     // Private Functions
     void Update()
     {
+        transform.Translate(new Vector2(UnityEngine.Random.Range(-2f, 2f), UnityEngine.Random.Range(-2f, 2f)) * Time.deltaTime);
         m_currentState.Execute();
     }
 
@@ -59,10 +68,12 @@ public class PlayerSquadFSM : MonoBehaviour
             return false;
         }
 
+        // State Changing
         m_currentState.Exit();
 
         m_currentEnumState = _enumState;
         m_currentState = dict_States[m_currentEnumState];
+
         m_currentState.Enter();
         return true;
     }
@@ -72,26 +83,45 @@ public class PlayerSquadFSM : MonoBehaviour
     public static int StateCount(SCState _enumState)
     {
         int nStateCount = 0;
-        foreach (PlayerSquadFSM m_playerSquadFSM in s_List_PlayerSquadFSM)
+        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
         {
-            if (m_playerSquadFSM.EnumState.Equals(_enumState))
+            if (s_array_PlayerSquadFSM[i].EnumState.Equals(_enumState))
                 nStateCount++;
         }
         return nStateCount;
     }
 
     // GetAliveCount(): Returns the number of squad child that is alive
-    public static int GetAliveCount()
+    public static int AliveCount()
     {
         int nAliveCount = 0;
-        foreach (PlayerSquadFSM m_playerSquadFSM in s_List_PlayerSquadFSM)
+        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
         {
             // if: The current element m_playerSquadFSM's state is not in SC_DeadState
-            if (!m_playerSquadFSM.EnumState.Equals(SCState.Dead))
+            if (s_array_PlayerSquadFSM[i].EnumState != SCState.Dead)
                 nAliveCount++;
         }
         return nAliveCount;
     }
+
+    // Public Static Functions
+    // Spawn(): Make alive a squad child from the object pooling
+    public static PlayerSquadFSM Spawn(Vector3 _position)
+    {
+        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        {
+            if (s_array_PlayerSquadFSM[i].EnumState.Equals(SCState.Dead))
+            {
+                s_array_PlayerSquadFSM[i].Advance(SCState.Idle);
+                s_array_PlayerSquadFSM[i].transform.position = _position;
+                return s_array_PlayerSquadFSM[i];
+            }
+        }
+        Debug.LogWarning("PlayerSquadFSM.Spawn(): Cannot spawn child. All child is alive.");
+        return null;
+    }
+
+    public static PlayerSquadFSM[] ChildArray { get { return s_array_PlayerSquadFSM; } }
 
     // Getter-Setter Functions
     public SCState EnumState { get { return m_currentEnumState; } }
