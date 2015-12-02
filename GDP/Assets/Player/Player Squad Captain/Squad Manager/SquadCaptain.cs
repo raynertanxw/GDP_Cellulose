@@ -101,7 +101,6 @@ public class SquadCaptain : MonoBehaviour
             return true;
         }
 
-        Debug.Log(PlayerSquadFSM.StateCount(SCState.Idle));
         fNextCooldown = (fMaximumCooldown - fMinimumCooldown) * ((float)(nMaximumChildCount - PlayerSquadFSM.StateCount(SCState.Idle)) / (float)nMaximumChildCount) + fMinimumCooldown;
 
         if (fNextCooldown <= 0f)
