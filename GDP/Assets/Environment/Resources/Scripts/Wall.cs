@@ -27,8 +27,8 @@ public class Wall : MonoBehaviour
 	{
 		while (true)
 		{
-			yield return new WaitForSeconds(fNutrientsChance);
-			if (Random.Range(0, 10) >= fNutrientsDelay * 10f)
+			yield return new WaitForSeconds(fNutrientsDelay);
+			if (Random.value * 10 >= fNutrientsChance * 10f)
 			{
 				float xPos = 0;
 				if (Random.Range(0, 2) == 1)

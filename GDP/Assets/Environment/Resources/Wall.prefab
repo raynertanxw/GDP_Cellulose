@@ -97,7 +97,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615233366a63f415f9cf9fcefadf80a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resourcePrefab: {fileID: 179072, guid: 0e3f3fd41014b4da496973bbe6ac5c05, type: 2}
+  fNutrientsChance: .5
+  fNutrientsDelay: 1
+  nutrientGO: {fileID: 179072, guid: 0e3f3fd41014b4da496973bbe6ac5c05, type: 2}
 --- !u!212 &21210438
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -116,7 +118,9 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_MinimumChartSize: 4
   m_AutoUVMaxDistance: .5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
@@ -142,7 +146,9 @@ SpriteRenderer:
   m_ProbeAnchor: {fileID: 0}
   m_ScaleInLightmap: 1
   m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
   m_ImportantGI: 0
+  m_MinimumChartSize: 4
   m_AutoUVMaxDistance: .5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
