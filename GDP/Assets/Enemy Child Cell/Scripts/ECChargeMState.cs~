@@ -2,54 +2,58 @@
 using System.Collections;
 
 public class ECChargeMState : IECState {
-
-    private GameObject m_PlayerMain;
-
-    public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
-    {
+	
+	private float fChargeSpeed;
+	private GameObject m_PlayerMain;
+	
+	public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
+	{
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_PlayerMain = m_ecFSM.pMain;
-    }
-
-    public override void Enter()
-    {
-
-    }
-
-    public override void Execute()
-    {
-		if (HasCellReachTargetPos(m_PlayerMain.transform.position) == false)
-        {
+		fChargeSpeed = 1f;
+	}
+	
+	public override void Enter()
+	{
+		m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
+	}
+	
+	public override void Execute()
+	{
+		Debug.Log(m_PlayerMain.transform.position);
+		if (!HasCellReachTargetPos(m_PlayerMain.transform.position))
+		{
 			ChargeTowards(m_PlayerMain);
-        }
-        else
-        {
-            MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.Dead, 0.0);
-        }
-    }
-
-    public override void Exit()
-    {
-
-    }
-
-    private bool HasCellReachTargetPos(Vector2 pos)
-    {
-		if (Vector2.Distance(m_Child.transform.position, pos) <= 0.1f)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private void ChargeTowards(GameObject PM)
-    {
-        Vector2 targetPos = PM.transform.position;
-		Vector2 difference = new Vector2(targetPos.x - m_Child.transform.position.x, targetPos.y - m_Child.transform.position.y);
-        Vector2 direction = difference.normalized;
-
-		m_Child.transform.Translate(direction * m_ecFSM.fSpeed);
-    }
+		}
+		else
+		{
+			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
+			MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.Dead, 0.0);
+		}
+	}
+	
+	public override void Exit()
+	{
+		
+	}
+	
+	private bool HasCellReachTargetPos(Vector2 _Pos)
+	{
+		if (Vector2.Distance(m_Child.transform.position, _Pos) <= m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 + m_PlayerMain.GetComponent<SpriteRenderer>().bounds.size.x/2)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private void ChargeTowards(GameObject _PM)
+	{
+		Vector2 m_TargetPos = _PM.transform.position;
+		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
+		Vector2 m_Direction = m_Difference.normalized;
+		Debug.Log(m_Direction);
+		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
+	}
 }
 

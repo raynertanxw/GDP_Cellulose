@@ -9,5 +9,5 @@ public enum EMState {Production, Maintain, Defend, AggressiveAttack, CautiousAtt
 
 public enum ECState {Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend, Avoid, Landmine, Dead};
 
-public enum MessageType {Empty, Idle, Attack, Defend, Avoid, Landmine, Dead};
+public enum MessageType {Empty, Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend, Avoid, Landmine, Dead};
 
