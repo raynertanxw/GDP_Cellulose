@@ -9,4 +9,19 @@ public class SC_ProduceState : ISCState
     {
         m_scFSM = m_PlayerSquadFSM;
     }
+
+    public override void Enter()
+    {
+        PlayerSquadFSM.CalculateStrafingOffset();
+    }
+
+    public override void Execute()
+    {
+        m_scFSM.Strafing();
+    }
+
+    public override void Exit()
+    {
+        PlayerSquadFSM.CalculateStrafingOffset();
+    }
 }

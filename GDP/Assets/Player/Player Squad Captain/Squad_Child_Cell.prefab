@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 498690}
   - 114: {fileID: 11477736}
   - 212: {fileID: 21298998}
-  m_Layer: 0
+  m_Layer: 13
   m_Name: Squad_Child_Cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -24,7 +24,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 167496}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.53999996, y: -3.45000005, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -40,6 +40,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a89bc9d9d4d6f1b4cacb98dd8b763dab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fStrafingOffsetAngle: 0
   m_SpriteRenderer: {fileID: 21298998}
 --- !u!212 &21298998
 SpriteRenderer:

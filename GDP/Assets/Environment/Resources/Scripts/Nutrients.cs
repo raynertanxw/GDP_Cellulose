@@ -19,7 +19,6 @@ public class Nutrients : MonoBehaviour
 	private Vector3 endPosition;
     private bool bIsCollectable = true;     // isCollected: Determines if the current resource can be collected by the player
     private float fClickMagnitude;          // fClickMagnitude: The distance between the resource AT THE POINT OF CLICKING and the player's position
-    private Vector3 initialScale;           // <------- REMOVE THIS IN MAIN GAME, SPRITE SHOULD VECTOR.ONE SCALE
 
     // GameObject and Component References
     private Transform playerMainTransform;  // playerMainTransform: The transform of the player
@@ -31,7 +30,6 @@ public class Nutrients : MonoBehaviour
         // Definition of variables
 		endPosition = new Vector2 (-transform.position.x, transform.position.y + Random.Range (-5f, 5f) * fMaximumOffset);
         playerMainTransform = GameObject.Find("Player_Cell").transform;
-        initialScale = transform.localScale;
 	}
 	
 	// Update(): is called once per frame
@@ -41,7 +39,9 @@ public class Nutrients : MonoBehaviour
         if (bIsCollectable)
         {
             // Animation of player absorbing the resource
-            transform.position = Vector2.MoveTowards(transform.position, endPosition, ((endPosition - transform.position).magnitude * fTimeTaken + fMinimumSpeed) * Time.deltaTime);
+            Vector2 vectorToTarget = endPosition - transform.position;
+            transform.position = Vector2.MoveTowards(transform.position, endPosition, (vectorToTarget.magnitude * fTimeTaken + fMinimumSpeed) * Time.deltaTime);
+            transform.rotation = Quaternion.AngleAxis(vectorToTarget.magnitude * 60f, Vector3.forward);
             if (transform.position == endPosition)
                 Destroy(this.gameObject);
         }
@@ -51,7 +51,7 @@ public class Nutrients : MonoBehaviour
             float distanceMagnitude = (playerMainTransform.position - transform.position).magnitude;
             transform.position = Vector2.MoveTowards(transform.position, playerMainTransform.position, (distanceMagnitude * fTimeTaken + fMinimumSpeed) * 5.0f * Time.deltaTime);
 
-            transform.localScale = initialScale * (distanceMagnitude / fClickMagnitude);
+            transform.localScale = Vector3.one * (distanceMagnitude / fClickMagnitude);
 
             if (distanceMagnitude < 0.1f)
                 Destroy(this.gameObject);
