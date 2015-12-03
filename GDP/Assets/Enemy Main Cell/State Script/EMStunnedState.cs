@@ -14,6 +14,8 @@ public class EMStunnedState : IEMState
 
 	public override void Enter ()
 	{
+		Debug.Log ("Enter EMStunnedState");
+
 		transition = m_EMFSM.emTransition;
 
 		// Reset transition availability
@@ -26,15 +28,17 @@ public class EMStunnedState : IEMState
 		controller = m_EMFSM.emController;
 		helper = m_EMFSM.emHelper;
 
-		// If the enemy main cell is not stunned any more, transit to Maintain State
+		// If the enemy main cell is not stunned any more, transit to Production State
 		if (!controller.Stunned) 
 		{
-			m_EMFSM.ChangeState (m_EMFSM.MaintainState);
+			m_EMFSM.ChangeState (EMState.Production);
 		}
 	}
 
 	public override void Exit ()
 	{
+		Debug.Log ("Exit EMStunnedState");
+
 		transition = m_EMFSM.emTransition;
 
 		// Reset transition availability

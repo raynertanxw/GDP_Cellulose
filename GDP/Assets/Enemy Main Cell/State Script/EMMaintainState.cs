@@ -14,10 +14,11 @@ public class EMMaintainState : IEMState
 
 	public override void Enter ()
 	{
+		Debug.Log ("Enter EMMaintainState");
+
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
-
-		Debug.Log ("Enter EMMaintainState");
+		
 		transition = m_EMFSM.emTransition;
 		// Reset transition availability
 		transition.bCanTransit = true;
@@ -40,32 +41,32 @@ public class EMMaintainState : IEMState
 				
 				// Transition to Defend
 				if (nEnemyChildFactor > nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 10f), m_EMFSM.DefendState);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 10f), EMState.Defend);
 				}
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.Aggressiveness * 5f), m_EMFSM.AggressiveAttackState);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.Aggressiveness * 5f), EMState.AggressiveAttack);
 				}
 				
 				// Transition to EMCautiousAttack
 				if (nEnemyChildFactor > nPlayerChildFactor) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1.5f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 3f), m_EMFSM.CautiousAttackState);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1.5f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 3f), EMState.CautiousAttack);
 				}
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 2.5f), m_EMFSM.LandmineState);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 2.5f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), m_EMFSM.MaintainState);
+					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 
 				// Transition to Production
 				if (controller.NutrientNum > 0) {
-					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f) / 2f, m_EMFSM.ProductionState);
+					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f) / 2f, EMState.Production);
 				}
 			} else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50) {
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
@@ -73,32 +74,32 @@ public class EMMaintainState : IEMState
 				
 				// Transition to Defend
 				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 8f && (nPlayerChildFactor - nEnemyChildFactor) > 2f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 5f), m_EMFSM.DefendState);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 5f), EMState.Defend);
 				}
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1.5f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.Aggressiveness * 5f), m_EMFSM.AggressiveAttackState);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1.5f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.Aggressiveness * 5f), EMState.AggressiveAttack);
 				}
 				
 				// Transition to EMCautiousAttack
 				if (nEnemyChildFactor > nPlayerChildFactor) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 2f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 3f), m_EMFSM.CautiousAttackState);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 2f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 3f), EMState.CautiousAttack);
 				}
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 1.5f), m_EMFSM.LandmineState);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 1.5f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (8f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), m_EMFSM.MaintainState);
+					transition.Transition (1000f / helper.Pow (8f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 
 				// Transition to Production
 				if (controller.NutrientNum > 0) {
-					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f) / 3f, m_EMFSM.ProductionState);
+					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f) / 3f, EMState.Production);
 				}
 			} else if (m_EMFSM.AvailableChildNum > 50) {
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
@@ -106,22 +107,22 @@ public class EMMaintainState : IEMState
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1.75f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 5f), m_EMFSM.AggressiveAttackState);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 1.75f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 5f), EMState.AggressiveAttack);
 				}
 				
 				// Transition to EMCautiousAttack
 				if (nEnemyChildFactor > nPlayerChildFactor) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 2f / nPlayerChildFactor, 2f) * 7.5f + m_EMFSM.Aggressiveness * 3f), m_EMFSM.CautiousAttackState);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor * 2f / nPlayerChildFactor, 2f) * 7.5f + m_EMFSM.Aggressiveness * 3f), EMState.CautiousAttack);
 				}
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 1.5f), m_EMFSM.LandmineState);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 1.5f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), m_EMFSM.MaintainState);
+					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 			}
 			
@@ -133,9 +134,10 @@ public class EMMaintainState : IEMState
 
 	public override void Exit ()
 	{
-		transition = m_EMFSM.emTransition;
-
 		Debug.Log ("Exit EMMaintainState");
+
+		transition = m_EMFSM.emTransition;
+		
 		// Reset transition availability
 		transition.bCanTransit = true;
 	}

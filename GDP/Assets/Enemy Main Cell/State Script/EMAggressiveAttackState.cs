@@ -17,9 +17,11 @@ public class EMAggressiveAttackState : IEMState
 
 	public override void Enter ()
 	{
+		Debug.Log ("Enter EMAggressiveAttackState");
+
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
-
+		
 		// Reset availability to command mini cell to Attack state
 		if (!helper.CanAddAttack)
 			helper.CanAddAttack = true;
@@ -92,6 +94,8 @@ public class EMAggressiveAttackState : IEMState
 
 	public override void Exit ()
 	{
+		Debug.Log ("Exit EMAggressiveAttackState");
+
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 

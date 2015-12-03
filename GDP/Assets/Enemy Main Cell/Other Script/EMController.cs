@@ -103,7 +103,7 @@ public class EMController : MonoBehaviour
             }
         }
         // Change the horizontal direction if allowed
-        if (bCanChangeHori) {
+        if (bCanChangeHori && !bPushed && !bStunned) {
 			StartCoroutine (MovingHorizontally ());
 		}
         // Check the direction of horizontal movement is correct
@@ -181,6 +181,7 @@ public class EMController : MonoBehaviour
 			bMovingLeft = !bMovingLeft;
 
 		fHoriSpeed = fSpeed;
+		ResetVelocity ();
 		yield return new WaitForSeconds (fTime);
 		bCanChangeHori = true;
 	}
@@ -188,10 +189,13 @@ public class EMController : MonoBehaviour
 	// Check the direction of horizontal movement is correct
 	void HorizontalCheck ()
 	{
-		if (bMovingLeft && fHoriSpeed > 0)
+		if (bMovingLeft && fHoriSpeed > 0) {
 			fHoriSpeed = -fHoriSpeed;
-		else if (!bMovingLeft && fHoriSpeed < 0)
+			ResetVelocity ();
+		} else if (!bMovingLeft && fHoriSpeed < 0) {
 			fHoriSpeed = -fHoriSpeed;
+			ResetVelocity ();
+		}
 	}
 
 	public void ChangeSpeed(float changeInSpeed)

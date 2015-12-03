@@ -27,7 +27,7 @@ public class EMTransition : MonoBehaviour
 	}
 
 	// Universal transition probability checking function
-	public void Transition (float nChanceFactor, IEMState state)
+	public void Transition (float nChanceFactor, EMState state)
 	{
 		float nChance = 0f;
 		float nEnemyChildFactor = m_EMFSM.AvailableChildNum / 10;
@@ -54,31 +54,31 @@ public class EMTransition : MonoBehaviour
 	// Immediate transition to ProductionState
 	void ProductionTransition ()
 	{
-		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentState != m_EMFSM.ProductionState) 
+		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentStateIndex != EMState.Production && bCanTransit) 
 		{
-			m_EMFSM.ChangeState (m_EMFSM.ProductionState);
-		}
+			m_EMFSM.ChangeState (EMState.Production);
 
-		// Reset transition availability
-		bCanTransit = true;
+			// Reset transition availability
+			bCanTransit = true;
+		}
 	}
 	// Immediate transition to StunnedState
 	void StunnedTransition ()
 	{
-		if (controller.Stunned && m_EMFSM.CurrentState != m_EMFSM.StunnedState) 
+		if (controller.Stunned && m_EMFSM.CurrentStateIndex != EMState.Stunned) 
 		{
-			m_EMFSM.ChangeState (m_EMFSM.ProductionState);
-		}
+			m_EMFSM.ChangeState (EMState.Production);
 
-		// Reset transition availability
-		bCanTransit = true;
+			// Reset transition availability
+			bCanTransit = true;
+		}
 	}
 	// Transition to DieState
 	void DieTransition ()
 	{
-		if (m_EMFSM.Health <= 0 && m_EMFSM.CurrentState != m_EMFSM.DieState) 
+		if (m_EMFSM.Health <= 0 && m_EMFSM.CurrentStateIndex != EMState.Die) 
 		{
-			m_EMFSM.ChangeState (m_EMFSM.DieState);
+			m_EMFSM.ChangeState (EMState.Die);
 		}
 	}
 	#endregion

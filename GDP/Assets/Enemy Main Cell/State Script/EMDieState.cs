@@ -14,11 +14,11 @@ public class EMDieState : IEMState
 
 	public override void Enter ()
 	{
-
+		Debug.Log ("Enter EMDieState");
 	}
 	
 	public override void Execute ()
 	{
-		m_EMFSM.ChangeState (m_EMFSM.ProductionState);
+		m_EMFSM.ChangeState (EMState.Production);
 	}
 }

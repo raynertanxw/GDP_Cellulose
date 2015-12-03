@@ -14,7 +14,7 @@ public class EnemyMainFSM : MonoBehaviour
 		return instance;
 	}
 	[SerializeField]
-	private GameObject enemyCellPrefab;
+	private GameObject enemyMiniPrefab;
 	private GameObject enemyMainObject;
 	public GameObject EnemyMainObject { get { return enemyMainObject; } }
 	#region Classes for help
@@ -25,7 +25,7 @@ public class EnemyMainFSM : MonoBehaviour
 	[HideInInspector]
 	public EMTransition emTransition;
 	#endregion
-	#region State classes
+	/*#region State classes
 	IEMState m_ProductionState = null;
 	public IEMState ProductionState { get { return m_ProductionState; } }
 	IEMState m_DefendState = null;
@@ -42,9 +42,14 @@ public class EnemyMainFSM : MonoBehaviour
 	public IEMState StunnedState { get { return m_StunnedState; } }
 	IEMState m_DieState = null;
 	public IEMState DieState { get { return m_DieState; } }
-	#endregion
+	#endregion*/
+
+	private Dictionary<EMState, IEMState> m_statesDictionary;
+	public Dictionary<EMState, IEMState> StatesDictionary { get { return m_statesDictionary; } }
 	private IEMState m_CurrentState = null;
 	public IEMState CurrentState { get { return m_CurrentState; } }
+	private EMState m_currentStateIndex;
+	public EMState CurrentStateIndex { get { return m_currentStateIndex; } }
 
 	// Enemy Child
 	private List<EnemyChildFSM> ecList = new List<EnemyChildFSM>();
@@ -68,7 +73,16 @@ public class EnemyMainFSM : MonoBehaviour
 	{
 		enemyMainObject = this.gameObject;
 
-		#region State classes
+		m_statesDictionary = new Dictionary<EMState, IEMState>();
+		m_statesDictionary.Add (EMState.Production, new EMProductionState (this));
+		m_statesDictionary.Add (EMState.Maintain, new EMMaintainState (this));
+		m_statesDictionary.Add (EMState.Defend, new EMDefendState (this));
+		m_statesDictionary.Add (EMState.AggressiveAttack, new EMAggressiveAttackState (this));
+		m_statesDictionary.Add (EMState.CautiousAttack, new EMCautiousAttackState (this));
+		m_statesDictionary.Add (EMState.Landmine, new EMLandmineState (this));
+		m_statesDictionary.Add (EMState.Stunned, new EMStunnedState (this));
+		m_statesDictionary.Add (EMState.Die, new EMDieState (this));
+		/*#region State classes
 		m_ProductionState = new EMProductionState (this);
 		m_DefendState = new EMDefendState (this);
 		m_MaintainState = new EMMaintainState (this);
@@ -77,9 +91,10 @@ public class EnemyMainFSM : MonoBehaviour
 		m_LandmineState = new EMLandmineState (this);
 		m_StunnedState = new EMStunnedState (this);
 		m_DieState = new EMDieState (this);
-		#endregion
+		#endregion*/
 		// Initialise the default to Production
-		m_CurrentState = m_MaintainState;
+		m_CurrentState = m_statesDictionary [EMState.Production];
+		m_currentStateIndex = EMState.Production;
 
 		// Get the enemy main controller, helper class and transition class
 		emController = GetComponent<EMController> ();
@@ -98,7 +113,8 @@ public class EnemyMainFSM : MonoBehaviour
         ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>()).ToList();    
         // Count the number of child cells in list
         nAvailableChildNum = ecList.Count;
-		// Initialise num of damages and aggressiveness
+		// Initialise num of health, damages and aggressiveness
+		nHealth = 30;
 		nDamageNum = 0;
 		nAggressiveness = 10;
 		// Initialise status
@@ -110,12 +126,13 @@ public class EnemyMainFSM : MonoBehaviour
 		m_CurrentState.Execute ();
 	}
 
-	public void ChangeState (IEMState newState)
+	public void ChangeState (EMState newState)
 	{
 		if (m_CurrentState != null)
 			m_CurrentState.Exit ();
 
-		m_CurrentState = newState;
+		m_currentStateIndex = newState;
+		m_CurrentState = m_statesDictionary [newState];
 		m_CurrentState.Enter ();
 	}
 
@@ -132,7 +149,7 @@ public class EnemyMainFSM : MonoBehaviour
 			{
 				yield return new WaitForSeconds(Random.Range(1f, 5f));
 				
-				GameObject newChild = (GameObject) Instantiate(enemyCellPrefab, transform.position, Quaternion.identity);
+				GameObject newChild = (GameObject) Instantiate(enemyMiniPrefab, transform.position, Quaternion.identity);
 				newChild.transform.SetParent(this.transform);
 				ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
 				newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
