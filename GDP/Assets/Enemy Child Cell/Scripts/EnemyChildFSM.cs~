@@ -34,7 +34,7 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		m_CurrentState = m_StatesDictionary[ECState.Idle];
 		m_CurrentEnum = ECState.Idle;
-		m_CurrentCommand = MessageType.Attack;
+		m_CurrentCommand = MessageType.Idle;
 	}
 	
 	void Update()
