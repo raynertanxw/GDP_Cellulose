@@ -14,6 +14,7 @@ public class ECDeadState : IECState {
 		m_Child.GetComponent<SpriteRenderer>().enabled = false;
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
 		m_Child.GetComponent<Rigidbody2D>().isKinematic = true;
+		//ECPoolManager.AddToPool(m_Child); Add when pool is implemneted
 	}
 	
 	public override void Execute()
@@ -26,11 +27,6 @@ public class ECDeadState : IECState {
 		m_Child.GetComponent<SpriteRenderer>().enabled = true;
 		m_Child.GetComponent<BoxCollider2D>().enabled = true;
 		m_Child.GetComponent<Rigidbody2D>().isKinematic = false;
-//		Debug.Log("Exit Dead");
-	}
-	
-	private void Reactivate()
-	{
-		MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.Idle, 0.0);
+		Debug.Log("Exit Dead");
 	}
 }

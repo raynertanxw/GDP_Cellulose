@@ -13,7 +13,7 @@ GameObject:
   - 114: {fileID: 11488050}
   - 50: {fileID: 5017822}
   m_Layer: 8
-  m_Name: Mini_Enemy_Cell
+  m_Name: Enemy_Child_Cell
   m_TagString: EnemyChild
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

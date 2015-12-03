@@ -41,7 +41,7 @@ public class ECChargeCState : IECState {
 		GameObject[] childCells = GameObject.FindGameObjectsWithTag("EnemyChild");
 		for (int i = 0; i < childCells.Length; i++)
 		{
-			if (childCells[i].GetComponent<ECChargeCState>().m_Target == _GO)
+			if ((childCells[i].GetComponent<EnemyChildFSM>().StateDictionary[ECState.ChargeChild] as ECChargeCState).m_Target == _GO)
 			{
 				return false;
 			}
@@ -64,7 +64,7 @@ public class ECChargeCState : IECState {
 				closestChild = childCells[i];
 			}
 		}
-		
+				
 		return closestChild;
 	}
 	
@@ -81,9 +81,11 @@ public class ECChargeCState : IECState {
 	private void ChargeTowards(GameObject _PC)
 	{
 		Vector2 m_TargetPos = _PC.transform.position;
-		Vector2 m_Difference = new Vector2(m_TargetPos.x - m_Child.transform.position.x, m_TargetPos.y - m_Child.transform.position.y);
-		Vector2 m_Direction = m_Difference.normalized;
+		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
+		Vector2 m_Direction = -m_Difference.normalized;
 		
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
+		fChargeSpeed += 0.2f;
+		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
 	}
 }

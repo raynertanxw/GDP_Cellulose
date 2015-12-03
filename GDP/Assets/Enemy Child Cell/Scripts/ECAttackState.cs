@@ -20,13 +20,12 @@ public class ECAttackState : IECState {
 	
 	public override void Enter()
 	{
-		Debug.Log("Enter Attack");
-		DecideAttackType();
+		
 	}
 	
 	public override void Execute()
 	{
-		
+		DecideAttackType();
 	}
 	
 	public override void Exit()

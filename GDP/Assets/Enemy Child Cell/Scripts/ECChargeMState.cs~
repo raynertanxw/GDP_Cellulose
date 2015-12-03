@@ -11,7 +11,7 @@ public class ECChargeMState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_PlayerMain = m_ecFSM.pMain;
-		fChargeSpeed = 1f;
+		fChargeSpeed = 1f; //min 3f max 10f;
 	}
 	
 	public override void Enter()
@@ -21,7 +21,6 @@ public class ECChargeMState : IECState {
 	
 	public override void Execute()
 	{
-		Debug.Log(m_PlayerMain.transform.position);
 		if (!HasCellReachTargetPos(m_PlayerMain.transform.position))
 		{
 			ChargeTowards(m_PlayerMain);
@@ -51,9 +50,11 @@ public class ECChargeMState : IECState {
 	{
 		Vector2 m_TargetPos = _PM.transform.position;
 		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
-		Vector2 m_Direction = m_Difference.normalized;
-		Debug.Log(m_Direction);
+		Vector2 m_Direction = -m_Difference.normalized;
+		
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
+		fChargeSpeed += 0.2f;
+		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
 	}
 }
 
