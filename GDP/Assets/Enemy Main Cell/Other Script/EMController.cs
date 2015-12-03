@@ -3,6 +3,8 @@ using System.Collections;
 
 public class EMController : MonoBehaviour 
 {	
+	EnemyMainFSM m_EMFSM;
+
 	#region Speed & Velocity
 	// Speed
 	private float fSpeed;
@@ -49,31 +51,32 @@ public class EMController : MonoBehaviour
 	void Start()
 	{
 		// GetComponent
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		thisRB = GetComponent<Rigidbody2D> ();
+		// Size
+		nInitialSize = 150;
+		nNutrientNum = 50;
+		initialScale = gameObject.transform.localScale;
+		currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
 		// Speed
 		fSpeed = .25f;
 		fSpeedFactor = 1f;
 		fSpeedTemp = fSpeed;
 		bIsDefend = false;
 		fDefendFactor = 0.9f;
-		// Velocity
-		velocity = new Vector2 (0, fSpeed * fSpeedFactor);
-		thisRB.velocity = velocity;
 		// Horizontal movement
 		bMovingLeft = true;
 		bCanChangeHori = true;
-		fHoriSpeed = 1f / Mathf.Sqrt (nNutrientNum);
+		fHoriSpeed = 0f;
+		// Velocity
+		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
+		thisRB.velocity = velocity;
 		// Damage
 		nDamageNum = 0;
 		// State
 		bPushed = false;
 		bStunned = false;
 		bCanStun = true;
-		// Size
-		nInitialSize = 150;
-		nNutrientNum = 50;
-		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
 	}
 
 	void Update()
@@ -113,8 +116,11 @@ public class EMController : MonoBehaviour
 		{
 			currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
 		}
+		// Update Aggresiveness
+		UpdateAggressiveness ();
 	}
 
+	#region Damage behavior
 	// Push back the enemy main cell when received attack
 	IEnumerator ForceBack()
 	{
@@ -150,7 +156,9 @@ public class EMController : MonoBehaviour
 		yield return new WaitForSeconds (3f);
 		bCanStun = true;
 	}
+	#endregion
 
+	#region Movement
 	// Auto reset velocity
 	void ResetVelocity ()
 	{
@@ -174,14 +182,14 @@ public class EMController : MonoBehaviour
 	{
 		bCanChangeHori = false;
 		int bDirection = Random.Range (0, 2);
-		float fTime = Random.Range (0f, 5f);
-		float fSpeed = Random.Range (0f, 1f / Mathf.Sqrt (nNutrientNum));
+		float fTime = Random.Range (1f, 5f);
+		float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nNutrientNum));
 
 		if (bDirection == 0) 
 			bMovingLeft = !bMovingLeft;
 
 		fHoriSpeed = fSpeed;
-		ResetVelocity ();
+
 		yield return new WaitForSeconds (fTime);
 		bCanChangeHori = true;
 	}
@@ -189,11 +197,11 @@ public class EMController : MonoBehaviour
 	// Check the direction of horizontal movement is correct
 	void HorizontalCheck ()
 	{
-		if (bMovingLeft && fHoriSpeed > 0) {
-			fHoriSpeed = -fHoriSpeed;
+		if (bMovingLeft && fHoriSpeed > 0f) {
+			fHoriSpeed *= -1f;
 			ResetVelocity ();
-		} else if (!bMovingLeft && fHoriSpeed < 0) {
-			fHoriSpeed = -fHoriSpeed;
+		} else if (!bMovingLeft && fHoriSpeed < 0f) {
+			fHoriSpeed *= -1f;
 			ResetVelocity ();
 		}
 	}
@@ -218,6 +226,30 @@ public class EMController : MonoBehaviour
 	{
 		bMovingLeft = !bMovingLeft;
 	}
+	#endregion
+
+	#region Change aggressiveness due to the existence of squad captain
+	void UpdateAggressiveness ()
+	{
+		// Reset Aggressiveness factor (Captain)
+		if (SquadCaptain.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0) {
+			m_EMFSM.AggressivenessSquadCap = Random.Range (1f, 5f);
+		} else if (!SquadCaptain.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > m_EMFSM.InitialAggressiveness) {
+			m_EMFSM.AggressivenessSquadCap = 0f;
+		}
+		// Reset Aggressiveness factor (Child)
+		if (SquadCaptain.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != 10f / Mathf.Sqrt((float)SquadCaptain.Instance.AliveChildCount())) {
+			float fAggressivenessSquadChild = 10f / Mathf.Sqrt((float)SquadCaptain.Instance.AliveChildCount());
+			if (fAggressivenessSquadChild > 5f)
+				fAggressivenessSquadChild = 5f;
+			m_EMFSM.AggressivenessSquadChild = fAggressivenessSquadChild;
+		}
+
+		// Update Aggressiveness
+		if (m_EMFSM.CurrentAggressiveness != m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild)
+			m_EMFSM.CurrentAggressiveness = m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild;
+	}
+	#endregion
     
     // Recevice nutrient from incoming enemy mini nutrient and destroy the mini nutrient
 	void OnCollisionEnter2D (Collision2D collision)
