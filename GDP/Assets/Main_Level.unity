@@ -6509,7 +6509,7 @@ GameObject:
   - 61: {fileID: 1972632686}
   - 114: {fileID: 1972632688}
   - 114: {fileID: 1972632687}
-  m_Layer: 0
+  m_Layer: 14
   m_Name: Player_Cell
   m_TagString: Player
   m_Icon: {fileID: 0}
