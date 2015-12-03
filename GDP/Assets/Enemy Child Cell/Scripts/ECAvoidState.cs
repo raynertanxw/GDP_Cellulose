@@ -37,7 +37,7 @@ public class ECAvoidState : IECState {
 		{
 			if(Attackers[i].gameObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
-				PlayerChildAttacking.Add(Attackers[i]);
+				PlayerChildAttacking.Add(Attackers[i].gameObject);
 			}
 		}
 

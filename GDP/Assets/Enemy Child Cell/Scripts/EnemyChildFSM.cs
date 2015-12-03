@@ -10,6 +10,7 @@ public class EnemyChildFSM : MonoBehaviour
 	public GameObject pMain;
 	public GameObject eMain;
 	private IECState m_CurrentState;
+	private ECState m_CurrentEnum;
 	private MessageType m_CurrentCommand;
 	private Dictionary<ECState,IECState> m_StatesDictionary;
 	
@@ -32,6 +33,7 @@ public class EnemyChildFSM : MonoBehaviour
 		m_StatesDictionary.Add(ECState.Dead, new ECDeadState(this.gameObject,this));
 		
 		m_CurrentState = m_StatesDictionary[ECState.Dead];
+		m_CurrentEnum = ECState.Dead;
 		m_CurrentCommand = MessageType.Idle;
 	}
 	
@@ -64,12 +66,18 @@ public class EnemyChildFSM : MonoBehaviour
 		
 	}
 	
+	public ECState CurrentStateEnum
+	{
+		get { return m_CurrentEnum; }
+	}
+	
 	public void ChangeState(ECState _state)
 	{
 		m_CurrentState.Exit();
 		m_CurrentState = m_StatesDictionary[_state];
 		m_CurrentState.Enter();
 		m_CurrentCommand = MessageType.Empty;
+		m_CurrentEnum = _state;
 	}
 	
 	private void UpdateState()
