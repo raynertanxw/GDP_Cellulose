@@ -17,7 +17,7 @@ public class EMProductionState : IEMState
 		Debug.Log ("Enter EMProductionState");
 
 		transition = m_EMFSM.emTransition;
-	
+		
 		// Reset transition availability
 		transition.bCanTransit = true;
 		// Pause the transition for 1 second
@@ -32,7 +32,7 @@ public class EMProductionState : IEMState
 
 		// Produce enemy mini cell if has nutrient and can spawn
 		if (controller.NutrientNum > 0 && m_EMFSM.CanSpawn)
-			m_EMFSM.ProduceChild ();
+			m_EMFSM.StartProduceChild ();
 		else if (controller.NutrientNum == 0 && m_EMFSM.CanSpawn)
 			m_EMFSM.ChangeState (EMState.Maintain);
 

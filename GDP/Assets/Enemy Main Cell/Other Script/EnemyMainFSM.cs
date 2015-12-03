@@ -123,6 +123,8 @@ public class EnemyMainFSM : MonoBehaviour
 
 	void Update()
 	{
+		if (emController.NutrientNum > 0 && bCanSpawn)
+			ProduceChild ();
 		m_CurrentState.Execute ();
 	}
 
@@ -145,16 +147,13 @@ public class EnemyMainFSM : MonoBehaviour
 			//emController.nNutrientNum--;
 
 			bCanSpawn = false;
-			while (true)
-			{
-				yield return new WaitForSeconds(Random.Range(1f, 5f));
 				
-				GameObject newChild = (GameObject) Instantiate(enemyMiniPrefab, transform.position, Quaternion.identity);
-				newChild.transform.SetParent(this.transform);
-				ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
-				newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
-				emController.ReduceNutrient ();
-			}
+			GameObject newChild = (GameObject) Instantiate(enemyMiniPrefab, transform.position, Quaternion.identity);
+			newChild.transform.SetParent(this.transform);
+			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
+			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
+			emController.ReduceNutrient ();
+
 			yield return new WaitForSeconds (2);
 			bCanSpawn = true;
 		}
