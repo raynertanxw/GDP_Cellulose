@@ -12,7 +12,7 @@ GameObject:
   - 114: {fileID: 11442176}
   - 58: {fileID: 5893706}
   - 50: {fileID: 5034440}
-  m_Layer: 0
+  m_Layer: 15
   m_Name: Nutrients
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,6 +129,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_Radius
       value: .300000012
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Layer
+      value: 15
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

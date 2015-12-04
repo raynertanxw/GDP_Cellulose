@@ -7,8 +7,11 @@ public class EnemyChildFSM : MonoBehaviour
 	private int nIndex;
 	public float fSpeed;
 	private bool bIsMine;
+	
 	public GameObject pMain;
 	public GameObject eMain;
+	public GameObject chargeTarget;
+	
 	private IECState m_CurrentState;
 	private ECState m_CurrentEnum;
 	private MessageType m_CurrentCommand;
@@ -20,6 +23,7 @@ public class EnemyChildFSM : MonoBehaviour
 		bIsMine = false;
 		pMain = GameObject.Find("Player_Cell");
 		eMain = GameObject.Find("Enemy_Cell");
+		chargeTarget = null;
 		m_StatesDictionary = new Dictionary<ECState,IECState>();
 		
 		m_StatesDictionary.Add(ECState.Idle, new ECIdleState(this.gameObject,this));
@@ -34,7 +38,7 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		m_CurrentState = m_StatesDictionary[ECState.Idle];
 		m_CurrentEnum = ECState.Idle;
-		m_CurrentCommand = MessageType.Defend;
+		m_CurrentCommand = MessageType.Idle;
 	}
 	
 	void Update()
@@ -52,6 +56,12 @@ public class EnemyChildFSM : MonoBehaviour
 	{
 		get { return nIndex; }
 		set { nIndex = value; }
+	}
+	
+	public GameObject Target
+	{
+		get { return chargeTarget; }
+		set { chargeTarget = value; }
 	}
 	
 	public MessageType Command
