@@ -40,6 +40,14 @@ public class ECChargeCState : IECState {
 	private bool CheckIfTargetIsAvailable(GameObject _Target)
 	{
 		GameObject[] m_Childs = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
+		for(int i = 0; i < m_Childs.Length; i++)
+		{
+			//Utility.CheckEmpty<EnemyChildFSM>(m_Childs[i].GetComponent<EnemyChildFSM>());
+			if(m_Childs[i].GetComponent<EnemyChildFSM>().Target != _Target)
+			{
+				return false;
+			}
+		}
 		return true;
 	}
 	
@@ -70,8 +78,6 @@ public class ECChargeCState : IECState {
 		}
 		
 		//Debug.Log("step 3");
-		
-		Utility.CheckEmpty<GameObject>(m_TargetCell);
 		
 		//Debug.Log("step 4");
 		
