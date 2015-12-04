@@ -40,7 +40,7 @@ public class ECChargeCState : IECState {
 	private bool CheckIfTargetIsAvailable(GameObject _Target)
 	{
 		GameObject[] m_Childs = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
-		return null;
+		return true;
 	}
 	
 	private GameObject FindTargetChild()
