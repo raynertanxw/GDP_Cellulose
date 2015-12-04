@@ -42,10 +42,10 @@ public class EMTransition : MonoBehaviour
 	}
 
 	// Universal function for pausing transition availability
-	public IEnumerator TransitionAvailability (float fTIme)
+	public IEnumerator TransitionAvailability (float fTime)
 	{
 		bCanTransit = false;
-		yield return new WaitForSeconds (fTIme);
+		yield return new WaitForSeconds (fTime);
 		bCanTransit = true;
 	}
 

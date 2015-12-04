@@ -44,9 +44,9 @@ public class EMProductionState : IEMState
 			{
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
-
+				
 				// Transition to Defend
-				if (nEnemyChildFactor > nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
+				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
 					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 10f), EMState.Defend);
 				}
 
@@ -62,7 +62,7 @@ public class EMProductionState : IEMState
 
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 2.5f), EMState.Landmine);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2.5f), EMState.Landmine);
 				}
 
 				// Transition to Maintain
@@ -92,7 +92,7 @@ public class EMProductionState : IEMState
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 1.5f), EMState.Landmine);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain
@@ -117,7 +117,7 @@ public class EMProductionState : IEMState
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 1.5f), EMState.Landmine);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1.5f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain
@@ -128,7 +128,7 @@ public class EMProductionState : IEMState
 
 			// Check transition every 0.1 second to save computing power
 			if (transition.CanTransit)
-				m_EMFSM.StartPauseTransition (.1f);
+				m_EMFSM.StartPauseTransition (.2f);
 		}
 	}
 

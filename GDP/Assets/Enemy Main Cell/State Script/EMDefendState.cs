@@ -90,7 +90,7 @@ public class EMDefendState : IEMState
 				// Transit to Production only if has less than 25 mini cells and has nutrient
 				if (m_EMFSM.AvailableChildNum < 25 && controller.NutrientNum > 0)
 				{
-					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f)/2f, EMState.Defend);
+					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f)/2f, EMState.Production);
 				}
 
 				// If not transit to Production state, then transit to Maintain state

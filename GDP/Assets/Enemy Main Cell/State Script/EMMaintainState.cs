@@ -40,7 +40,7 @@ public class EMMaintainState : IEMState
 				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 				
 				// Transition to Defend
-				if (nEnemyChildFactor > nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
+				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
 					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 10f), EMState.Defend);
 				}
 				
@@ -56,7 +56,7 @@ public class EMMaintainState : IEMState
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 2.5f), EMState.Landmine);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2.5f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain
@@ -89,7 +89,7 @@ public class EMMaintainState : IEMState
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) * 1.5f), EMState.Landmine);
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain

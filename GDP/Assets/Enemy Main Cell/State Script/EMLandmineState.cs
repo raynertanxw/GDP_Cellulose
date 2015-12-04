@@ -20,11 +20,14 @@ public class EMLandmineState : IEMState
 		
 		// Reset transition availability
 		transition.CanTransit = true;
+		// Pause the transition for 1 second
+		m_EMFSM.StartPauseTransition (1f);
 	}
 
 	public override void Execute ()
 	{
-		m_EMFSM.ChangeState (EMState.Production);
+		if (transition.CanTransit)
+			m_EMFSM.ChangeState (EMState.Production);
 	}
 
 	public override void Exit ()

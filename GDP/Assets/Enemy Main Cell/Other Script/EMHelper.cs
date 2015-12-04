@@ -77,6 +77,11 @@ public class EMHelper : MonoBehaviour
 		return Mathf.Pow (value, power);
 	}
 
+	public float Sqrt (float value)
+	{
+		return Mathf.Sqrt (value);
+	}
+
 	public float Abs (float value)
 	{
 		return Mathf.Abs (value);
