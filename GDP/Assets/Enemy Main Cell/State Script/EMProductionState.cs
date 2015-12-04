@@ -33,7 +33,7 @@ public class EMProductionState : IEMState
 		// Produce enemy mini cell if has nutrient and can spawn
 		if (controller.NutrientNum > 0 && m_EMFSM.CanSpawn)
 			m_EMFSM.StartProduceChild ();
-		else if (controller.NutrientNum == 0 && m_EMFSM.CanSpawn)
+		else if (controller.NutrientNum == 0 && transition.bCanTransit)
 			m_EMFSM.ChangeState (EMState.Maintain);
 
 		// Start checking transition only when there are more than 10 available enemy mini cells, transition is allowed and has nutrient
@@ -52,12 +52,12 @@ public class EMProductionState : IEMState
 
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.Aggressiveness * 5f), EMState.AggressiveAttack);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.CurrentAggressiveness * 5f), EMState.AggressiveAttack);
 				}
 
 				// Transition to EMCautiousAttack
 				if (nEnemyChildFactor > nPlayerChildFactor) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1.5f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 3f), EMState.CautiousAttack);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1.5f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.CurrentAggressiveness * 3f), EMState.CautiousAttack);
 				}
 
 				// Transition to Landmine
@@ -82,12 +82,12 @@ public class EMProductionState : IEMState
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1.5f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.Aggressiveness * 5f), EMState.AggressiveAttack);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1.5f / nPlayerChildFactor, 2f) * 3f + m_EMFSM.CurrentAggressiveness * 5f), EMState.AggressiveAttack);
 				}
 				
 				// Transition to EMCautiousAttack
 				if (nEnemyChildFactor > nPlayerChildFactor) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*2f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 3f), EMState.CautiousAttack);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*2f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.CurrentAggressiveness * 3f), EMState.CautiousAttack);
 				}
 				
 				// Transition to Landmine
@@ -107,12 +107,12 @@ public class EMProductionState : IEMState
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1.75f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.Aggressiveness * 5f), EMState.AggressiveAttack);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*1.75f / nPlayerChildFactor, 2f) * 5f + m_EMFSM.CurrentAggressiveness * 5f), EMState.AggressiveAttack);
 				}
 				
 				// Transition to EMCautiousAttack
 				if (nEnemyChildFactor > nPlayerChildFactor) {
-					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*2f / nPlayerChildFactor, 2f) * 7.5f + m_EMFSM.Aggressiveness * 3f), EMState.CautiousAttack);
+					transition.Transition (1000f / (helper.Pow (nEnemyChildFactor*2f / nPlayerChildFactor, 2f) * 7.5f + m_EMFSM.CurrentAggressiveness * 3f), EMState.CautiousAttack);
 				}
 				
 				// Transition to Landmine

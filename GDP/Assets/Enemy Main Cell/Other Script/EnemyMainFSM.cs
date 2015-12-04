@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 public class EnemyMainFSM : MonoBehaviour 
 {
-	public static EnemyMainFSM instance;
+	private static EnemyMainFSM instance;
 	// Singleton
 	public static EnemyMainFSM Instance() {
 		if (instance == null)
@@ -58,14 +59,23 @@ public class EnemyMainFSM : MonoBehaviour
 	public int AvailableChildNum { get { return nAvailableChildNum; } }
 
 	// Health
-	private int nHealth;
+	[Header("Health")]
+	[Tooltip("Health of the Enemy Main Cell")]
+	[SerializeField] private int nHealth;
 	public int Health { get { return nHealth; } }
-	// Damage
-	private int nDamageNum;
 	// Aggressiveness
-	private int nAggressiveness;
-	public int Aggressiveness { get { return nAggressiveness; } }
-	// Production State
+	[Header("Aggressiveness")]
+	[Tooltip("Initial Aggressiveness of the Enemy Main Cell")]
+	[SerializeField] private float nInitialAggressiveness;
+	public float InitialAggressiveness { get { return nInitialAggressiveness; } }
+	[Tooltip("Current Aggressiveness of the Enemy Main Cell")]
+	[SerializeField] private float nCurrentAggressiveness;
+	public float CurrentAggressiveness { get { return nCurrentAggressiveness; } set { nCurrentAggressiveness = value; } }
+	private float nAggressivenessSquadCap;
+	public float AggressivenessSquadCap { get { return nAggressivenessSquadCap; } set { nAggressivenessSquadCap = value; } }
+	private float nAggressivenessSquadChild;
+	public float AggressivenessSquadChild { get { return nAggressivenessSquadChild; } set { nAggressivenessSquadChild = value; } }
+	// Production status
 	private bool bCanSpawn; 
 	public bool CanSpawn { get { return bCanSpawn; } }
 
@@ -113,18 +123,18 @@ public class EnemyMainFSM : MonoBehaviour
         ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>()).ToList();    
         // Count the number of child cells in list
         nAvailableChildNum = ecList.Count;
-		// Initialise num of health, damages and aggressiveness
+		// Initialise num of health and aggressiveness
 		nHealth = 30;
-		nDamageNum = 0;
-		nAggressiveness = 10;
+		nInitialAggressiveness = 10;
+		nCurrentAggressiveness = nInitialAggressiveness;
+		nAggressivenessSquadCap = 0;
+		nAggressivenessSquadChild = 0;
 		// Initialise status
 		bCanSpawn = true;
 	}
 
 	void Update()
 	{
-		if (emController.NutrientNum > 0 && bCanSpawn)
-			ProduceChild ();
 		m_CurrentState.Execute ();
 	}
 
@@ -142,9 +152,19 @@ public class EnemyMainFSM : MonoBehaviour
 	{
 		if (bCanSpawn) 
 		{
-			//GameObject newChild = (GameObject)Instantiate (enemyChild, transform.position, Quaternion.identity);
-			//ecList.Add (newChild);
-			//emController.nNutrientNum--;
+			/*
+			bCanSpawn = false;
+
+			for (int i = 0; i < ecList.Count; i++)
+			{
+				if (ecList[i].CurrentStateEnum == ECState.Dead)
+				{
+					ecList[i].ChangeState(ECState.Idle);
+					break;
+				}
+			}
+			emController.ReduceNutrient ();
+			*/
 
 			bCanSpawn = false;
 				
