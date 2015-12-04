@@ -21,7 +21,7 @@ public class EMMaintainState : IEMState
 		
 		transition = m_EMFSM.emTransition;
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 		// Pause the transition for 1 second
 		m_EMFSM.StartPauseTransition (1f);
 	}
@@ -33,11 +33,11 @@ public class EMMaintainState : IEMState
 		helper = m_EMFSM.emHelper;
 
 		// Start checking transition only when there are more than 10 available enemy mini cells and transition is allowed 
-		if (m_EMFSM.AvailableChildNum > 10 && transition.bCanTransit) {
+		if (m_EMFSM.AvailableChildNum > 10 && transition.CanTransit) {
 			// If there are more than 10  and less than 25 available enemy mini cells
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25) {
-				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 				
 				// Transition to Defend
 				if (nEnemyChildFactor > nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
@@ -69,8 +69,8 @@ public class EMMaintainState : IEMState
 					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f) / 2f, EMState.Production);
 				}
 			} else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50) {
-				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 				
 				// Transition to Defend
 				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 8f && (nPlayerChildFactor - nEnemyChildFactor) > 2f) {
@@ -102,8 +102,8 @@ public class EMMaintainState : IEMState
 					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f) / 3f, EMState.Production);
 				}
 			} else if (m_EMFSM.AvailableChildNum > 50) {
-				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
@@ -127,7 +127,7 @@ public class EMMaintainState : IEMState
 			}
 			
 			// Check transition every 0.1 second to save computing power
-			if (transition.bCanTransit)
+			if (transition.CanTransit)
 				m_EMFSM.StartPauseTransition (.1f);
 		}
 	}
@@ -139,6 +139,6 @@ public class EMMaintainState : IEMState
 		transition = m_EMFSM.emTransition;
 		
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 	}
 }

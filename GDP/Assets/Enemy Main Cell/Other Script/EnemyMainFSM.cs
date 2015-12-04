@@ -47,6 +47,7 @@ public class EnemyMainFSM : MonoBehaviour
 
 	private Dictionary<EMState, IEMState> m_statesDictionary;
 	public Dictionary<EMState, IEMState> StatesDictionary { get { return m_statesDictionary; } }
+	// Current State
 	private IEMState m_CurrentState = null;
 	public IEMState CurrentState { get { return m_CurrentState; } }
 	private EMState m_currentStateIndex;
@@ -55,7 +56,10 @@ public class EnemyMainFSM : MonoBehaviour
 	// Enemy Child
 	private List<EnemyChildFSM> ecList = new List<EnemyChildFSM>();
 	public List<EnemyChildFSM> ECList { get { return ecList; } }
-	private int nAvailableChildNum;
+	// Available child number
+	[Header("Available child number")]
+	[Tooltip("Available child number of the Enemy Main Cell")]
+	[SerializeField] private int nAvailableChildNum;
 	public int AvailableChildNum { get { return nAvailableChildNum; } }
 
 	// Health
@@ -163,6 +167,7 @@ public class EnemyMainFSM : MonoBehaviour
 					break;
 				}
 			}
+			nAvailableChildNum++;
 			emController.ReduceNutrient ();
 			*/
 
@@ -171,6 +176,7 @@ public class EnemyMainFSM : MonoBehaviour
 			GameObject newChild = (GameObject) Instantiate(enemyMiniPrefab, transform.position, Quaternion.identity);
 			newChild.transform.SetParent(this.transform);
 			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
+			nAvailableChildNum++;
 			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
 			emController.ReduceNutrient ();
 

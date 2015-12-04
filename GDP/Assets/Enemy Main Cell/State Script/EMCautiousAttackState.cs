@@ -24,7 +24,7 @@ public class EMCautiousAttackState : IEMState
 			helper.CanAddAttack = true;
 
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 		// Pause the transition for 1 second
 		m_EMFSM.StartPauseTransition (1f);
 	}
@@ -38,8 +38,8 @@ public class EMCautiousAttackState : IEMState
 		#region Attack only when there are more enemy mini cells than player's 
 		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount ()) 
 		{
-			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25)
 			{
@@ -85,7 +85,7 @@ public class EMCautiousAttackState : IEMState
 		#endregion
 
 		// Check transition every 0.1 second to save computing power
-		if (transition.bCanTransit)
+		if (transition.CanTransit)
 			m_EMFSM.StartPauseTransition (.1f);
 	}
 
@@ -100,6 +100,6 @@ public class EMCautiousAttackState : IEMState
 		if (!helper.CanAddAttack)
 			helper.CanAddAttack = true;
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 	}
 }

@@ -27,7 +27,7 @@ public class EMDefendState : IEMState
 		controller.bIsDefend = true;
 
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 		// Pause the transition for 1 second
 		m_EMFSM.StartPauseTransition (1f);
 	}
@@ -41,8 +41,8 @@ public class EMDefendState : IEMState
 		#region Command child cells to transit to Defend state only when there are more player mini cells than enemy mini cells
 		if (m_EMFSM.AvailableChildNum < PlayerChildFSM.GetActiveChildCount() && helper.CanAddDefend)
 		{
-			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 
 			// If there are more than 10 and less than 25 available enemy mini cells
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25 && helper.CanAddDefend)
@@ -79,7 +79,7 @@ public class EMDefendState : IEMState
 		#endregion
 		
 		//Start checking transition only when transition is allowed
-		if (transition.bCanTransit) 
+		if (transition.CanTransit) 
 		{
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
 			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
@@ -99,7 +99,7 @@ public class EMDefendState : IEMState
 		}
 
 		// Check transition every 0.1 second to save computing power
-		if (transition.bCanTransit)
+		if (transition.CanTransit)
 			m_EMFSM.StartPauseTransition (.1f);
 	}
 
@@ -117,6 +117,6 @@ public class EMDefendState : IEMState
 		// Set status to not defending
 		controller.bIsDefend = false;
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 	}
 }

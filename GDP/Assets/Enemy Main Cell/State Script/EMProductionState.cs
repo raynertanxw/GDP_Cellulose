@@ -19,7 +19,7 @@ public class EMProductionState : IEMState
 		transition = m_EMFSM.emTransition;
 		
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 		// Pause the transition for 1 second
 		m_EMFSM.StartPauseTransition (1f);
 	}
@@ -33,17 +33,17 @@ public class EMProductionState : IEMState
 		// Produce enemy mini cell if has nutrient and can spawn
 		if (controller.NutrientNum > 0 && m_EMFSM.CanSpawn)
 			m_EMFSM.StartProduceChild ();
-		else if (controller.NutrientNum == 0 && transition.bCanTransit)
+		else if (controller.NutrientNum == 0 && transition.CanTransit)
 			m_EMFSM.ChangeState (EMState.Maintain);
 
 		// Start checking transition only when there are more than 10 available enemy mini cells, transition is allowed and has nutrient
-		if (m_EMFSM.AvailableChildNum > 10 && transition.bCanTransit && controller.NutrientNum > 0) 
+		if (m_EMFSM.AvailableChildNum > 10 && transition.CanTransit && controller.NutrientNum > 0) 
 		{
 			// If there are more than 10  and less than 25 available enemy mini cells
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25) 
 			{
-				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 
 				// Transition to Defend
 				if (nEnemyChildFactor > nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
@@ -67,13 +67,13 @@ public class EMProductionState : IEMState
 
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (5f - Mathf.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
+					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 			} 
 			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50) 
 			{
-				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 
 				// Transition to Defend
 				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 8f && (nPlayerChildFactor - nEnemyChildFactor) > 2f) {
@@ -97,13 +97,13 @@ public class EMProductionState : IEMState
 				
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (8f - Mathf.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
+					transition.Transition (1000f / helper.Pow (8f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 			}
 			else if (m_EMFSM.AvailableChildNum > 50)
 			{
-				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
+				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 				
 				// Transition to EMAggressiveAttack
 				if (nEnemyChildFactor > nPlayerChildFactor * 1.5f) {
@@ -127,7 +127,7 @@ public class EMProductionState : IEMState
 			}
 
 			// Check transition every 0.1 second to save computing power
-			if (transition.bCanTransit)
+			if (transition.CanTransit)
 				m_EMFSM.StartPauseTransition (.1f);
 		}
 	}
@@ -139,6 +139,6 @@ public class EMProductionState : IEMState
 		transition = m_EMFSM.emTransition;
 		
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 	}
 }

@@ -7,7 +7,7 @@ public class EMTransition : MonoBehaviour
 	private EMController controller;
 
 	// Transition availability
-	public bool bCanTransit;
+	private bool bCanTransit;
 	public bool CanTransit { get { return bCanTransit; } set { bCanTransit = value; } }
 
 	void Start ()
@@ -30,7 +30,6 @@ public class EMTransition : MonoBehaviour
 	public void Transition (float nChanceFactor, EMState state)
 	{
 		float nChance = 0f;
-		float nEnemyChildFactor = m_EMFSM.AvailableChildNum / 10;
 
 		if (nChanceFactor <= 10f)
 			m_EMFSM.ChangeState (state);

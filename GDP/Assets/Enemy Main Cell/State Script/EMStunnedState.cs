@@ -19,7 +19,7 @@ public class EMStunnedState : IEMState
 		transition = m_EMFSM.emTransition;
 
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 	}
 
 	public override void Execute ()
@@ -42,6 +42,6 @@ public class EMStunnedState : IEMState
 		transition = m_EMFSM.emTransition;
 
 		// Reset transition availability
-		transition.bCanTransit = true;
+		transition.CanTransit = true;
 	}
 }
