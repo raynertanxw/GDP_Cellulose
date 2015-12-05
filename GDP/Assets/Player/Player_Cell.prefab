@@ -12,7 +12,7 @@ GameObject:
   - 61: {fileID: 6189744}
   - 114: {fileID: 11402096}
   m_Layer: 0
-  m_Name: Squad_Right
+  m_Name: Node_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,7 +49,7 @@ GameObject:
   - 61: {fileID: 6118202}
   - 114: {fileID: 11480924}
   m_Layer: 0
-  m_Name: Squad_Top
+  m_Name: Node_Top
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -67,7 +67,7 @@ GameObject:
   - 61: {fileID: 6172048}
   - 114: {fileID: 11439746}
   m_Layer: 0
-  m_Name: Squad_Left
+  m_Name: Node_Left
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

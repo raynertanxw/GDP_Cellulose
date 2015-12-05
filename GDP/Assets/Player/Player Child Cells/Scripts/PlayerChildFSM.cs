@@ -54,9 +54,8 @@ public class PlayerChildFSM : MonoBehaviour
 	public bool m_bIsDefending = true;
 	public bool m_bHasAwaitingDeferredStateChange = false;
 	private PCState m_deferredState;
-	public Transform m_assignedNode;
 	public EnemyChildFSM m_currentEnemyCellTarget;
-	public Squad_Manager m_assignedSquad;
+	public Node_Manager m_assignedNode;
 
 
 	// Component Cache.
