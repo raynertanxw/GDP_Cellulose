@@ -40,7 +40,7 @@ public class EMHelper : MonoBehaviour
         // Update width of enemy main cell
         widthUpdate();
 		// Remove destroyed items in enemy child list
-		Debug.Log (EnemyMainFSM.Instance().ECList.Count);
+		EnemyMainFSM.Instance().ECList.RemoveAll(item => item == null);
 	}
 
 	public IEnumerator PauseAddDefend (float fTime)
