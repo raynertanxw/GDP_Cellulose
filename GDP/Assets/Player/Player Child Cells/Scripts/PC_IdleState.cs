@@ -18,7 +18,7 @@ public class PC_IdleState : IPCState
 		m_nodeOrigin = m_pcFSM.m_assignedNode.transform.position;
 		m_currentVelocity = Vector3.zero;
 
-		m_pcFSM.m_assignedSquad.AddChildToSquadList(m_pcFSM);
+		m_pcFSM.m_assignedNode.AddChildToNodeList(m_pcFSM);
 	}
 	
 	public override void Execute()

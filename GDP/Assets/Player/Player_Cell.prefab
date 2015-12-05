@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 400694}
   - 212: {fileID: 21229052}
   - 61: {fileID: 6189744}
-  - 114: {fileID: 11402096}
+  - 114: {fileID: 11464766}
   m_Layer: 0
   m_Name: Node_Right
   m_TagString: Untagged
@@ -47,7 +47,7 @@ GameObject:
   - 4: {fileID: 405416}
   - 212: {fileID: 21273838}
   - 61: {fileID: 6118202}
-  - 114: {fileID: 11480924}
+  - 114: {fileID: 11480844}
   m_Layer: 0
   m_Name: Node_Top
   m_TagString: Untagged
@@ -65,7 +65,7 @@ GameObject:
   - 4: {fileID: 484622}
   - 212: {fileID: 21229882}
   - 61: {fileID: 6172048}
-  - 114: {fileID: 11439746}
+  - 114: {fileID: 11495356}
   m_Layer: 0
   m_Name: Node_Left
   m_TagString: Untagged
@@ -176,7 +176,7 @@ BoxCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Size: {x: .200000003, y: .200000003}
---- !u!114 &11402096
+--- !u!114 &11464766
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -184,22 +184,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 123898}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671de6a80b03940c6b01bfc7d9689013, type: 3}
+  m_Script: {fileID: 11500000, guid: e4a5cf384bf3849ebad4d6baea33d2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nSquadIndex: 2
---- !u!114 &11439746
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 174024}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671de6a80b03940c6b01bfc7d9689013, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_nSquadIndex: 0
+  m_nNodeIndex: 2
 --- !u!114 &11473374
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -213,7 +201,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_nHealth: 100
   m_fDetectionRadius: 4
---- !u!114 &11480924
+--- !u!114 &11480844
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -221,10 +209,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 145798}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 671de6a80b03940c6b01bfc7d9689013, type: 3}
+  m_Script: {fileID: 11500000, guid: e4a5cf384bf3849ebad4d6baea33d2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nSquadIndex: 1
+  m_nNodeIndex: 1
 --- !u!114 &11489008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -237,6 +225,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_nSpawnCost: 10
+--- !u!114 &11495356
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 174024}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4a5cf384bf3849ebad4d6baea33d2fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_nNodeIndex: 0
 --- !u!212 &21229052
 SpriteRenderer:
   m_ObjectHideFlags: 1

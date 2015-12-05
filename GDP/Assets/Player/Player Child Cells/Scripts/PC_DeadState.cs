@@ -19,11 +19,11 @@ public class PC_DeadState : IPCState
 		// Update active Child Count.
 		PlayerChildFSM.SetActiveChildCount(false);
 
-		// Remove from SquadList if any assignedSquad.
-		if (m_pcFSM.m_assignedSquad != null)
+		// Remove from NodeList if any assignedNode.
+		if (m_pcFSM.m_assignedNode != null)
 		{
-			m_pcFSM.m_assignedSquad.RemoveChildFromSquadList(m_pcFSM);
-			m_pcFSM.m_assignedSquad = null;
+			m_pcFSM.m_assignedNode.RemoveChildFromNodeList(m_pcFSM);
+			m_pcFSM.m_assignedNode = null;
 		}
 	}
 

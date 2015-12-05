@@ -49,42 +49,42 @@ public class PositionQuery
 	private Vector2 EvaluateForBestPos(List<Vector2> _PositionList, PositionType _RequestType, GameObject _PlayerMain, GameObject _EnemyMain)
 	{
 		Vector2 m_BestPos = new Vector2(0f,0f);
-		List<GameObject> m_SquadList = GetListOfSquads(_PlayerMain);//sequence should be left, top, right squads
+		List<GameObject> m_NodeList = GetListOfNodes(_PlayerMain);//sequence should be left, top, right nodes
 		
-		//Aggressive positioning for landmines (focus at the weak spot of the 3 squads formation)
+		//Aggressive positioning for landmines (focus at the weak spot of the 3 nodes formation)
 		if(_RequestType == PositionType.Aggressive)
 		{
-			//if there is no empty squads, find the weakest squad to aim
-			if(!IsAllSquadsEmpty(m_SquadList))
+			//if there is no empty nodes, find the weakest node to aim
+			if(!IsAllNodesEmpty(m_NodeList))
 			{
-				GameObject _TargetSquad = GetMostWeakSquad(m_SquadList);
-				m_BestPos = GetClosestPositionToSquad(_PositionList, _TargetSquad);
+				GameObject _TargetNode = GetMostWeakNode(m_NodeList);
+				m_BestPos = GetClosestPositionToNode(_PositionList, _TargetNode);
 			}
-			//else if all is empty squad, aim the main squad
+			//else if all is empty node, aim the main node
 			else
 			{
 				m_BestPos = _PlayerMain.transform.position;
 			}
 		}
-		//Focus positioning towards the threatening squad (Aimed at the threatening player squad)
+		//Focus positioning towards the threatening node (Aimed at the threatening player node)
 		else if(_RequestType == PositionType.Neutral)
 		{
-			if(!IsAllSquadsEmpty(m_SquadList))
+			if(!IsAllNodesEmpty(m_NodeList))
 			{
-				GameObject _TargetSquad = GetMostThreateningSquad(m_SquadList);
-				m_BestPos = GetClosestPositionToSquad(_PositionList,_TargetSquad);
+				GameObject _TargetNode = GetMostThreateningNode(m_NodeList);
+				m_BestPos = GetClosestPositionToNode(_PositionList,_TargetNode);
 			}
-			//else if all is empty squad, aim the main squad
+			//else if all is empty node, aim the main node
 			else
 			{
 				m_BestPos = _PlayerMain.transform.position;
 			}
 		}
-		//Even spread position across all squads (divide all the different landmines evenly)
+		//Even spread position across all nodes (divide all the different landmines evenly)
 		else if(_RequestType == PositionType.Defensive)
 		{
-			GameObject _TargetSquad = m_SquadList[nIndexOrder];
-			m_BestPos = GetClosestPositionToSquad(_PositionList,_TargetSquad);
+			GameObject _TargetNode = m_NodeList[nIndexOrder];
+			m_BestPos = GetClosestPositionToNode(_PositionList,_TargetNode);
 			nIndexOrder++;
 			if(nIndexOrder > 2)
 			{
@@ -97,41 +97,41 @@ public class PositionQuery
 		return m_BestPos;
 	}
 	
-	private List<GameObject> GetListOfSquads(GameObject _PlayerMain)
+	private List<GameObject> GetListOfNodes(GameObject _PlayerMain)
 	{
-		List<GameObject> m_SquadList = new List<GameObject>();
+		List<GameObject> m_NodeList = new List<GameObject>();
 		
-		foreach(Transform squad in _PlayerMain.transform)
+		foreach(Transform node in _PlayerMain.transform)
 		{
-			m_SquadList.Add(squad.gameObject);
+			m_NodeList.Add(node.gameObject);
 		}
 		
-		return m_SquadList;
+		return m_NodeList;
 	}
 	
-	private GameObject GetMostThreateningSquad(List<GameObject> _SquadList)
+	private GameObject GetMostThreateningNode(List<GameObject> _NodeList)
 	{
 		int nIndexForMostThreating = 0;
 		int nHighestScore = 0;
 		
-		for(int i = 0; i < _SquadList.Count; i++)
+		for(int i = 0; i < _NodeList.Count; i++)
 		{
-			if(EvaluateSquad(_SquadList[i]) > nHighestScore)
+			if(EvaluateNode(_NodeList[i]) > nHighestScore)
 			{
 				nIndexForMostThreating = i;
-				nHighestScore = EvaluateSquad(_SquadList[i]);
+				nHighestScore = EvaluateNode(_NodeList[i]);
 			}
 		}
 		
-		return _SquadList[nIndexForMostThreating];
+		return _NodeList[nIndexForMostThreating];
 	}
 	
-	private bool IsAllSquadsEmpty (List<GameObject> _SquadList)
+	private bool IsAllNodesEmpty (List<GameObject> _NodeList)
 	{
 		bool bResult = false;
-		for(int i = 0; i < _SquadList.Count; i++)
+		for(int i = 0; i < _NodeList.Count; i++)
 		{
-			if(_SquadList[i].GetComponent<Squad_Manager>().GetSquadChildList().Count <= 0)
+			if(_NodeList[i].GetComponent<Node_Manager>().GetNodeChildList().Count <= 0)
 			{
 				return false;
 			}
@@ -139,56 +139,56 @@ public class PositionQuery
 		return true;
 	}
 	
-	private GameObject GetMostWeakSquad (List<GameObject> _SquadList)
+	private GameObject GetMostWeakNode (List<GameObject> _NodeList)
 	{
 		int nIndexForMostWeak = 0;
 		int nLowestScore = 0;
 		
-		for(int i = 0; i < _SquadList.Count; i++)
+		for(int i = 0; i < _NodeList.Count; i++)
 		{
-			if(EvaluateSquad(_SquadList[i]) < nLowestScore)
+			if(EvaluateNode(_NodeList[i]) < nLowestScore)
 			{
 				nIndexForMostWeak = i;
-				nLowestScore = EvaluateSquad(_SquadList[i]);
+				nLowestScore = EvaluateNode(_NodeList[i]);
 			}
 		}
 		
-		return _SquadList[nIndexForMostWeak];
+		return _NodeList[nIndexForMostWeak];
 	}
 	
-	private int EvaluateSquad (GameObject _Squad)
+	private int EvaluateNode (GameObject _Node)
 	{
-		//if the squad contains no cell, it serve no threat to the enemy main cell
-		if(_Squad.GetComponent<Squad_Manager>().GetSquadChildList().Count == 0)
+		//if the node contains no cell, it serve no threat to the enemy main cell
+		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
 		{
 			return 0;
 		}
 		
 		int nthreatLevel = 0;
 		
-		//increase score based on amount of cells in that squad
-		nthreatLevel += _Squad.GetComponent<Squad_Manager>().GetSquadChildList().Count;
+		//increase score based on amount of cells in that node
+		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
 		
-		//increase score if that squad have formed together and has a squad captain
-		if(_Squad.GetComponent<SquadCaptain>() != null)
+		//increase score if that node have formed together and has a node captain
+		if(_Node.GetComponent<SquadCaptain>() != null)
 		{
 			nthreatLevel+= 50;
 			
-			//increase score by the amount of nutrients that squad has
+			//increase score by the amount of nutrients that node has
 			
 		}
 		
 		return nthreatLevel;
 	}
 	
-	private Vector2 GetClosestPositionToSquad (List<Vector2> _PositionList ,GameObject _Squad)
+	private Vector2 GetClosestPositionToNode (List<Vector2> _PositionList ,GameObject _Node)
 	{
 		Vector2 m_ClosestPosition = new Vector2(0f,0f);
 		float fClosestDistance = Mathf.Infinity;
 		
 		for(int i = 0; i < _PositionList.Count; i++)
 		{
-			float fDistance = Vector2.Distance(_Squad.transform.position, _PositionList[i]);
+			float fDistance = Vector2.Distance(_Node.transform.position, _PositionList[i]);
 			if(fDistance < fClosestDistance)
 			{
 				m_ClosestPosition = _PositionList[i];

@@ -29,7 +29,7 @@ public class PROTOTYPE_Squad_Manager : MonoBehaviour
 
 	void OnMouseDown()
 	{
-		playerCtrl.ChangeActiveSquad(squadIndex);
+//		playerCtrl.ChangeActiveSquad(squadIndex);
 	}
 
     void Update()

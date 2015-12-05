@@ -6,36 +6,33 @@ public class player_control : MonoBehaviour
 {
 	public static int s_nResources;
 	public int m_nSpawnCost = 10;
-	
-	private Transform[] m_squadPoints;
-	private SpriteRenderer[] m_squadPointsRen;
-	private int m_nActiveSquad = 1;
 
-	private Color m_unselectedSquadCol, m_selectedSquadCol;
+	private SpriteRenderer[] m_nodePointsRen;
+	private int m_nActiveNode = 1;
+
+	private Color m_unselectedNodeCol, m_selectedNodeCol;
 
 	void Awake()
 	{
-		m_unselectedSquadCol = new Color(0, 1, 0.867f, 1);
-		m_selectedSquadCol = new Color(0.75f, 1, 0.25f, 1);
+		m_unselectedNodeCol = new Color(0, 1, 0.867f, 1);
+		m_selectedNodeCol = new Color(0.75f, 1, 0.25f, 1);
 
-		m_squadPoints = new Transform[transform.childCount];
-		m_squadPointsRen = new SpriteRenderer[transform.childCount];
+		m_nodePointsRen = new SpriteRenderer[transform.childCount];
 		for (int i = 0; i < transform.childCount; i++)
 		{
-			m_squadPoints[i] = transform.GetChild(i);
-			m_squadPointsRen[i] = transform.GetChild(i).gameObject.GetComponent<SpriteRenderer>();
+			m_nodePointsRen[i] = Node_Manager.GetNode(i).gameObject.GetComponent<SpriteRenderer>();
 		}
-		m_squadPointsRen[m_nActiveSquad].color = m_selectedSquadCol;
+		m_nodePointsRen[m_nActiveNode].color = m_selectedNodeCol;
 
 		s_nResources = 100;
 	}
 
-	public void ChangeActiveSquad(int nNewSquad)
+	public void ChangeActiveNode(int nNewNode)
 	{
-		m_squadPointsRen[m_nActiveSquad].color = m_unselectedSquadCol;
-		m_nActiveSquad = nNewSquad;
-		m_squadPointsRen[m_nActiveSquad].color = m_selectedSquadCol;
-		Debug.Log("Active Squad: " + m_nActiveSquad);
+		m_nodePointsRen[m_nActiveNode].color = m_unselectedNodeCol;
+		m_nActiveNode = nNewNode;
+		m_nodePointsRen[m_nActiveNode].color = m_selectedNodeCol;
+		Debug.Log("Active Node: " + m_nActiveNode);
 	}
 
 	
@@ -45,9 +42,8 @@ public class player_control : MonoBehaviour
 		if (s_nResources > m_nSpawnCost)
 		{
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
-			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(m_squadPoints[m_nActiveSquad].position + (Vector3)Random.insideUnitCircle*0.5f);
-			currentChild.m_assignedNode = m_squadPoints[m_nActiveSquad];
-			currentChild.m_assignedSquad = Squad_Manager.GetSquad(m_nActiveSquad);
+			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(Node_Manager.GetNode(m_nActiveNode).transform.position + (Vector3)Random.insideUnitCircle*0.5f);
+			currentChild.m_assignedNode = Node_Manager.GetNode(m_nActiveNode);
 			s_nResources -= m_nSpawnCost;
 		}
 		else
@@ -60,7 +56,7 @@ public class player_control : MonoBehaviour
 	{
 		Debug.Log("Defend Action called");
 
-		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
 			listOfChildCells[i].m_bIsDefending = true;
@@ -73,7 +69,7 @@ public class player_control : MonoBehaviour
 	{
 		Debug.Log("Avoid Action called");
 
-		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
 			listOfChildCells[i].m_bIsDefending = false;
@@ -86,7 +82,7 @@ public class player_control : MonoBehaviour
 	{
 		Debug.Log("Charge Main Action Called");
 
-		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
 			listOfChildCells[i].DeferredChangeState(PCState.ChargeMain);
@@ -97,7 +93,7 @@ public class player_control : MonoBehaviour
 	{
 		Debug.Log("Charge Child Action Called");
 
-		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
 			listOfChildCells[i].DeferredChangeState(PCState.ChargeChild);
