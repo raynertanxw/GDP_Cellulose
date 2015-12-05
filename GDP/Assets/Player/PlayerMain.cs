@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (Collider2D))]
 public class PlayerMain : MonoBehaviour
 {
 	public int m_nHealth = 100;
@@ -35,5 +36,16 @@ public class PlayerMain : MonoBehaviour
 	{
 		Collider2D[] surroudingEnemyChildren = Physics2D.OverlapCircleAll(transform.position, m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
 		return surroudingEnemyChildren.Length;
+	}
+
+	void OnTriggerEnter2D(Collider2D col)
+	{
+		if (col.gameObject.tag == Constants.s_strEnemyChildTag)
+		{
+			// Kill the child cell.
+			col.gameObject.GetComponent<EnemyChildFSM>().KillChildCell();
+			// Reduce health.
+			m_nHealth--;
+		}
 	}
 }
