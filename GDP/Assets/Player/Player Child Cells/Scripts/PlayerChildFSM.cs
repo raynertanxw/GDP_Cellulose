@@ -54,8 +54,10 @@ public class PlayerChildFSM : MonoBehaviour
 	private Dictionary<PCState, IPCState> m_statesDictionary;
 	[SerializeField]
 	public bool m_bIsDefending = true;
+	public bool m_bHasAwaitingDeferredStateChange = false;
+	private PCState m_deferredState;
 	public Transform m_assignedNode;
-	public Transform m_currentEnemyCellTarget;
+	public EnemyChildFSM m_currentEnemyCellTarget;
 	public Squad_Manager m_assignedSquad;
 
 
@@ -88,6 +90,18 @@ public class PlayerChildFSM : MonoBehaviour
 		m_currentEnumState = newState;
 	}
 
+	public void DeferredChangeState(PCState newState)
+	{
+		m_deferredState = newState;
+		m_bHasAwaitingDeferredStateChange = true;
+	}
+
+	public void ExecuteDeferredStateChange()
+	{
+		ChangeState(m_deferredState);
+		m_bHasAwaitingDeferredStateChange = false;
+	}
+
 	void Awake()
 	{
 		// does the pool exist yet
@@ -114,6 +128,8 @@ public class PlayerChildFSM : MonoBehaviour
 		m_statesDictionary.Add(PCState.Defend, new PC_DefendState(this));
 		m_statesDictionary.Add(PCState.Idle, new PC_IdleState(this));
 
+
+		PlayerChildFSM.SetActiveChildCount(true);
 		// Default Start currentState is dead state.
 		m_currentState = m_statesDictionary[PCState.Dead];
 		m_currentState.Enter();

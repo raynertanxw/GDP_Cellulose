@@ -32,7 +32,7 @@ public class PC_DefendState : IPCState
 
 
 
-	private float m_fAttackRange;
+	private static float s_fDetectionRange = 1.0f;
 
 	#region Helper functions
 	private bool isTargetAlive()

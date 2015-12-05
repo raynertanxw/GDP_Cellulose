@@ -37,6 +37,12 @@ public class PC_IdleState : IPCState
 				m_pcFSM.ChangeState(PCState.Avoid);
 			}
 		}
+
+		// Check for deferred state change.
+		if (m_pcFSM.m_bHasAwaitingDeferredStateChange == true)
+		{
+			m_pcFSM.ExecuteDeferredStateChange();
+		}
 	}
 	
 	public override void Exit()
@@ -67,7 +73,7 @@ public class PC_IdleState : IPCState
 		if (enemyCell != null)
 		{
 			// Assign the currentEnemyCellTarget in the FSM to the returned enemy cell.
-			m_pcFSM.m_currentEnemyCellTarget = enemyCell.transform;
+			m_pcFSM.m_currentEnemyCellTarget = enemyCell.gameObject.GetComponent<EnemyChildFSM>();
 
 			return true;
 		}
