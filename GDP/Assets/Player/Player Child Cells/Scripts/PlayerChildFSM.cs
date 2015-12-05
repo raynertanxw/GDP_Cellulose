@@ -164,6 +164,10 @@ public class PlayerChildFSM : MonoBehaviour
 		else if (col.gameObject.tag == Constants.s_strEnemyTag)
 		{
 			Debug.Log("Hit Enemy Main");
+
+			// Damage Enemy.
+
+			KillPlayerChildCell();
 		}
 	}
 }

@@ -93,8 +93,7 @@ public class PC_IdleState : IPCState
 		{
 			// Calculate "force" vector.
 			Vector3 direction = m_currentTarget - m_pcFSM.transform.position;
-			float scalar = Mathf.Pow(s_fPlayerChildIdleSpeed, 2) / direction.sqrMagnitude;
-			m_currentVelocity += direction * scalar;
+			m_currentVelocity += direction.normalized * s_fPlayerChildIdleSpeed;
 			CapSpeed();
 		}
 

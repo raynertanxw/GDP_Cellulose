@@ -3,9 +3,15 @@ using System.Collections;
 
 public class PC_ChargeChildState : IPCState
 {
+	private Vector3 m_currentVelocity;
+	private static float s_fPlayerChildChargeSpeed = 5.0f;
+	private static float s_fDetectionRange = 2.0f;
+
 	public override void Enter()
 	{
 		Debug.Log("Entering ChargeChild State");
+
+		m_currentVelocity = Vector3.zero;
 	}
 	
 	public override void Execute()
@@ -15,16 +21,21 @@ public class PC_ChargeChildState : IPCState
 			if (m_pcFSM.m_currentEnemyCellTarget == null)
 			{
 				// Switch targets.
-				FindTarget();
+				if (FindNearTarget() == false)
+					FindFarTarget();
 			}
 			else if (IsTargetAlive() == false)
 			{
 				// Switch targets.
-				FindTarget();
+				if (FindNearTarget() == false)
+					FindFarTarget();
 			}
 			else // Target is still alive.
 			{
+				MoveTowardsTarget();
 
+				// Check for nearer target.
+				FindNearTarget();
 			}
 		}
 		else
@@ -60,8 +71,12 @@ public class PC_ChargeChildState : IPCState
 	
 	
 	
-	
-	private static float s_fDetectionRange = 1.0f;
+
+
+
+
+
+
 	
 	#region Helper functions
 	private bool IsTargetAlive()
@@ -74,32 +89,44 @@ public class PC_ChargeChildState : IPCState
 	
 	private void MoveTowardsTarget()
 	{
-		
+		// Calculate "force" vector.
+		Vector3 direction = m_pcFSM.m_currentEnemyCellTarget.transform.position - m_pcFSM.transform.position;
+		m_currentVelocity += direction.normalized * s_fPlayerChildChargeSpeed;
+		CapSpeed();
+	
+		// Apply velocity vector.
+		m_pcFSM.transform.position += m_currentVelocity * Time.deltaTime;
 	}
 
-	private void FindTarget()
+	private bool FindNearTarget()
 	{
 		Collider2D enemyCell = Physics2D.OverlapCircle(m_pcFSM.transform.position, s_fDetectionRange, Constants.s_onlyEnemeyChildLayer);
 		if (enemyCell != null)
 		{
 			// Assign the currentEnemyCellTarget in the FSM to the returned enemy cell.
 			m_pcFSM.m_currentEnemyCellTarget = enemyCell.gameObject.GetComponent<EnemyChildFSM>();
+			return true;
 		}
 		else
 		{
-			int nClosestEnemyCell = 0;
-			float fSqrDistance = 10000f; // Arbitrarily high number.
-			// Get Random Target from List.
-			for (int i = 0; i < EnemyMainFSM.Instance().ECList.Count; i++)
-			{
-				if ((m_pcFSM.transform.position - EnemyMainFSM.Instance().ECList[i].transform.position).sqrMagnitude < fSqrDistance)
-				{
-					nClosestEnemyCell = i;
-				}
-			}
-
-			m_pcFSM.m_currentEnemyCellTarget = EnemyMainFSM.Instance().ECList[nClosestEnemyCell];
+			return false;
 		}
+	}
+
+	private void FindFarTarget()
+	{
+		int nClosestEnemyCell = 0;
+		float fSqrDistance = 10000f; // Arbitrarily high number.
+		// Get Random Target from List.
+		for (int i = 0; i < EnemyMainFSM.Instance().ECList.Count; i++)
+		{
+			if ((m_pcFSM.transform.position - EnemyMainFSM.Instance().ECList[i].transform.position).sqrMagnitude < fSqrDistance)
+			{
+				nClosestEnemyCell = i;
+			}
+		}
+		
+		m_pcFSM.m_currentEnemyCellTarget = EnemyMainFSM.Instance().ECList[nClosestEnemyCell];
 	}
 
 	private bool AreThereTargets()
@@ -111,6 +138,16 @@ public class PC_ChargeChildState : IPCState
 		else
 		{
 			return false;
+		}
+	}
+
+	private void CapSpeed()
+	{
+		float sqrMag = m_currentVelocity.sqrMagnitude;
+		if (sqrMag > Mathf.Pow(s_fPlayerChildChargeSpeed, 2))
+		{
+			float scalar = Mathf.Pow(s_fPlayerChildChargeSpeed, 2) / sqrMag;
+			m_currentVelocity *= scalar;
 		}
 	}
 	#endregion
