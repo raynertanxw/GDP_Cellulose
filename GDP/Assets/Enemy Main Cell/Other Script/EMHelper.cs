@@ -28,7 +28,7 @@ public class EMHelper : MonoBehaviour
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 
 		controller = GetComponent<EMController> ();
-		width = GetComponent<BoxCollider2D> ().bounds.size.x;
+		width = GetComponent<CircleCollider2D> ().bounds.size.x;
 
 		bCanAddDefend = true;
 	}
