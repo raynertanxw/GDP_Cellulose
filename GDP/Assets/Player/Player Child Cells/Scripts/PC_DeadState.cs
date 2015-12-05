@@ -17,7 +17,7 @@ public class PC_DeadState : IPCState
 		m_pcFSM.transform.position = Constants.s_farfarAwayVector;
 
 		// Update active Child Count.
-		PlayerChildFSM.SetActiveChildCount(true);
+		PlayerChildFSM.SetActiveChildCount(false);
 
 		// Remove from SquadList if any assignedSquad.
 		if (m_pcFSM.m_assignedSquad != null)
@@ -47,7 +47,7 @@ public class PC_DeadState : IPCState
 		m_bIsCalledFromPool = false;
 
 		// Update active Child Count.
-		PlayerChildFSM.SetActiveChildCount(false);
+		PlayerChildFSM.SetActiveChildCount(true);
 	}
 
 	// Constructor.
