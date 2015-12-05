@@ -43,9 +43,7 @@ public class PlayerChildFSM : MonoBehaviour
 		}
 	}
 	#endregion
-
-	public static EnemyMainFSM s_eMain;
-	public static PlayerMain s_pMain;
+	
 	private static int s_nActiveChildCount = 0;
 
 	
