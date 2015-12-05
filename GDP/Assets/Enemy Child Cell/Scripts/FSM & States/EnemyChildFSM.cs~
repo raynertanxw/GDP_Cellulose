@@ -130,6 +130,11 @@ public class EnemyChildFSM : MonoBehaviour
 		}
 	}
 	
+	public void KillChildCell()
+	{
+		ChangeState(ECState.Dead);
+	}
+	
 	public int AmountOfSameCellState()
 	{
 		GameObject[] childCells = GameObject.FindGameObjectsWithTag("EnemyChild");

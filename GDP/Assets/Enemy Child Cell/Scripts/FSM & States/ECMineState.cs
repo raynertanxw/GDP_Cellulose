@@ -19,6 +19,7 @@ public class ECMineState : IECState {
     public override void Enter()
     {
 		Debug.Log("Enter landmine");
+		PointDatabase.Instance.RefreshDatabase(m_ecFSM.pMain.transform.position,GameObject.Find("Left Wall"),m_Main.GetComponent<SpriteRenderer>().bounds.size.x, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
 		m_TargetPosition = PositionQuery.Instance.RequestLandminePos(DetermineType(), m_Main, m_ecFSM.pMain);
 		fSpeed = 12f;
 		bReachPosition = false;
