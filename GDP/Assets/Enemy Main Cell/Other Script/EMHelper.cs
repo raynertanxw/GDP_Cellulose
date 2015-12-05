@@ -4,6 +4,8 @@ using System.Collections;
 [RequireComponent (typeof (BoxCollider2D))]
 public class EMHelper : MonoBehaviour 
 {
+	EnemyMainFSM m_EMFSM;
+
 	public static float leftLimit;
 	public static float rightLimit;
 	public static float topLimit;
@@ -21,6 +23,8 @@ public class EMHelper : MonoBehaviour
 
 	void Start () 
 	{
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
+
 		controller = GetComponent<EMController> ();
 		width = GetComponent<BoxCollider2D> ().bounds.size.x;
 
@@ -35,6 +39,8 @@ public class EMHelper : MonoBehaviour
 		PositionLimit ();
         // Update width of enemy main cell
         widthUpdate();
+		// Remove destroyed items in enemy child list
+		Debug.Log (EnemyMainFSM.Instance().ECList.Count);
 	}
 
 	public IEnumerator PauseAddDefend (float fTime)

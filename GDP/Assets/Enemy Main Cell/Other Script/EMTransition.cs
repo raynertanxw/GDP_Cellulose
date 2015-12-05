@@ -44,9 +44,12 @@ public class EMTransition : MonoBehaviour
 	// Universal function for pausing transition availability
 	public IEnumerator TransitionAvailability (float fTime)
 	{
+		EMState currentStateIndex = m_EMFSM.CurrentStateIndex;
 		bCanTransit = false;
 		yield return new WaitForSeconds (fTime);
-		bCanTransit = true;
+		// Reset transition availability only when it is still in the state which the call is from
+		if (currentStateIndex == m_EMFSM.CurrentStateIndex)
+			bCanTransit = true;
 	}
 
 	#region Exteral Transitions

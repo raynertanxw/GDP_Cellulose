@@ -38,7 +38,9 @@ public class EMController : MonoBehaviour
 
 	#region Size
 	private int nInitialSize;
-	private int nNutrientNum;
+	[Header("Number of nutrient")]
+	[Tooltip("Number of enemy nutrient")]
+	[SerializeField] private int nNutrientNum;
 	public int NutrientNum { get { return nNutrientNum; } }
 	public void ReduceNutrient () { nNutrientNum--; }
 	private Vector2 initialScale;
@@ -59,7 +61,7 @@ public class EMController : MonoBehaviour
 		initialScale = gameObject.transform.localScale;
 		currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
 		// Speed
-		fSpeed = .25f;
+		fSpeed = .1f;
 		fSpeedFactor = 1f;
 		fSpeedTemp = fSpeed;
 		bIsDefend = false;
