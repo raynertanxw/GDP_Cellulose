@@ -10,7 +10,7 @@ GameObject:
   - 4: {fileID: 435002}
   - 212: {fileID: 21242206}
   - 50: {fileID: 5027150}
-  - 61: {fileID: 6199700}
+  - 58: {fileID: 5822816}
   - 114: {fileID: 11453586}
   - 114: {fileID: 11442052}
   - 114: {fileID: 11464244}
@@ -80,6 +80,19 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!58 &5822816
+CircleCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 178304}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: .0799999982
 --- !u!58 &5854596
 CircleCollider2D:
   m_ObjectHideFlags: 1
@@ -93,19 +106,6 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: .100000001
---- !u!61 &6199700
-BoxCollider2D:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 178304}
-  m_Enabled: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_Offset: {x: 0, y: 0}
-  serializedVersion: 2
-  m_Size: {x: .159999996, y: .159999996}
 --- !u!114 &11424054
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -117,7 +117,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5525bfd36d4a03c4b982123920a81794, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bCanTransit: 0
 --- !u!114 &11442052
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -130,6 +129,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDefend: 0
+  nNutrientNum: 0
 --- !u!114 &11453586
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -145,6 +145,18 @@ MonoBehaviour:
   emController: {fileID: 0}
   emHelper: {fileID: 0}
   emTransition: {fileID: 0}
+  nAvailableChildNum: 0
+  nHealth: 0
+  nInitialAggressiveness: 0
+  nCurrentAggressiveness: 0
+  nAggressivenessSquadCap: 0
+  nAggressivenessSquadChild: 0
+  fProductionScore: 0
+  fMaintainScore: 0
+  fDefendScore: 0
+  fAggressiveAttackScore: 0
+  fCautiousAttackScore: 0
+  fLandmineScore: 0
 --- !u!114 &11464244
 MonoBehaviour:
   m_ObjectHideFlags: 1
