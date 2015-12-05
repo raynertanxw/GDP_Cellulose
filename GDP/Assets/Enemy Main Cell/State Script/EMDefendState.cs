@@ -98,9 +98,9 @@ public class EMDefendState : IEMState
 			}
 		}
 
-		// Check transition every 0.1 second to save computing power
+		// Check transition every 0.2 second to save computing power
 		if (transition.CanTransit)
-			m_EMFSM.StartPauseTransition (.1f);
+			m_EMFSM.StartPauseTransition (.2f);
 	}
 
 	public override void Exit ()

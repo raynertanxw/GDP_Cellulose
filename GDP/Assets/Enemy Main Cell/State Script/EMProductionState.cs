@@ -67,7 +67,7 @@ public class EMProductionState : IEMState
 
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
+					transition.Transition (1000f / helper.Pow (3f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 			} 
 			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50) 
@@ -97,7 +97,7 @@ public class EMProductionState : IEMState
 				
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (8f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
+					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 			}
 			else if (m_EMFSM.AvailableChildNum > 50)
@@ -122,11 +122,11 @@ public class EMProductionState : IEMState
 				
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
-					transition.Transition (1000f / helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
+					transition.Transition (1000f / helper.Pow (3f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f), EMState.Maintain);
 				}
 			}
 
-			// Check transition every 0.1 second to save computing power
+			// Check transition every 0.2 second to save computing power
 			if (transition.CanTransit)
 				m_EMFSM.StartPauseTransition (.2f);
 		}

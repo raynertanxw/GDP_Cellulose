@@ -8,12 +8,11 @@ public class EnemyMainFSM : MonoBehaviour
 {
 	private static EnemyMainFSM instance;
 	// Singleton
-	public static EnemyMainFSM Instance() {
-		if (instance == null)
-			instance = new EnemyMainFSM();
-		
+	public static EnemyMainFSM Instance()
+	{
 		return instance;
 	}
+
 	[SerializeField]
 	private GameObject enemyMiniPrefab;
 	private GameObject enemyMainObject;
@@ -114,6 +113,7 @@ public class EnemyMainFSM : MonoBehaviour
 
 	void Start ()
 	{
+		instance = this;
 		enemyMainObject = this.gameObject;
 		#region Initialize state dictionary
 		m_statesDictionary = new Dictionary<EMState, IEMState>();
@@ -162,7 +162,7 @@ public class EnemyMainFSM : MonoBehaviour
         nAvailableChildNum = ecList.Count;
 		// Initialise num of health and aggressiveness
 		nHealth = 30;
-		nInitialAggressiveness = 10;
+		nInitialAggressiveness = 5;
 		nCurrentAggressiveness = nInitialAggressiveness;
 		nAggressivenessSquadCap = 0;
 		nAggressivenessSquadChild = 0;
