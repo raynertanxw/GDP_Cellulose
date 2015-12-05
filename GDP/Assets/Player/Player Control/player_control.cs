@@ -42,7 +42,6 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn()
 	{
-		Debug.Log("Spawn Action called");
 		if (s_nResources > m_nSpawnCost)
 		{
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
