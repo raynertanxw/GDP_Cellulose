@@ -17,6 +17,8 @@ public class EMHelper : MonoBehaviour
 	public bool CanAddDefend { get { return bCanAddDefend; } set { bCanAddDefend = value; } }
 	private bool bCanAddAttack;
 	public bool CanAddAttack { get { return bCanAddAttack; } set { bCanAddAttack = value; } }
+	private bool bCanAddLandmine;
+	public bool CanAddLandmine { get { return bCanAddLandmine; } set { bCanAddLandmine = value; } }
 
 	private EMTransition transition;
 	private EMController controller;

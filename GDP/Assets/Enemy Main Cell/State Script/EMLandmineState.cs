@@ -26,8 +26,62 @@ public class EMLandmineState : IEMState
 
 	public override void Execute ()
 	{
-		if (transition.CanTransit)
-			m_EMFSM.ChangeState (EMState.Production);
+		transition = m_EMFSM.emTransition;
+		controller = m_EMFSM.emController;
+		helper = m_EMFSM.emHelper;
+
+		int nCommandNum = 0;
+		
+		#region Attack only when there are more enemy mini cells than player's 
+		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount ()) 
+		{
+			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
+			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
+			
+			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25)
+			{
+				nCommandNum = Random.Range (1, 2 + (int)nEnemyChildFactor);
+				for (int nAmount = 0; nAmount < nCommandNum); nAmount++)
+				{
+					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
+					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					{
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
+						helper.CanAddLandmine = false;
+					}
+				}
+			}
+			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50)
+			{
+				nCommandNum = Random.Range (2, 3 + (int)nEnemyChildFactor);
+				for (int nAmount = 0; nAmount < nCommandNum); nAmount++)
+				{
+					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
+					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					{
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
+						helper.CanAddLandmine = false;
+					}
+				}
+			}
+			else if (m_EMFSM.AvailableChildNum > 50)
+			{
+				nCommandNum = Random.Range (3, 4 + (int)nEnemyChildFactor);
+				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
+				{
+					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
+					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					{
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
+						helper.CanAddLandmine = false;
+					}
+				}
+			}
+			
+			// Pause commanding enemy mini cells to Attack state
+			// Pause duration depends only on the number of enemy mini cell commanded
+			m_EMFSM.StartPauseAddAttack ((float)nCommandNum);
+		}
 	}
 
 	public override void Exit ()

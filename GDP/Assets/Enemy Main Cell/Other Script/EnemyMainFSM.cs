@@ -111,9 +111,14 @@ public class EnemyMainFSM : MonoBehaviour
 	private bool bCanSpawn; 
 	public bool CanSpawn { get { return bCanSpawn; } }
 
+	void Awake ()
+	{
+		if (instance == null)
+			instance = this;
+	}
+
 	void Start ()
 	{
-		instance = this;
 		enemyMainObject = this.gameObject;
 		#region Initialize state dictionary
 		m_statesDictionary = new Dictionary<EMState, IEMState>();
