@@ -28,7 +28,7 @@ public class EMController : MonoBehaviour
 
 	#region Status
 	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
-	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum += value; } }
+	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
 	public void CauseDamageOne () { nDamageNum++; }
 	private bool bPushed; 
 	private bool bStunned;

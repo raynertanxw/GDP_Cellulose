@@ -62,12 +62,13 @@ public class EnemyMainFSM : MonoBehaviour
 	[SerializeField] private int nAvailableChildNum;
 	public int AvailableChildNum { get { return nAvailableChildNum; } }
 
-	// Health
+	#region Health
 	[Header("Health")]
 	[Tooltip("Health of the Enemy Main Cell")]
 	[SerializeField] private int nHealth;
 	public int Health { get { return nHealth; } }
-	// Aggressiveness
+	#endregion
+	#region Aggressiveness
 	[Header("Aggressiveness")]
 	[Tooltip("Initial Aggressiveness of the Enemy Main Cell")]
 	[SerializeField] private float nInitialAggressiveness;
@@ -75,10 +76,38 @@ public class EnemyMainFSM : MonoBehaviour
 	[Tooltip("Current Aggressiveness of the Enemy Main Cell")]
 	[SerializeField] private float nCurrentAggressiveness;
 	public float CurrentAggressiveness { get { return nCurrentAggressiveness; } set { nCurrentAggressiveness = value; } }
-	private float nAggressivenessSquadCap;
+	[Tooltip("Current Squad Captain Aggressiveness of the Enemy Main Cell")]
+	[SerializeField] private float nAggressivenessSquadCap;
 	public float AggressivenessSquadCap { get { return nAggressivenessSquadCap; } set { nAggressivenessSquadCap = value; } }
-	private float nAggressivenessSquadChild;
+	[Tooltip("Current Squad Child Aggressiveness of the Enemy Main Cell")]
+	[SerializeField] private float nAggressivenessSquadChild;
 	public float AggressivenessSquadChild { get { return nAggressivenessSquadChild; } set { nAggressivenessSquadChild = value; } }
+	#endregion
+	#region Learning Element
+	[Header("Learning Element")]
+	[Tooltip("Score of Enemy Main Production State")]
+	[SerializeField] private float fProductionScore;
+	public float ProductionScore { get { return fProductionScore; } set { fProductionScore = value; } }
+	[Tooltip("Score of Enemy Main Maintain State")]
+	[SerializeField] private float fMaintainScore;
+	public float MaintainScore { get { return fMaintainScore; } set { fMaintainScore = value; } }
+	[Tooltip("Score of Enemy Main Defend State")]
+	[SerializeField] private float fDefendScore;
+	public float DefendScore { get { return fDefendScore; } set { fDefendScore = value; } }
+	[Tooltip("Score of Enemy Main Aggressive Attack State")]
+	[SerializeField] private float fAggressiveAttackScore;
+	public float AggressiveAttackScore { get { return fAggressiveAttackScore; } set { fAggressiveAttackScore = value; } }
+	[Tooltip("Score of Enemy Main Cautious Attack State")]
+	[SerializeField] private float fCautiousAttackScore;
+	public float CautiousAttackScore { get { return fCautiousAttackScore; } set { fCautiousAttackScore = value; } }
+	[Tooltip("Score of Enemy Main Landmine State")]
+	[SerializeField] private float fLandmineScore;
+	public float LandmineScore { get { return fLandmineScore; } set { fLandmineScore = value; } }
+	// Dictionary of Learning Element
+	private Dictionary<EMState, float> m_learningDictionary;
+	public Dictionary<EMState, float> LearningDictionary{ get { return m_learningDictionary; } }
+	public void SetLearningScore (EMState key, float value) {m_learningDictionary [key] = value;}
+	#endregion
 	// Production status
 	private bool bCanSpawn; 
 	public bool CanSpawn { get { return bCanSpawn; } }
@@ -86,7 +115,7 @@ public class EnemyMainFSM : MonoBehaviour
 	void Start ()
 	{
 		enemyMainObject = this.gameObject;
-
+		#region Initialize state dictionary
 		m_statesDictionary = new Dictionary<EMState, IEMState>();
 		m_statesDictionary.Add (EMState.Production, new EMProductionState (this));
 		m_statesDictionary.Add (EMState.Maintain, new EMMaintainState (this));
@@ -96,17 +125,21 @@ public class EnemyMainFSM : MonoBehaviour
 		m_statesDictionary.Add (EMState.Landmine, new EMLandmineState (this));
 		m_statesDictionary.Add (EMState.Stunned, new EMStunnedState (this));
 		m_statesDictionary.Add (EMState.Die, new EMDieState (this));
-		/*#region State classes
-		m_ProductionState = new EMProductionState (this);
-		m_DefendState = new EMDefendState (this);
-		m_MaintainState = new EMMaintainState (this);
-		m_AggressiveAttackState = new EMAggressiveAttackState (this);
-		m_CautiousAttackState = new EMCautiousAttackState (this);
-		m_LandmineState = new EMLandmineState (this);
-		m_StunnedState = new EMStunnedState (this);
-		m_DieState = new EMDieState (this);
-		#endregion*/
-		// Initialise the default to Production
+		#endregion
+
+		#region Initialize the Learning Element dictionary
+		m_learningDictionary = new Dictionary<EMState, float>();
+		m_learningDictionary.Add (EMState.Production, 0f);
+		m_learningDictionary.Add (EMState.Maintain, 0f);
+		m_learningDictionary.Add (EMState.Defend, 0f);
+		m_learningDictionary.Add (EMState.AggressiveAttack, 0f);
+		m_learningDictionary.Add (EMState.CautiousAttack, 0f);
+		m_learningDictionary.Add (EMState.Landmine, 0f);
+		m_learningDictionary.Add (EMState.Stunned, 0f);
+		m_learningDictionary.Add (EMState.Die, 0f);
+		#endregion
+
+		// Initialize the default to Production
 		m_CurrentState = m_statesDictionary [EMState.Production];
 		m_currentStateIndex = EMState.Production;
 

@@ -12,9 +12,9 @@ public class EMHelper : MonoBehaviour
 	private float width;
 
 	private bool bCanAddDefend;
-	public bool CanAddDefend { get { return bCanAddDefend; } set { bCanAddDefend = true; } }
+	public bool CanAddDefend { get { return bCanAddDefend; } set { bCanAddDefend = value; } }
 	private bool bCanAddAttack;
-	public bool CanAddAttack { get { return bCanAddAttack; } set { bCanAddAttack = true; } }
+	public bool CanAddAttack { get { return bCanAddAttack; } set { bCanAddAttack = value; } }
 
 	private EMTransition transition;
 	private EMController controller;
