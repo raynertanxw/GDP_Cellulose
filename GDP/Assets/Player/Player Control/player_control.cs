@@ -64,6 +64,8 @@ public class player_control : MonoBehaviour
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
 			listOfChildCells[i].m_bIsDefending = true;
+			if (listOfChildCells[i].GetCurrentState != PCState.Idle)
+				listOfChildCells[i].DeferredChangeState(PCState.Idle); // Will auto change to defend if deteced.
 		}
 	}
 
@@ -75,6 +77,8 @@ public class player_control : MonoBehaviour
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
 			listOfChildCells[i].m_bIsDefending = false;
+			if (listOfChildCells[i].GetCurrentState != PCState.Idle)
+				listOfChildCells[i].DeferredChangeState(PCState.Idle); // Will auto change to avoid if detected.
 		}
 	}
 
