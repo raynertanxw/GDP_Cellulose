@@ -158,7 +158,10 @@ public class PlayerChildFSM : MonoBehaviour
 		// Hit Enemy Child
 		if (col.gameObject.tag == Constants.s_strEnemyChildTag)
 		{
-			Debug.Log("Hit Enemy Child");
+			// Kill Enemy.
+			col.gameObject.GetComponent<EnemyChildFSM>().KillChildCell();
+			// Kill Self.
+			KillPlayerChildCell();
 		}
 		// Hit Enemy Main.
 		else if (col.gameObject.tag == Constants.s_strEnemyTag)
