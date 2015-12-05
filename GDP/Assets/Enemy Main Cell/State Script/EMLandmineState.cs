@@ -32,7 +32,7 @@ public class EMLandmineState : IEMState
 
 		int nCommandNum = 0;
 		
-		#region Attack only when there are more enemy mini cells than player's 
+		#region Landmine Behaviour
 		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount ()) 
 		{
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
@@ -41,7 +41,7 @@ public class EMLandmineState : IEMState
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25)
 			{
 				nCommandNum = Random.Range (1, 2 + (int)nEnemyChildFactor);
-				for (int nAmount = 0; nAmount < nCommandNum); nAmount++)
+				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
@@ -54,7 +54,7 @@ public class EMLandmineState : IEMState
 			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50)
 			{
 				nCommandNum = Random.Range (2, 3 + (int)nEnemyChildFactor);
-				for (int nAmount = 0; nAmount < nCommandNum); nAmount++)
+				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
@@ -82,6 +82,7 @@ public class EMLandmineState : IEMState
 			// Pause duration depends only on the number of enemy mini cell commanded
 			m_EMFSM.StartPauseAddAttack ((float)nCommandNum);
 		}
+		#endregion
 	}
 
 	public override void Exit ()
