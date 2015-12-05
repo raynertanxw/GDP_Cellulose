@@ -8997,6 +8997,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_nHealth: 100
+  m_fDetectionRadius: 4
 --- !u!4 &1992387769 stripped
 Transform:
   m_PrefabParentObject: {fileID: 498690, guid: 7455fdbd1e679ff47a04c28e65b9b1e1, type: 2}
