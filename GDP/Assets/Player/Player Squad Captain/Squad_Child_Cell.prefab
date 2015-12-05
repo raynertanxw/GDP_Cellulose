@@ -10,6 +10,8 @@ GameObject:
   - 4: {fileID: 498690}
   - 114: {fileID: 11477736}
   - 212: {fileID: 21298998}
+  - 61: {fileID: 6147394}
+  - 50: {fileID: 5065968}
   m_Layer: 13
   m_Name: Squad_Child_Cell
   m_TagString: Untagged
@@ -29,6 +31,35 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
+--- !u!50 &5065968
+Rigidbody2D:
+  serializedVersion: 2
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 167496}
+  m_Mass: .100000001
+  m_LinearDrag: 0
+  m_AngularDrag: .0500000007
+  m_GravityScale: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
+--- !u!61 &6147394
+BoxCollider2D:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 167496}
+  m_Enabled: 0
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Size: {x: .159999996, y: .159999996}
 --- !u!114 &11477736
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -41,7 +72,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fStrafingOffsetAngle: 0
+  bIsAlive: 0
   m_SpriteRenderer: {fileID: 21298998}
+  m_RigidBody: {fileID: 5065968}
+  m_Collider: {fileID: 6147394}
 --- !u!212 &21298998
 SpriteRenderer:
   m_ObjectHideFlags: 1
