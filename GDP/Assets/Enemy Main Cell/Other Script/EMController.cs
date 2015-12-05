@@ -184,11 +184,12 @@ public class EMController : MonoBehaviour
 		int bDirection = Random.Range (0, 2);
 		float fTime = Random.Range (1f, 5f);
 		float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nNutrientNum));
-
+		
 		if (bDirection == 0) 
 			bMovingLeft = !bMovingLeft;
 
 		fHoriSpeed = fSpeed;
+		ResetVelocity ();
 
 		yield return new WaitForSeconds (fTime);
 		bCanChangeHori = true;
@@ -233,15 +234,15 @@ public class EMController : MonoBehaviour
 	{
 		// Reset Aggressiveness factor (Captain)
 		if (SquadCaptain.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0) {
-			m_EMFSM.AggressivenessSquadCap = Random.Range (1f, 5f);
+			m_EMFSM.AggressivenessSquadCap = Random.Range (1f, 3f);
 		} else if (!SquadCaptain.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > m_EMFSM.InitialAggressiveness) {
 			m_EMFSM.AggressivenessSquadCap = 0f;
 		}
 		// Reset Aggressiveness factor (Child)
 		if (SquadCaptain.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != 10f / Mathf.Sqrt((float)SquadCaptain.Instance.AliveChildCount())) {
 			float fAggressivenessSquadChild = 10f / Mathf.Sqrt((float)SquadCaptain.Instance.AliveChildCount());
-			if (fAggressivenessSquadChild > 5f)
-				fAggressivenessSquadChild = 5f;
+			if (fAggressivenessSquadChild > 4f)
+				fAggressivenessSquadChild = 4f;
 			m_EMFSM.AggressivenessSquadChild = fAggressivenessSquadChild;
 		}
 

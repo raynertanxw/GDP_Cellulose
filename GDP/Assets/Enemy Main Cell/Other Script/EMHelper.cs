@@ -21,6 +21,7 @@ public class EMHelper : MonoBehaviour
 
 	void Start () 
 	{
+		controller = GetComponent<EMController> ();
 		width = GetComponent<BoxCollider2D> ().bounds.size.x;
 
 		bCanAddDefend = true;
