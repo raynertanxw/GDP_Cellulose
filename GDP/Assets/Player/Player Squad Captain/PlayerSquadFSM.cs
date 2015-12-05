@@ -15,9 +15,12 @@ public class PlayerSquadFSM : MonoBehaviour
     private Dictionary<SCState, ISCState> dict_States;          // dict_States: The dictionary to store all the states
     private SCState m_currentEnumState;                         // m_currentEnumState: The current enum state of the FSM
     private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
+    [HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
 
     // GameObject/Component References
-    public SpriteRenderer m_SpriteRenderer;                     // m_SpriteRenderer: It is public so that states can reference to it
+    public SpriteRenderer m_SpriteRenderer;                     // m_SpriteRenderer: It is public so that states can references it
+    public Rigidbody2D m_RigidBody;                             // m_RigidBody: It is public so that states can references it
+    public BoxCollider2D m_Collider;                            // m_Collider: It is public so that states can references it
 
     // Private Functions
     // Start(): Use this for initialisation
@@ -56,8 +59,12 @@ public class PlayerSquadFSM : MonoBehaviour
     // Private Functions
     void Update()
     {
-        //transform.Translate(new Vector2(UnityEngine.Random.Range(-2f, 2f), UnityEngine.Random.Range(-2f, 2f)) * Time.deltaTime);
+        // Pre-Excution
+
+        // Excution of the current state
         m_currentState.Execute();
+
+        // Post-Excution
     }
 
     // Public Functions
@@ -88,11 +95,18 @@ public class PlayerSquadFSM : MonoBehaviour
             Debug.LogWarning(gameObject.name + ".PlayerSquadFSM.Strafing(): Current state is not SCState.Produce! Ignore Strafing!");
             return false;
         }
+
+        // targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
         Vector3 targetPosition = Quaternion.Euler(Vector3.forward * fStrafingOffsetAngle) * SquadCaptain.Instance.StrafingVector() + SquadCaptain.Instance.transform.position;
-        
         transform.position = Vector3.Lerp(transform.position, targetPosition, 3f * Time.deltaTime);
 
         return true;
+    }
+
+    // Kill(): Kill the current cell
+    public void Kill()
+    {
+        Advance(SCState.Dead);
     }
 
     // Public Static Functions
@@ -159,9 +173,27 @@ public class PlayerSquadFSM : MonoBehaviour
         return true;
     }
 
-    public static PlayerSquadFSM[] ChildArray { get { return s_array_PlayerSquadFSM; } }
+    // KillThisChild(): Goes through the child array and kill the identified child
+    public static bool KillThisChild(GameObject m_GOchild)
+    {
+        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        {
+            // if: The states matches
+            if (s_array_PlayerSquadFSM[i] == m_GOchild.GetComponent<PlayerSquadFSM>())
+            {
+                s_array_PlayerSquadFSM[i].Advance(SCState.Dead);
+                return true;
+            }
+        }
+        Debug.LogWarning("PlayerSquadFSM.KillThisChild():" + m_GOchild + " does not match any child cell. Wrong Reference?");
+        return false;
+    }
+
+
+    //public static PlayerSquadFSM[] ChildArray { get { return s_array_PlayerSquadFSM; } }
 
     // Getter-Setter Functions
     public SCState EnumState { get { return m_currentEnumState; } }
     public ISCState State { get { return m_currentState; } }
+    public bool IsAlive { get { return bIsAlive; } }
 }
