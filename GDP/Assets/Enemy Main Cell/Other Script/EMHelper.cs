@@ -76,8 +76,8 @@ public class EMHelper : MonoBehaviour
     // Update width of enemy main cell
 	void widthUpdate ()
 	{
-		if (width != GetComponent<BoxCollider2D> ().bounds.size.x)
-			width = GetComponent<BoxCollider2D> ().bounds.size.x;
+		if (width != GetComponent<CircleCollider2D> ().bounds.size.x)
+			width = GetComponent<CircleCollider2D> ().bounds.size.x;
 	}
 
 	#region Math
