@@ -4,7 +4,16 @@ using System.Collections;
 // SquadCaptain.cs: Function of script here.
 public class SquadCaptain : MonoBehaviour 
 {
-    /* NOTES ON SQUAD CHILD SPAWNING ------------------------------------------------------------------------------------------------
+    /* SquadCaptain.cs API - Everything you need to know about SquadCaptain
+     * ------------------------------------------------------------------------------------------------------------------------------
+     * Static Functions:
+     * - SquadCaptain Instance: Return the main instance of the squad captain
+     * ------------------------------------------------------------------------------------------------------------------------------
+     * Public Functions:
+     * - void Initialise(): Initialise the Squad Captain; Make the squad captain alive
+     * - int AliveChildCount(): Get the amount of alive squad child cells
+     * ------------------------------------------------------------------------------------------------------------------------------
+     * NOTES ON SQUAD CHILD SPAWNING ------------------------------------------------------------------------------------------------
      * > The rate of squad child spawn is relative to the number of squad child in the production state (alive too)
      * > The cooldown can be calculated with the following formula:
      * 
@@ -17,7 +26,7 @@ public class SquadCaptain : MonoBehaviour
      */
 
     // Static Fields
-    private static SquadCaptain s_m_Instance;     // m_Instance: Stores this instance in this variable, used for singleton purposes
+    private static SquadCaptain s_m_Instance;   // m_Instance: Stores this instance in this variable, used for singleton purposes
 
 	// Editables Fields
     [Header("Costs")]
@@ -49,8 +58,6 @@ public class SquadCaptain : MonoBehaviour
     private bool bIsAlive = false;              // bIsAlive: Returns if the squad captain is alive
     private Vector3 m_strafingVector;           // m_strafingVector: The current direction of the strafing vector
     private bool isStrafeVectorUpdated = true;  // isStrafeVectorUpdated: Checks if the strafing vector is updated
-
-    private PlayerSquadFSM[] array_SquadChild;  // array_SquadChild: An array to store all the squad child
 
     // Co-Routines
     IEnumerator SpawnRoutine()
@@ -85,7 +92,6 @@ public class SquadCaptain : MonoBehaviour
         // Variable Initialisation
         m_strafingVector = Vector3.up;
 
-        array_SquadChild = new PlayerSquadFSM[nMaximumChildCount];
         StartCoroutine(SpawnRoutine());
     }
 

@@ -6,6 +6,17 @@ using System.Collections.Generic;
 // PlayerSquadFSM.cs: The finite state machine of the cells
 public class PlayerSquadFSM : MonoBehaviour 
 {
+    /* PlayerSquadFSM.cs API - Everything you possibly need for your Player Squad Finite State Machine Needs!
+     * ------------------------------------------------------------------------------------------------------------------------------
+     * Static Functions:
+     * - int StateCount(SCState _enumState): Returns the number of squad child cells that is in the state defined
+     *                           _enumState: The state in which to check
+     * - int AliveCount(): Returns the number of squad child cells that is alive
+     * - bool KillThisChild(GameObject _GOchild): Identify the squad child cell and kills it (This method is best used with collider)
+     *                                  _GOchild: The identity of the child
+     * ------------------------------------------------------------------------------------------------------------------------------
+    */
+
     // Static Fields
     private static PlayerSquadFSM[] s_array_PlayerSquadFSM;     // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
 
@@ -23,6 +34,14 @@ public class PlayerSquadFSM : MonoBehaviour
     public BoxCollider2D m_Collider;                            // m_Collider: It is public so that states can references it
 
     // Private Functions
+    void OnCollisionEnter2D(Collision2D _collision)
+    {
+        if (_collision.contacts[0].collider.gameObject.layer == Constants.s_onlyEnemeyChildLayer.value)
+        {
+            Debug.Log(":D");
+        }
+    }
+
     // Start(): Use this for initialisation
     void Start()
     {
@@ -103,12 +122,6 @@ public class PlayerSquadFSM : MonoBehaviour
         return true;
     }
 
-    // Kill(): Kill the current cell
-    public void Kill()
-    {
-        Advance(SCState.Dead);
-    }
-
     // Public Static Functions
     // StateCount(): The number of cells that is in _state;
     public static int StateCount(SCState _enumState)
@@ -135,7 +148,6 @@ public class PlayerSquadFSM : MonoBehaviour
         return nAliveCount;
     }
 
-    // Public Static Functions
     // Spawn(): Make alive a squad child from the object pooling
     public static PlayerSquadFSM Spawn(Vector3 _position)
     {
@@ -188,9 +200,6 @@ public class PlayerSquadFSM : MonoBehaviour
         Debug.LogWarning("PlayerSquadFSM.KillThisChild():" + m_GOchild + " does not match any child cell. Wrong Reference?");
         return false;
     }
-
-
-    //public static PlayerSquadFSM[] ChildArray { get { return s_array_PlayerSquadFSM; } }
 
     // Getter-Setter Functions
     public SCState EnumState { get { return m_currentEnumState; } }
