@@ -11,3 +11,5 @@ public enum ECState {Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend,
 
 public enum MessageType {Empty, Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend, Avoid, Landmine, Dead};
 
+public enum PositionType {Aggressive, Neutral, Defensive};
+

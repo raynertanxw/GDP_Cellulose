@@ -23,5 +23,9 @@ public class ECManualStateControl : MonoBehaviour {
 		{
 			MessageDispatcher.Instance.DispatchMessage(gameObject,gameObject,MessageType.Defend,0);
 		}
+		if(Input.GetKeyDown(KeyCode.Alpha4))
+		{
+			MessageDispatcher.Instance.DispatchMessage(gameObject,gameObject,MessageType.Landmine,0);
+		}
 	}
 }

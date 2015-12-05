@@ -53,44 +53,29 @@ public class ECChargeCState : IECState {
 	
 	private GameObject FindTargetChild()
 	{
-		//Debug.Log("find target child");
-	
 		Squad_Manager m_TargetSquad = GetMostThreateningSquad();
 		List<PlayerChildFSM> m_PotentialTargets = m_TargetSquad.GetSquadChildList();
-		
-		//Debug.Log("step 1");
-		
+
 		float fDistanceBetween = Mathf.Infinity;
 		int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
 		GameObject m_TargetCell = m_PotentialTargets[0].gameObject;
 		
-		//Debug.Log("step 2");
-		
 		for (int i = 0; i < m_PotentialTargets.Count; i++)
 		{
-			//Debug.Log("step 2.1");
 			if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween)
 			{
-				//Debug.Log("step 2.2");
 				fDistanceBetween = Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position);
 				m_TargetCell = m_PotentialTargets[i].gameObject;
 			}
 		}
-		
-		//Debug.Log("step 3");
-		
-		//Debug.Log("step 4");
-		
+
 		//If there is no more available player child to be targeted, stop this state and shift back to idle state
 		if(m_TargetCell == null)
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child, m_Child, MessageType.Idle, 0);
-			//Debug.Log("No Target Avaiable");
 			return null;
 		}
-		
-		//Debug.Log("step 5");
-		
+
 		return m_TargetCell;
 	}
 	
