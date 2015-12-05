@@ -10,12 +10,16 @@ public class PC_DefendState : IPCState
 	
 	public override void Execute()
 	{
-		
+		// Check for deferred state change.
+		if (m_pcFSM.m_bHasAwaitingDeferredStateChange == true)
+		{
+			m_pcFSM.ExecuteDeferredStateChange();
+		}
 	}
 	
 	public override void Exit()
 	{
-		
+		Debug.Log("Exiting Defend State");
 	}
 	
 	// Constructor.

@@ -82,11 +82,23 @@ public class player_control : MonoBehaviour
 	public void ActionChargeMain()
 	{
 		Debug.Log("Charge Main Action Called");
+
+		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		for (int i = 0; i < listOfChildCells.Count; i++)
+		{
+			listOfChildCells[i].DeferredChangeState(PCState.ChargeMain);
+		}
 	}
 
 	public void ActionChargeChild()
 	{
 		Debug.Log("Charge Child Action Called");
+
+		List<PlayerChildFSM> listOfChildCells = Squad_Manager.GetSquad(m_nActiveSquad).GetSquadChildList();
+		for (int i = 0; i < listOfChildCells.Count; i++)
+		{
+			listOfChildCells[i].DeferredChangeState(PCState.ChargeChild);
+		}
 	}
 	#endregion
 }

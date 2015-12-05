@@ -5,7 +5,7 @@ public class PC_ChargeChildState : IPCState
 {
 	public override void Enter()
 	{
-		
+		Debug.Log("Entering ChargeChild State");
 	}
 	
 	public override void Execute()
@@ -32,10 +32,20 @@ public class PC_ChargeChildState : IPCState
 			// Transition to ChargeMainState
 			m_pcFSM.ChangeState(PCState.ChargeMain);
 		}
+
+
+
+		// Check for deferred state change.
+		if (m_pcFSM.m_bHasAwaitingDeferredStateChange == true)
+		{
+			m_pcFSM.ExecuteDeferredStateChange();
+		}
 	}
 	
 	public override void Exit()
 	{
+		Debug.Log("Exiting ChargeChild State");
+
 		// Clean up
 		m_pcFSM.m_currentEnemyCellTarget = null;
 	}

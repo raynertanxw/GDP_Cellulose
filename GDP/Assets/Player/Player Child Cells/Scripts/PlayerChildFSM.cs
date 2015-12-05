@@ -102,6 +102,13 @@ public class PlayerChildFSM : MonoBehaviour
 		m_bHasAwaitingDeferredStateChange = false;
 	}
 
+
+	// For Enemy to call
+	public void KillPlayerChildCell()
+	{
+		DeferredChangeState(PCState.Dead);
+	}
+
 	void Awake()
 	{
 		// does the pool exist yet
