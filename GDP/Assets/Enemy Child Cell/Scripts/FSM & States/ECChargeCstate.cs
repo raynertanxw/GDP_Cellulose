@@ -25,10 +25,10 @@ public class ECChargeCState : IECState {
 		if(!HasCellReachTargetPos(m_ecFSM.chargeTarget.transform.position))
 		{
 			ChargeTowards(m_ecFSM.chargeTarget);
-		}
-		else
-		{
-			MessageDispatcher.Instance.DispatchMessage(m_Child.gameObject, m_Child.gameObject, MessageType.Dead, 0);
+			if(IsTargetDead(m_ecFSM.chargeTarget))
+			{
+				m_ecFSM.chargeTarget = FindTargetChild();
+			}
 		}
 	}
 	
@@ -62,7 +62,7 @@ public class ECChargeCState : IECState {
 		
 		for (int i = 0; i < m_PotentialTargets.Count; i++)
 		{
-			if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween)
+			if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween && m_PotentialTargets[i].GetCurrentState() != PCState.Dead)
 			{
 				fDistanceBetween = Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position);
 				m_TargetCell = m_PotentialTargets[i].gameObject;
@@ -152,5 +152,14 @@ public class ECChargeCState : IECState {
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
 		fChargeSpeed += 0.2f;
 		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
+	}
+	
+	private bool IsTargetDead(GameObject _Target)
+	{
+		if(_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead)
+		{
+			return true;
+		}
+		return false;
 	}
 }

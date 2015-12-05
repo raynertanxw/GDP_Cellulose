@@ -46,7 +46,7 @@ public class PointDatabase
 		m_Database.Add(Position.D3, new Vector2(0f,0f));
 	}
 	
-	public void RefreshDatabase(Vector2 _PlayerMainPos, GameObject Wall, float _EMDiameter, float _ECDiameter)
+	public void RefreshDatabase(Vector2 _EnemyMainPos, Vector2 _PlayerMainPos, GameObject Wall)
 	{
 		//length of each vertical section of the screen (6 sections but only 4 at the center will be used as due to the exceeding length of the wall being the two sections)
 		float fVertSection = Wall.GetComponent<SpriteRenderer>().bounds.size.y/6;
@@ -63,21 +63,21 @@ public class PointDatabase
 		Vector2 m_CentreBot = new Vector2(0f, -m_CentreTop.y);
 		
 		//Go through every position in the database and refresh it based on player's main position
-		m_Database[Position.A1] = new Vector2(-fHoriSection, 2 * fVertSection);
-		m_Database[Position.A2] = new Vector2(0f, m_Database[Position.A1].y);
-		m_Database[Position.A3] = new Vector2(fHoriSection, m_Database[Position.A1].y);
+		m_Database[Position.A1] = new Vector2(_EnemyMainPos.x + -fHoriSection, _EnemyMainPos.y + 1.0f * fVertSection);
+		m_Database[Position.A2] = new Vector2(_EnemyMainPos.x, m_Database[Position.A1].y);
+		m_Database[Position.A3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.A1].y);
 		
-		m_Database[Position.B1] = new Vector2(-fHoriSection, fVertSection);
-		m_Database[Position.B2] = new Vector2(0f, m_Database[Position.B1].y);
-		m_Database[Position.B3] = new Vector2(fHoriSection, m_Database[Position.B1].y);
+		m_Database[Position.B1] = new Vector2(_EnemyMainPos.x + -fHoriSection, _EnemyMainPos.y + 0.5f * fVertSection);
+		m_Database[Position.B2] = new Vector2(_EnemyMainPos.x,  m_Database[Position.B1].y);
+		m_Database[Position.B3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.B1].y);
 		
-		m_Database[Position.C1] = new Vector2(-fHoriSection, -fVertSection);
-		m_Database[Position.C2] = new Vector2(0f, m_Database[Position.C1].y);
-		m_Database[Position.C3] = new Vector2(fHoriSection, m_Database[Position.C1].y);
+		m_Database[Position.C1] = new Vector2(_EnemyMainPos.x + -fHoriSection, -_EnemyMainPos.y + -0.5f * fVertSection);
+		m_Database[Position.C2] = new Vector2(_EnemyMainPos.x , m_Database[Position.C1].y);
+		m_Database[Position.C3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.C1].y);
 		
-		m_Database[Position.D1] = new Vector2(-fHoriSection, 2 * -fVertSection);
-		m_Database[Position.D2] = new Vector2(0f, m_Database[Position.D1].y);
-		m_Database[Position.D3] = new Vector2(fHoriSection, m_Database[Position.D1].y);
+		m_Database[Position.D1] = new Vector2(_EnemyMainPos.x + -fHoriSection, -_EnemyMainPos.y + -1.0f * fVertSection);
+		m_Database[Position.D2] = new Vector2(_EnemyMainPos.x, m_Database[Position.D1].y);
+		m_Database[Position.D3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.D1].y);
 		
 		DrawPoints();
 	}
@@ -114,9 +114,10 @@ public class PointDatabase
 	
 	private void DrawPoints()
 	{
-		Debug.Log("draw points");
+		
 		foreach(Vector2 position in m_Database.Values)
 		{
+			Debug.Log(position);
 			Utility.DrawCross(position,Color.red,0.1f);
 		}
 	}

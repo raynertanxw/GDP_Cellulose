@@ -25,10 +25,10 @@ public class ECChargeCState : IECState {
 		if(!HasCellReachTargetPos(m_ecFSM.chargeTarget.transform.position))
 		{
 			ChargeTowards(m_ecFSM.chargeTarget);
-		}
-		else
-		{
-			MessageDispatcher.Instance.DispatchMessage(m_Child.gameObject, m_Child.gameObject, MessageType.Dead, 0);
+			if(IsTargetDead(m_ecFSM.chargeTarget))
+			{
+				m_ecFSM.chargeTarget = FindTargetChild();
+			}
 		}
 	}
 	
@@ -53,8 +53,8 @@ public class ECChargeCState : IECState {
 	
 	private GameObject FindTargetChild()
 	{
-		Squad_Manager m_TargetSquad = GetMostThreateningSquad();
-		List<PlayerChildFSM> m_PotentialTargets = m_TargetSquad.GetSquadChildList();
+		Node_Manager m_TargetNode = GetMostThreateningNode();
+		List<PlayerChildFSM> m_PotentialTargets = m_TargetNode.GetNodeChildList();
 
 		float fDistanceBetween = Mathf.Infinity;
 		int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
@@ -62,7 +62,7 @@ public class ECChargeCState : IECState {
 		
 		for (int i = 0; i < m_PotentialTargets.Count; i++)
 		{
-			if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween)
+			if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween && m_PotentialTargets[i].GetCurrentState() != PCState.Dead)
 			{
 				fDistanceBetween = Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position);
 				m_TargetCell = m_PotentialTargets[i].gameObject;
@@ -79,55 +79,55 @@ public class ECChargeCState : IECState {
 		return m_TargetCell;
 	}
 	
-	private Squad_Manager GetMostThreateningSquad()
+	private Node_Manager GetMostThreateningNode()
 	{
-		//3 different player squads
-		GameObject m_TopSquad = GameObject.Find("Squad_Top");
-		GameObject m_LeftSquad = GameObject.Find("Squad_Left");
-		GameObject m_RightSquad = GameObject.Find("Squad_Right");
+		//3 different player nodes
+		GameObject m_TopNode = GameObject.Find("Node_Top");
+		GameObject m_LeftNode = GameObject.Find("Node_Left");
+		GameObject m_RightNode = GameObject.Find("Node_Right");
 		
-		//Scores for the 3 different squads
-		int nTopScore = EvaluateSquad(m_TopSquad);
-		int nLeftScore = EvaluateSquad(m_LeftSquad);
-		int nRightScore = EvaluateSquad(m_RightSquad);
+		//Scores for the 3 different nodes
+		int nTopScore = EvaluateNode(m_TopNode);
+		int nLeftScore = EvaluateNode(m_LeftNode);
+		int nRightScore = EvaluateNode(m_RightNode);
 		
 		int nHighestThreat = Mathf.Max(Mathf.Max(nTopScore,nLeftScore),nRightScore);
 		
 		if(nHighestThreat == nTopScore)
 		{
-			return m_TopSquad.GetComponent<Squad_Manager>();
+			return m_TopNode.GetComponent<Node_Manager>();
 		}
 		else if(nHighestThreat == nLeftScore)
 		{
-			return m_LeftSquad.GetComponent<Squad_Manager>();
+			return m_LeftNode.GetComponent<Node_Manager>();
 		}
 		else if(nHighestThreat == nRightScore)
 		{
-			return m_RightSquad.GetComponent<Squad_Manager>();
+			return m_RightNode.GetComponent<Node_Manager>();
 		}
 		
 		return null;
 	}
 	
-	private int EvaluateSquad (GameObject _Squad)
+	private int EvaluateNode (GameObject _Node)
 	{
-		//if the squad contains no cell, it serve no threat to the enemy main cell
-		if(_Squad.GetComponent<Squad_Manager>().GetSquadChildList().Count == 0)
+		//if the node contains no cell, it serve no threat to the enemy main cell
+		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
 		{
 			return 0;
 		}
 		
 		int nthreatLevel = 0;
 		
-		//increase score based on amount of cells in that squad
-		nthreatLevel += _Squad.GetComponent<Squad_Manager>().GetSquadChildList().Count;
+		//increase score based on amount of cells in that node
+		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
 	
-		//increase score if that squad have formed together and has a squad captain
-		if(_Squad.GetComponent<SquadCaptain>() != null)
+		//increase score if that node have formed together and has a node captain
+		if(_Node.GetComponent<SquadCaptain>() != null)
 		{
 			nthreatLevel+= 50;
 			
-			//increase score by the amount of nutrients that squad has
+			//increase score by the amount of nutrients that node has
 			
 		}
 		
@@ -152,5 +152,14 @@ public class ECChargeCState : IECState {
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
 		fChargeSpeed += 0.2f;
 		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
+	}
+	
+	private bool IsTargetDead(GameObject _Target)
+	{
+		if(_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead)
+		{
+			return true;
+		}
+		return false;
 	}
 }

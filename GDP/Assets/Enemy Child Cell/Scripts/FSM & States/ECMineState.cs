@@ -19,7 +19,7 @@ public class ECMineState : IECState {
     public override void Enter()
     {
 		Debug.Log("Enter landmine");
-		PointDatabase.Instance.RefreshDatabase(m_ecFSM.pMain.transform.position,GameObject.Find("Left Wall"),m_Main.GetComponent<SpriteRenderer>().bounds.size.x, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
+		PointDatabase.Instance.RefreshDatabase(m_Main.transform.position, m_ecFSM.pMain.transform.position ,GameObject.Find("Left Wall"));
 		m_TargetPosition = PositionQuery.Instance.RequestLandminePos(DetermineType(), m_Main, m_ecFSM.pMain);
 		fSpeed = 12f;
 		bReachPosition = false;
@@ -58,19 +58,18 @@ public class ECMineState : IECState {
     private PositionType DetermineType()
     {
 		float fEMainAggressiveness = m_Main.GetComponent<EnemyMainFSM>().CurrentAggressiveness;
-		float fInitialAggressiveness = m_Main.GetComponent<EnemyMainFSM>().InitialAggressiveness;
-		
-		//if the aggressiveness is same as the initial aggressiveness, perform neutral landmine
-		//if the aggressive is below the initial aggressiveness, perform the defensive landmine
-		//if the aggresstiveness is higher than the initial aggressiveness, perform the offensive landmine
-		if(fEMainAggressiveness > fInitialAggressiveness)
+
+		if(fEMainAggressiveness >= 12)
 		{
+			Debug.Log("Aggressive");
 			return PositionType.Aggressive;
 		}
-		else if(fEMainAggressiveness < fInitialAggressiveness)
+		else if(fEMainAggressiveness <= 6)
 		{
+			Debug.Log("Defensive");
 			return PositionType.Defensive;
 		}
+		Debug.Log("Neutral");
 		return PositionType.Neutral;
     }
 	
