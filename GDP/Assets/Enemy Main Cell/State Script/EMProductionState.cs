@@ -29,7 +29,7 @@ public class EMProductionState : IEMState
 		transition = m_EMFSM.emTransition;
 		controller = m_EMFSM.emController;
 		helper = m_EMFSM.emHelper;
-
+	
 		// Produce enemy mini cell if has nutrient and can spawn
 		if (controller.NutrientNum > 0 && m_EMFSM.CanSpawn)
 			m_EMFSM.StartProduceChild ();
