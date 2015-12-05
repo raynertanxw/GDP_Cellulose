@@ -5,6 +5,8 @@ public class PlayerMain : MonoBehaviour
 {
 	public int m_nHealth = 100;
 
+	public float m_fDetectionRadius = 4.0f;
+
 	public static PlayerMain s_Instance;
 
 	void Awake()
@@ -26,6 +28,12 @@ public class PlayerMain : MonoBehaviour
 	
 	// Update is called once per frame
 	void Update () {
-	
+
+	}
+
+	public int GetEnemyCountSurroundingPlayer()
+	{
+		Collider2D[] surroudingEnemyChildren = Physics2D.OverlapCircleAll(transform.position, m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
+		return surroudingEnemyChildren.Length;
 	}
 }
