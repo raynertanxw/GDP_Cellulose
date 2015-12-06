@@ -71,7 +71,7 @@ public class ECChargeCState : IECState {
 		//loop through all the childs of the most threatening squad and return the closest target player cell
 		float fDistanceBetween = Mathf.Infinity;
 		int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
-		GameObject m_TargetCell = m_PotentialTargets[0].gameObject;
+		GameObject m_TargetCell = GetFirstAvailableCell(m_PotentialTargets);
 		
 		for (int i = 0; i < m_PotentialTargets.Count; i++)
 		{
@@ -177,5 +177,17 @@ public class ECChargeCState : IECState {
 			return true;
 		}
 		return false;
+	}
+	
+	private GameObject GetFirstAvailableCell(List<PlayerChildFSM> _PotentialTarget)
+	{
+		for(int i = 0; i < _PotentialTarget.Count; i++)
+		{
+			if(_PotentialTarget[i] != null)
+			{
+				return _PotentialTarget[i].gameObject;
+			}
+		}
+		return null;
 	}
 }
