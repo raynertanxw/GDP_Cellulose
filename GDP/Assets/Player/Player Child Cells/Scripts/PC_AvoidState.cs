@@ -9,7 +9,7 @@ public class PC_AvoidState : IPCState
 
 	public override void Enter()
 	{
-		Debug.Log("Entering Avoid State");
+
 	}
 	
 	public override void Execute()
@@ -34,7 +34,7 @@ public class PC_AvoidState : IPCState
 	
 	public override void Exit()
 	{
-		Debug.Log("Exiting Avoid State");
+
 	}
 	
 	// Constructor.
