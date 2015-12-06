@@ -42,7 +42,9 @@ public class EMHelper : MonoBehaviour
         // Update width of enemy main cell
         widthUpdate();
 		// Remove destroyed items in enemy child list
-		EnemyMainFSM.Instance().ECList.RemoveAll(item => item == null);
+		EnemyMainFSM.Instance().ECList.RemoveAll(item => item.CurrentStateEnum == ECState.Dead);
+		//Recalculate available enemy child cells
+		m_EMFSM.AvailableChildNum = m_EMFSM.ECList.Count;
 		// Update enemy main position
 		m_EMFSM.Position = this.gameObject.transform.position;
 	}
