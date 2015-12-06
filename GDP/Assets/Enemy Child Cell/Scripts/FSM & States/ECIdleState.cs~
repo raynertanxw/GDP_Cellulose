@@ -25,7 +25,7 @@ public class ECIdleState : IECState
 	
 	public override void Enter()
 	{
-		Debug.Log("Enter idle state");
+		//Debug.Log("Enter idle state");
 	
 		fAlignStrength = 0.0f;
 		fCohesionStrength = 0.0f;

@@ -10,7 +10,11 @@ public class ECPoolManager : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
-		m_ECPool = new Queue<GameObject>();
+		Debug.Log("start pool");
+		if(m_ECPool == null)
+		{
+			m_ECPool = new Queue<GameObject>();
+		}
 	
 		//Store all enemy child cells into the pool
 		foreach(Transform child in transform)
@@ -24,11 +28,16 @@ public class ECPoolManager : MonoBehaviour {
 	
 	public static void AddToPool (GameObject _EnemyChild)
 	{
+		if(m_ECPool == null)
+		{
+			m_ECPool = new Queue<GameObject>();
+		}
 		m_ECPool.Enqueue(_EnemyChild);
 	}
 	
 	public GameObject SpawnFromPool(Vector2 _SpawnPos)
 	{
+		Debug.Log("spawn from pool");
 		if(IsPoolEmpty())
 		{
 			RestockPool();
@@ -36,11 +45,11 @@ public class ECPoolManager : MonoBehaviour {
 		
 		GameObject newChild = m_ECPool.Dequeue();
 		newChild.transform.position = _SpawnPos;
-		MessageDispatcher.Instance.DispatchMessage(newChild,newChild.GetComponent<EnemyChildFSM>().eMain,MessageType.Idle,0);
+		MessageDispatcher.Instance.DispatchMessage(this.gameObject,newChild,MessageType.Idle,0);
 		
 		return newChild;
 	}
-	
+
 	private bool IsPoolEmpty()
 	{
 		if(m_ECPool.Count > 0)

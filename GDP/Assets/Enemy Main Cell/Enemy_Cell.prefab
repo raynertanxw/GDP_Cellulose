@@ -142,6 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMiniPrefab: {fileID: 129788, guid: a5b7ee48a68434888a6866f170bb0da7, type: 2}
+  ECPool: {fileID: 0}
   emController: {fileID: 0}
   emHelper: {fileID: 0}
   emTransition: {fileID: 0}

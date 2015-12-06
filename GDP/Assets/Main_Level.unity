@@ -7840,6 +7840,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 11453586, guid: c40121fc1e4987742bac2e5b876b457d, type: 2}
+      propertyPath: ECPool
+      value: 
+      objectReference: {fileID: 91163309}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c40121fc1e4987742bac2e5b876b457d, type: 2}
   m_IsPrefabParent: 0

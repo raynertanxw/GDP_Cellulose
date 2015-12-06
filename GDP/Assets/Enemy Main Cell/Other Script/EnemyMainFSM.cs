@@ -18,6 +18,7 @@ public class EnemyMainFSM : MonoBehaviour
 	[SerializeField]
 	private GameObject enemyMiniPrefab;
 	private GameObject enemyMainObject;
+	[SerializeField]
 	private ECPoolManager ECPool;
 	public GameObject EnemyMainObject { get { return enemyMainObject; } }
 	#region Classes for help
@@ -185,7 +186,7 @@ public class EnemyMainFSM : MonoBehaviour
 		nAggressivenessSquadChild = 0;
 		// Initialise status
 		bCanSpawn = true;
-		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
+		//ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 	}
 
 	void Update()
