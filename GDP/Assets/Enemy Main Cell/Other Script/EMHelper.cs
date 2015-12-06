@@ -43,6 +43,8 @@ public class EMHelper : MonoBehaviour
         widthUpdate();
 		// Remove destroyed items in enemy child list
 		EnemyMainFSM.Instance().ECList.RemoveAll(item => item == null);
+		// Update enemy main position
+		m_EMFSM.Position = this.gameObject.transform.position;
 	}
 
 	public IEnumerator PauseAddDefend (float fTime)

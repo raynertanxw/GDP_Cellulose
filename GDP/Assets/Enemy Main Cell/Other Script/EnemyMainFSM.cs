@@ -14,7 +14,7 @@ public class EnemyMainFSM : MonoBehaviour
 	}
 
 	private Vector2 m_position;
-	public Vector2 Position { get { return m_position; } }
+	public Vector2 Position { get { return m_position; } set { m_position = value; } }
 	[SerializeField]
 	private GameObject enemyMiniPrefab;
 	private GameObject enemyMainObject;
