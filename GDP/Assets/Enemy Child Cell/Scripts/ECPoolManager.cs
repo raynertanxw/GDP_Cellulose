@@ -38,6 +38,7 @@ public class ECPoolManager : MonoBehaviour {
 	public GameObject SpawnFromPool(Vector2 _SpawnPos)
 	{
 		Debug.Log("spawn from pool");
+		EnemyMainFSM.Instance ().StartProduceChild ();
 		if(IsPoolEmpty())
 		{
 			RestockPool();

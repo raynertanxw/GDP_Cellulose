@@ -209,7 +209,7 @@ public class EnemyMainFSM : MonoBehaviour
 		if (bCanSpawn) 
 		{
 			bCanSpawn = false;
-
+			/*
 			for (int i = 0; i < ecList.Count; i++)
 			{
 				if (ecList[i].CurrentStateEnum == ECState.Dead)
@@ -222,7 +222,7 @@ public class EnemyMainFSM : MonoBehaviour
 			emController.ReduceNutrient ();
 
 			bCanSpawn = false;
-			
+			*/
 			/*GameObject newChild = ECPool.SpawnFromPool(gameObject.transform.position);	
 			newChild.transform.SetParent(this.transform);
 			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
