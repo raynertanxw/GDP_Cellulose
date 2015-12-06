@@ -18,6 +18,9 @@ public class SC_ProduceState : ISCState
 
     public override void Execute()
     {
+        if (PlayerSquadFSM.AliveCount() >= 4f)
+            PlayerSquadFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 10f);
+
         m_scFSM.Strafing();
     }
 
