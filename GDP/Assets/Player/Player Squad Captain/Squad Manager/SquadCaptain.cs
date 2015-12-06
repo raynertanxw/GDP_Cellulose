@@ -32,8 +32,6 @@ public class SquadCaptain : MonoBehaviour
     [Header("Costs")]
     [Tooltip("The cost to initiate a squad")]
     [SerializeField] private int nCostPoints = 50;
-    [Tooltip("The cost of one squad child")]
-    [SerializeField] private int nChildCost = 10;
 
     [Header("Child Spawn: Generic")]
     [Tooltip("The maximum number of squad child cell")]
@@ -53,7 +51,6 @@ public class SquadCaptain : MonoBehaviour
     [SerializeField] private float fStrafingSpeed = 0.5f;
 	
 	// Uneditables Fields
-    private int nNutrient = 0;                  // nNutrient: The number of nutrient the squad currently has
     private float fNextCooldown = 0.0f;         // fNextCooldown: Stores the time of the cooldown
     private bool bIsAlive = false;              // bIsAlive: Returns if the squad captain is alive
     private Vector3 m_strafingVector;           // m_strafingVector: The current direction of the strafing vector
@@ -77,7 +74,8 @@ public class SquadCaptain : MonoBehaviour
     }
 
 	// Private Functions
-    void OnEnable()
+    // Awake(): Called when the object is instantiated
+    void Awake()
     {
         // Singleton Implementation
         if (s_m_Instance == null)
@@ -107,12 +105,6 @@ public class SquadCaptain : MonoBehaviour
             m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
             isStrafeVectorUpdated = true;
         }
-    }
-
-    // GetProductionChildCount(): Returns the number of child cells in production state
-    private int GetProductionChildCount()
-    {
-        return PlayerSquadFSM.StateCount(SCState.Produce);
     }
 	
 	// Public Functions
@@ -162,7 +154,6 @@ public class SquadCaptain : MonoBehaviour
     public static SquadCaptain Instance { get { return s_m_Instance; } }
 
 	// Getter-Setter Functions
-    public int Nutrient { get { return nNutrient; } }
     public float Cooldown { get { return fNextCooldown; } }
     public int MaximumCount { get { return nMaximumChildCount; } }
     public bool IsAlive { get { return bIsAlive; } }

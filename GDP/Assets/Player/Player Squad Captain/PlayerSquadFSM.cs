@@ -14,6 +14,11 @@ public class PlayerSquadFSM : MonoBehaviour
      * - int AliveCount(): Returns the number of squad child cells that is alive
      * - bool KillThisChild(GameObject _GOchild): Identify the squad child cell and kills it (This method is best used with collider)
      *                                  _GOchild: The identity of the child
+     * - int AdvanceSquadPercentage(SCState _currentState, SCState _nextState, float _chance): 
+     *                              Advance _chance percentage of the squad child to _enumState
+     *               _currentState: Checks for all child cells that is in the current state
+     *                  _nextState: The state in which to advance towards
+     *                     _chance: (from 0f to 100f) The chance of it advance to the next state
      * ------------------------------------------------------------------------------------------------------------------------------
     */
 
@@ -84,6 +89,7 @@ public class PlayerSquadFSM : MonoBehaviour
         m_currentState.Execute();
 
         // Post-Excution
+        
     }
 
     // Public Functions
@@ -123,7 +129,11 @@ public class PlayerSquadFSM : MonoBehaviour
     }
 
     // Public Static Functions
-    // StateCount(): The number of cells that is in _state;
+    /// <summary>
+    /// Returns the number of squad child cells that is in the current state
+    /// </summary>
+    /// <param name="_enumState"> The state in which to check for </param>
+    /// <returns></returns>
     public static int StateCount(SCState _enumState)
     {
         int nStateCount = 0;
@@ -135,7 +145,11 @@ public class PlayerSquadFSM : MonoBehaviour
         return nStateCount;
     }
 
-    // GetAliveCount(): Returns the number of squad child that is alive
+    
+    /// <summary>
+    /// Returns the number of squad child that is alive
+    /// </summary>
+    /// <returns></returns>
     public static int AliveCount()
     {
         int nAliveCount = 0;
@@ -148,7 +162,11 @@ public class PlayerSquadFSM : MonoBehaviour
         return nAliveCount;
     }
 
-    // Spawn(): Make alive a squad child from the object pooling
+    /// <summary>
+    /// Make alive a squad child from the object pooling
+    /// </summary>
+    /// <param name="_position"> The position of spawn </param>
+    /// <returns></returns>
     public static PlayerSquadFSM Spawn(Vector3 _position)
     {
         for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
@@ -164,7 +182,9 @@ public class PlayerSquadFSM : MonoBehaviour
         return null;
     }
 
-    // CalculateStrafingOffset(): Recalculates all the offset angle that is used in strafing. This is called in SC_ProduceState.cs, within Enter() and Exit() functions
+    /// <summary>
+    /// Recalculates all the offset angle that is used in strafing. This is called in SC_ProduceState.cs, within Enter() and Exit() functions
+    /// </summary>
     public static bool CalculateStrafingOffset()
     {
         // if: There is no squad child cells in produce state
@@ -185,7 +205,11 @@ public class PlayerSquadFSM : MonoBehaviour
         return true;
     }
 
-    // KillThisChild(): Goes through the child array and kill the identified child
+
+    /// <summary>
+    /// Goes through the child array and kill the identified child
+    /// </summary>
+    /// <param name="m_GOchild"> The reference of the child to be identified </param>
     public static bool KillThisChild(GameObject m_GOchild)
     {
         for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
@@ -199,6 +223,30 @@ public class PlayerSquadFSM : MonoBehaviour
         }
         Debug.LogWarning("PlayerSquadFSM.KillThisChild():" + m_GOchild + " does not match any child cell. Wrong Reference?");
         return false;
+    }
+
+    /// <summary>
+    /// Advance all squad in the state _currentState to _nextState by a certain amount of _chance
+    /// </summary>
+    /// <param name="_currentState"> the state of squad child which would be advancing </param>
+    /// <param name="_nextState"> The state that the squad child cell will advance towards </param>
+    /// <param name="_chance"> The chance of which the squad child cell will advance </param>
+    public static IExecuteOnceable AdvanceSquadPercentage(SCState _currentState, SCState _nextState, float _chance)
+    {
+        // for: Checks throughout all squad child
+        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        {
+            // if: Current state in element is equal to _currentState
+            if (s_array_PlayerSquadFSM[i].EnumState == _currentState)
+            {
+                // if: The random value is below _chance
+                if (UnityEngine.Random.value * 100f <= _chance)
+                {                    
+                    s_array_PlayerSquadFSM[i].Advance(_nextState);
+                }
+            }
+        }
+        return IExecuteOnceable.EndOfMethod;
     }
 
     // Getter-Setter Functions
