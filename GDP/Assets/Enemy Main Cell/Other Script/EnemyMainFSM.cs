@@ -13,6 +13,8 @@ public class EnemyMainFSM : MonoBehaviour
 		return instance;
 	}
 
+	private Vector2 m_position;
+	public Vector2 Position { get { return m_position; } }
 	[SerializeField]
 	private GameObject enemyMiniPrefab;
 	private GameObject enemyMainObject;
@@ -117,6 +119,8 @@ public class EnemyMainFSM : MonoBehaviour
 	{
 		if (instance == null)
 			instance = this;
+
+		m_position = gameObject.transform.position;
 	}
 
 	void Start ()
@@ -166,7 +170,13 @@ public class EnemyMainFSM : MonoBehaviour
         */
         ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>()).ToList();    
         // Count the number of child cells in list
-        nAvailableChildNum = ecList.Count;
+		/*
+		for (int i = 0; i < ecList.Count; i++) {
+			if(ecList[i].CurrentStateEnum != ECState.Dead)
+				nAvailableChildNum++;
+		}
+		*/
+		nAvailableChildNum = 0;
 		// Initialise num of health and aggressiveness
 		nHealth = 30;
 		nInitialAggressiveness = 5;
