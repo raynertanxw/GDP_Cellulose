@@ -4,16 +4,15 @@ using System.Collections.Generic;
 
 public class ECPoolManager : MonoBehaviour {
 
-	private static Queue<GameObject> m_ECPool;
+	private static Queue<GameObject> s_ECPool;
 	public GameObject EnemyChildCell;
 
 	// Use this for initialization
 	void Start () 
 	{
-		Debug.Log("start pool");
-		if(m_ECPool == null)
+		if(s_ECPool == null)
 		{
-			m_ECPool = new Queue<GameObject>();
+			s_ECPool = new Queue<GameObject>();
 		}
 	
 		//Store all enemy child cells into the pool
@@ -21,44 +20,52 @@ public class ECPoolManager : MonoBehaviour {
 		{
 			if(child.tag == Constants.s_strEnemyChildTag)
 			{
-				m_ECPool.Enqueue(child.gameObject);
+				s_ECPool.Enqueue(child.gameObject);
 			}
 		}
 	}
 	
+	//A function to add a Enemy Child Cell to the pool
 	public static void AddToPool (GameObject _EnemyChild)
 	{
-		if(m_ECPool == null)
+		if(s_ECPool == null)
 		{
-			m_ECPool = new Queue<GameObject>();
+			s_ECPool = new Queue<GameObject>();
 		}
-		m_ECPool.Enqueue(_EnemyChild);
+		s_ECPool.Enqueue(_EnemyChild);
 	}
 	
+	//Extract an Enemy Child Cell from the pool and spawn it to the position given in the perimeter
 	public GameObject SpawnFromPool(Vector2 _SpawnPos)
 	{
+		EnemyMainFSM.Instance ().StartProduceChild ();
 		if(IsPoolEmpty())
 		{
 			RestockPool();
 		}
 		
-		GameObject newChild = m_ECPool.Dequeue();
+		//Extract the enemy child cell pool from the pool and add it to the enemy child cell list
+		GameObject newChild = s_ECPool.Dequeue();
 		newChild.transform.position = _SpawnPos;
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,newChild,MessageType.Idle,0);
+		EnemyMainFSM.Instance ().ECList.Add (newChild.GetComponent<EnemyChildFSM> ());
+		EnemyMainFSM.Instance ().AvailableChildNum++;
 		
 		return newChild;
 	}
 
+	//A function to check if the pool is empty
 	private bool IsPoolEmpty()
 	{
-		if(m_ECPool.Count > 0)
+		if(s_ECPool.Count > 0)
 		{
 			return false;
 		}
 		return true;
 	}
 	
-	//a function to extend the size of the pool by adding another enemy child cell
+	//a function to extend the size of the pool by adding another enemy child cell in the case of an empty pool
+	//and the enemy main cell require a new enemy child cell
 	private void RestockPool()
 	{
 		GameObject newChild = (GameObject) Instantiate(EnemyChildCell, transform.position, Quaternion.identity);

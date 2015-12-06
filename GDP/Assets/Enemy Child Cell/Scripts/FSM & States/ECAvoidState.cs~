@@ -4,26 +4,33 @@ using System.Collections.Generic;
 
 public class ECAvoidState : IECState {
 
+	//A list of gameobjects that is used to store all the attacking player child cell towards the Enemy Child
+	//Cell
 	private List<GameObject> m_Attackers;
 
-    // Use this for initialization
+    //Constructor
     public ECAvoidState(GameObject _childCell, EnemyChildFSM _ecFSM)
     {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
-		m_Main = m_ecFSM.eMain;
+		m_Main = m_ecFSM.m_EMain;
     }
-
-    public override void Enter()
-    {
-
-    }
-
+    
+	public override void Enter()
+	{
+		
+	}
+	
     public override void Execute()
     {
+		//Calculate a target velocity for the Enemy Child cell to avoid any near player attacking cell
 		Vector2 targetVelo = Avoid();
+		
+		//Add the velocity of the enemy main cell in order to keep up with it
 		targetVelo.x += m_Main.GetComponent<Rigidbody2D>().velocity.x;
 		targetVelo.y += m_Main.GetComponent<Rigidbody2D>().velocity.y;
+		
+		//Set the enemy child velocity to the target velocity
 		m_Child.GetComponent<Rigidbody2D>().velocity = targetVelo;
     }
 
@@ -32,6 +39,7 @@ public class ECAvoidState : IECState {
 		
     }
 
+	//Return a list of attacking player child cells that are nearby
 	private List<GameObject> ReturnAttackersNearby()
 	{
 		Collider2D[] Attackers = Physics2D.OverlapCircleAll(m_Child.transform.position, 3 * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
@@ -48,6 +56,7 @@ public class ECAvoidState : IECState {
 		return PlayerChildAttacking;
 	}
 
+	//A function that return a velocity to drive the child cell to avoid any attacking player cells nearby
     private Vector2 Avoid()
 	{
 		m_Attackers = ReturnAttackersNearby();

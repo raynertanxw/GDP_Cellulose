@@ -3,14 +3,13 @@ using System.Collections;
 
 public class ECManualStateControl : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
+	//A class that is used for debugging and testing whether the Enemy Child states is working.
+	//Can toggle all of the enemy child cell on screen to change states by pressing 1/2/3/4/5
+
 	void Update () 
 	{
+		//if this enemy child cell is not dead and 1/2/3/4/5 is pressed, transition this enemy child cell
+		//to a specific state
 		if(gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum != ECState.Dead)
 		{
 			if(Input.GetKeyDown(KeyCode.Alpha1))

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class ECIdleState : IECState
 {
+	//various float variables for flocking purposes to direct the enemy child cell
 	private float fAlignStrength;
 	private float fCohesionStrength;
 	private float fSeperateStrength;
@@ -11,22 +12,25 @@ public class ECIdleState : IECState
 	private float fWanderRadius;
 	private float fWanderDistance;
 	private float fWanderJitter;
-	private float fTimer;
+	
+	//Booleans to track whether the enemy child cell is wondering or reach the initial position
 	private bool bIsWondering;
 	private bool bReachInitialPos;
 	private Vector2 m_InitialTarget;
 	
+	//Constructor
 	public ECIdleState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
-		m_Main = m_ecFSM.eMain;
+		m_Main = m_ecFSM.m_EMain;
 	}
 	
+	//Initialize all of the variables and generate the initial postion for the wandering behavior of the enemy
+	//child cell. It will then start the corountine for the enemy child cell to wandering around the enemy main
+	//cell.
 	public override void Enter()
 	{
-		//Debug.Log("Enter idle state");
-	
 		fAlignStrength = 0.0f;
 		fCohesionStrength = 0.0f;
 		fSeperateStrength = 0.0f;
@@ -34,7 +38,6 @@ public class ECIdleState : IECState
 		fWanderRadius = 2.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x / 2;
 		fWanderDistance = 2f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
 		fWanderJitter = 2f;
-		fTimer = 0.0f;
 		bReachInitialPos = false;
 		
 		m_InitialTarget = GenerateRandomPos();
@@ -44,12 +47,13 @@ public class ECIdleState : IECState
 	
 	public override void Execute()
 	{
-		if (bIsWondering == false && (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position)))
+		if (bIsWondering == true && (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position)))
 		{
 			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
 		}
 		
-		/*in progress
+		/*
+        //Implementation of different group movement behaviour (Further testing is needed to implement)//
         
         //if this child cell is the only child cell in the main cell it is not wondering now, start the wandering process
         if (m_Main.GetComponent<EnemyMainFSM>().ECList.Count <= 1 && bIsWondering == false)
@@ -75,16 +79,20 @@ public class ECIdleState : IECState
         if (bIsWondering == false && (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position)))
         {
 			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
-        }*/
+        }
+        */
 		
 	}
 	
 	public override void Exit()
 	{
+		//When exiting from idle state, exit the corountine of wandering
 		m_ecFSM.StopChildCorountine(this.Wandering());
 		bIsWondering = false;
 	}
 	
+	//a function to find all the nearby enemy child cells around this enemy child cell and return an array of
+	//enemy child cells for it.
 	private GameObject[] TagNeighbours()
 	{
 		Collider2D[] GOaround = Physics2D.OverlapCircleAll(m_Child.transform.position, 5 * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
@@ -101,6 +109,7 @@ public class ECIdleState : IECState
 		return neighbours;
 	}
 	
+	//A function to generate a random vector position based on the game environment
 	private Vector2 GenerateRandomPos()
 	{
 		float minX = GameObject.Find("Left Wall").transform.position.x + GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x / 2 + m_Child.GetComponent<SpriteRenderer>().bounds.size.x / 2;
@@ -111,6 +120,7 @@ public class ECIdleState : IECState
 		return new Vector2(Random.Range(minX, maxX), Random.Range(minY, maxY));
 	}
 	
+	//a function to generate an inverse version of the inputted velocity through the perimeter
 	private Vector2 GenerateInverseVelo(Vector2 velo)
 	{
 		Vector2 inverse = velo;
@@ -121,6 +131,7 @@ public class ECIdleState : IECState
 		return inverse;
 	}
 	
+	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
 	private void MoveTowards(Vector2 target)
 	{
 		Vector2 targetPos = m_Child.transform.position;
@@ -130,19 +141,24 @@ public class ECIdleState : IECState
 		m_Child.GetComponent<Rigidbody2D>().MovePosition(towards);
 	}
 	
+	//a function that return a boolean to show whether the current position of the enemy child agent is getting
+	//closer to the wall
 	private bool HittingWall(Vector2 pos)
 	{
-		float fClosingDistance = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 + GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
-		float fDistanceToLeft = Vector2.Distance(m_Child.transform.position, GameObject.Find("Left Wall").transform.position);
-		float fDistanceToRight = Vector2.Distance(m_Child.transform.position, GameObject.Find("Right Wall").transform.position);
+		GameObject LWall = GameObject.Find("Left Wall");
+		GameObject RWall = GameObject.Find("Right Wall");
+		float fWallWidth = LWall.GetComponent<SpriteRenderer>().bounds.size.x/2;
+		float fCellWidth = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2;
 		
-		if(fDistanceToLeft < fClosingDistance || fDistanceToRight < fClosingDistance)
+		if(m_Child.transform.position.x <= LWall.transform.position.x + fWallWidth + fCellWidth || m_Child.transform.position.x >= RWall.transform.position.x - fWallWidth - fCellWidth)
 		{
 			return true;
 		}
 		return false;
 	}
 	
+	//a function that return a boolean to show whether the current position of the enemy child agent is getting
+	//out of the idle range
 	private bool LeavingIdleRange(Vector2 pos)
 	{
 		float maxY = m_Main.transform.position.y + m_Main.GetComponent<SpriteRenderer>().bounds.size.x / 2 + 2.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
@@ -157,6 +173,7 @@ public class ECIdleState : IECState
 		return false;
 	}
 	
+	//a function that return a velocity to drive the agent back towards the idle range
 	private Vector2 ReturnToIdleRange()
 	{
 		Vector2 target = GenerateRandomPos();
@@ -165,16 +182,24 @@ public class ECIdleState : IECState
 		return new Vector2(diff.x, diff.y + m_Main.GetComponent<Rigidbody2D>().velocity.y);
 	}
 	
+	//A corountine to drive the wandering movement of the enemy child cells
 	public IEnumerator Wandering()
 	{
 		bool bRecover = false;
+		
+		//while the enemy child cell is still wandering and no other group movement method is affect the enemy child cell,
+		//repeat the following:
+		// - check if the enemy child cell is hitting the wall or leaving the idle range
+		// - if it is, start the recovering process whereby the enemy child cell will generate an inverse version of
+		//   it's velocity to drive the enemy child cell back towards the enemy main cell
+		// - else, continue the wander process by generating the velocity to drive the enemy child cell using the
+		//   "Wander" function
 		
 		while (bIsWondering == true && fCohesionStrength == 0.0f && fSeperateStrength == 0.0f && fAlignStrength == 0.0f)
 		{
 			if (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position))
 			{
 				bRecover = true;
-				Debug.Log("inverse wandering direction");
 			}
 			
 			if (bRecover == true)
@@ -193,7 +218,7 @@ public class ECIdleState : IECState
 			else if (bRecover == false)
 			{
 				Vector2 velo = Wander();
-				velo.y += m_ecFSM.eMain.GetComponent<Rigidbody2D>().velocity.y;
+				velo.y += m_ecFSM.m_EMain.GetComponent<Rigidbody2D>().velocity.y;
 				m_Child.GetComponent<Rigidbody2D>().velocity = velo;
 				float duration = Random.Range(0.5f, 1f);
 				yield return new WaitForSeconds(duration);
@@ -204,6 +229,7 @@ public class ECIdleState : IECState
 		yield break;
 	}
 	
+	//a function that return a velocity to direct the enemy child cell to wander around the enemy main cell
 	private Vector2 Wander()
 	{
 		Vector2 m_target = new Vector2(m_Child.transform.position.x + Random.Range(-6f, 6f), m_Child.transform.position.y + Random.Range(-1f, 1f));
@@ -214,6 +240,8 @@ public class ECIdleState : IECState
 		return projection.normalized;
 	}
 	
+	//a function to return a steering force to direct the enemy child cell to align with the average rotation
+	//of all the nearby enemy child cells
 	private Vector2 Alignment()
 	{
 		GameObject[] neighbours = TagNeighbours();
@@ -242,6 +270,7 @@ public class ECIdleState : IECState
 		}
 	}
 	
+	//a function that return a velocity to direct the enemy child cell to seperate from other enemy child cell
 	private Vector2 Seperation()
 	{
 		GameObject[] neighbours = TagNeighbours();
@@ -271,6 +300,7 @@ public class ECIdleState : IECState
 		}
 	}
 	
+	//a function that return a velocity to direct the enemy child cell to gather all the other enemy child cell
 	private Vector2 Cohesion()
 	{
 		GameObject[] neighbours = TagNeighbours();
@@ -300,6 +330,7 @@ public class ECIdleState : IECState
 		}
 	}
 	
+	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachPosition(Vector2 pos)
 	{
 		if (Vector2.Distance(m_Child.transform.position, pos) < 0.01f)

@@ -4,31 +4,36 @@ using System.Collections.Generic;
 
 public class PointDatabase
 {
+	//Enumeration of the 12 positions to be used to represent the tactical positions for the Enemy Child Cell
 	private enum Position {A1, A2, A3, B1, B2, B3, C1, C2, C3, D1, D2, D3}; 
-
-	private static PointDatabase instance;
+	
+	//Declare an instance of the PointDatabase to make Database Singleton
+	private static PointDatabase s_Instance;
+	
+	//Declare a dictionary to store the various tactical position in the database
 	private Dictionary<Position,Vector2> m_Database;
 	
-	//Constructor
+	//Constructor for the PointDatabase
 	public PointDatabase()
 	{
 		m_Database = new Dictionary<Position,Vector2>();
 		InitializeDatabase();
 	}
 	
-	//Singleton
+	//Singleton and Get function
 	public static PointDatabase Instance
 	{
 		get
 		{
-			if(instance == null)
+			if(s_Instance == null)
 			{
-				instance = new PointDatabase();
+				s_Instance = new PointDatabase();
 			}
-			return instance;
+			return s_Instance;
 		}
 	}
 	
+	//Initialize the database with all the declared 12 positions
 	private void InitializeDatabase()
 	{
 		//Add the 12 positions into the database
@@ -46,6 +51,8 @@ public class PointDatabase
 		m_Database.Add(Position.D3, new Vector2(0f,0f));
 	}
 	
+	//Update all the database's position based on the Enemy main cell position, Player main cell position and
+	//the two walls of the game environment
 	public void RefreshDatabase(Vector2 _EnemyMainPos, Vector2 _PlayerMainPos, GameObject Wall)
 	{
 		//length of each vertical section of the screen (6 sections but only 4 at the center will be used as due to the exceeding length of the wall being the two sections)
@@ -79,11 +86,15 @@ public class PointDatabase
 		m_Database[Position.D2] = new Vector2(_EnemyMainPos.x, m_Database[Position.D1].y);
 		m_Database[Position.D3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.D1].y);
 		
+		//Draw various cross onto the screen to represent the newly refreshed position in the database
 		DrawPoints();
 	}
 	
+	//Extract a range of positions from the database based on a minimum amount and maximum amount of Y value
 	public List<Vector2> ExtractPosYRange (float _MinY, float _MaxY)
 	{
+		//Create a list of vector 2 to store the extracted position based on the minimum Y and maximum Y 
+		//from the database and return that list
 		List<Vector2> m_PositionsBelowY = new List<Vector2>();
 		
 		foreach(Vector2 position in m_Database.Values)
@@ -97,8 +108,11 @@ public class PointDatabase
 		return m_PositionsBelowY;
 	}
 	
+	//Extract a range of positions from the database based on a minimum amount and maximum amount of X value
 	public List<Vector2> ExtractPosXRange (float _MinX, float _MaxX)
 	{
+		//Create a list of vector 2 to store the extracted position based on the minimum X and maximum X
+		//from the database and return that list
 		List<Vector2> m_PositionsSubX = new List<Vector2>();
 		
 		foreach(Vector2 position in m_Database.Values)
@@ -112,6 +126,7 @@ public class PointDatabase
 		return m_PositionsSubX;
 	}
 	
+	//Draw various cross onto the screen to represent the newly refreshed position in the database
 	private void DrawPoints()
 	{
 		foreach(Vector2 position in m_Database.Values)
