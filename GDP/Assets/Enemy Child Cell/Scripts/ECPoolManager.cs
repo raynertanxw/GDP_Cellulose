@@ -47,6 +47,7 @@ public class ECPoolManager : MonoBehaviour {
 		GameObject newChild = m_ECPool.Dequeue();
 		newChild.transform.position = _SpawnPos;
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,newChild,MessageType.Idle,0);
+		EnemyMainFSM.Instance ().ECList.Add (newChild.GetComponent<EnemyChildFSM> ());
 		EnemyMainFSM.Instance ().AvailableChildNum++;
 		
 		return newChild;
