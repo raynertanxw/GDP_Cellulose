@@ -179,7 +179,7 @@ public class ECMineState : IECState {
 			//if the player main cell is within the exploding range, damage the player main
 			else if(m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerTag)
 			{
-				PlayerMain.s_Instance.m_nHealth--;
+				m_SurroundingObjects[i].GetComponent<PlayerMain>().HurtPlayerMain();
 			}
 		}
 		

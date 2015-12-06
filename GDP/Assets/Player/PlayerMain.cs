@@ -4,7 +4,7 @@ using System.Collections;
 [RequireComponent (typeof (Collider2D))]
 public class PlayerMain : MonoBehaviour
 {
-	public int m_nHealth = 100;
+	private int m_nHealth = 100;
 
 	public float m_fDetectionRadius = 4.0f;
 
@@ -38,6 +38,11 @@ public class PlayerMain : MonoBehaviour
 		return surroudingEnemyChildren.Length;
 	}
 
+	public void HurtPlayerMain()
+	{
+		m_nHealth--;
+	}
+
 	void OnTriggerEnter2D(Collider2D col)
 	{
 		if (col.gameObject.tag == Constants.s_strEnemyChildTag)
@@ -45,7 +50,7 @@ public class PlayerMain : MonoBehaviour
 			// Kill the child cell.
 			col.gameObject.GetComponent<EnemyChildFSM>().KillChildCell();
 			// Reduce health.
-			m_nHealth--;
+			HurtPlayerMain();
 		}
 	}
 }
