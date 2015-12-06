@@ -160,16 +160,15 @@ public class EnemyMainFSM : MonoBehaviour
 		emHelper = GetComponent<EMHelper> ();
 		emTransition = GetComponent<EMTransition> ();
         // Initialise the enemy child list
-        
+        /*
 		EnemyChildFSM[] ecClasses = (EnemyChildFSM[])GameObject.FindObjectsOfType (typeof(EnemyChildFSM));
 		foreach (EnemyChildFSM ecClass in ecClasses) 
 		{
 			if (ecClass.CurrentStateEnum != ECState.Dead)
 				ecList.Add (ecClass);
 		}
-		ecList = new List<EnemyChildFSM>();
-        
-        //ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>()).ToList();    
+        */
+        // ecList = GameObject.FindGameObjectsWithTag("EnemyChild").Select(gameObject => gameObject.GetComponent<EnemyChildFSM>()).ToList();    
         // Count the number of child cells in list
 		/*
 		for (int i = 0; i < ecList.Count; i++) {
@@ -237,6 +236,7 @@ public class EnemyMainFSM : MonoBehaviour
 			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
 			emController.ReduceNutrient ();
 			*/
+			emController.ReduceNutrient ();
 			yield return new WaitForSeconds (2);
 			bCanSpawn = true;
 		}

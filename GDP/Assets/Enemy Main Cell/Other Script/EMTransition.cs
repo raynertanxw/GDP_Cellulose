@@ -7,7 +7,9 @@ public class EMTransition : MonoBehaviour
 	private EMController controller;
 
 	// Transition availability
-	private bool bCanTransit;
+	[Header("Transition Availability")]
+	[Tooltip("Transition avvailability of the Enemy Main Cell")]
+	[SerializeField] private bool bCanTransit;
 	public bool CanTransit { get { return bCanTransit; } set { bCanTransit = value; } }
 
 	void Start ()

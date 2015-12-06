@@ -84,9 +84,9 @@ public class EMCautiousAttackState : IEMState
 		}
 		#endregion
 		#region Transition
-		if (transition.CanTransit && m_EMFSM.AvailableChildNum > 0)
+		if (transition.CanTransit && controller.NutrientNum > 0)
 			m_EMFSM.ChangeState (EMState.Production);
-		else if (transition.CanTransit && m_EMFSM.AvailableChildNum == 0)
+		else if (transition.CanTransit && controller.NutrientNum == 0)
 			m_EMFSM.ChangeState (EMState.Maintain);
 		#endregion
 
