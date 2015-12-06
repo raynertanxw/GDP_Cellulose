@@ -99,5 +99,17 @@ public class player_control : MonoBehaviour
 			listOfChildCells[i].DeferredChangeState(PCState.ChargeChild);
 		}
 	}
+
+	public void ActionSpawnCaptain()
+	{
+		// Need to check if no current captain is spawned and also check if node conditions are met.
+
+		Debug.Log("Spawn Squad Captain Action Called");
+	}
+
+	public void ActionDisperse()
+	{
+		Debug.Log("Disperse Action called");
+	}
 	#endregion
 }
