@@ -17,7 +17,7 @@ public class ECTrickAttackState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.eMain;
-		
+		m_Nodes = new GameObject[3];
     }
     
     public override void Enter()
