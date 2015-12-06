@@ -47,7 +47,7 @@ public class ECIdleState : IECState
 	
 	public override void Execute()
 	{
-		if (bIsWondering == true && (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position)))
+		if (bIsWondering == true && HittingWall(m_Child.transform.position))
 		{
 			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
 		}
@@ -197,7 +197,7 @@ public class ECIdleState : IECState
 		
 		while (bIsWondering == true && fCohesionStrength == 0.0f && fSeperateStrength == 0.0f && fAlignStrength == 0.0f)
 		{
-			if (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position))
+			if (LeavingIdleRange(m_Child.transform.position))
 			{
 				bRecover = true;
 			}
@@ -220,7 +220,7 @@ public class ECIdleState : IECState
 				Vector2 velo = Wander();
 				velo.y += m_ecFSM.m_EMain.GetComponent<Rigidbody2D>().velocity.y;
 				m_Child.GetComponent<Rigidbody2D>().velocity = velo;
-				float duration = Random.Range(0.5f, 1f);
+				float duration = Random.Range(0.5f, 0.7f);
 				yield return new WaitForSeconds(duration);
 			}
 			
