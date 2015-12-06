@@ -132,7 +132,11 @@ public class ECIdleState : IECState
 	
 	private bool HittingWall(Vector2 pos)
 	{
-		if (Vector2.Distance(pos, GameObject.Find("Right Wall").transform.position) < m_Child.GetComponent<SpriteRenderer>().bounds.size.x || Vector2.Distance(pos, GameObject.Find("Left Wall").transform.position) < m_Child.GetComponent<SpriteRenderer>().bounds.size.x)
+		float fClosingDistance = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 + GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
+		float fDistanceToLeft = Vector2.Distance(m_Child.transform.position, GameObject.Find("Left Wall").transform.position);
+		float fDistanceToRight = Vector2.Distance(m_Child.transform.position, GameObject.Find("Right Wall").transform.position);
+		
+		if(fDistanceToLeft < fClosingDistance || fDistanceToRight < fClosingDistance)
 		{
 			return true;
 		}
@@ -169,26 +173,8 @@ public class ECIdleState : IECState
 		{
 			if (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position))
 			{
-				/*Vector2 current = child.GetComponent<Rigidbody2D>().velocity;
-                Vector2 inverse = GenerateInverseVelo(current);
-                child.GetComponent<Rigidbody2D>().velocity = inverse;*/
-				
 				bRecover = true;
-				
-				/*float velocity = inverse.magnitude;
-                float distance = Vector2.Distance(child.transform.position, main.transform.position);
-                float initialTime = distance / velocity;
-
-                float mVelo = main.GetComponent<Rigidbody2D>().velocity.magnitude;
-                float mDistance = mVelo * initialTime;
-
-                float predictY = Mathf.Pow(mDistance, 2f) + main.transform.position.y;
-                Vector2 predictedMPos = new Vector2(main.transform.position.x, predictY);
-
-                float travelToPredict = Vector2.Distance(child.transform.position, predictedMPos) / child.GetComponent<Rigidbody2D>().velocity.magnitude;
-
-                float duration = Random.Range(travelToPredict - 0.5f, travelToPredict);
-                yield return new WaitForSeconds(duration);*/
+				Debug.Log("inverse wandering direction");
 			}
 			
 			if (bRecover == true)

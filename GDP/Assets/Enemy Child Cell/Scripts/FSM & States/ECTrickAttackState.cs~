@@ -17,7 +17,7 @@ public class ECTrickAttackState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.eMain;
-		
+		m_Nodes = new GameObject[3];
     }
     
     public override void Enter()
@@ -42,13 +42,12 @@ public class ECTrickAttackState : IECState {
 			ChargeTowards(m_StartTelePos);
 			if(HasCellReachTargetPos(m_StartTelePos))
 			{
-				m_Child.transform.position = m_EndTelePos;
-				bReachStart = true;
+				m_ecFSM.StartChildCorountine(Teleport());
 			}
 		}
 		else
 		{
-			ChargeTowards(m_TargetPos);
+			MoveTowards(m_TargetPos);
 		}
     }
 
@@ -192,6 +191,15 @@ public class ECTrickAttackState : IECState {
 		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
 	}
 	
+	private void MoveTowards(Vector2 _Pos)
+	{
+		Vector2 m_TargetPos = _Pos;
+		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
+		Vector2 m_Direction = -m_Difference.normalized;
+		
+		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * 8f;
+	}
+	
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
 		if (Vector2.Distance(m_Child.transform.position, _Pos) <= m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 + GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x/2)
@@ -199,5 +207,22 @@ public class ECTrickAttackState : IECState {
 			return true;
 		}
 		return false;
+	}
+	
+	IEnumerator Teleport()
+	{
+		m_Child.GetComponent<SpriteRenderer>().enabled = false;
+		m_Child.GetComponent<BoxCollider2D>().enabled = false;
+		m_Child.GetComponent<Rigidbody2D>().isKinematic = true;
+		
+		yield return new WaitForSeconds(1f);
+		
+		m_Child.GetComponent<SpriteRenderer>().enabled = true;
+		m_Child.GetComponent<BoxCollider2D>().enabled = true;
+		m_Child.GetComponent<Rigidbody2D>().isKinematic = false;
+		
+		m_Child.transform.position = m_EndTelePos;
+
+		bReachStart = true;
 	}
 }

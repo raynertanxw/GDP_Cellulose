@@ -77,16 +77,12 @@ public class ECDefendState : IECState {
 
     private Vector2 SpreadAcrossLine()
     {
-		Vector2 m_SpreadTopLeft = new Vector2(s_m_FormationCenter.x - 2 * m_Child.GetComponent<SpriteRenderer>().bounds.size.x, s_m_FormationCenter.y + m_Child.GetComponent<SpriteRenderer>().bounds.size.y/2);
-		Vector2 m_SpreadBotRight = new Vector2(s_m_FormationCenter.x + 2 * m_Child.GetComponent<SpriteRenderer>().bounds.size.x, s_m_FormationCenter.y - m_Child.GetComponent<SpriteRenderer>().bounds.size.y/2);
-		
-		Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2f);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+		Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
 		List<GameObject> m_DefendingChilds = new List<GameObject>();
 		
 		for(int i = 0; i < m_NeighbourChilds.Length; i++)
 		{
-			//Utility.CheckEmpty<IECState>(m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().StateDictionary[ECState.Defend]);
-			if(m_NeighbourChilds[i] != null )
+			if(m_NeighbourChilds[i] != null && m_NeighbourChilds[i].tag == Constants.s_strEnemyChildTag && m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend)
 			{
 				m_DefendingChilds.Add(m_NeighbourChilds[i].gameObject);
 			}
@@ -99,6 +95,7 @@ public class ECDefendState : IECState {
 			if(child != null && child != m_Child)
 			{
 				m_Steering.x += child.transform.position.x - m_Child.transform.position.x;
+				//m_Steering.y += child.transform.position.y - m_Child.transform.position.y;
 				nDefendingCount++;
 			}
 		}

@@ -114,10 +114,8 @@ public class PointDatabase
 	
 	private void DrawPoints()
 	{
-		
 		foreach(Vector2 position in m_Database.Values)
 		{
-			Debug.Log(position);
 			Utility.DrawCross(position,Color.red,0.1f);
 		}
 	}
