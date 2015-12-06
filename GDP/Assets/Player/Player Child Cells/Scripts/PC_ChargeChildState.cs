@@ -9,7 +9,7 @@ public class PC_ChargeChildState : IPCState
 
 	public override void Enter()
 	{
-		Debug.Log("Entering ChargeChild State");
+
 
 		m_currentVelocity = Vector3.zero;
 	}
@@ -55,7 +55,7 @@ public class PC_ChargeChildState : IPCState
 	
 	public override void Exit()
 	{
-		Debug.Log("Exiting ChargeChild State");
+
 
 		// Clean up
 		m_pcFSM.m_currentEnemyCellTarget = null;

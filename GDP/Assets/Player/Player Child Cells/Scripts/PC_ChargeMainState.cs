@@ -9,7 +9,7 @@ public class PC_ChargeMainState : IPCState
 
 	public override void Enter()
 	{
-		Debug.Log("Entering ChargeMain State");
+
 	}
 	
 	public override void Execute()
@@ -34,7 +34,7 @@ public class PC_ChargeMainState : IPCState
 	
 	public override void Exit()
 	{
-		Debug.Log("Exiting ChargeMain State");
+
 	}
 	
 	// Constructor.

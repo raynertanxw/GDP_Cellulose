@@ -49,6 +49,13 @@ public class EMHelper : MonoBehaviour
 		m_EMFSM.Position = this.gameObject.transform.position;
 	}
 
+	public IEnumerator PauseAddAttack (float fTime)
+	{
+		bCanAddAttack = false;
+		yield return new WaitForSeconds (fTime);
+		bCanAddAttack = true;
+	}
+
 	public IEnumerator PauseAddDefend (float fTime)
 	{
 		bCanAddDefend = false;
@@ -56,11 +63,11 @@ public class EMHelper : MonoBehaviour
 		bCanAddDefend = true;
 	}
 
-	public IEnumerator PauseAddAttack (float fTime)
+	public IEnumerator PauseAddLandmine (float fTime)
 	{
-		bCanAddAttack = false;
+		bCanAddLandmine = false;
 		yield return new WaitForSeconds (fTime);
-		bCanAddAttack = true;
+		bCanAddLandmine = true;
 	}
 
 	// Camera limit update

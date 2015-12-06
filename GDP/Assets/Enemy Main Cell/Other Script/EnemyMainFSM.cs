@@ -6,6 +6,7 @@ using System.Linq;
 
 public class EnemyMainFSM : MonoBehaviour 
 {
+	// Instance of the class
 	private static EnemyMainFSM instance;
 	// Singleton
 	public static EnemyMainFSM Instance()
@@ -13,10 +14,10 @@ public class EnemyMainFSM : MonoBehaviour
 		return instance;
 	}
 
+	// Current position of the enemy main cell
 	private Vector2 m_position;
 	public Vector2 Position { get { return m_position; } set { m_position = value; } }
 	[SerializeField]
-	private GameObject enemyMiniPrefab;
 	private GameObject enemyMainObject;
 	[SerializeField]
 	private ECPoolManager ECPool;
@@ -48,6 +49,7 @@ public class EnemyMainFSM : MonoBehaviour
 	public IEMState DieState { get { return m_DieState; } }
 	#endregion*/
 
+	// Dictionary of states of enemy main cell
 	private Dictionary<EMState, IEMState> m_statesDictionary;
 	public Dictionary<EMState, IEMState> StatesDictionary { get { return m_statesDictionary; } }
 	// Current State
@@ -193,6 +195,7 @@ public class EnemyMainFSM : MonoBehaviour
 		m_CurrentState.Execute ();
 	}
 
+	// Change current state, perform exit and enter functions
 	public void ChangeState (EMState newState)
 	{
 		if (m_CurrentState != null)
@@ -243,24 +246,30 @@ public class EnemyMainFSM : MonoBehaviour
 	}
 
 	#region Coroutine functions
+	// Things needed when produce child cells
 	public void StartProduceChild ()
 	{
 		StartCoroutine (ProduceChild ());
 	}
-
+	// Disable transition for fTime
 	public void StartPauseTransition (float fTime)
 	{
 		StartCoroutine (emTransition.TransitionAvailability (fTime));
 	}
-
+	// Stop commanding child cells to Attack state for fTime
 	public void StartPauseAddAttack (float fTime)
 	{
 		StartCoroutine (emHelper.PauseAddAttack (fTime));
 	}
-
+	// Stop commanding child cells to Defend state for fTime
 	public void StartPauseAddDefend (float fTime)
 	{
 		StartCoroutine (emHelper.PauseAddDefend (fTime));
+	}
+	// Stop commanding child cells to Landmine state for fTime
+	public void StartPauseAddLandmine (float fTime)
+	{
+		StartCoroutine (emHelper.PauseAddLandmine (fTime));
 	}
 	#endregion
 }

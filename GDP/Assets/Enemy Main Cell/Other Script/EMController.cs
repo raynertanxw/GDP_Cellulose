@@ -3,6 +3,7 @@ using System.Collections;
 
 public class EMController : MonoBehaviour 
 {	
+	// Instance of the class
 	private static EMController instance;
 	// Singleton
 	public static EMController Instance()

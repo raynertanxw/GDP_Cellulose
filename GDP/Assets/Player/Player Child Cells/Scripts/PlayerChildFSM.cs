@@ -166,6 +166,7 @@ public class PlayerChildFSM : MonoBehaviour
 			Debug.Log("Hit Enemy Main");
 
 			// Damage Enemy.
+			EMController.Instance().CauseDamageOne();
 
 			KillPlayerChildCell();
 		}
