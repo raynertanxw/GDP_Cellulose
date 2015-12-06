@@ -63,7 +63,7 @@ public class EnemyMainFSM : MonoBehaviour
 	[Header("Available child number")]
 	[Tooltip("Available child number of the Enemy Main Cell")]
 	[SerializeField] private int nAvailableChildNum;
-	public int AvailableChildNum { get { return nAvailableChildNum; } }
+	public int AvailableChildNum { get { return nAvailableChildNum; } set { nAvailableChildNum = value; } }
 
 	#region Health
 	[Header("Health")]
