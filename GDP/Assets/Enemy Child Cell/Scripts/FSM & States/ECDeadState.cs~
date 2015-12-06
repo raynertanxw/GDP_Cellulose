@@ -16,6 +16,7 @@ public class ECDeadState : IECState {
 	
 	public override void Enter()
 	{
+		Debug.Log("Enter Dead");
 		bDisable = true;
 		DisableCell();
 	}
@@ -32,6 +33,7 @@ public class ECDeadState : IECState {
 	
 	private void DisableCell()
 	{
+		Debug.Log("Disable");
 		m_Child.GetComponent<SpriteRenderer>().enabled = false;
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
 		m_Child.GetComponent<Rigidbody2D>().isKinematic = true;
@@ -41,6 +43,7 @@ public class ECDeadState : IECState {
 	
 	private void EnableCell()
 	{
+		Debug.Log("Enable");
 		m_Child.GetComponent<SpriteRenderer>().enabled = true;
 		m_Child.GetComponent<BoxCollider2D>().enabled = true;
 		m_Child.GetComponent<Rigidbody2D>().isKinematic = false;

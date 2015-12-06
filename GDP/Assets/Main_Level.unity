@@ -462,7 +462,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &91163308
 Transform:
   m_ObjectHideFlags: 0
@@ -537,7 +537,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a72ffbb0aea24be438be0ebb1a430d5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnemyChildCell: {fileID: 0}
+  EnemyChildCell: {fileID: 129788, guid: a5b7ee48a68434888a6866f170bb0da7, type: 2}
 --- !u!1001 &116713555
 Prefab:
   m_ObjectHideFlags: 0

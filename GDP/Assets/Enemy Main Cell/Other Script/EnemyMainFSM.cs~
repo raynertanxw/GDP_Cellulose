@@ -214,19 +214,20 @@ public class EnemyMainFSM : MonoBehaviour
 
 			bCanSpawn = false;
 			
-			/*GameObject newChild = ECPool.SpawnFromPool(gameObject.transform.position);	
-			newChild.transform.SetParent(this.transform);
-			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
-			nAvailableChildNum++;
-			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
-			emController.ReduceNutrient ();*/
-
-			GameObject newChild = (GameObject) Instantiate(enemyMiniPrefab, transform.position, Quaternion.identity);
+			Debug.Log("spawn");
+			GameObject newChild = ECPool.SpawnFromPool(gameObject.transform.position);	
 			newChild.transform.SetParent(this.transform);
 			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
 			nAvailableChildNum++;
 			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
 			emController.ReduceNutrient ();
+
+			/*GameObject newChild = (GameObject) Instantiate(enemyMiniPrefab, transform.position, Quaternion.identity);
+			newChild.transform.SetParent(this.transform);
+			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
+			nAvailableChildNum++;
+			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
+			emController.ReduceNutrient ();*/
 
 			yield return new WaitForSeconds (2);
 			bCanSpawn = true;

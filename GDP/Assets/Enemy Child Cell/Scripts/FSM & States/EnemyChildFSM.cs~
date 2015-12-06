@@ -36,9 +36,10 @@ public class EnemyChildFSM : MonoBehaviour
 		m_StatesDictionary.Add(ECState.Landmine, new ECMineState(this.gameObject,this));
 		m_StatesDictionary.Add(ECState.Dead, new ECDeadState(this.gameObject,this));
 		
-		m_CurrentState = m_StatesDictionary[ECState.Idle];
-		m_CurrentEnum = ECState.Idle;
-		m_CurrentCommand = MessageType.Idle;
+		m_CurrentState = m_StatesDictionary[ECState.Dead];
+		m_CurrentEnum = ECState.Dead;
+		m_CurrentCommand = MessageType.Empty;
+		CurrentState.Enter();
 	}
 	
 	void Update()
