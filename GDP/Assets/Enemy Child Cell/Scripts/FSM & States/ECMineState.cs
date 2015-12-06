@@ -77,15 +77,12 @@ public class ECMineState : IECState {
 
 		if(fEMainAggressiveness >= 12)
 		{
-			Debug.Log("Aggressive");
 			return PositionType.Aggressive;
 		}
 		else if(fEMainAggressiveness <= 6)
 		{
-			Debug.Log("Defensive");
 			return PositionType.Defensive;
 		}
-		Debug.Log("Neutral");
 		return PositionType.Neutral;
     }
     
