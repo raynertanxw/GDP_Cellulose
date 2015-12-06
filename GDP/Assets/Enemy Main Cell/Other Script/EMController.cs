@@ -3,6 +3,13 @@ using System.Collections;
 
 public class EMController : MonoBehaviour 
 {	
+	private static EMController instance;
+	// Singleton
+	public static EMController Instance()
+	{
+		return instance;
+	}
+
 	EnemyMainFSM m_EMFSM;
 
 	#region Speed & Velocity
@@ -27,7 +34,9 @@ public class EMController : MonoBehaviour
 	#endregion
 
 	#region Status
-	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
+	[Header("Number of damage")]
+	[Tooltip("Number of enemy damage")]
+	[SerializeField] private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
 	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
 	public void CauseDamageOne () { nDamageNum++; }
 	private bool bPushed; 
@@ -49,6 +58,13 @@ public class EMController : MonoBehaviour
 
 	private Rigidbody2D thisRB;
 	public Rigidbody2D Rigibody { get { return thisRB; } }
+
+
+	void Awake ()
+	{
+		if (instance == null)
+			instance = this;
+	}
 
 	void Start()
 	{
