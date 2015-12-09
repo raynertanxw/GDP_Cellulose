@@ -105,8 +105,6 @@ public class SquadCaptain : MonoBehaviour
             m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
             isStrafeVectorUpdated = true;
         }
-
-        Debug.Log(PlayerSquadFSM.StateCount(SCState.Idle) + " (Idle vs. Produce) " + PlayerSquadFSM.StateCount(SCState.Produce));
     }
 	
 	// Public Functions
