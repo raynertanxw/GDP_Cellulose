@@ -68,7 +68,7 @@ public class EMTransition : MonoBehaviour
 	{
 		if (controller.Stunned && m_EMFSM.CurrentStateIndex != EMState.Stunned) 
 		{
-			m_EMFSM.ChangeState (EMState.Stunnedtion);
+			m_EMFSM.ChangeState (EMState.Stunned);
 		}
 	}
 	// Transition to DieState
