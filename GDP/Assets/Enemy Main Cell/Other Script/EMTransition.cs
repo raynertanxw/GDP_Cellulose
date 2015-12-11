@@ -58,12 +58,9 @@ public class EMTransition : MonoBehaviour
 	// Immediate transition to ProductionState
 	void ProductionTransition ()
 	{
-		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentStateIndex != EMState.Production && bCanTransit) 
+		if (m_EMFSM.AvailableChildNum <= 10 && m_EMFSM.CurrentStateIndex != EMState.Production && bCanTransit && !controller.Pushed && !controller.Stunned) 
 		{
 			m_EMFSM.ChangeState (EMState.Production);
-
-			// Reset transition availability
-			bCanTransit = true;
 		}
 	}
 	// Immediate transition to StunnedState
@@ -71,10 +68,7 @@ public class EMTransition : MonoBehaviour
 	{
 		if (controller.Stunned && m_EMFSM.CurrentStateIndex != EMState.Stunned) 
 		{
-			m_EMFSM.ChangeState (EMState.Production);
-
-			// Reset transition availability
-			bCanTransit = true;
+			m_EMFSM.ChangeState (EMState.Stunnedtion);
 		}
 	}
 	// Transition to DieState

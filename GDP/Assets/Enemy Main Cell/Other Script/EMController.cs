@@ -41,6 +41,7 @@ public class EMController : MonoBehaviour
 	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
 	public void CauseDamageOne () { nDamageNum++; }
 	private bool bPushed; 
+	public bool Pushed { get { return bPushed; } }
 	private bool bStunned;
 	public bool Stunned { get { return bStunned; } }
 	private bool bCanStun;
