@@ -18,7 +18,7 @@ TagManager:
   - 
   - EnemyChild
   - PlayerChild
-  - EnemyResource
+  - EnemyNutriemt
   - EnemyMain
   - SquadCaptain
   - SquadChild
