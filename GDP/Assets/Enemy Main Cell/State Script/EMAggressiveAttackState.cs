@@ -52,7 +52,6 @@ public class EMAggressiveAttackState : IEMState
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
-						helper.CanAddAttack = false;
 					}
 				}
 			}
@@ -64,7 +63,6 @@ public class EMAggressiveAttackState : IEMState
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
-						helper.CanAddAttack = false;
 					}
 				}
 			}
@@ -76,7 +74,6 @@ public class EMAggressiveAttackState : IEMState
 					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
-						helper.CanAddAttack = false;
 					}
 				}
 			}
