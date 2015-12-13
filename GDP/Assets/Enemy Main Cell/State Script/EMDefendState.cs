@@ -28,8 +28,9 @@ public class EMDefendState : IEMState
 
 		// Reset transition availability
 		transition.CanTransit = true;
-		// Pause the transition for 1 second
-		m_EMFSM.StartPauseTransition (1f);
+		// Pause the transition for randomized time
+		float fPauseTime = Random.Range (2f, 4f);
+		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 	
 	public override void Execute ()
@@ -50,7 +51,7 @@ public class EMDefendState : IEMState
 				for (int nAmount = 0; nAmount < Random.Range (5, 11); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECDefendState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Defend,0.0);
 						helper.CanAddDefend = false;
@@ -65,7 +66,7 @@ public class EMDefendState : IEMState
 				for (int nAmount = 0; nAmount < Random.Range (3, 9); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECDefendState(m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Defend,0.0);
 						helper.CanAddDefend = false;

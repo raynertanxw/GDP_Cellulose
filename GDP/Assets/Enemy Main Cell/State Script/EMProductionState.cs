@@ -21,8 +21,9 @@ public class EMProductionState : IEMState
 		
 		// Reset transition availability
 		transition.CanTransit = true;
-		// Pause the transition for 1 second
-		m_EMFSM.StartPauseTransition (1f);
+		// Pause the transition for randomized time
+		float fPauseTime = Random.Range (2f, 4f);
+		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 
 	public override void Execute ()
@@ -63,8 +64,8 @@ public class EMProductionState : IEMState
 				}
 
 				// Transition to Landmine
-				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2.5f), EMState.Landmine);
+				if (nPlayerChildFactor > 1f) {
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 3f) * 2.5f + m_EMFSM.CurrentAggressiveness * 3f), EMState.Landmine);
 				}
 
 				// Transition to Maintain
@@ -93,8 +94,8 @@ public class EMProductionState : IEMState
 				}
 				
 				// Transition to Landmine
-				if (nPlayerChildFactor > 5f) {
-					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2f), EMState.Landmine);
+				if (nPlayerChildFactor > 2f) {
+					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2f + m_EMFSM.CurrentAggressiveness * 1f), EMState.Landmine);
 				}
 				
 				// Transition to Maintain
@@ -118,7 +119,7 @@ public class EMProductionState : IEMState
 				}
 				
 				// Transition to Landmine
-				if (nPlayerChildFactor > 5f) {
+				if (nPlayerChildFactor > 3f) {
 					transition.Transition (1000f / (helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1.5f), EMState.Landmine);
 				}
 				

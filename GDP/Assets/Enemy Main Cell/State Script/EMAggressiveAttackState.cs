@@ -28,8 +28,9 @@ public class EMAggressiveAttackState : IEMState
 		
 		// Reset transition availability
 		transition.CanTransit = true;
-		// Pause the transition for 1 second
-		m_EMFSM.StartPauseTransition (1f);
+		// Pause the transition for randomized time
+		float fPauseTime = Random.Range (1.5f, 3f);
+		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 
 	public override void Execute ()

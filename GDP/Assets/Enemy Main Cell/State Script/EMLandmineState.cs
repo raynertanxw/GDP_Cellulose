@@ -20,8 +20,9 @@ public class EMLandmineState : IEMState
 		
 		// Reset transition availability
 		transition.CanTransit = true;
-		// Pause the transition for 1 second
-		m_EMFSM.StartPauseTransition (1f);
+		// Pause the transition for randomized time
+		float fPauseTime = Random.Range (1.5f, 3f);
+		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 
 	public override void Execute ()
@@ -44,7 +45,7 @@ public class EMLandmineState : IEMState
 				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
 						helper.CanAddLandmine = false;
@@ -57,7 +58,7 @@ public class EMLandmineState : IEMState
 				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
 						helper.CanAddLandmine = false;
@@ -70,7 +71,7 @@ public class EMLandmineState : IEMState
 				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECMineState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
 						helper.CanAddLandmine = false;
