@@ -4,11 +4,15 @@ using System.Collections.Generic;
 
 public class ECIdleState : IECState
 {
+	private enum IdleStatus {Seperate, Cohesion};
+
 	//various float variables for flocking purposes to direct the enemy child cell
-	private float fAlignStrength;
-	private float fCohesionStrength;
-	private float fSeperateStrength;
-	private float fWanderStrength;
+	private static float s_fAlignStrength;
+	private static float s_fCohesionStrength;
+	private static float s_fSeperateStrength;
+	private static float s_PreviousStatusTime;
+	private static IdleStatus s_Status;
+	
 	private float fWanderRadius;
 	private float fWanderDistance;
 	private float fWanderJitter;
@@ -24,6 +28,14 @@ public class ECIdleState : IECState
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
+		if(s_Status == null)
+		{
+			s_fAlignStrength = 0.0f;
+			s_fCohesionStrength = 0.0f;
+			s_fSeperateStrength = 0.0f;
+			s_PreviousStatusTime = Time.time;
+			s_Status = IdleStatus.Cohesion;
+		}
 	}
 	
 	//Initialize all of the variables and generate the initial postion for the wandering behavior of the enemy
@@ -31,28 +43,22 @@ public class ECIdleState : IECState
 	//cell.
 	public override void Enter()
 	{
-		fAlignStrength = 0.0f;
-		fCohesionStrength = 0.0f;
-		fSeperateStrength = 0.0f;
-		fWanderStrength = 0.0f;
 		fWanderRadius = 2.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x / 2;
 		fWanderDistance = 2f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
 		fWanderJitter = 2f;
 		bReachInitialPos = false;
 		
 		m_InitialTarget = GenerateRandomPos();
-		bIsWondering = true;
-		m_ecFSM.StartChildCorountine(Wandering());
 	}
 	
 	public override void Execute()
 	{
-		if (bIsWondering == true && HittingWall(m_Child.transform.position))
+		/*if (bIsWondering == true && HittingWall(m_Child.transform.position))
 		{
 			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
-		}
+		}*/
 		
-		/*
+		
         //Implementation of different group movement behaviour (Further testing is needed to implement)//
         
         //if this child cell is the only child cell in the main cell it is not wondering now, start the wandering process
@@ -63,16 +69,36 @@ public class ECIdleState : IECState
         }
         else if (m_Main.GetComponent<EnemyMainFSM>().ECList.Count > 1)
         {
+			m_ecFSM.StopChildCorountine(Wandering());
+        
             if (bIsWondering == true)
             {
                 bIsWondering = false;
             }
+            
+            if(s_Status == IdleStatus.Seperate)
+            {
+				SetupSeperate();
+				if(Time.time - s_PreviousStatusTime > 1f)
+				{
+					s_Status = IdleStatus.Cohesion;
+					s_PreviousStatusTime = Time.time;
+				}
+            }
+            else if(s_Status == IdleStatus.Cohesion)
+            {
+				SetupCohesion();
+				if(HasAllChildsReachMainMid())
+				{
+					s_Status = IdleStatus.Seperate;
+					s_PreviousStatusTime = Time.time;
+				}
+            }
 
-            float veloX = Alignment().x * fAlignStrength + Cohesion().x * fCohesionStrength + Seperation().x * fSeperateStrength + Wander().x * fWanderStrength;
-			float veloY = Alignment().y * fAlignStrength + Cohesion().y * fCohesionStrength + Seperation().y * fSeperateStrength + Wander().y * fWanderStrength;
-
+			float veloX = Alignment().x * s_fAlignStrength + Cohesion().x * s_fCohesionStrength + Seperation().x * s_fSeperateStrength;
+			float veloY = Alignment().y * s_fAlignStrength + Cohesion().y * s_fCohesionStrength + Seperation().y * s_fSeperateStrength;
             Vector2 velocity = new Vector2(veloX, veloY);
-            m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, velocity.y + m_ecFSM.eMain.GetComponent<Rigidbody2D>().velocity.y);
+			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x + m_ecFSM.m_EMain.GetComponent<Rigidbody2D>().velocity.x, velocity.y + m_ecFSM.m_EMain.GetComponent<Rigidbody2D>().velocity.y);
         }
 
         //if the child cell is not wandering but it is going to leave the idle range or hit the wall, reverse its velocity
@@ -80,7 +106,7 @@ public class ECIdleState : IECState
         {
 			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
         }
-        */
+        
 		
 	}
 	
@@ -96,16 +122,17 @@ public class ECIdleState : IECState
 	private GameObject[] TagNeighbours()
 	{
 		Collider2D[] GOaround = Physics2D.OverlapCircleAll(m_Child.transform.position, 5 * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
-		GameObject[] neighbours = new GameObject[GOaround.Length];
+		GameObject[] neighbours = new GameObject[GOaround.Length + 1];
 		int count = 0;
 		for (int i = 0; i < GOaround.Length; i++)
 		{
-			if (GOaround[i].gameObject.tag == "EnemyChild")
+			if (GOaround[i].gameObject.tag == "EnemyChild" || GOaround[i].gameObject.tag == "EnemyMain")
 			{
 				neighbours[count] = GOaround[i].gameObject;
 				count++;
 			}
 		}
+		neighbours[GOaround.Length]= m_ecFSM.m_EMain;
 		return neighbours;
 	}
 	
@@ -195,7 +222,7 @@ public class ECIdleState : IECState
 		// - else, continue the wander process by generating the velocity to drive the enemy child cell using the
 		//   "Wander" function
 		
-		while (bIsWondering == true && fCohesionStrength == 0.0f && fSeperateStrength == 0.0f && fAlignStrength == 0.0f)
+		while (bIsWondering == true && s_fCohesionStrength == 0.0f && s_fSeperateStrength == 0.0f && s_fAlignStrength == 0.0f)
 		{
 			if (LeavingIdleRange(m_Child.transform.position))
 			{
@@ -270,6 +297,20 @@ public class ECIdleState : IECState
 		}
 	}
 	
+	private void SetupSeperate()
+	{
+		s_fAlignStrength = 0.0f;
+		s_fCohesionStrength = 0.0f;
+		s_fSeperateStrength = 1.0f;
+	}
+	
+	private void SetupCohesion()
+	{
+		s_fAlignStrength = 0.0f;
+		s_fCohesionStrength = 1.0f;
+		s_fSeperateStrength = 0.0f;
+	}
+	
 	//a function that return a velocity to direct the enemy child cell to seperate from other enemy child cell
 	private Vector2 Seperation()
 	{
@@ -315,6 +356,7 @@ public class ECIdleState : IECState
 				steering.y += cell.transform.position.y;
 				neighbourCount++;
 			}
+			
 		}
 		
 		if (neighbourCount <= 0)
@@ -334,6 +376,27 @@ public class ECIdleState : IECState
 	private bool HasCellReachPosition(Vector2 pos)
 	{
 		if (Vector2.Distance(m_Child.transform.position, pos) < 0.01f)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private bool HasAllChildsReachMainMid()
+	{
+		List<EnemyChildFSM> childList = m_ecFSM.m_EMain.GetComponent<EnemyMainFSM>().ECList;
+		
+		Collider2D[] ObjectsInMain = Physics2D.OverlapCircleAll(m_ecFSM.m_EMain.transform.position,m_ecFSM.m_EMain.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		int ChildsInMain = 0;
+		for(int i = 0; i < ObjectsInMain.Length; i++)
+		{
+			if(ObjectsInMain[i].gameObject.tag == "EnemyChild" && Vector2.Distance(m_ecFSM.m_EMain.transform.position,ObjectsInMain[i].transform.position) < 0.1f)
+			{
+				ChildsInMain++;
+			}
+		}
+		
+		if(ChildsInMain == childList.Count)
 		{
 			return true;
 		}
