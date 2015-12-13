@@ -39,7 +39,7 @@ public class EMAggressiveAttackState : IEMState
 		helper = m_EMFSM.emHelper;
 
 		#region Attack only when there are more enemy mini cells than player's 
-		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount ()) 
+		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount () && helper.CanAddAttack) 
 		{
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
@@ -49,9 +49,9 @@ public class EMAggressiveAttackState : IEMState
 				for (int nAmount = 0; nAmount < Random.Range (1, 3 + (int)nEnemyChildFactor); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
-						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
 					}
 				}
 			}
@@ -60,9 +60,9 @@ public class EMAggressiveAttackState : IEMState
 				for (int nAmount = 0; nAmount < Random.Range (2, 4 + (int)nEnemyChildFactor); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
-						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
 					}
 				}
 			}
@@ -71,9 +71,9 @@ public class EMAggressiveAttackState : IEMState
 				for (int nAmount = 0; nAmount < Random.Range (4, 6 + (int)nEnemyChildFactor); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
-					if (m_EMFSM.ECList[nIndex].CurrentState != new ECAttackState (m_EMFSM.ECList[nIndex].gameObject, m_EMFSM.ECList[nIndex]))
+					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
-						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
+						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.gameObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Attack,0.0);
 					}
 				}
 			}

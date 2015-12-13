@@ -52,6 +52,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 	
 	void Update()
 	{
+		AgentList.RemoveAll(item => item == null);
+
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 		    transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
 

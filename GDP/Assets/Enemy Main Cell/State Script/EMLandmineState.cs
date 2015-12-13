@@ -33,7 +33,7 @@ public class EMLandmineState : IEMState
 		int nCommandNum = 0;
 		
 		#region Landmine Behaviour
-		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount ()) 
+		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount () && helper.CanAddLandmine) 
 		{
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
