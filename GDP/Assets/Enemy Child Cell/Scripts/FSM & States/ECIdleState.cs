@@ -60,16 +60,15 @@ public class ECIdleState : IECState
 		
 		
         //Implementation of different group movement behaviour (Further testing is needed to implement)//
-        
         //if this child cell is the only child cell in the main cell it is not wondering now, start the wandering process
-        if (m_Main.GetComponent<EnemyMainFSM>().ECList.Count <= 1 && bIsWondering == false)
+        /*if (m_Main.GetComponent<EnemyMainFSM>().ECList.Count <= 1 && bIsWondering == false)
         {
             bIsWondering = true;
             m_ecFSM.StartChildCorountine(Wandering());
         }
         else if (m_Main.GetComponent<EnemyMainFSM>().ECList.Count > 1)
         {
-			m_ecFSM.StopChildCorountine(Wandering());
+			m_ecFSM.StopChildCorountine(Wandering());*/
         
             if (bIsWondering == true)
             {
@@ -79,7 +78,7 @@ public class ECIdleState : IECState
             if(s_Status == IdleStatus.Seperate)
             {
 				SetupSeperate();
-				if(Time.time - s_PreviousStatusTime > 1f)
+				if(HasAllChildSpread() && Time.time - s_PreviousStatusTime > 1f || Time.time - s_PreviousStatusTime > 1.5f)
 				{
 					s_Status = IdleStatus.Cohesion;
 					s_PreviousStatusTime = Time.time;
@@ -99,13 +98,17 @@ public class ECIdleState : IECState
 			float veloY = Alignment().y * s_fAlignStrength + Cohesion().y * s_fCohesionStrength + Seperation().y * s_fSeperateStrength;
             Vector2 velocity = new Vector2(veloX, veloY);
 			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x + m_ecFSM.m_EMain.GetComponent<Rigidbody2D>().velocity.x, velocity.y + m_ecFSM.m_EMain.GetComponent<Rigidbody2D>().velocity.y);
-        }
+        //}
 
         //if the child cell is not wandering but it is going to leave the idle range or hit the wall, reverse its velocity
-        if (bIsWondering == false && (HittingWall(m_Child.transform.position) || LeavingIdleRange(m_Child.transform.position)))
+        if (bIsWondering == false && LeavingIdleRange(m_Child.transform.position) && Physics2D.OverlapCircle(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2) == null)
         {
 			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
         }
+		else if(bIsWondering == false && HittingWall(m_Child.transform.position))
+		{
+			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
+		}
         
 		
 	}
@@ -121,12 +124,12 @@ public class ECIdleState : IECState
 	//enemy child cells for it.
 	private GameObject[] TagNeighbours()
 	{
-		Collider2D[] GOaround = Physics2D.OverlapCircleAll(m_Child.transform.position, 5 * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
+		Collider2D[] GOaround = Physics2D.OverlapCircleAll(m_Child.transform.position, 1.3f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
 		GameObject[] neighbours = new GameObject[GOaround.Length + 1];
 		int count = 0;
 		for (int i = 0; i < GOaround.Length; i++)
 		{
-			if (GOaround[i].gameObject.tag == "EnemyChild" || GOaround[i].gameObject.tag == "EnemyMain")
+			if ((GOaround[i].gameObject.tag == "EnemyChild" || GOaround[i].gameObject.tag == "EnemyMain") && GOaround[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 			{
 				neighbours[count] = GOaround[i].gameObject;
 				count++;
@@ -390,7 +393,7 @@ public class ECIdleState : IECState
 		int ChildsInMain = 0;
 		for(int i = 0; i < ObjectsInMain.Length; i++)
 		{
-			if(ObjectsInMain[i].gameObject.tag == "EnemyChild" && Vector2.Distance(m_ecFSM.m_EMain.transform.position,ObjectsInMain[i].transform.position) < 0.1f)
+			if(ObjectsInMain[i].gameObject.tag == "EnemyChild" && Vector2.Distance(m_ecFSM.m_EMain.transform.position,ObjectsInMain[i].transform.position) < 0.05f)
 			{
 				ChildsInMain++;
 			}
@@ -401,5 +404,21 @@ public class ECIdleState : IECState
 			return true;
 		}
 		return false;
+	}
+	
+	private bool HasAllChildSpread()
+	{
+		List<EnemyChildFSM> childList = m_ecFSM.m_EMain.GetComponent<EnemyMainFSM>().ECList;
+		
+		foreach(EnemyChildFSM child in childList)
+		{
+			Collider2D hittedObject = Physics2D.OverlapCircle(child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+			if(hittedObject != null && hittedObject != child.GetComponent<BoxCollider2D>() && !HittingWall(child.transform.position))
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }
