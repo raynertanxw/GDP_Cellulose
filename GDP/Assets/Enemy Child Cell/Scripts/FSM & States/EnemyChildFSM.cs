@@ -55,6 +55,11 @@ public class EnemyChildFSM : MonoBehaviour
 	{
 		m_CurrentState.Execute();
 		UpdateState();
+		
+		if(IsMainBeingAttacked() && !IsThereEnoughDefence())
+		{
+			AutoDefend();
+		}	
 	}
 	
 	//Various getter functions
@@ -156,6 +161,71 @@ public class EnemyChildFSM : MonoBehaviour
 			}
 		}
 		return count;
+	}
+	
+	private bool IsMainBeingAttacked()
+	{
+		Collider2D[] IncomingToMain = Physics2D.OverlapCircleAll(m_EMain.transform.position, 2 * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x);
+		foreach(Collider2D comingObject in IncomingToMain)
+		{
+			if(comingObject.tag == Constants.s_strPlayerChildTag)
+			{
+				return true;
+			}
+		}
+	
+		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 10 * GetComponent<SpriteRenderer>().bounds.size.x);
+		
+		foreach(Collider2D comingObject in IncomingToChild)
+		{
+			if(comingObject.tag == Constants.s_strPlayerChildTag && comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private bool IsThereEnoughDefence()
+	{
+		GameObject[] Attackers = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
+		List<EnemyChildFSM> Child = m_EMain.GetComponent<EnemyMainFSM>().ECList;
+		int attackerAmount = 0;
+		int defenderAmount = 0;
+		
+		foreach(GameObject attacker in Attackers)
+		{
+			attackerAmount++;
+		}
+		
+		foreach(EnemyChildFSM defender in Child)
+		{
+			if(defender.CurrentStateEnum == ECState.Defend)
+			{
+				defenderAmount++;
+			}
+		}
+		
+		if(attackerAmount > defenderAmount)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	private void AutoDefend()
+	{
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 3 * GetComponent<SpriteRenderer>().bounds.size.x/2);
+		
+		//Dispatch a message to all nearby enemy child cells that are idling to defend the main cell
+		foreach(Collider2D nearby in NearbyObjects)
+		{
+			if(nearby.tag == Constants.s_strEnemyChildTag && nearby.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+			{
+				MessageDispatcher.Instance.DispatchMessage(gameObject,nearby.gameObject,MessageType.Defend,0);
+			}
+		}
 	}
 	
 	//two functions to start and stop corountines that are called from the child states

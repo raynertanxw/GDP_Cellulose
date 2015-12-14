@@ -16,6 +16,8 @@ public class ECDefendState : IECState {
     
     //a static vector to store the central positon of the defending position for all defending enemy child cells
     private static Vector2 s_m_FormationCenter;
+    
+    private float fDefendTime;
 
 	//Constructor
     public ECDefendState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -24,11 +26,13 @@ public class ECDefendState : IECState {
 		m_ecFSM = _ecFSM;
 		m_Main = _ecFSM.m_EMain;
 		fMoveSpeed = 3f;
+		fDefendTime = 0f;
     }
 
     public override void Enter()
     {
 		bReachPos = false;
+		fDefendTime = 0f;
     }
 
     public override void Execute()
@@ -57,11 +61,19 @@ public class ECDefendState : IECState {
 			m_Child.GetComponent<Rigidbody2D>().velocity = m_SteeringVelo;
 		}
 		
+		if(IsThereNoAttackers())
+		{
+			fDefendTime += Time.deltaTime;
+			if(fDefendTime > 2.0f)
+			{
+				MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0f);
+			}
+		}
     }
 
     public override void Exit()
     {
-
+		fDefendTime = 0f;
     }
     
     public bool ReachPos
@@ -127,4 +139,17 @@ public class ECDefendState : IECState {
 			return m_Steering;
 		}
     }
+    
+    private bool IsThereNoAttackers()
+	{
+		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
+		foreach(GameObject child in PlayerChilds)
+		{
+			if(child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 }
