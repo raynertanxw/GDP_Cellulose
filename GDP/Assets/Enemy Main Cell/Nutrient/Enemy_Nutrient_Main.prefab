@@ -89,9 +89,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FlockWeight: 1
-  SeekWeight: .5
-  fNeighbourRadius: 2
-  fAlignmentWeight: .5
+  SeekWeight: .300000012
+  fNeighbourRadius: 1.5
+  fAlignmentWeight: .699999988
   fCohesionWeigth: .300000012
   fSeperationWeight: .5
 --- !u!212 &21216358
@@ -195,15 +195,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: SeekWeight
-      value: .5
+      value: .300000012
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fNeighbourRadius
-      value: 2
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fAlignmentWeight
-      value: .5
+      value: .699999988
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fCohesionWeigth
