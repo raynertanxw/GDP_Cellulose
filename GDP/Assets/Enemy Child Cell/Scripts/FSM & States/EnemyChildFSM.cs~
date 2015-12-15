@@ -56,13 +56,14 @@ public class EnemyChildFSM : MonoBehaviour
 		m_CurrentState.Execute();
 		UpdateState();
 		
-		if(IsMainBeingAttacked() && !IsThereEnoughDefence())
+		if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsThereEnoughDefence())
 		{
+			Debug.Log("AutoDefend");
 			AutoDefend();
 		}	
 	}
 	
-	//Various getter functions
+	//Various getter functionss
 	public Dictionary<ECState,IECState> StateDictionary
 	{
 		get { return m_StatesDictionary; }
@@ -170,16 +171,18 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			if(comingObject.tag == Constants.s_strPlayerChildTag)
 			{
+				Debug.Log("main detect");
 				return true;
 			}
 		}
 	
-		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 10 * GetComponent<SpriteRenderer>().bounds.size.x);
+		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 12 * GetComponent<SpriteRenderer>().bounds.size.x);
 		
 		foreach(Collider2D comingObject in IncomingToChild)
 		{
 			if(comingObject.tag == Constants.s_strPlayerChildTag && comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
+				Debug.Log("child detect");
 				return true;
 			}
 		}
@@ -196,7 +199,10 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		foreach(GameObject attacker in Attackers)
 		{
-			attackerAmount++;
+			if(attacker.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || attacker.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			{
+				attackerAmount++;
+			}
 		}
 		
 		foreach(EnemyChildFSM defender in Child)
@@ -209,8 +215,10 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		if(attackerAmount > defenderAmount)
 		{
+			Debug.Log("Attacker more than defender");
 			return false;
 		}
+		Debug.Log("defender more than Attacker");
 		return true;
 	}
 	

@@ -42,18 +42,18 @@ public class ECDefendState : IECState {
    
 		//if the enemy child cell had not reach the central positon of the defending position, move the enemy
 		//child cell towards the target position
-		if(!HasCellReachTargetPos(s_m_FormationCenter) && bReachPos == false)
+		if(!HasCellReachTargetPos(s_m_FormationCenter) && bReachPos == false && !IsPlayerChildPassingBy())
 		{
 			MoveTowards(s_m_FormationCenter);
 		}		
-		else if(HasCellReachTargetPos(s_m_FormationCenter) && bReachPos == false)
+		else if(HasCellReachTargetPos(s_m_FormationCenter) && bReachPos == false && !IsPlayerChildPassingBy())
 		{
 			bReachPos = true;
 		}
 	
 		//if the enemy child cell had reached the central positon of the defending position, move towards 
 		//and maintain its own defending position in the formation
-		if(bReachPos == true)
+		if(bReachPos == true && !IsPlayerChildPassingBy())
 		{
 			Vector2 m_SteeringVelo = SpreadAcrossLine();
 			m_SteeringVelo.x += m_Main.GetComponent<Rigidbody2D>().velocity.x;
@@ -61,10 +61,16 @@ public class ECDefendState : IECState {
 			m_Child.GetComponent<Rigidbody2D>().velocity = m_SteeringVelo;
 		}
 		
+		if(IsPlayerChildPassingBy())
+		{
+			GameObject target = GetClosestAttacker();
+			MoveTowards(target.transform.position);
+		}
+		
 		if(IsThereNoAttackers())
 		{
 			fDefendTime += Time.deltaTime;
-			if(fDefendTime > 2.0f)
+			if(fDefendTime > 1.5f)
 			{
 				MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0f);
 			}
@@ -123,6 +129,7 @@ public class ECDefendState : IECState {
 			if(child != null && child != m_Child)
 			{
 				m_Steering.x += child.transform.position.x - m_Child.transform.position.x;
+				m_Steering.y += (child.transform.position.y - m_Child.transform.position.y)/2;
 				nDefendingCount++;
 			}
 		}
@@ -140,6 +147,19 @@ public class ECDefendState : IECState {
 		}
     }
     
+    private bool IsPlayerChildPassingBy()
+    {
+		Collider2D[] PasserBy = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
+		foreach(Collider2D obj in PasserBy)
+		{
+			if(obj != null && obj.tag == Constants.s_strPlayerChildTag)
+			{
+				return true;
+			}
+		}
+		return false;
+    }
+    
     private bool IsThereNoAttackers()
 	{
 		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
@@ -151,5 +171,23 @@ public class ECDefendState : IECState {
 			}
 		}
 		return true;
+	}
+	
+	private GameObject GetClosestAttacker()
+	{
+		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
+		GameObject ClosestAttacker = PlayerChilds[0];
+		float distance = Mathf.Infinity;
+		
+		foreach(GameObject child in PlayerChilds)
+		{
+			if((child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain) && Vector2.Distance(child.transform.position,m_Child.transform.position) < distance)
+			{
+				ClosestAttacker = child;
+				distance = Vector2.Distance(child.transform.position,m_Child.transform.position);
+			}
+		}
+		
+		return ClosestAttacker;
 	}
 }
