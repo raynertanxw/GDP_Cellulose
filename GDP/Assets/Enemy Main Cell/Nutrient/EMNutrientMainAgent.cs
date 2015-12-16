@@ -9,6 +9,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	public int Size { get { return nSize; } }
 	private Vector2 initialScale;
 	private Vector2 currentScale;
+	private float fInitialRadius;
 	// Velocity
 	public float fMaxVelocity = 1;
 	public Vector2 currentVelocity;
@@ -40,6 +41,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		nSize = 5;
 		initialScale = gameObject.transform.localScale;
 		transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
+		fInitialRadius = GetComponent<CircleCollider2D> ().bounds.size.x / 2;
 
 		bSucked = false;
 	}
@@ -48,10 +50,13 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Add the agent to the agent list
 		AgentList.Add(this);
+		// Initialize the position 
+		InitialPosition ();
 	}
 	
 	void Update()
 	{
+		// Remove destroyed from the list
 		AgentList.RemoveAll(item => item == null);
 
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
@@ -90,6 +95,35 @@ public class EMNutrientMainAgent : MonoBehaviour
 	void Sucking ()
 	{
 		transform.Translate (suckedTarget.transform.position * Time.deltaTime * .5f);
+	}
+
+	void InitialPosition ()
+	{
+		for (int i = 0; i < AgentList.Count; i++)
+		{
+			// Initialize the position of the nutrient
+			AgentList[i].gameObject.transform.position = new Vector3 (Random.Range(fInitialRadius * -10f, fInitialRadius * 10f), 
+			                                                          Random.Range(fInitialRadius * -10f, fInitialRadius * 10f));
+			// Change the position of the nutrient if it is too close to the preceding one
+			if (i != 0)
+			{
+				while (true)
+				{
+					// Check for all preceding nutrient cells
+					for (int j = 0; j < i; j++)
+					{
+						// Only proceed to break the while loop of initializing position when the nutrient is not too close with any preceding nutrient
+						if (Vector3.Distance (AgentList[i-1].gameObject.transform.position, AgentList[i].gameObject.transform.position) <=
+						    fInitialRadius * 5f)
+						{
+							AgentList[i].gameObject.transform.position = new Vector3 (Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
 	}
 
 	void OnTriggerEnter2D (Collider2D collision)
