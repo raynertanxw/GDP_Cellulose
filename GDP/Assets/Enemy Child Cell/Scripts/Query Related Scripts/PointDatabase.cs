@@ -4,20 +4,21 @@ using System.Collections.Generic;
 
 public class PointDatabase
 {
-	//Enumeration of the 12 positions to be used to represent the tactical positions for the Enemy Child Cell
-	private enum Position {A1, A2, A3, B1, B2, B3, C1, C2, C3, D1, D2, D3}; 
-	
 	//Declare an instance of the PointDatabase to make Database Singleton
 	private static PointDatabase s_Instance;
 	
 	//Declare a dictionary to store the various tactical position in the database
-	private Dictionary<Position,Vector2> m_Database;
+	private Dictionary<string,Point> m_Database;
+	
+	private Vector2 m_InitialPlayerPos;
+	public float PointIntervalX;
+	public float PointIntervalY;
 	
 	//Constructor for the PointDatabase
 	public PointDatabase()
 	{
-		m_Database = new Dictionary<Position,Vector2>();
-		InitializeDatabase();
+		m_Database = new Dictionary<string, Point>();
+		m_InitialPlayerPos = GameObject.Find("Player_Cell").transform.position;
 	}
 	
 	//Singleton and Get function
@@ -27,111 +28,250 @@ public class PointDatabase
 		{
 			if(s_Instance == null)
 			{
+				Debug.Log("initialize");
 				s_Instance = new PointDatabase();
 			}
 			return s_Instance;
 		}
 	}
 	
-	//Initialize the database with all the declared 12 positions
-	private void InitializeDatabase()
+	public Dictionary<string,Point> Database
 	{
-		//Add the 12 positions into the database
-		m_Database.Add(Position.A1, new Vector2(0f,0f));
-		m_Database.Add(Position.A2, new Vector2(0f,0f));
-		m_Database.Add(Position.A3, new Vector2(0f,0f));
-		m_Database.Add(Position.B1, new Vector2(0f,0f));
-		m_Database.Add(Position.B2, new Vector2(0f,0f));
-		m_Database.Add(Position.B3, new Vector2(0f,0f));
-		m_Database.Add(Position.C1, new Vector2(0f,0f));
-		m_Database.Add(Position.C2, new Vector2(0f,0f));
-		m_Database.Add(Position.C3, new Vector2(0f,0f));
-		m_Database.Add(Position.D1, new Vector2(0f,0f));
-		m_Database.Add(Position.D2, new Vector2(0f,0f));
-		m_Database.Add(Position.D3, new Vector2(0f,0f));
+		get{ return m_Database;}
 	}
 	
-	//Update all the database's position based on the Enemy main cell position, Player main cell position and
-	//the two walls of the game environment
-	public void RefreshDatabase(Vector2 _EnemyMainPos, Vector2 _PlayerMainPos, GameObject Wall)
+	private bool IsPointWalkable(Point _Point)
 	{
-		//length of each vertical section of the screen (6 sections but only 4 at the center will be used as due to the exceeding length of the wall being the two sections)
-		float fVertSection = Wall.GetComponent<SpriteRenderer>().bounds.size.y/6;
-		
-		//length of each horizontal section of the screen
-		float fHoriSection = Mathf.Abs(Wall.transform.position.x/2);
-		
-		//declare variables for calculation purpose
-		Vector2 m_PosCalculate = new Vector2(0f, Screen.height);
-		m_PosCalculate = Camera.main.ScreenToWorldPoint(m_PosCalculate);
-		
-		//positions at the centre top and centre bottom of the screen
-		Vector2 m_CentreTop = new Vector2(0f,m_PosCalculate.y/2);
-		Vector2 m_CentreBot = new Vector2(0f, -m_CentreTop.y);
-		
-		//Go through every position in the database and refresh it based on player's main position
-		m_Database[Position.A1] = new Vector2(_EnemyMainPos.x + -fHoriSection, _EnemyMainPos.y + 1.0f * fVertSection);
-		m_Database[Position.A2] = new Vector2(_EnemyMainPos.x, m_Database[Position.A1].y);
-		m_Database[Position.A3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.A1].y);
-		
-		m_Database[Position.B1] = new Vector2(_EnemyMainPos.x + -fHoriSection, _EnemyMainPos.y + 0.5f * fVertSection);
-		m_Database[Position.B2] = new Vector2(_EnemyMainPos.x,  m_Database[Position.B1].y);
-		m_Database[Position.B3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.B1].y);
-		
-		m_Database[Position.C1] = new Vector2(_EnemyMainPos.x + -fHoriSection, -_EnemyMainPos.y + -0.5f * fVertSection);
-		m_Database[Position.C2] = new Vector2(_EnemyMainPos.x , m_Database[Position.C1].y);
-		m_Database[Position.C3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.C1].y);
-		
-		m_Database[Position.D1] = new Vector2(_EnemyMainPos.x + -fHoriSection, -_EnemyMainPos.y + -1.0f * fVertSection);
-		m_Database[Position.D2] = new Vector2(_EnemyMainPos.x, m_Database[Position.D1].y);
-		m_Database[Position.D3] = new Vector2(_EnemyMainPos.x + fHoriSection, m_Database[Position.D1].y);
-		
-		//Draw various cross onto the screen to represent the newly refreshed position in the database
-		DrawPoints();
-	}
-	
-	//Extract a range of positions from the database based on a minimum amount and maximum amount of Y value
-	public List<Vector2> ExtractPosYRange (float _MinY, float _MaxY)
-	{
-		//Create a list of vector 2 to store the extracted position based on the minimum Y and maximum Y 
-		//from the database and return that list
-		List<Vector2> m_PositionsBelowY = new List<Vector2>();
-		
-		foreach(Vector2 position in m_Database.Values)
+		Collider2D[] PointCollisions = Physics2D.OverlapPointAll(_Point.Position);
+		foreach(Collider2D collision in PointCollisions)
 		{
-			if(position.y >= _MinY && position.y <= _MaxY)
+			if(collision.tag == "Wall")
 			{
-				m_PositionsBelowY.Add(position);
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public void InitializeDatabase()
+	{
+		float fScreenWidth = Screen.width;
+		float fScreenHeight = Screen.height;
+		
+		Vector2 topLeft = Camera.main.ScreenToWorldPoint(new Vector2(0,fScreenHeight));
+		Vector2 botRight = Camera.main.ScreenToWorldPoint(new Vector2(fScreenWidth,0));
+		
+		//width: 9 Height : 14
+		PointIntervalX = (botRight.x - topLeft.x)/8;
+		PointIntervalY = (topLeft.y - botRight.y)/14; 
+		
+		Vector2 currentGeneration = topLeft;
+		int HKey = 0;
+		int LKey = 0;
+		int Count = 0;
+		
+		m_Database.Add(LKey.ToString() + "-" + HKey.ToString(), new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
+		//Utility.DrawCross(currentGeneration,Color.red,0.05f);
+		
+		while(Count < 125)
+		{
+			if(HKey <= 8)
+			{
+				currentGeneration.x += PointIntervalX;
+				HKey++;
+			}
+			
+			if(HKey >= 9)
+			{
+				currentGeneration.y -= PointIntervalY;
+				currentGeneration.x = topLeft.x;
+				LKey++;
+				HKey = 0;
+			}
+			
+			string CurrentKey = LKey.ToString() + "-" + HKey.ToString();
+			m_Database.Add(CurrentKey, new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
+			Debug.Log("generate: " + LKey.ToString() + "-" + HKey.ToString());
+			m_Database[CurrentKey].Walkable = IsPointWalkable(m_Database[CurrentKey]);
+			//Utility.DrawCross(currentGeneration,Color.red,0.05f);
+		
+			Count++;
+		}
+		
+		List<string> Keys = new List<string>(m_Database.Keys);
+		foreach(string key in Keys)
+		{
+			if(m_Database[key] != null)
+			{
+				if(GetPointNextToGivenPoint("Up",m_Database[key]) != null && !m_Database[key].Index.Contains("0-"));
+				{
+					Point PointUp = GetPointNextToGivenPoint("Up",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUp,1.0f));
+					PointUp.Edges.Add(new Edge(PointUp,m_Database[key],1.0f));
+				}
+				if(GetPointNextToGivenPoint("Down",m_Database[key]) != null && !m_Database[key].Index.Contains("13-"))
+				{
+					Point PointDown = GetPointNextToGivenPoint("Down",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointDown,1.0f));
+					PointDown.Edges.Add(new Edge(PointDown,m_Database[key],1.0f));
+				}
+				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null)
+				{
+					Point PointLeft = GetPointNextToGivenPoint("Left",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointLeft,1.0f));
+					PointLeft.Edges.Add(new Edge(PointLeft,m_Database[key],1.0f));
+				}
+				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null)
+				{
+					Point PointRight = GetPointNextToGivenPoint("Right",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointRight,1.0f));
+					PointRight.Edges.Add(new Edge(PointRight,m_Database[key],1.0f));
+				}
+				
+				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null && GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Left",m_Database[key]))) != null && !m_Database[key].Index.Contains("0-"))
+				{
+					Point PointTopLeft = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Left",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopLeft,1.0f));
+					PointTopLeft.Edges.Add(new Edge(PointTopLeft,m_Database[key],1.0f));
+				}
+				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null && GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key]))) != null && !m_Database[key].Index.Contains("0-") && m_Database[key].LIndex != GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key]))).LIndex)
+				{
+					Point PointTopRight = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopRight,1.0f));
+					PointTopRight.Edges.Add(new Edge(PointTopRight,m_Database[key],1.0f));
+				}
+				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null && GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Left",m_Database[key]))) != null && !m_Database[key].Index.Contains("13-") && !m_Database[key].Index.Contains("-0"))
+				{
+					Point PointBotLeft = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Left",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotLeft,1.0f));
+					PointBotLeft.Edges.Add(new Edge(PointBotLeft,m_Database[key],1.0f));
+				}
+				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null && GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Right",m_Database[key]))) != null && !m_Database[key].Index.Contains("13-") && !m_Database[key].Index.Contains("-8"))
+				{
+					Point PointBotRight = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Right",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotRight,1.0f));
+					PointBotRight.Edges.Add(new Edge(PointBotRight,m_Database[key],1.0f));
+				}
+			}
+		}
+	}
+	
+	public void RefreshDatabase()
+	{
+		//CREATE LIST OF STRINGS TO STORE THE KEY OF THE DICTIONARY
+		float fDifferenceY = GameObject.Find("Player_Cell").transform.position.y - m_InitialPlayerPos.y;
+		List<string> keys = new List<string>(m_Database.Keys);
+		
+		foreach(string key in keys)
+		{
+			m_Database[key].Position = new Vector2(m_Database[key].Position.x, m_Database[key].Position.y + fDifferenceY);
+			m_Database[key].Walkable = IsPointWalkable(m_Database[key]);
+		}
+	}
+
+	public List<Point> GetPointsBetweenAxis(string _XorY, float _Min, float _Max)
+	{
+		List<Point> PointsWithinRange = new List<Point>();
+		List<string> keys = new List<string>(m_Database.Keys);
+		
+		if(_XorY == "X" || _XorY == "x")
+		{
+			foreach(string key in keys)
+			{
+				if(m_Database[key].Position.x >= _Min && m_Database[key].Position.x <= _Max)
+				{
+					PointsWithinRange.Add(m_Database[key]);
+				}
+			}
+		}
+		else if(_XorY == "Y" || _XorY == "y")
+		{
+			foreach(string key in keys)
+			{
+				if(m_Database[key].Position.y >= _Min && m_Database[key].Position.y <= _Max)
+				{
+					PointsWithinRange.Add(m_Database[key]);
+				}
 			}
 		}
 		
-		return m_PositionsBelowY;
+		return PointsWithinRange;
 	}
-	
-	//Extract a range of positions from the database based on a minimum amount and maximum amount of X value
-	public List<Vector2> ExtractPosXRange (float _MinX, float _MaxX)
+
+	public Point GetClosestPointToPosition(Vector2 _Pos)
 	{
-		//Create a list of vector 2 to store the extracted position based on the minimum X and maximum X
-		//from the database and return that list
-		List<Vector2> m_PositionsSubX = new List<Vector2>();
+		List<string> keys = new List<string>(m_Database.Keys);
+		Point ClosestPoint = new Point("",new Vector2(0f,0f),false);
+		float ClosestDistance = Mathf.Infinity;
 		
-		foreach(Vector2 position in m_Database.Values)
+		foreach(string key in keys)
 		{
-			if(position.x >= _MinX && position.x <= _MaxX)
+			if(Vector2.Distance(_Pos, m_Database[key].Position) < ClosestDistance)
 			{
-				m_PositionsSubX.Add(position);
+				ClosestPoint = m_Database[key];
+				ClosestDistance = Vector2.Distance(_Pos, m_Database[key].Position);
 			}
 		}
 		
-		return m_PositionsSubX;
+		return ClosestPoint;
 	}
 	
-	//Draw various cross onto the screen to represent the newly refreshed position in the database
-	private void DrawPoints()
+	public Point GetPointNextToGivenPoint (string _Direction, Point _Given)
 	{
-		foreach(Vector2 position in m_Database.Values)
+		string[] keys = _Given.Index.Split('-');
+		int GivenLKey = int.Parse(keys[0]);
+		int GivenHKey = int.Parse(keys[1]);
+		
+		if(GivenLKey == 13)
 		{
-			Utility.DrawCross(position,Color.red,0.1f);
+			Debug.Log ("Meow");
 		}
+		
+		if(_Direction == "Up" || _Direction == "up")
+		{
+			int TargetLKey = GivenLKey - 1;
+			if(TargetLKey < 0)
+			{
+				TargetLKey = 0;
+			}
+			return m_Database[TargetLKey.ToString() + "-" + GivenHKey.ToString()];
+		}
+		else if(_Direction == "Down" || _Direction == "down")
+		{
+			int TargetLKey = GivenLKey + 1;
+			if(TargetLKey > 13)
+			{
+				TargetLKey = 13;
+			}
+			return m_Database[TargetLKey.ToString() + "-" + GivenHKey.ToString()]; 
+		}
+		else if(_Direction == "Left" || _Direction == "left")
+		{
+			if(GivenHKey > 0)
+			{
+				int TargetHKey = GivenHKey - 1;
+				return m_Database[GivenLKey.ToString() + "-" + TargetHKey.ToString()]; 
+			}
+		}
+		else if(_Direction == "Right" || _Direction == "right")
+		{
+			if(GivenHKey < 7)
+			{
+				int TargetHKey = GivenHKey + 1;
+				return m_Database[GivenLKey.ToString() + "-" + TargetHKey.ToString()];
+			}
+		}
+		return null;
+	}
+	
+	public List<Point> ReturnDatabaseAsList()
+	{
+		List<string> Keys = new List<string>(m_Database.Keys);
+		List<Point> Points = new List<Point>();
+		foreach(string key in Keys)
+		{
+			Points.Add(m_Database[key]);
+		}
+		return Points;
 	}
 }

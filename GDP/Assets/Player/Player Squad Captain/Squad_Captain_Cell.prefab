@@ -14,7 +14,7 @@ GameObject:
   - 50: {fileID: 5038718}
   m_Layer: 12
   m_Name: Squad_Captain_Cell
-  m_TagString: Player
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -72,7 +72,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nCostPoints: 50
-  nChildCost: 10
   nMaximumChildCount: 50
   fMinimumCooldown: 1
   fMaximumCooldown: 3

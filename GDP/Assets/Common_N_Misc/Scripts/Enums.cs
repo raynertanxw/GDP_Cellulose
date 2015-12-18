@@ -20,3 +20,4 @@ public enum TargetType  {PlayerMain, PlayerChild, EnemyMain, EnemyChild, Others}
 public enum RangeValue  {Min, Max, None};
 
 public enum Directness  {Low, Mid, High};
+

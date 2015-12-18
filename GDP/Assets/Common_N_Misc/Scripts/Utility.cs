@@ -41,4 +41,9 @@ public static class Utility
 		Debug.DrawLine(topLeft,botRight,_Color,Mathf.Infinity,true);
 		Debug.DrawLine(topRight,botLeft,_Color,Mathf.Infinity,true);
 	}
+	
+	public static void DrawLine(Vector2 _Start, Vector2 _End)
+	{
+		Debug.DrawLine(_Start,_End,Color.red,Mathf.Infinity,true);
+	}
 }

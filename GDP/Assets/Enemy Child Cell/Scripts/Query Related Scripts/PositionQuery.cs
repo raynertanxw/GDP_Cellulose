@@ -10,15 +10,20 @@ public class PositionQuery
 	//Declare an instance of database to refer back to the singleton instance of the database
 	private PointDatabase m_PDatabase;
 	
-	//An integer that serve as an index for the even spreading of generated position in the Landmine state
-	//of the enemy child cell
-	private int nIndexOrder;
+	private GameObject EnemyMain;
+	private GameObject PlayerMain;
+	private static int CurrentNodeTarget;
 	
+	//Criterion
+	
+		
 	//Constructor for PositionQuery
 	public PositionQuery()
 	{
 		m_PDatabase = PointDatabase.Instance;
-		nIndexOrder = 0;
+		PlayerMain = GameObject.Find("Player_Cell");
+		EnemyMain = GameObject.Find("Enemey_Cell");
+		CurrentNodeTarget = 0;
 	}
 	
 	//Singleton and Getter function for Position Query
@@ -33,121 +38,18 @@ public class PositionQuery
 			return s_Instance;
 		}
 	}
-	
-	//Based on the type of position and the situation of the enemy main and player main cell, it will make an
-	//appropriate decision and return the best tactical osition
-	public Vector2 RequestLandminePos (PositionType _LandmineType, GameObject _EnemyMain, GameObject _PlayerMain)
-	{
-		Vector2 IdealMinePos = new Vector2(0f,0f);
-		
-		List<Vector2> PossiblePositions = GeneratePossiblePositions(_EnemyMain, _PlayerMain);
-		IdealMinePos = EvaluateForBestPos(PossiblePositions, _LandmineType, _PlayerMain, _EnemyMain);
-		
-		return IdealMinePos;
-	}
-	
-	//Return a list of positions based on the enemy main cell and player main cell
-	private List<Vector2> GeneratePossiblePositions(GameObject _EnemyMain, GameObject _PlayerMain) 
-	{
-		List<Vector2> PossiblePosition = new List<Vector2>();
-		
-		PossiblePosition = m_PDatabase.ExtractPosYRange(_PlayerMain.transform.position.y, _EnemyMain.transform.position.y);
-	
-		return PossiblePosition;
-	}
-	
-	//Evaluate a list of positions based on the positioning type and the game environment information, returning an ideal position
-	private Vector2 EvaluateForBestPos(List<Vector2> _PositionList, PositionType _RequestType, GameObject _PlayerMain, GameObject _EnemyMain)
-	{
-		Vector2 BestPos = new Vector2(0f,0f);
-		List<GameObject> NodeList = GetListOfNodes(_PlayerMain);//sequence should be left, top, right nodes
-		
-		//Depending on the request given, it will evaluate the list of positions differently.
-		//Aggressive positioning for landmines (focus at the weak spot of the 3 nodes formation)
-		if(_RequestType == PositionType.Aggressive)
-		{
-			//if there is no empty nodes, find the weakest node to aim
-			if(!IsAllNodesEmpty(NodeList))
-			{
-				GameObject _TargetNode = GetMostWeakNode(NodeList);
-				BestPos = GetClosestPositionToNode(_PositionList, _TargetNode);
-			}
-			//else if all is empty node, aim the main node
-			else
-			{
-				BestPos = _PlayerMain.transform.position;
-			}
-		}
-		//Focus positioning towards the threatening node (Aimed at the threatening player node)
-		else if(_RequestType == PositionType.Neutral)
-		{
-			if(!IsAllNodesEmpty(NodeList))
-			{
-				GameObject _TargetNode = GetMostThreateningNode(NodeList);
-				BestPos = GetClosestPositionToNode(_PositionList,_TargetNode);
-			}
-			//else if all is empty node, aim the main node
-			else
-			{
-				BestPos = _PlayerMain.transform.position;
-			}
-		}
-		//Even spread position across all nodes (divide all the different landmines evenly)
-		else if(_RequestType == PositionType.Defensive)
-		{
-			GameObject _TargetNode = NodeList[nIndexOrder];
-			BestPos = GetClosestPositionToNode(_PositionList,_TargetNode);
-			nIndexOrder++;
-			if(nIndexOrder > 2)
-			{
-				nIndexOrder = 0;
-			}
-		}
-		
-		//Add noise to the position given
-		BestPos = InduceNoiseToPosition(BestPos);
-		
-		return BestPos;
-	}
-	
-	//A function that return a list of all player's nodes based on the player main cell
-	private List<GameObject> GetListOfNodes(GameObject _PlayerMain)
+
+	private bool IsAllNodesEmpty ()
 	{
 		List<GameObject> NodeList = new List<GameObject>();
+		NodeList.Add(GameObject.Find("Node_Left"));
+		NodeList.Add(GameObject.Find("Node_Right"));
+		NodeList.Add(GameObject.Find("Node_Top"));
 		
-		foreach(Transform Node in _PlayerMain.transform)
-		{
-			NodeList.Add(Node.gameObject);
-		}
-		
-		return NodeList;
-	}
-	
-	//A function that evaluate all the nodes of the player and return the most threatening node
-	private GameObject GetMostThreateningNode(List<GameObject> _NodeList)
-	{
-		int nIndexForMostThreating = 0;
-		int nHighestScore = 0;
-		
-		for(int i = 0; i < _NodeList.Count; i++)
-		{
-			if(EvaluateNode(_NodeList[i]) > nHighestScore)
-			{
-				nIndexForMostThreating = i;
-				nHighestScore = EvaluateNode(_NodeList[i]);
-			}
-		}
-		
-		return _NodeList[nIndexForMostThreating];
-	}
-	
-	//A function to check whether the node has any cells within it
-	private bool IsAllNodesEmpty (List<GameObject> _NodeList)
-	{
 		bool bResult = false;
-		for(int i = 0; i < _NodeList.Count; i++)
+		for(int i = 0; i < NodeList.Count; i++)
 		{
-			if(_NodeList[i].GetComponent<Node_Manager>().GetNodeChildList().Count <= 0)
+			if(NodeList[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
 			{
 				return false;
 			}
@@ -155,24 +57,50 @@ public class PositionQuery
 		return true;
 	}
 	
-	//A function that evaluate all the nodes of the player and return the most weak node
-	private GameObject GetMostWeakNode (List<GameObject> _NodeList)
+	//A function that evaluate all the nodes of the player and return the most threatening node
+	private GameObject GetMostThreateningNode()
 	{
-		int nIndexForMostWeak = 0;
-		int nLowestScore = 0;
+		List<GameObject> NodeList = new List<GameObject>();
+		NodeList.Add(GameObject.Find("Node_Left"));
+		NodeList.Add(GameObject.Find("Node_Right"));
+		NodeList.Add(GameObject.Find("Node_Top"));
+		int nIndexForMostThreating = 0;
+		int nHighestScore = 0;
 		
-		for(int i = 0; i < _NodeList.Count; i++)
+		for(int i = 0; i < NodeList.Count; i++)
 		{
-			if(EvaluateNode(_NodeList[i]) < nLowestScore)
+			if(EvaluateNode(NodeList[i]) > nHighestScore)
 			{
-				nIndexForMostWeak = i;
-				nLowestScore = EvaluateNode(_NodeList[i]);
+				nIndexForMostThreating = i;
+				nHighestScore = EvaluateNode(NodeList[i]);
 			}
 		}
 		
-		return _NodeList[nIndexForMostWeak];
+		return NodeList[nIndexForMostThreating];
 	}
-	
+
+	//A function that evaluate all the nodes of the player and return the most weak node
+	private GameObject GetMostWeakNode ()
+	{
+		List<GameObject> NodeList = new List<GameObject>();
+		NodeList.Add(GameObject.Find("Node_Left"));
+		NodeList.Add(GameObject.Find("Node_Right"));
+		NodeList.Add(GameObject.Find("Node_Top"));
+		int nIndexForMostWeak = 0;
+		int nLowestScore = 0;
+		
+		for(int i = 0; i < NodeList.Count; i++)
+		{
+			if(EvaluateNode(NodeList[i]) < nLowestScore)
+			{
+				nIndexForMostWeak = i;
+				nLowestScore = EvaluateNode(NodeList[i]);
+			}
+		}
+		
+		return NodeList[nIndexForMostWeak];
+	}
+
 	//a function that evalute the given node and return a score
 	private int EvaluateNode (GameObject _Node)
 	{
@@ -196,27 +124,61 @@ public class PositionQuery
 		return nthreatLevel;
 	}
 	
-	//A function that based on the given node and a list of information to return the closest position to 
-	//the node
-	private Vector2 GetClosestPositionToNode (List<Vector2> _PositionList ,GameObject _Node)
+	private List<Vector2> GetPointRangeBetweenPlayerEnemy()
 	{
-		Vector2 ClosestPosition = new Vector2(0f,0f);
-		float fClosestDistance = Mathf.Infinity;
+		Point PlayerClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Player_Cell").transform.position);
+		Point EnemyClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Enemy_Cell").transform.position);
 		
-		for(int i = 0; i < _PositionList.Count; i++)
+		float PosDifferenceX = EnemyClosestPoint.Position.x - PlayerClosestPoint.Position.x;
+		float PosDifferenceY = EnemyClosestPoint.Position.y - PlayerClosestPoint.Position.y;
+		
+		int PointDifferenceX = Mathf.RoundToInt(PosDifferenceX/PointDatabase.Instance.PointIntervalX);
+		int PointDifferenceY = Mathf.RoundToInt(PosDifferenceY/PointDatabase.Instance.PointIntervalY);
+		
+		List<Vector2> PointRange = new List<Vector2>();
+		PointRange.Add(new Vector2(Mathf.RoundToInt(0.6f * PointDifferenceX), Mathf.RoundToInt(0.6f * PointDifferenceY)));
+		PointRange.Add(new Vector2(Mathf.RoundToInt(0.5f * PointDifferenceX), Mathf.RoundToInt(0.5f * PointDifferenceY)));
+		PointRange.Add(new Vector2(Mathf.RoundToInt(0.25f * PointDifferenceX), Mathf.RoundToInt(0.25f * PointDifferenceY)));
+		
+		return PointRange;
+	}
+	
+	private Point GetPointAfterMoving(Point CurrentPoint, int ChangeInX, int ChangeInY, string YDirection)
+	{
+		if(YDirection == "Up" || YDirection == "up")
 		{
-			float fDistance = Vector2.Distance(_Node.transform.position, _PositionList[i]);
-			if(fDistance < fClosestDistance)
+			for(int i = 0; i < ChangeInY; i++)
 			{
-				ClosestPosition = _PositionList[i];
-				fClosestDistance = fDistance;
+				CurrentPoint = PointDatabase.Instance.GetPointNextToGivenPoint("Up", CurrentPoint);
+			}
+		}
+		else
+		{
+			for(int i = 0; i < Mathf.Abs(ChangeInY); i++)
+			{
+				CurrentPoint = PointDatabase.Instance.GetPointNextToGivenPoint("Down", CurrentPoint);
+			}
+			
+		}
+		
+		if(ChangeInX >= 0)
+		{
+			for(int i = 0; i < ChangeInX; i++)
+			{
+				CurrentPoint = PointDatabase.Instance.GetPointNextToGivenPoint("Right", CurrentPoint);
+			}
+		}
+		else
+		{
+			for(int i = 0; i < Mathf.Abs(ChangeInX); i++)
+			{
+				CurrentPoint = PointDatabase.Instance.GetPointNextToGivenPoint("Left", CurrentPoint);
 			}
 		}
 		
-		return ClosestPosition;
+		return CurrentPoint;
 	}
 	
-	//A function that add values to the position given through the perimeter and returh the new position
 	private Vector2 InduceNoiseToPosition (Vector2 _TargetPos)
 	{
 		float fRandomXNeg = Random.Range(-0.5f, 0f);
@@ -224,10 +186,220 @@ public class PositionQuery
 		float fRandomYNeg = Random.Range(-0.5f, 0f);
 		float fRandomYPos = Random.Range(0f, 0.5f);
 		
-		float fNoiseToX = Mathf.PerlinNoise(fRandomXNeg,fRandomXPos);
-		float fNoiseToY = Mathf.PerlinNoise(fRandomYNeg,fRandomYPos);
+		float fNoiseToX = Random.Range(fRandomXNeg,fRandomXPos);
+		Debug.Log(fNoiseToX);
+		float fNoiseToY = Random.Range(fRandomYNeg,fRandomYPos);
+		Debug.Log(fNoiseToY);
 		Vector2 RandomResult = new Vector2(_TargetPos.x + fNoiseToX, _TargetPos.y + fNoiseToY);
 		
 		return RandomResult;
 	}
+	
+	public GameObject GetLandmineTarget(PositionType PType, GameObject Agent)
+	{
+		GameObject target = null;
+		if(IsAllNodesEmpty())
+		{
+			return GameObject.Find("Player_Cell");
+		}
+		
+		if(PType == PositionType.Aggressive)
+		{
+			GameObject TopNode = GameObject.Find("Node_Top");
+			if(TopNode.GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			{
+				return TopNode;
+			}
+			else
+			{
+				return GameObject.Find("Player_Cell");
+			}
+		}
+		else if(PType == PositionType.Defensive)
+		{
+			return GetMostThreateningNode();
+		}
+		else if(PType == PositionType.Neutral)
+		{
+			if(CurrentNodeTarget == 0)
+			{
+				return GameObject.Find("Node_Left");
+			}
+			else if(CurrentNodeTarget == 1)
+			{
+				return GameObject.Find("Node_Top");
+			}
+			else if(CurrentNodeTarget == 2)
+			{
+				return GameObject.Find("Node_Right");
+			}
+		}
+		
+		return null;
+	}
+	
+	public Vector2 GetLandminePos(RangeValue Range, PositionType PType, GameObject Agent)
+	{
+		Vector2 targetPos = new Vector2(0f,0f);
+		List<Vector2> PointRange = GetPointRangeBetweenPlayerEnemy();
+		int XMax = (int) PointRange[0].x;
+		int YMax = (int) PointRange[0].y;
+		int XBal = (int) PointRange[1].x;
+		int YBal = (int) PointRange[1].y;
+		int XMin = (int) PointRange[2].x;
+		int YMin = (int) PointRange[2].y;
+	
+		if(PType == PositionType.Aggressive)
+		{
+			Debug.Log("Aggressive");
+			if(IsAllNodesEmpty())
+			{
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
+				
+				CurrentPoint = GetPointAfterMoving(CurrentPoint,XMin,YMin,"Up");
+				
+				targetPos = CurrentPoint.Position;
+			}
+			else
+			{
+				GameObject TopNode = GameObject.Find("Node_Top");
+				Point CurrentPoint = null;
+				if(TopNode.GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+				{
+					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TopNode.transform.position);
+				}
+				else
+				{
+					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
+				}
+
+				if(Range == RangeValue.Max)
+				{
+					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMin,YMin,"Up");
+					
+					targetPos = CurrentPoint.Position;
+				}
+				else if(Range == RangeValue.Min)
+				{	
+					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMax,YMax,"Up");
+					
+					targetPos = CurrentPoint.Position;
+				}
+				else if(Range == RangeValue.None)
+				{
+					CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
+
+					targetPos = CurrentPoint.Position;
+				}
+			}
+		}
+		else if(PType == PositionType.Defensive)
+		{
+			Debug.Log("Defensive");
+			if(IsAllNodesEmpty())
+			{
+				Debug.Log("All Nodes empty");
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
+
+				CurrentPoint = GetPointAfterMoving(CurrentPoint,XMax,YMax,"Up");
+				
+				targetPos = CurrentPoint.Position;
+			}
+			else
+			{
+				Debug.Log("Obtain threatening node");
+				GameObject TargetNode = GetMostThreateningNode();
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position);
+
+				if(Range == RangeValue.Max)
+				{
+					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMin,YMin,"Up");
+					
+					targetPos = CurrentPoint.Position;
+				}
+				else if(Range == RangeValue.Min)
+				{
+					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMax,YMax,"Up");
+					
+					targetPos = CurrentPoint.Position;
+				}
+				else if(Range == RangeValue.None)
+				{
+					CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
+					
+					targetPos = CurrentPoint.Position;
+				}
+			}
+		}
+		else if(PType == PositionType.Neutral)
+		{
+			Debug.Log("Netural");
+			if(IsAllNodesEmpty())
+			{
+				Debug.Log("neutral empty");
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
+				
+				CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
+
+				targetPos = CurrentPoint.Position;
+			}
+			else
+			{
+				Debug.Log("neutral act");
+				GameObject TargetNode = null;
+				
+				if(CurrentNodeTarget == 0)
+				{
+					TargetNode = GameObject.Find("Node_Left");
+				}
+				else if(CurrentNodeTarget == 1)
+				{
+					TargetNode = GameObject.Find("Node_Top");
+				}
+				else if(CurrentNodeTarget == 2)
+				{
+					TargetNode = GameObject.Find("Node_Right");
+				}
+				
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position);
+			
+				CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
+
+				targetPos = CurrentPoint.Position;
+				
+				if(CurrentNodeTarget >= 2)
+				{
+					CurrentNodeTarget = 0;
+				}
+				else
+				{
+					CurrentNodeTarget++;
+				}
+			}
+		}
+		
+		Utility.DrawCross(targetPos,Color.green,0.5f);
+		return InduceNoiseToPosition(targetPos);
+	}
+	
+	/*
+	public static Vector2[] GetPathToPM(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
+	{
+	
+	}
+	
+	public static Vector2[] GetPathToPC(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
+	{
+		
+	}
+	
+	public static Vector2[] GetTrickAttackPathToPM(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
+	{
+	
+	}
+	
+	public static Vector2 GetECPosAwayFromPC(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
+	{
+	
+	}*/
 }

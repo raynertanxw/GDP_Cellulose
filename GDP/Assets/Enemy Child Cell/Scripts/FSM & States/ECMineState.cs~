@@ -6,6 +6,7 @@ public class ECMineState : IECState {
 
 	//A vector 2 variable to store the target position for the landmine to move to
 	private Vector2 m_TargetPosition;
+	private GameObject m_Target;
 	
 	//2 booleans to track whether the enemy child cell had reach the target landmine position 
 	// or the explosion of the enemy child cell had started
@@ -26,10 +27,12 @@ public class ECMineState : IECState {
     public override void Enter()
     {
 		//Refresh the pointDatabase with the latest information of the game environment
-		PointDatabase.Instance.RefreshDatabase(m_Main.transform.position, m_ecFSM.m_PMain.transform.position ,GameObject.Find("Left Wall"));
+
+		PointDatabase.Instance.RefreshDatabase();
 		
 		//Retrieve the best target position to move to based on the request for position type and other game information
-		m_TargetPosition = PositionQuery.Instance.RequestLandminePos(DetermineType(), m_Main, m_ecFSM.m_PMain);
+		m_Target = PositionQuery.Instance.GetLandmineTarget(DeterminePositionType(),m_Child);
+		m_TargetPosition = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(), DeterminePositionType(), m_Child);
 		
 		fSpeed = 12f;
 		bReachPosition = false;
@@ -47,7 +50,17 @@ public class ECMineState : IECState {
 		else if(HasCellReachTarget(m_TargetPosition) && bReachPosition == false)
 		{
 			bReachPosition = true;
-			FloatForward();
+		}
+		
+		if(bReachPosition)
+		{
+			FloatForward(m_Target);
+		}
+		
+		if(m_Target == GameObject.Find("Node_Top") && m_Target.GetComponent<Node_Manager>().GetNodeChildList().Count <= 0)
+		{
+			m_Target = m_ecFSM.m_PMain;
+			Debug.Log("Target Change");
 		}
 		
 		//if the enemy child cell is colliding with a player cell, start the explosion
@@ -69,9 +82,24 @@ public class ECMineState : IECState {
 		
     }
     
+	private RangeValue DetermineRangeValue()
+	{
+		float fEMainAggressiveness = m_Main.GetComponent<EnemyMainFSM>().CurrentAggressiveness;
+		
+		if(fEMainAggressiveness >= 12)
+		{
+			return RangeValue.Max;
+		}
+		else if(fEMainAggressiveness <= 6)
+		{
+			return RangeValue.Min;
+		}
+		return RangeValue.None;
+	}
+    
     //a function that return the type of position the landmine it should take based on the aggressiveness of 
     //the enemy main cell
-    private PositionType DetermineType()
+    private PositionType DeterminePositionType()
     {
 		float fEMainAggressiveness = m_Main.GetComponent<EnemyMainFSM>().CurrentAggressiveness;
 
@@ -94,14 +122,22 @@ public class ECMineState : IECState {
 		Vector2 m_Direction = -m_Difference.normalized;
 		
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fSpeed;
-		fSpeed -= 0.2f;
-		fSpeed = Mathf.Clamp(fSpeed,1f,6f);
+		fSpeed -= 0.1f;
+		fSpeed = Mathf.Clamp(fSpeed,1f,2.5f);
 	}
 	
 	//a function that direct the enemy child cell downward slowly 
-	private void FloatForward()
+	private void FloatForward(GameObject m_Target)
 	{
-		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.down;
+		Vector2 m_TargetPos = m_Target.transform.position;
+		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
+		Vector2 m_Direction = -m_Difference.normalized;
+		
+		Vector2 TargetVelocity = new Vector2(0,m_Direction.y) * fSpeed;
+		TargetVelocity += MaintainDistBetweenMines();
+		m_Child.GetComponent<Rigidbody2D>().velocity = TargetVelocity;
+		fSpeed -= 0.01f;
+		fSpeed = Mathf.Clamp(fSpeed,0.4f,1f);
 	}
 	
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
@@ -155,6 +191,53 @@ public class ECMineState : IECState {
 		return false;
 	}
 	
+	private GameObject[] TagLandmines()
+	{
+		Collider2D[] Objects = Physics2D.OverlapCircleAll(m_Child.transform.position, 1f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
+		GameObject[] NeighbouringMines = new GameObject[Objects.Length];
+		int Count = 0;
+		
+		foreach(Collider2D collision in Objects)
+		{
+			if(collision.tag == Constants.s_strEnemyChildTag && collision.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
+			{
+				NeighbouringMines[Count] = collision.gameObject;
+				Count++;
+			}
+		}
+		
+		return NeighbouringMines;
+	}
+	
+	private Vector2 MaintainDistBetweenMines()
+	{
+		GameObject[] neighbours = TagLandmines();
+		int neighbourCount = 0;
+		Vector2 steering = new Vector2(0f, 0f);
+		
+		foreach (GameObject cell in neighbours)
+		{
+			if (cell != null && cell != m_Child)
+			{
+				steering.x += 0.5f * (cell.transform.position.x - m_Child.transform.position.x);
+				steering.y += cell.transform.position.y - m_Child.transform.position.y;
+				neighbourCount++;
+			}
+		}
+		
+		if (neighbourCount <= 0)
+		{
+			return steering;
+		}
+		else
+		{
+			steering /= neighbourCount;
+			steering *= -1f;
+			steering.Normalize();
+			return steering;
+		}
+	}
+	
 	//a function for any potential sound effects or visual effects to be played 
 	//during explosions (to be implemented in the future)
 	private void ExplodeSetup()
@@ -169,12 +252,12 @@ public class ECMineState : IECState {
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
 			//if the player child cell is within the exploding range, kill the player child
-			if(m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerChildTag)
+			if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerChildTag)
 			{
 				m_SurroundingObjects[i].GetComponent<PlayerChildFSM>().DeferredChangeState(PCState.Dead);
 			}
 			//if the player main cell is within the exploding range, damage the player main
-			else if(m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerTag)
+			else if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerTag)
 			{
 				m_SurroundingObjects[i].GetComponent<PlayerMain>().HurtPlayerMain();
 			}

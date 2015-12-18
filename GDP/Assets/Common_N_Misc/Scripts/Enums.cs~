@@ -13,3 +13,11 @@ public enum MessageType {Empty, Idle, Attack, ChargeMain, ChargeChild, TrickAtta
 
 public enum PositionType {Aggressive, Neutral, Defensive};
 
+public enum QueryType   {Exact, Around, Path};
+
+public enum TargetType  {PlayerMain, PlayerChild, EnemyMain, EnemyChild, Others};
+
+public enum RangeValue  {Min, Max, None};
+
+public enum Directness  {Low, Mid, High};
+

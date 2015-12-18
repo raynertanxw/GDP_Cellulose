@@ -161,6 +161,11 @@ public class EnemyMainFSM : MonoBehaviour
 		emController = GetComponent<EMController> ();
 		emHelper = GetComponent<EMHelper> ();
 		emTransition = GetComponent<EMTransition> ();
+		
+		//Initialize and refresh the point database for Enemy Child Cells
+		PointDatabase.Instance.InitializeDatabase();
+		PointDatabase.Instance.RefreshDatabase();
+		
         // Initialise the enemy child list
         /*
 		EnemyChildFSM[] ecClasses = (EnemyChildFSM[])GameObject.FindObjectsOfType (typeof(EnemyChildFSM));
