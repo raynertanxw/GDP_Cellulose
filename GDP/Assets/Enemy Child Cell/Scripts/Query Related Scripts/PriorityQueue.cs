@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 public class PriorityQueue
 {
-	private Queue<int> queue;
-	private float[] cost;
+	private Queue<string> queue;
+	private Dictionary<string,float> cost;
 	
-	public PriorityQueue(float[] fCost)
+	public PriorityQueue(Dictionary<string,float> fCost)
 	{
-		queue = new Queue<int>();
+		queue = new Queue<string>();
 		cost = fCost;
 	}
 	
-	public void Add(int index)
+	public void Add(string index)
 	{
 		if(CheckLowestCost(index))
 		{
@@ -25,15 +25,7 @@ public class PriorityQueue
 		}
 	}
 	
-	void PrintCosts()
-	{
-		for(int i = 0; i < cost.Length; i++)
-		{
-			Debug.Log("cost index: " + i + " , element: " + cost[i]);
-		}
-	}
-	
-	bool CheckLowestCost(int index)
+	bool CheckLowestCost(string index)
 	{
 		var items = queue.ToArray();
 		for(int i = 0; i < items.Length; i++)
@@ -51,14 +43,14 @@ public class PriorityQueue
 		Debug.Log("count: " + queue.Count);
 		for(int i = 0; i < queue.Count; i++)
 		{
-			int current = queue.Dequeue();
+			string current = queue.Dequeue();
 			Debug.Log(current);
 			queue.Enqueue(current);
 		}
 		Debug.Log("after count: " + queue.Count);
 	}
 	
-	void EnqueueToFront(int index)
+	void EnqueueToFront(string index)
 	{
 		if(queue.Count >= 1)
 		{
@@ -76,7 +68,7 @@ public class PriorityQueue
 		}
 	}
 	
-	public void ChangePriority(int index)
+	public void ChangePriority(string index)
 	{
 		if(CheckLowestCost(index))
 		{
@@ -84,9 +76,9 @@ public class PriorityQueue
 		}
 	}
 	
-	public int Dequeue()
+	public string Dequeue()
 	{
-		int dq = queue.Dequeue();
+		string dq = queue.Dequeue();
 		return dq;
 	}
 	
@@ -95,7 +87,7 @@ public class PriorityQueue
 		return queue.Count;
 	}
 	
-	bool IsIndexSameAsFirst(int index)
+	bool IsIndexSameAsFirst(string index)
 	{
 		Debug.Log("index: " + index);
 		Debug.Log("peek: " + queue.Peek());

@@ -71,7 +71,7 @@ public class PointDatabase
 		int Count = 0;
 		
 		m_Database.Add(LKey.ToString() + "-" + HKey.ToString(), new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
-		//Utility.DrawCross(currentGeneration,Color.red,0.05f);
+		Utility.DrawCross(currentGeneration,Color.red,0.05f);
 		
 		while(Count < 125)
 		{
@@ -91,9 +91,8 @@ public class PointDatabase
 			
 			string CurrentKey = LKey.ToString() + "-" + HKey.ToString();
 			m_Database.Add(CurrentKey, new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
-			Debug.Log("generate: " + LKey.ToString() + "-" + HKey.ToString());
 			m_Database[CurrentKey].Walkable = IsPointWalkable(m_Database[CurrentKey]);
-			//Utility.DrawCross(currentGeneration,Color.red,0.05f);
+			Utility.DrawCross(currentGeneration,Color.red,0.05f);
 		
 			Count++;
 		}
@@ -221,11 +220,6 @@ public class PointDatabase
 		string[] keys = _Given.Index.Split('-');
 		int GivenLKey = int.Parse(keys[0]);
 		int GivenHKey = int.Parse(keys[1]);
-		
-		if(GivenLKey == 13)
-		{
-			Debug.Log ("Meow");
-		}
 		
 		if(_Direction == "Up" || _Direction == "up")
 		{
