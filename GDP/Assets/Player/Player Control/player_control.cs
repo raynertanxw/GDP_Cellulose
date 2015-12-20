@@ -44,6 +44,7 @@ public class player_control : MonoBehaviour
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
 			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(Node_Manager.GetNode(m_nActiveNode).transform.position + (Vector3)Random.insideUnitCircle*0.5f);
 			currentChild.m_assignedNode = Node_Manager.GetNode(m_nActiveNode);
+            currentChild.m_assignedNode.AddChildToNodeList(currentChild);
 			s_nResources -= m_nSpawnCost;
 		}
 		else
