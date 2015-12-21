@@ -7,9 +7,9 @@ using System.Collections;
 public class SC_DeadState : ISCState
 {
     // Constructor
-    public SC_DeadState(PlayerSquadFSM m_PlayerSquadFSM)
+    public SC_DeadState(SquadChildFSM m_SquadChildFSM)
     {
-        m_scFSM = m_PlayerSquadFSM;
+        m_scFSM = m_SquadChildFSM;
     }
 
     public override void Enter()
@@ -36,9 +36,9 @@ public class SC_IdleState : ISCState
     private Vector3 targetPosition;     // targetPosition: The target position that the cell is travelling towards
 
     // Constructor
-    public SC_IdleState(PlayerSquadFSM m_PlayerSquadFSM)
+    public SC_IdleState(SquadChildFSM m_SquadChildFSM)
     {
-        m_scFSM = m_PlayerSquadFSM;
+        m_scFSM = m_SquadChildFSM;
     }
 
     // State Execution:
@@ -50,7 +50,7 @@ public class SC_IdleState : ISCState
     public override void Execute()
     {
         // if: The number of squad child cells is less than 30 <- Production Check
-        if (PlayerSquadFSM.AliveCount() < 4f)
+        if (SquadChildFSM.AliveCount() < 4f)
         {
             m_scFSM.Advance(SCState.Produce);
             return;
@@ -90,27 +90,27 @@ public class SC_IdleState : ISCState
 public class SC_ProduceState : ISCState
 {
     // Constructor
-    public SC_ProduceState(PlayerSquadFSM m_PlayerSquadFSM)
+    public SC_ProduceState(SquadChildFSM m_SquadChildFSM)
     {
-        m_scFSM = m_PlayerSquadFSM;
+        m_scFSM = m_SquadChildFSM;
     }
 
     public override void Enter()
     {
-        PlayerSquadFSM.CalculateStrafingOffset();
+        SquadChildFSM.CalculateStrafingOffset();
     }
 
     public override void Execute()
     {
-        if (PlayerSquadFSM.AliveCount() >= 4f)
-            PlayerSquadFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 10f);
+        if (SquadChildFSM.AliveCount() >= 4f)
+            SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 10f);
 
         m_scFSM.Strafing();
     }
 
     public override void Exit()
     {
-        PlayerSquadFSM.CalculateStrafingOffset();
+        SquadChildFSM.CalculateStrafingOffset();
     }
 }
 
@@ -118,9 +118,9 @@ public class SC_ProduceState : ISCState
 public class SC_FindResourceState : ISCState
 {
     // Constructor
-    public SC_FindResourceState(PlayerSquadFSM m_PlayerSquadFSM)
+    public SC_FindResourceState(SquadChildFSM m_SquadChildFSM)
     {
-        m_scFSM = m_PlayerSquadFSM;
+        m_scFSM = m_SquadChildFSM;
     }
 }
 
@@ -128,9 +128,9 @@ public class SC_FindResourceState : ISCState
 public class SC_DefendState : ISCState
 {
     // Constructor
-    public SC_DefendState(PlayerSquadFSM m_PlayerSquadFSM)
+    public SC_DefendState(SquadChildFSM m_SquadChildFSM)
     {
-        m_scFSM = m_PlayerSquadFSM;
+        m_scFSM = m_SquadChildFSM;
     }
 }
 
@@ -138,8 +138,8 @@ public class SC_DefendState : ISCState
 public class SC_AttackState : ISCState
 {
     // Constructor
-    public SC_AttackState(PlayerSquadFSM m_PlayerSquadFSM)
+    public SC_AttackState(SquadChildFSM m_SquadChildFSM)
     {
-        m_scFSM = m_PlayerSquadFSM;
+        m_scFSM = m_SquadChildFSM;
     }
 }

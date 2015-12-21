@@ -68,7 +68,7 @@ public class SquadCaptain : MonoBehaviour
                 isLoop = false;
             else
             {
-                PlayerSquadFSM.Spawn(transform.position);
+                SquadChildFSM.Spawn(transform.position);
             }
         }
     }
@@ -90,12 +90,15 @@ public class SquadCaptain : MonoBehaviour
         // Variable Initialisation
         m_strafingVector = Vector3.up;
 
-        StartCoroutine(SpawnRoutine());
+        SquadChildFSM.Spawn(transform.position);
     }
 
     // Update(): is called once every frame
     void Update()
     {
+        if (SquadChildFSM.StateCount(SCState.Produce) > 0)
+            StartCoroutine(SpawnRoutine());
+
         if (!isStrafeVectorUpdated)
         {
             float fCurrentRadius = Mathf.PingPong(Time.time * 0.5f, fStrafingRadius);
@@ -118,13 +121,13 @@ public class SquadCaptain : MonoBehaviour
     public bool CalculateCooldown()
     {
         // if: There is max number of production (all cells are alive)
-        if (PlayerSquadFSM.AliveCount() == nMaximumChildCount)
+        if (SquadChildFSM.AliveCount() == nMaximumChildCount)
         {
             fNextCooldown = fMinimumCooldown;
             return true;
         }
 
-        fNextCooldown = (fMaximumCooldown - fMinimumCooldown) * ((float)(nMaximumChildCount - PlayerSquadFSM.StateCount(SCState.Idle)) / (float)nMaximumChildCount) + fMinimumCooldown;
+        fNextCooldown = (fMaximumCooldown - fMinimumCooldown) * ((float)(nMaximumChildCount - SquadChildFSM.StateCount(SCState.Idle)) / (float)nMaximumChildCount) + fMinimumCooldown;
 
         if (fNextCooldown <= 0f)
         {
@@ -140,7 +143,7 @@ public class SquadCaptain : MonoBehaviour
     // AliveChildCount(): Returns the number of squad child cells that is alive
     public int AliveChildCount()
     {
-        return PlayerSquadFSM.AliveCount();
+        return SquadChildFSM.AliveCount();
     }
 
     // StrafingVector(): calculates and return the strafing vector

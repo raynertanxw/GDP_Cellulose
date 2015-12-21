@@ -22,7 +22,7 @@ public abstract class IECState : IState
 
 public abstract class ISCState : IState
 {
-    protected PlayerSquadFSM m_scFSM = null;
+    protected SquadChildFSM m_scFSM = null;
 }
 
 public abstract class IEMState : IState

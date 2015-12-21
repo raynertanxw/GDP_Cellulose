@@ -3,10 +3,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-// PlayerSquadFSM.cs: The finite state machine of the cells
-public class PlayerSquadFSM : MonoBehaviour 
+// SquadChildFSM.cs: The finite state machine of the cells
+public class SquadChildFSM : MonoBehaviour 
 {
-    /* PlayerSquadFSM.cs API - Everything you possibly need for your Player Squad Finite State Machine Needs!
+    /* SquadChildFSM.cs API - Everything you possibly need for your Player Squad Finite State Machine Needs!
      * ------------------------------------------------------------------------------------------------------------------------------
      * Static Functions:
      * - int StateCount(SCState _enumState): Returns the number of squad child cells that is in the state defined
@@ -23,7 +23,7 @@ public class PlayerSquadFSM : MonoBehaviour
     */
 
     // Static Fields
-    private static PlayerSquadFSM[] s_array_PlayerSquadFSM;     // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
+    private static SquadChildFSM[] s_array_SquadChildFSM;     // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
     // s_dict_SingleTransition: Limits the execution of Advance to happen one per frame, eliminates the stacked transition that is called by multiple cell at once
     private static List<StatesAndPercentage> s_list_SingleAdvance = new List<StatesAndPercentage>();
 
@@ -49,12 +49,27 @@ public class PlayerSquadFSM : MonoBehaviour
         }
     }
 
+    void Awake()
+    {
+        // Initialisation of Array
+        if (s_array_SquadChildFSM == null)
+            s_array_SquadChildFSM = new SquadChildFSM[50];
+
+        // Object Pooling: Putting all child into array (THIS SHOULD BE THE LAST ELEMENT IN THE void Start(), CAZ IT returns;)
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+        {
+            // if: The current element of the array is empty
+            if (s_array_SquadChildFSM[i] == null)
+            {
+                s_array_SquadChildFSM[i] = this;
+                break;
+            }
+        }
+    }
+
     // Start(): Use this for initialisation
     void Start()
     {
-        // Initialisation of Array
-        if (s_array_PlayerSquadFSM == null)
-            s_array_PlayerSquadFSM = new PlayerSquadFSM[SquadCaptain.Instance.MaximumCount];
 
         // Initialisation of Dictionary
         dict_States = new Dictionary<SCState, ISCState>();
@@ -70,16 +85,9 @@ public class PlayerSquadFSM : MonoBehaviour
         m_currentState = dict_States[m_currentEnumState];
         m_currentState.Enter();
 
-        // Object Pooling: Putting all child into array (THIS SHOULD BE THE LAST ELEMENT IN THE void Start(), CAZ IT returns;)
-        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
-        {
-            // if: The current element of the array is empty
-            if (s_array_PlayerSquadFSM[i] == null)
-            {
-                s_array_PlayerSquadFSM[i] = this;
-                return;
-            }
-        }
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+            if (s_array_SquadChildFSM[i] == null)
+                Debug.Log(i + ": D:");
     }
 
     // Private Functions
@@ -96,10 +104,10 @@ public class PlayerSquadFSM : MonoBehaviour
         while (s_list_SingleAdvance.Count > 0)
         {
             // for: Checks through all the child in the array
-            for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+            for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
             {
                 // if: The current cell is the targeted cell that has a transition
-                if (s_array_PlayerSquadFSM[i].EnumState == s_list_SingleAdvance[0].FromState)
+                if (s_array_SquadChildFSM[i].EnumState == s_list_SingleAdvance[0].FromState)
                 {
                     if (UnityEngine.Random.value * 100f <= s_list_SingleAdvance[0].Percentage)
                     {
@@ -156,9 +164,9 @@ public class PlayerSquadFSM : MonoBehaviour
     public static int StateCount(SCState _enumState)
     {
         int nStateCount = 0;
-        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
-            if (s_array_PlayerSquadFSM[i].EnumState.Equals(_enumState))
+            if (s_array_SquadChildFSM[i].EnumState == _enumState)
                 nStateCount++;
         }
         return nStateCount;
@@ -172,10 +180,10 @@ public class PlayerSquadFSM : MonoBehaviour
     public static int AliveCount()
     {
         int nAliveCount = 0;
-        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
             // if: The current element m_playerSquadFSM's state is not in SC_DeadState
-            if (s_array_PlayerSquadFSM[i].EnumState != SCState.Dead)
+            if (s_array_SquadChildFSM[i].EnumState != SCState.Dead)
                 nAliveCount++;
         }
         return nAliveCount;
@@ -186,18 +194,18 @@ public class PlayerSquadFSM : MonoBehaviour
     /// </summary>
     /// <param name="_position"> The position of spawn </param>
     /// <returns></returns>
-    public static PlayerSquadFSM Spawn(Vector3 _position)
+    public static SquadChildFSM Spawn(Vector3 _position)
     {
-        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
-            if (s_array_PlayerSquadFSM[i].EnumState.Equals(SCState.Dead))
+            if (s_array_SquadChildFSM[i].EnumState.Equals(SCState.Dead))
             {
-                s_array_PlayerSquadFSM[i].Advance(SCState.Produce);
-                s_array_PlayerSquadFSM[i].transform.position = _position;
-                return s_array_PlayerSquadFSM[i];
+                s_array_SquadChildFSM[i].Advance(SCState.Produce);
+                s_array_SquadChildFSM[i].transform.position = _position;
+                return s_array_SquadChildFSM[i];
             }
         }
-        Debug.LogWarning("PlayerSquadFSM.Spawn(): Cannot spawn child. All child is alive.");
+        Debug.LogWarning("SquadChildFSM.Spawn(): Cannot spawn child. All child is alive.");
         return null;
     }
 
@@ -211,15 +219,15 @@ public class PlayerSquadFSM : MonoBehaviour
             return false;
 
         // Resets all the strafing offset to 0
-        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
-            s_array_PlayerSquadFSM[i].fStrafingOffsetAngle = 0f;
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+            s_array_SquadChildFSM[i].fStrafingOffsetAngle = 0f;
 
         // for: Calculates strafing angle for squad child cells that are in production state
         // Calculation: Angles are split equally among each cells, which is also based on the number of production cells
         //              1 cell = 360 deg apart, 2 cells = 180 deg apart, 3 cells = 120 deg apart, 4 cells = 90 deg apart...
-        for (int i = 0; i < PlayerSquadFSM.StateCount(SCState.Produce); i++)
-            if (s_array_PlayerSquadFSM[i].EnumState.Equals(SCState.Produce))
-                s_array_PlayerSquadFSM[i].fStrafingOffsetAngle = 360f / PlayerSquadFSM.StateCount(SCState.Produce) * i;
+        for (int i = 0; i < SquadChildFSM.StateCount(SCState.Produce); i++)
+            if (s_array_SquadChildFSM[i].EnumState.Equals(SCState.Produce))
+                s_array_SquadChildFSM[i].fStrafingOffsetAngle = 360f / SquadChildFSM.StateCount(SCState.Produce) * i;
 
         return true;
     }
@@ -231,12 +239,12 @@ public class PlayerSquadFSM : MonoBehaviour
     /// <param name="m_GOchild"> The reference of the child to be identified </param>
     public static bool KillThisChild(GameObject m_GOchild)
     {
-        for (int i = 0; i < s_array_PlayerSquadFSM.Length; i++)
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
             // if: The states matches
-            if (s_array_PlayerSquadFSM[i] == m_GOchild.GetComponent<PlayerSquadFSM>())
+            if (s_array_SquadChildFSM[i] == m_GOchild.GetComponent<SquadChildFSM>())
             {
-                s_array_PlayerSquadFSM[i].Advance(SCState.Dead);
+                s_array_SquadChildFSM[i].Advance(SCState.Dead);
                 return true;
             }
         }
@@ -261,7 +269,6 @@ public class PlayerSquadFSM : MonoBehaviour
             }
         }
         s_list_SingleAdvance.Add(new StatesAndPercentage(_currentState, _nextState, _chance));
-        Debug.Log("list=" + s_list_SingleAdvance.Count);
         return true;
     }
 
