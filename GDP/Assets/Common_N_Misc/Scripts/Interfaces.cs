@@ -25,6 +25,11 @@ public abstract class ISCState : IState
     protected SquadChildFSM m_scFSM = null;
 }
 
+public abstract class IPSState : IState 
+{
+    protected PlayerSquadFSM m_psFSM = null;
+}
+
 public abstract class IEMState : IState
 {
 	protected EnemyMainFSM m_EMFSM = null;
