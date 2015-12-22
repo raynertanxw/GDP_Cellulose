@@ -98,13 +98,17 @@ public class EnemyChildFSM : MonoBehaviour
 		m_CurrentState.Exit();
 		m_CurrentState = m_StatesDictionary[_state];
 		m_CurrentState.Enter();
-		m_CurrentCommand = MessageType.Empty;
 		m_CurrentEnum = _state;
 	}
 	
 	//a function to update the enemy child state based on the currentcommand variable in the enemy child FSM
 	private void UpdateState()
 	{
+		if(m_CurrentCommand == MessageType.Empty)
+		{
+			return;
+		}
+	
 		if (m_CurrentCommand == MessageType.Avoid)
 		{
 			ChangeState(ECState.Avoid);
@@ -141,6 +145,8 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			ChangeState(ECState.Landmine);
 		}
+		
+		m_CurrentCommand = MessageType.Empty;
 	}
 	
 	//a function for player cells to kill this child cell by changing it to the dead state
@@ -247,4 +253,11 @@ public class EnemyChildFSM : MonoBehaviour
 		StopCoroutine(_childCorountine);
 	}
 
+	public IEnumerator PassThroughDeath()
+	{
+		GetComponent<Rigidbody2D>().velocity = new Vector2(0f,GetComponent<Rigidbody2D>().velocity.y);
+		yield return new WaitForSeconds(1f);
+		MessageDispatcher.Instance.DispatchMessage(this.gameObject,this.gameObject,MessageType.Dead,0);
+		Debug.Log("EC Kill Self: " + gameObject.name);
+	}
 }

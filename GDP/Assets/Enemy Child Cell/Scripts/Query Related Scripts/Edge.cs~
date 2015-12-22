@@ -12,7 +12,7 @@ public class Edge
 		Source = _Start;
 		Target = _End;
 		fCost = _Cost;
-		Utility.DrawLine(_Start.Position,_End.Position);
+		//Utility.DrawLine(_Start.Position,_End.Position);
 	}
 	
 	public Point Start
@@ -23,7 +23,7 @@ public class Edge
 	
 	public Point End
 	{
-		get{ return End;}
+		get{ return Target;}
 		set{ End = value;}
 	}
 	

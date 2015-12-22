@@ -10,7 +10,7 @@ public class ECManualStateControl : MonoBehaviour {
 	{
 		//if this enemy child cell is not dead and 1/2/3/4/5 is pressed, transition this enemy child cell
 		//to a specific state
-		if(gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum != ECState.Dead && gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum != ECState.Landmine)
+		if(gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 		{
 			if(Input.GetKeyDown(KeyCode.Alpha1))
 			{

@@ -28,7 +28,6 @@ public class PointDatabase
 		{
 			if(s_Instance == null)
 			{
-				Debug.Log("initialize");
 				s_Instance = new PointDatabase();
 			}
 			return s_Instance;
@@ -42,15 +41,17 @@ public class PointDatabase
 	
 	private bool IsPointWalkable(Point _Point)
 	{
-		Collider2D[] PointCollisions = Physics2D.OverlapPointAll(_Point.Position);
-		foreach(Collider2D collision in PointCollisions)
+		float LeftWallX = GameObject.Find("Left Wall").transform.position.x;
+		float RightWallX = GameObject.Find("Right Wall").transform.position.x; 
+		float RadiusOfCell = GameObject.Find("Enemy_Child_Cell").GetComponent<SpriteRenderer>().bounds.size.x/2;
+		float WidthOfWall = GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x;
+		
+		if(_Point.Position.x + RadiusOfCell + WidthOfWall/2 > RightWallX || _Point.Position.x - RadiusOfCell - WidthOfWall/2 < LeftWallX)
 		{
-			if(collision.tag == "Wall")
-			{
-				return true;
-			}
+			return false;
 		}
-		return false;
+		
+		return true;
 	}
 	
 	public void InitializeDatabase()
@@ -71,7 +72,7 @@ public class PointDatabase
 		int Count = 0;
 		
 		m_Database.Add(LKey.ToString() + "-" + HKey.ToString(), new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
-		Utility.DrawCross(currentGeneration,Color.red,0.05f);
+		//Utility.DrawCross(currentGeneration,Color.red,0.05f);
 		
 		while(Count < 125)
 		{
@@ -92,12 +93,13 @@ public class PointDatabase
 			string CurrentKey = LKey.ToString() + "-" + HKey.ToString();
 			m_Database.Add(CurrentKey, new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
 			m_Database[CurrentKey].Walkable = IsPointWalkable(m_Database[CurrentKey]);
-			Utility.DrawCross(currentGeneration,Color.red,0.05f);
+			//Utility.DrawCross(currentGeneration,Color.red,0.05f);
 		
 			Count++;
 		}
 		
 		List<string> Keys = new List<string>(m_Database.Keys);
+		float CostBetweenPoints = Vector2.Distance(m_Database["0-0"].Position,m_Database["0-1"].Position);
 		foreach(string key in Keys)
 		{
 			if(m_Database[key] != null)
@@ -105,51 +107,43 @@ public class PointDatabase
 				if(GetPointNextToGivenPoint("Up",m_Database[key]) != null && !m_Database[key].Index.Contains("0-"));
 				{
 					Point PointUp = GetPointNextToGivenPoint("Up",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUp,1.0f));
-					PointUp.Edges.Add(new Edge(PointUp,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUp,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Down",m_Database[key]) != null && !m_Database[key].Index.Contains("13-"))
 				{
 					Point PointDown = GetPointNextToGivenPoint("Down",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointDown,1.0f));
-					PointDown.Edges.Add(new Edge(PointDown,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointDown,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null)
 				{
 					Point PointLeft = GetPointNextToGivenPoint("Left",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointLeft,1.0f));
-					PointLeft.Edges.Add(new Edge(PointLeft,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointLeft,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null)
 				{
 					Point PointRight = GetPointNextToGivenPoint("Right",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointRight,1.0f));
-					PointRight.Edges.Add(new Edge(PointRight,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointRight,CostBetweenPoints));
 				}
 				
 				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null && GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Left",m_Database[key]))) != null && !m_Database[key].Index.Contains("0-"))
 				{
 					Point PointTopLeft = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Left",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopLeft,1.0f));
-					PointTopLeft.Edges.Add(new Edge(PointTopLeft,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopLeft,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null && GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key]))) != null && !m_Database[key].Index.Contains("0-") && m_Database[key].LIndex != GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key]))).LIndex)
 				{
 					Point PointTopRight = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopRight,1.0f));
-					PointTopRight.Edges.Add(new Edge(PointTopRight,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopRight,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null && GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Left",m_Database[key]))) != null && !m_Database[key].Index.Contains("13-") && !m_Database[key].Index.Contains("-0"))
 				{
 					Point PointBotLeft = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Left",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotLeft,1.0f));
-					PointBotLeft.Edges.Add(new Edge(PointBotLeft,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotLeft,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null && GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Right",m_Database[key]))) != null && !m_Database[key].Index.Contains("13-") && !m_Database[key].Index.Contains("-8"))
 				{
 					Point PointBotRight = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Right",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotRight,1.0f));
-					PointBotRight.Edges.Add(new Edge(PointBotRight,m_Database[key],1.0f));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotRight,CostBetweenPoints));
 				}
 			}
 		}
@@ -197,7 +191,7 @@ public class PointDatabase
 		return PointsWithinRange;
 	}
 
-	public Point GetClosestPointToPosition(Vector2 _Pos)
+	public Point GetClosestPointToPosition(Vector2 _Pos, bool _UnwalkableAllowed)
 	{
 		List<string> keys = new List<string>(m_Database.Keys);
 		Point ClosestPoint = new Point("",new Vector2(0f,0f),false);
@@ -205,7 +199,7 @@ public class PointDatabase
 		
 		foreach(string key in keys)
 		{
-			if(Vector2.Distance(_Pos, m_Database[key].Position) < ClosestDistance)
+			if(Vector2.Distance(_Pos, m_Database[key].Position) < ClosestDistance && (_UnwalkableAllowed == true||m_Database[key].Walkable == true))
 			{
 				ClosestPoint = m_Database[key];
 				ClosestDistance = Vector2.Distance(_Pos, m_Database[key].Position);
@@ -249,7 +243,7 @@ public class PointDatabase
 		}
 		else if(_Direction == "Right" || _Direction == "right")
 		{
-			if(GivenHKey < 7)
+			if(GivenHKey < 8)
 			{
 				int TargetHKey = GivenHKey + 1;
 				return m_Database[GivenLKey.ToString() + "-" + TargetHKey.ToString()];
@@ -267,5 +261,26 @@ public class PointDatabase
 			Points.Add(m_Database[key]);
 		}
 		return Points;
+	}
+	
+	public Point GetIdealPoint(Vector2 _Current, Vector2 _Target)
+	{
+		//Get the current closest point to the agent
+		Point InitialPoint = GetClosestPointToPosition(_Current,false);
+		float Difference = Vector2.Distance(InitialPoint.Position,_Target);
+		
+		//Check if there is any nearby point that is more ideal (more direct towards the target)
+		Point TargetPoint = InitialPoint;
+		
+		for(int i = 0; i < InitialPoint.Edges.Count; i++)
+		{
+			if(Vector2.Distance(InitialPoint.Edges[i].End.Position,_Target) < Difference)
+			{
+				TargetPoint = InitialPoint.Edges[i].End;
+				Difference = Vector2.Distance(InitialPoint.Edges[i].End.Position,_Target);
+			}
+		} 
+		
+		return TargetPoint;
 	}
 }

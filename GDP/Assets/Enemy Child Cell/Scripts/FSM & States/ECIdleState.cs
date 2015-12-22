@@ -52,24 +52,7 @@ public class ECIdleState : IECState
 	}
 	
 	public override void Execute()
-	{
-		/*if (bIsWondering == true && HittingWall(m_Child.transform.position))
-		{
-			m_Child.GetComponent<Rigidbody2D>().velocity = GenerateInverseVelo(m_Child.GetComponent<Rigidbody2D>().velocity);
-		}*/
-		
-		
-        //Implementation of different group movement behaviour (Further testing is needed to implement)//
-        //if this child cell is the only child cell in the main cell it is not wondering now, start the wandering process
-        /*if (m_Main.GetComponent<EnemyMainFSM>().ECList.Count <= 1 && bIsWondering == false)
-        {
-            bIsWondering = true;
-            m_ecFSM.StartChildCorountine(Wandering());
-        }
-        else if (m_Main.GetComponent<EnemyMainFSM>().ECList.Count > 1)
-        {
-			m_ecFSM.StopChildCorountine(Wandering());*/
-        
+	{  
             if (bIsWondering == true)
             {
                 bIsWondering = false;

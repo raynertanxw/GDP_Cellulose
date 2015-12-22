@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class ECTrickAttackState : IECState {
-
+	
 	//a gameobject variable to store the target to attack
 	private GameObject m_AttackTarget;
 	
@@ -20,19 +20,24 @@ public class ECTrickAttackState : IECState {
 	
 	//an array of gameobject to store the player nodes
 	private GameObject[] m_Nodes;
-
+	
+	private List<Point> PathToTarget;
+	private int CurrentTargetIndex;
+	private Point CurrentTargetPoint;
+	private bool bTeleported;
+	
 	//constructor
-    public ECTrickAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
-    {
+	public ECTrickAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
+	{
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
 		m_Nodes = new GameObject[3];
-    }
+	}
 	
 	//initialize the array and various variables for the trick attack
-    public override void Enter()
-    {
+	public override void Enter()
+	{
 		m_Nodes[0] = GameObject.Find("Node_Left");
 		m_Nodes[1] = GameObject.Find("Node_Top");
 		m_Nodes[2] = GameObject.Find("Node_Right");
@@ -44,36 +49,46 @@ public class ECTrickAttackState : IECState {
 		m_StartTelePos = m_Positions[0];
 		m_EndTelePos = m_Positions[1];
 		m_TargetPos = m_Positions[2];
-    }
-
-    public override void Execute()
+		
+		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_StartTelePos,true);
+		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
+		CurrentTargetIndex = 0;
+		CurrentTargetPoint = PathToTarget[0];
+		bTeleported = false;
+	}
+	
+	public override void Execute()
 	{
 		//if the cell have not reach the teleport starting position, continue charge forward. If the cell
 		//reach the teleport starting position, start the teleport corountine. The coroutine will disable the
 		//enemy child cell for 1.5 second become teleport the enemy child cell to the next position and then
 		//move towards the player main cell
-		if(bReachStart == false)
+		if(!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
-			ChargeTowards(m_StartTelePos);
-			if(HasCellReachTargetPos(m_StartTelePos))
-			{
-				m_ecFSM.StartChildCorountine(Teleport());
-			}
+			ChargeTowards(CurrentTargetPoint.Position);
 		}
-		else
+		else if(CurrentTargetIndex + 1 < PathToTarget.Count)
 		{
-			MoveTowards(m_TargetPos);
+			CurrentTargetIndex++;
+			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			//Utility.DrawCross(PathToTarget[CurrentTargetIndex].Position,Color.cyan,0.1f);
+			//Debug.Log("point: " + CurrentTargetPoint.Index);
 		}
-    }
-
-    public override void Exit()
-    {
-
-    }
-    
-    //a function that return a boolean that state whether all the player nodes is empty
-    private bool IsAllNodesEmpty()
-    {
+		else if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported == false)
+		{
+			bTeleported = true;
+			m_ecFSM.StartChildCorountine(Teleport());
+		}
+	}
+	
+	public override void Exit()
+	{
+		
+	}
+	
+	//a function that return a boolean that state whether all the player nodes is empty
+	private bool IsAllNodesEmpty()
+	{
 		for(int i = 0; i < m_Nodes.Length; i++)
 		{
 			if(m_Nodes[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
@@ -83,11 +98,11 @@ public class ECTrickAttackState : IECState {
 		}
 		
 		return true;
-    }
-    
-    //a function to return the least threatening node from the player
-    private GameObject GetWeakestNode()
-    {
+	}
+	
+	//a function to return the least threatening node from the player
+	private GameObject GetWeakestNode()
+	{
 		int[] m_Scores = new int[3];
 		m_Scores[0] = EvaluteNode(m_Nodes[0]);
 		m_Scores[1] = EvaluteNode(m_Nodes[1]);
@@ -105,11 +120,11 @@ public class ECTrickAttackState : IECState {
 		}
 		
 		return m_Nodes[nIndex];
-    }
-    
-    //a function that evluate a specific node based on several conditions and return an integer that represent the score of threat
-    private int EvaluteNode(GameObject _Node)
-    {
+	}
+	
+	//a function that evluate a specific node based on several conditions and return an integer that represent the score of threat
+	private int EvaluteNode(GameObject _Node)
+	{
 		//if the node contains no cell, it serve no threat to the enemy main cell
 		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
 		{
@@ -122,17 +137,17 @@ public class ECTrickAttackState : IECState {
 		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
 		
 		//increase score if that node have formed together and has a node captain
-		if(_Node.GetComponent<SquadCaptain>() != null)
+		if(_Node.GetComponent<PlayerSquadFSM>() != null)
 		{
 			nthreatLevel+= 50;
 		}
 		
 		return nthreatLevel;
-    }
-    
-    //a function to return the target object that the enemy child should aim towards
-    private GameObject GetTarget()
-    {
+	}
+	
+	//a function to return the target object that the enemy child should aim towards
+	private GameObject GetTarget()
+	{
 		if(IsAllNodesEmpty())
 		{
 			return m_ecFSM.m_PMain;
@@ -141,11 +156,11 @@ public class ECTrickAttackState : IECState {
 		{
 			return GetWeakestNode();
 		}
-    } 
-    
-    //a functon that return a list of the 3 key position used to perform the trick attack
-    private List<Vector2> CalculateKeyPositions()
-    {
+	} 
+	
+	//a functon that return a list of the 3 key position used to perform the trick attack
+	private List<Vector2> CalculateKeyPositions()
+	{
 		List<Vector2> Positions = new List<Vector2>();
 		
 		//Start Tele Position//
@@ -183,21 +198,21 @@ public class ECTrickAttackState : IECState {
 		Positions.Add(m_AttackTarget.transform.position);
 		
 		return Positions;
-    }
-    
-    //a function that return the wall that is closest to the given position in the perimeter
-    private GameObject GetClosestWall (Vector2 _Pos)
-    {
+	}
+	
+	//a function that return the wall that is closest to the given position in the perimeter
+	private GameObject GetClosestWall (Vector2 _Pos)
+	{
 		GameObject m_LWall = GameObject.Find("Left Wall");
 		GameObject m_RWall = GameObject.Find("Right Wall");
 		
 		if(Vector2.Distance(_Pos, m_LWall.transform.position) < Vector2.Distance(_Pos, m_RWall.transform.position))
 		{
-			return m_RWall;
+			return m_LWall;
 		}
-		return m_LWall;
-    }
-    
+		return m_RWall;
+	}
+	
 	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
 	private void ChargeTowards(Vector2 _Pos)
 	{
@@ -207,7 +222,7 @@ public class ECTrickAttackState : IECState {
 		
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
 		fChargeSpeed += 0.2f;
-		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
+		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,8f);
 	}
 	
 	//a function that direct the enemy child cell towards a gameObject by maintaining its velocity through calculation
@@ -233,6 +248,8 @@ public class ECTrickAttackState : IECState {
 	//A corountine that perform the teleporting process for the enemy child cell
 	IEnumerator Teleport()
 	{
+		yield return new WaitForSeconds(0.05f);
+		
 		//disable the enemy child cell
 		m_Child.GetComponent<SpriteRenderer>().enabled = false;
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
@@ -248,7 +265,12 @@ public class ECTrickAttackState : IECState {
 		
 		//and, change the position of the enemy child cell to the end of teleport position
 		m_Child.transform.position = m_EndTelePos;
-
+		
 		bReachStart = true;
+		
+		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_TargetPos,true);
+		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
+		CurrentTargetIndex = 0;
+		CurrentTargetPoint = PathToTarget[0];
 	}
 }

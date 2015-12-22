@@ -7,6 +7,12 @@ public class ECChargeCState : IECState {
 	//a float that determine the speed to charge towards a player child cell
 	private float fChargeSpeed;
 	
+	private List<Point> PathToTarget;
+	private Node_Manager m_TargetNode;
+	private Point CurrentTargetPoint;
+	private int CurrentTargetIndex;
+	private bool bReachTarget;
+	
 	//Constructor
 	public ECChargeCState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
@@ -21,19 +27,40 @@ public class ECChargeCState : IECState {
 	{
 		//Set the charge target to be one of the player child cell
 		m_ecFSM.m_ChargeTarget = FindTargetChild();
+		bReachTarget = false;
+		
+		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_ecFSM.m_ChargeTarget.transform.position,false);
+		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
+		CurrentTargetIndex = 0;
+		CurrentTargetPoint = PathToTarget[0];
 	}
 	
 	public override void Execute()
 	{
-		//If the Enemy child cell had not reach the charge target, continue charge towards the target.
-		//if the target is dead during the charging, change the target for the enemy child cell
-		if(!HasCellReachTargetPos(m_ecFSM.m_ChargeTarget.transform.position))
+		//If the child cell reach the charge target but the target is lost and there is no more cells in the target's node
+		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && m_TargetNode.GetNodeChildList().Count <= 0)
 		{
-			ChargeTowards(m_ecFSM.m_ChargeTarget);
-			if(IsTargetDead(m_ecFSM.m_ChargeTarget))
-			{
-				m_ecFSM.m_ChargeTarget = FindTargetChild();
-			}
+			bReachTarget = true;
+			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
+		}
+		
+		if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && bReachTarget == false)
+		{
+			ChargeTowards(CurrentTargetPoint);
+		}
+		else if(CurrentTargetIndex + 1 < PathToTarget.Count && bReachTarget == false)
+		{
+			CurrentTargetIndex++;
+			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+		}
+		
+		if(m_ecFSM.m_ChargeTarget.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead && m_ecFSM.m_ChargeTarget.GetComponent<PlayerChildFSM>().m_assignedNode == GameObject.Find("Node_Top"))
+		{
+			m_ecFSM.m_ChargeTarget = FindTargetChild();
+			PathQuery.Instance.AStarSearch(m_Child.transform.position,m_ecFSM.m_ChargeTarget.transform.position,false);
+			PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
+			CurrentTargetIndex = 0;
+			CurrentTargetPoint = PathToTarget[0];
 		}
 	}
 	
@@ -65,9 +92,9 @@ public class ECChargeCState : IECState {
 	private GameObject FindTargetChild()
 	{
 		//Find the node to obtain a target child by evaluating which node is the most threatening
-		Node_Manager m_TargetNode = GetMostThreateningNode();
+		m_TargetNode = GetMostThreateningNode();
 		List<PlayerChildFSM> m_PotentialTargets = m_TargetNode.GetNodeChildList();
-
+		
 		//loop through all the childs of the most threatening squad and return the closest target player cell
 		float fDistanceBetween = Mathf.Infinity;
 		int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
@@ -81,14 +108,14 @@ public class ECChargeCState : IECState {
 				m_TargetCell = m_PotentialTargets[i].gameObject;
 			}
 		}
-
+		
 		//If there is no more available player child to be targeted, stop this state and shift back to idle state
 		if(m_TargetCell == null)
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child, m_Child, MessageType.Idle, 0);
 			return null;
 		}
-
+		
 		return m_TargetCell;
 	}
 	
@@ -137,9 +164,9 @@ public class ECChargeCState : IECState {
 		
 		//increase score based on amount of cells in that node
 		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
-	
+		
 		//increase score if that node have formed together and has a node captain
-		if(_Node.GetComponent<SquadCaptain>() != null)
+		if(_Node.GetComponent<PlayerSquadFSM>() != null)
 		{
 			nthreatLevel+= 50;
 		}
@@ -158,9 +185,9 @@ public class ECChargeCState : IECState {
 	}
 	
 	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
-	private void ChargeTowards(GameObject _PC)
+	private void ChargeTowards(Point _Point)
 	{
-		Vector2 m_TargetPos = _PC.transform.position;
+		Vector2 m_TargetPos = _Point.Position;
 		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
 		Vector2 m_Direction = -m_Difference.normalized;
 		

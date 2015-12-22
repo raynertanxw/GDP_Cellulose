@@ -7,14 +7,18 @@ public class ECMineState : IECState {
 	//A vector 2 variable to store the target position for the landmine to move to
 	private Vector2 m_TargetPosition;
 	private GameObject m_Target;
+	private List<Point> PathToTarget;
+	private Point CurrentTargetPoint;
 	
 	//2 booleans to track whether the enemy child cell had reach the target landmine position 
 	// or the explosion of the enemy child cell had started
 	private bool bReachPosition;
+	private bool bReachTarget;
 	private bool bExplosionStart;
 	
 	//a float variable that store the speed of movement for the enemy child cell in this state
 	private float fSpeed;
+	private int CurrentTargetIndex;
 
 	//Constructor
     public ECMineState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -34,46 +38,49 @@ public class ECMineState : IECState {
 		m_Target = PositionQuery.Instance.GetLandmineTarget(DeterminePositionType(),m_Child);
 		m_TargetPosition = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(), DeterminePositionType(), m_Child);
 		
-		fSpeed = 12f;
+		PathQuery.Instance.AStarSearch(m_Child.transform.position, m_TargetPosition,false);
+		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Low);
+		CurrentTargetIndex = 0;
+		CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+		
+		fSpeed = 1f;
 		bReachPosition = false;
+		bReachTarget = false;
 		bExplosionStart = false;
     }
 
     public override void Execute()
     {
-		//if the enemy child cell had not reach the target position, continue float towards it.
-		//Once it reached, just float forward slowly
-		if(!HasCellReachTarget(m_TargetPosition) && bReachPosition == false)
+		if(HasCellReachTarget(PathToTarget[PathToTarget.Count - 1].Position))
 		{
-			FloatTowards(m_TargetPosition);
+			bReachTarget = true;
+			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
 		}
-		else if(HasCellReachTarget(m_TargetPosition) && bReachPosition == false)
+    
+		if(m_Target.name == "Node_Top" && m_Target.GetComponent<Node_Manager>().GetNodeChildList().Count <= 0)
 		{
-			bReachPosition = true;
+			m_Target = PositionQuery.Instance.GetLandmineTarget(DeterminePositionType(),m_Child);
+			m_TargetPosition = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),DeterminePositionType(),m_Child);
+			PathQuery.Instance.AStarSearch(m_Child.transform.position,m_TargetPosition,false);
+			PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Low);
+			CurrentTargetIndex = 0;
+			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+		}
+    
+		if(!HasCellReachTarget(CurrentTargetPoint.Position) && !HasCellReachTarget(PathToTarget[PathToTarget.Count - 1].Position) && bReachTarget == false)
+		{
+			FloatTowards(CurrentTargetPoint.Position);
+		}
+		else if(CurrentTargetIndex + 1 < PathToTarget.Count && bReachTarget == false)
+		{
+			CurrentTargetIndex++;
+			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			//Utility.DrawCross(PathToTarget[CurrentTargetIndex].Position,Color.cyan,0.1f);
 		}
 		
-		if(bReachPosition)
-		{
-			FloatForward(m_Target);
-		}
-		
-		if(m_Target == GameObject.Find("Node_Top") && m_Target.GetComponent<Node_Manager>().GetNodeChildList().Count <= 0)
-		{
-			m_Target = m_ecFSM.m_PMain;
-			Debug.Log("Target Change");
-		}
-		
-		//if the enemy child cell is colliding with a player cell, start the explosion
-		if(IsCollidingWithPlayerCell() && bExplosionStart == false)
+		if(HasCollidedWithPlayerCells())
 		{
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());
-			bExplosionStart = true;
-		}
-		
-		//if the enemy child cell has collided with a player cell, explode the enemy child cell
-		if(bExplosionStart == true && HasCollidedWithPlayerCells())
-		{
-			ExplodeDestroy();
 		}
     }
 
@@ -122,22 +129,6 @@ public class ECMineState : IECState {
 		Vector2 m_Direction = -m_Difference.normalized;
 		
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fSpeed;
-		fSpeed -= 0.1f;
-		fSpeed = Mathf.Clamp(fSpeed,1f,2.5f);
-	}
-	
-	//a function that direct the enemy child cell downward slowly 
-	private void FloatForward(GameObject m_Target)
-	{
-		Vector2 m_TargetPos = m_Target.transform.position;
-		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
-		Vector2 m_Direction = -m_Difference.normalized;
-		
-		Vector2 TargetVelocity = new Vector2(0,m_Direction.y) * fSpeed;
-		TargetVelocity += MaintainDistBetweenMines();
-		m_Child.GetComponent<Rigidbody2D>().velocity = TargetVelocity;
-		fSpeed -= 0.01f;
-		fSpeed = Mathf.Clamp(fSpeed,0.4f,1f);
 	}
 	
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter

@@ -14,9 +14,6 @@ public class PositionQuery
 	private GameObject PlayerMain;
 	private static int CurrentNodeTarget;
 	
-	//Criterion
-	
-		
 	//Constructor for PositionQuery
 	public PositionQuery()
 	{
@@ -38,7 +35,7 @@ public class PositionQuery
 			return s_Instance;
 		}
 	}
-
+	
 	private bool IsAllNodesEmpty ()
 	{
 		List<GameObject> NodeList = new List<GameObject>();
@@ -78,7 +75,7 @@ public class PositionQuery
 		
 		return NodeList[nIndexForMostThreating];
 	}
-
+	
 	//A function that evaluate all the nodes of the player and return the most weak node
 	private GameObject GetMostWeakNode ()
 	{
@@ -100,7 +97,7 @@ public class PositionQuery
 		
 		return NodeList[nIndexForMostWeak];
 	}
-
+	
 	//a function that evalute the given node and return a score
 	private int EvaluateNode (GameObject _Node)
 	{
@@ -116,7 +113,7 @@ public class PositionQuery
 		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
 		
 		//increase score if that node have formed together and has a node captain
-        if (_Node.GetComponent<PlayerSquadFSM>() != null)
+		if(_Node.GetComponent<PlayerSquadFSM>() != null)
 		{
 			nthreatLevel+= 50;
 		}
@@ -126,8 +123,8 @@ public class PositionQuery
 	
 	private List<Vector2> GetPointRangeBetweenPlayerEnemy()
 	{
-		Point PlayerClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Player_Cell").transform.position);
-		Point EnemyClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Enemy_Cell").transform.position);
+		Point PlayerClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Player_Cell").transform.position,false);
+		Point EnemyClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Enemy_Cell").transform.position,false);
 		
 		float PosDifferenceX = EnemyClosestPoint.Position.x - PlayerClosestPoint.Position.x;
 		float PosDifferenceY = EnemyClosestPoint.Position.y - PlayerClosestPoint.Position.y;
@@ -241,23 +238,13 @@ public class PositionQuery
 	public Vector2 GetLandminePos(RangeValue Range, PositionType PType, GameObject Agent)
 	{
 		Vector2 targetPos = new Vector2(0f,0f);
-		List<Vector2> PointRange = GetPointRangeBetweenPlayerEnemy();
-		int XMax = (int) PointRange[0].x;
-		int YMax = (int) PointRange[0].y;
-		int XBal = (int) PointRange[1].x;
-		int YBal = (int) PointRange[1].y;
-		int XMin = (int) PointRange[2].x;
-		int YMin = (int) PointRange[2].y;
-	
+		
 		if(PType == PositionType.Aggressive)
 		{
 			Debug.Log("Aggressive");
 			if(IsAllNodesEmpty())
 			{
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
-				
-				CurrentPoint = GetPointAfterMoving(CurrentPoint,XMin,YMin,"Up");
-				
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 			else
@@ -266,30 +253,11 @@ public class PositionQuery
 				Point CurrentPoint = null;
 				if(TopNode.GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
 				{
-					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TopNode.transform.position);
+					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TopNode.transform.position,false);
 				}
 				else
 				{
-					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
-				}
-
-				if(Range == RangeValue.Max)
-				{
-					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMin,YMin,"Up");
-					
-					targetPos = CurrentPoint.Position;
-				}
-				else if(Range == RangeValue.Min)
-				{	
-					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMax,YMax,"Up");
-					
-					targetPos = CurrentPoint.Position;
-				}
-				else if(Range == RangeValue.None)
-				{
-					CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
-
-					targetPos = CurrentPoint.Position;
+					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 				}
 			}
 		}
@@ -298,37 +266,14 @@ public class PositionQuery
 			Debug.Log("Defensive");
 			if(IsAllNodesEmpty())
 			{
-				Debug.Log("All Nodes empty");
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
-
-				CurrentPoint = GetPointAfterMoving(CurrentPoint,XMax,YMax,"Up");
-				
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 			else
 			{
-				Debug.Log("Obtain threatening node");
 				GameObject TargetNode = GetMostThreateningNode();
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position);
-
-				if(Range == RangeValue.Max)
-				{
-					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMin,YMin,"Up");
-					
-					targetPos = CurrentPoint.Position;
-				}
-				else if(Range == RangeValue.Min)
-				{
-					CurrentPoint = GetPointAfterMoving(CurrentPoint,XMax,YMax,"Up");
-					
-					targetPos = CurrentPoint.Position;
-				}
-				else if(Range == RangeValue.None)
-				{
-					CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
-					
-					targetPos = CurrentPoint.Position;
-				}
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position,false);
+				targetPos = CurrentPoint.Position;
 			}
 		}
 		else if(PType == PositionType.Neutral)
@@ -336,16 +281,11 @@ public class PositionQuery
 			Debug.Log("Netural");
 			if(IsAllNodesEmpty())
 			{
-				Debug.Log("neutral empty");
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position);
-				
-				CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
-
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 			else
 			{
-				Debug.Log("neutral act");
 				GameObject TargetNode = null;
 				
 				if(CurrentNodeTarget == 0)
@@ -361,10 +301,7 @@ public class PositionQuery
 					TargetNode = GameObject.Find("Node_Right");
 				}
 				
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position);
-			
-				CurrentPoint = GetPointAfterMoving(CurrentPoint,XBal,YBal,"Up");
-
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position,false);
 				targetPos = CurrentPoint.Position;
 				
 				if(CurrentNodeTarget >= 2)
@@ -378,8 +315,8 @@ public class PositionQuery
 			}
 		}
 		
-		Utility.DrawCross(targetPos,Color.green,0.5f);
-		return InduceNoiseToPosition(targetPos);
+		//Utility.DrawCross(targetPos,Color.green,0.5f);
+		return targetPos;//InduceNoiseToPosition(targetPos);
 	}
 	
 	/*

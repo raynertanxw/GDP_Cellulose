@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class ECChargeMState : IECState {
 
@@ -9,12 +10,17 @@ public class ECChargeMState : IECState {
 	//a gameobject instance that store the player main cell
 	private GameObject m_PlayerMain;
 	
+	private List<Point> PathToTarget;
+	private Point CurrentTargetPoint;
+	private int CurrentTargetIndex;
+	
 	//Constructor for ECChargeMState
 	public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_PlayerMain = m_ecFSM.m_PMain;
+		PathToTarget = new List<Point>();
 		fChargeSpeed = 1f; //min 3f max 10f;
 	}
 	
@@ -22,14 +28,24 @@ public class ECChargeMState : IECState {
 	{
 		//set the velocity of the enemy child cell to be 0
 		m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
+		
+		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_ecFSM.m_PMain.transform.position,false);
+		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
+		CurrentTargetIndex = 0;
+		CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 	}
 	
 	public override void Execute()
 	{
 		//if the enemy child cell had not reach the player main cell, continue charge towards the player main cell
-		if (!HasCellReachTargetPos(m_PlayerMain.transform.position))
+		if (!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
-			ChargeTowards(m_PlayerMain);
+			ChargeTowards(CurrentTargetPoint);
+		}
+		else if(CurrentTargetIndex + 1 < PathToTarget.Count)
+		{
+			CurrentTargetIndex++;
+			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
 	}
 	
@@ -50,7 +66,17 @@ public class ECChargeMState : IECState {
 	}
 	
 	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
-	private void ChargeTowards(GameObject _PM)
+	private void ChargeTowards(Point _Point)
+	{
+		Vector2 targetPos = _Point.Position;
+		Vector2 difference = new Vector2(targetPos.x - m_Child.transform.position.x, targetPos.y - m_Child.transform.position.y);
+		Vector2 direction = difference.normalized;
+		m_Child.GetComponent<Rigidbody2D>().velocity = direction * fChargeSpeed;
+		fChargeSpeed += 0.2f;
+		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
+	}
+	
+	/*private void ChargeTowards(GameObject _PM)
 	{
 		Vector2 m_TargetPos = _PM.transform.position;
 		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
@@ -59,6 +85,6 @@ public class ECChargeMState : IECState {
 		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
 		fChargeSpeed += 0.2f;
 		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
-	}
+	}*/
 }
 

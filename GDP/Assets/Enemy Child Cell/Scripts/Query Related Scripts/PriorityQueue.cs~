@@ -17,12 +17,15 @@ public class PriorityQueue
 	{
 		if(CheckLowestCost(index))
 		{
+			//Debug.Log("enqueue to front");
 			EnqueueToFront(index);
 		}
 		else
 		{
 			queue.Enqueue(index);
 		}
+		
+		//DebugAllEntries();
 	}
 	
 	bool CheckLowestCost(string index)
@@ -30,6 +33,8 @@ public class PriorityQueue
 		var items = queue.ToArray();
 		for(int i = 0; i < items.Length; i++)
 		{
+			//Debug.Log(items[i] + ": " + cost[items[i]] + " " + index + ": " + cost[index]);
+			
 			if(cost[items[i]] < cost[index])
 			{
 				return false;
