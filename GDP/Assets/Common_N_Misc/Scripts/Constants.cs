@@ -16,5 +16,7 @@ public class Constants : MonoBehaviour
 	public static string s_strPlayerChildTag = "PlayerChild";
 	public static string s_strEnemyTag = "Enemy";
 	public static string s_strEnemyChildTag = "EnemyChild";
+	public static string s_strEnemyMainNutrient = "EnemyMainNutrient";
+	public static string s_strEnemyMiniNutrient = "EnemyMiniNutrient";
 	#endregion
 }
