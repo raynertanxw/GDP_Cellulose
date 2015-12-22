@@ -60,9 +60,9 @@ public class SC_IdleState : ISCState
         if ((targetPosition - m_scFSM.transform.position).sqrMagnitude < 0.1f)
         {
             // Idling Squad cells got too far from the captain
-            if ((SquadCaptain.Instance.transform.position - m_scFSM.transform.position).magnitude > 1.0f)
+            if ((PlayerSquadFSM.Instance.transform.position - m_scFSM.transform.position).magnitude > 1.0f)
             {
-                targetPosition = SquadCaptain.Instance.transform.position - m_scFSM.transform.position;
+                targetPosition = PlayerSquadFSM.Instance.transform.position - m_scFSM.transform.position;
                 // if: The cell is further away from the squad captain in the x-direction than the y-direction
                 if (targetPosition.x > targetPosition.y)
                     targetPosition = Vector3.Cross(targetPosition, Vector3.right);

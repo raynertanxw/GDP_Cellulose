@@ -116,7 +116,7 @@ public class PositionQuery
 		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
 		
 		//increase score if that node have formed together and has a node captain
-		if(_Node.GetComponent<SquadCaptain>() != null)
+        if (_Node.GetComponent<PlayerSquadFSM>() != null)
 		{
 			nthreatLevel+= 50;
 		}

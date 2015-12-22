@@ -125,7 +125,7 @@ public class SquadChildFSM : MonoBehaviour
     {
         if (_enumState.Equals(m_currentEnumState))
         {
-            Debug.LogWarning(this.name + ".PlayerSquadFSM.Advance(): Tried to advance to same state! m_currentEnumState = SC.State." + m_currentEnumState.ToString());
+            Debug.LogWarning(this.name + ".SquadChildFSM.Advance(): Tried to advance to same state! m_currentEnumState = SC.State." + m_currentEnumState.ToString());
             return false;
         }
 
@@ -144,12 +144,12 @@ public class SquadChildFSM : MonoBehaviour
     {
         if (m_currentEnumState != SCState.Produce)
         {
-            Debug.LogWarning(gameObject.name + ".PlayerSquadFSM.Strafing(): Current state is not SCState.Produce! Ignore Strafing!");
+            Debug.LogWarning(gameObject.name + ".SquadChildFSM.Strafing(): Current state is not SCState.Produce! Ignore Strafing!");
             return false;
         }
 
         // targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
-        Vector3 targetPosition = Quaternion.Euler(Vector3.forward * fStrafingOffsetAngle) * SquadCaptain.Instance.StrafingVector() + SquadCaptain.Instance.transform.position;
+        Vector3 targetPosition = Quaternion.Euler(Vector3.forward * fStrafingOffsetAngle) * PlayerSquadFSM.Instance.StrafingVector() + PlayerSquadFSM.Instance.transform.position;
         transform.position = Vector3.Lerp(transform.position, targetPosition, 3f * Time.deltaTime);
 
         return true;
@@ -248,7 +248,7 @@ public class SquadChildFSM : MonoBehaviour
                 return true;
             }
         }
-        Debug.LogWarning("PlayerSquadFSM.KillThisChild():" + m_GOchild + " does not match any child cell. Wrong Reference?");
+        Debug.LogWarning("SquadChildFSM.KillThisChild():" + m_GOchild + " does not match any child cell. Wrong Reference?");
         return false;
     }
 
@@ -270,11 +270,6 @@ public class SquadChildFSM : MonoBehaviour
         }
         s_list_SingleAdvance.Add(new StatesAndPercentage(_currentState, _nextState, _chance));
         return true;
-    }
-
-    public static void DebugLog(bool _bool)
-    {
-        Debug.Log(":D");
     }
 
     // Getter-Setter Functions

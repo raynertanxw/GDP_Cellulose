@@ -253,14 +253,15 @@ public class EMController : MonoBehaviour
 	void UpdateAggressiveness ()
 	{
 		// Reset Aggressiveness factor (Captain)
-		if (SquadCaptain.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0) {
+        if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0) {
 			m_EMFSM.AggressivenessSquadCap = Random.Range (1f, 3f);
-		} else if (!SquadCaptain.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > m_EMFSM.InitialAggressiveness) {
+        }
+        else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > m_EMFSM.InitialAggressiveness) {
 			m_EMFSM.AggressivenessSquadCap = 0f;
 		}
 		// Reset Aggressiveness factor (Child)
-		if (SquadCaptain.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != 10f / Mathf.Sqrt((float)SquadCaptain.Instance.AliveChildCount())) {
-			float fAggressivenessSquadChild = 10f / Mathf.Sqrt((float)SquadCaptain.Instance.AliveChildCount());
+        if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != 10f / Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount())) {
+            float fAggressivenessSquadChild = 10f / Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount());
 			if (fAggressivenessSquadChild > 4f)
 				fAggressivenessSquadChild = 4f;
 			m_EMFSM.AggressivenessSquadChild = fAggressivenessSquadChild;

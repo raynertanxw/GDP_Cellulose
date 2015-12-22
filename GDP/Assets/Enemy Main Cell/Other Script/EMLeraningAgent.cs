@@ -80,15 +80,15 @@ public class EMLeraningAgent : MonoBehaviour
 		EMState currentStateEnum = m_EMFSM.CurrentStateIndex;
 		int nCurrentEnemyChild = m_EMFSM.AvailableChildNum;
 		int nCurrentPlayerChild = PlayerChildFSM.GetActiveChildCount ();
-		int nCurrentSquadChild = SquadCaptain.Instance.AliveChildCount ();
-		bool bSquadCaptainIsAlive = SquadCaptain.Instance.IsAlive;
+        int nCurrentSquadChild = PlayerSquadFSM.Instance.AliveChildCount();
+        bool bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
 		// Pause calling the function for checking and wait for the result
 		StartCoroutine (ConstantCheck (fCheckFreq));
 		// If we are still in the same state then proceed
 		if (currentStateEnum == m_EMFSM.CurrentStateIndex && !bChecking) 
 		{
 			LearningElement (currentStateEnum, nCurrentEnemyChild, m_EMFSM.AvailableChildNum, nCurrentPlayerChild, PlayerChildFSM.GetActiveChildCount(),
-			                 nCurrentSquadChild, SquadCaptain.Instance.AliveChildCount (), bSquadCaptainIsAlive, SquadCaptain.Instance.IsAlive);
+                             nCurrentSquadChild, PlayerSquadFSM.Instance.AliveChildCount(), bSquadCaptainIsAlive, PlayerSquadFSM.Instance.IsAlive);
 		}
 	}
 	// Check only once within a given perio of time

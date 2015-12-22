@@ -2,7 +2,7 @@
 using System.Collections;
 
 // SquadCaptain.cs: Function of script here.
-public class SquadCaptain : MonoBehaviour 
+public class PlayerSquadFSM : MonoBehaviour 
 {
     /* SquadCaptain.cs API - Everything you need to know about SquadCaptain
      * ------------------------------------------------------------------------------------------------------------------------------
@@ -26,7 +26,7 @@ public class SquadCaptain : MonoBehaviour
      */
 
     // Static Fields
-    private static SquadCaptain s_m_Instance;   // m_Instance: Stores this instance in this variable, used for singleton purposes
+    private static PlayerSquadFSM s_m_Instance;   // m_Instance: Stores this instance in this variable, used for singleton purposes
 
 	// Editables Fields
     [Header("Costs")]
@@ -154,7 +154,7 @@ public class SquadCaptain : MonoBehaviour
     }
 
     // Public Static Functions
-    public static SquadCaptain Instance { get { return s_m_Instance; } }
+    public static PlayerSquadFSM Instance { get { return s_m_Instance; } }
 
 	// Getter-Setter Functions
     public float Cooldown { get { return fNextCooldown; } }
