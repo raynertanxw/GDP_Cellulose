@@ -277,4 +277,15 @@ public class EnemyMainFSM : MonoBehaviour
 		StartCoroutine (emHelper.PauseAddLandmine (fTime));
 	}
 	#endregion
+
+	// Update the score on the inspector
+	public void ScoreUpdate ()
+	{
+		fProductionScore = LearningDictionary [EMState.Production];
+		fMaintainScore = LearningDictionary [EMState.Maintain];
+		fDefendScore = LearningDictionary [EMState.Defend];
+		fAggressiveAttackScore = LearningDictionary [EMState.AggressiveAttack];
+		fCautiousAttackScore = LearningDictionary [EMState.CautiousAttack];
+		fLandmineScore = LearningDictionary [EMState.Landmine];
+	}
 }

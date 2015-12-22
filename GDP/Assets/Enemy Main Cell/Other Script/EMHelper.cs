@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (EnemyMainFSM))]
+[RequireComponent (typeof (EMController))]
 [RequireComponent (typeof (CircleCollider2D))]
 public class EMHelper : MonoBehaviour 
 {

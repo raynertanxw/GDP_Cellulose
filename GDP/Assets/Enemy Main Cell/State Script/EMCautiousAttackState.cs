@@ -26,7 +26,7 @@ public class EMCautiousAttackState : IEMState
 		// Reset transition availability
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
-		float fPauseTime = Random.Range (1.5f, 3f);
+		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 2f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness));
 		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 	
@@ -81,16 +81,13 @@ public class EMCautiousAttackState : IEMState
 			m_EMFSM.StartPauseAddAttack (1.5f - (nEnemyChildFactor - nPlayerChildFactor)/10f);
 		}
 		#endregion
+
 		#region Transition
 		if (transition.CanTransit && controller.NutrientNum > 0)
 			m_EMFSM.ChangeState (EMState.Production);
 		else if (transition.CanTransit && controller.NutrientNum == 0)
 			m_EMFSM.ChangeState (EMState.Maintain);
 		#endregion
-
-		// Check transition every 0.2 second to save computing power
-		if (transition.CanTransit)
-			m_EMFSM.StartPauseTransition (.2f);
 	}
 
 	public override void Exit ()

@@ -1,57 +1,106 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (EnemyMainFSM))]
 public class EMLeraningAgent : MonoBehaviour 
 {
+	// Instance of the class
+	private static EMLeraningAgent instance;
+	// Singleton
+	public static EMLeraningAgent Instance()
+	{
+		return instance;
+	}
+
 	EnemyMainFSM m_EMFSM;
 
-	private bool bChecking;
+	private bool bCanStartCheck;
 	private float fCheckFreq;
+
+	private bool bCanRegain;
+	private float fRegainFreq;
+
+	void Awake ()
+	{
+		if (instance == null)
+			instance = this;
+	}
 
 	void Start ()
 	{
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 
-		bChecking = false;
+		bCanStartCheck = true;
 		fCheckFreq = 1f;
+
+		bCanRegain = true;
+		fRegainFreq = 1f;
 	}
 
 	void Update ()
 	{
-		if (!bChecking)
+		if (bCanStartCheck)
 			Critic ();
+
+		if (bCanRegain)
+			RegainScoreCall ();
+		// // Update the score on the inspector
+		EnemyMainFSM.Instance ().ScoreUpdate ();
+		// Clamp the hided score value between -100f and 100f
+		ScoreLimit ();
 	}
 
 	// Learning Element: Correspond with the FSM to make improvements
 	private void LearningElement (EMState state, int pastEnemyChild, int currentEnemyChild, int pastPlayerChild, int currentPlayerChild, 
-	                              int pastSquadChild, int currentSquadChild, bool squadCaptainWasAlive, bool squadCaptainIsAlive)
+	                              int pastSquadChild, int currentSquadChild, bool squadCaptainWasAlive, bool squadCaptainIsAlive, 
+	                              int pastEnemyHealth, int pastPlayerHealth)
 	{
 		#region General transition probability change
 		// Initialize the overall score
 		float fOverallScore = 0f;
 		// Reward for increment of the number of enemy child cells, vice versa
-		// (float)(currentEnemyChild - pastEnemyChild) * Mathf.Sqrt(15f) / m_EMFSM.InitialAggressiveness
-		fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Sqrt(15f) / m_EMFSM.InitialAggressiveness) / 1.5f,
-		                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Sqrt(15f) / m_EMFSM.InitialAggressiveness) * 1.5f);
+		// The less aggressive the enemy is, the more it wants to increase the number of its child cells
+		fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (6f, 2f) / m_EMFSM.InitialAggressiveness) * .5f,
+		                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (6f, 2f) / m_EMFSM.InitialAggressiveness) * 1f);
 		// Penalty for increment of the number of player child cells, vice versa
-		// (float)(currentPlayerChild - pastPlayerChild) * m_EMFSM.InitialAggressiveness
-		fOverallScore -= Random.Range (((float)(currentPlayerChild - pastPlayerChild) * m_EMFSM.InitialAggressiveness) / 3f,
+		// The more aggressive the enemy is, the more it wants to decrease the number of player child cells
+		fOverallScore -= Random.Range (((float)(currentPlayerChild - pastPlayerChild) * m_EMFSM.InitialAggressiveness) * .5f,
 		                               ((float)(currentPlayerChild - pastPlayerChild) * m_EMFSM.InitialAggressiveness) * 1f);
 		// Penalty for increment of the number of player squad child cells, vice versa
 		// (float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness
-		fOverallScore -= Random.Range (((float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness) / 3f,
+		fOverallScore -= Random.Range (((float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness) * .5f,
 		                               ((float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness) * 1f);
 		// Reward for killing the player squad captain based on enemy initial aggressiveness
 		if (squadCaptainWasAlive && !squadCaptainIsAlive) {
 			fOverallScore += Random.Range (m_EMFSM.InitialAggressiveness, m_EMFSM.InitialAggressiveness * 2f);
 		}
+		// Penalty for loss of health of the enemy main cell
+		if (pastEnemyHealth > m_EMFSM.Health) {
+			if (((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness)) < 
+			    (pastEnemyHealth - m_EMFSM.Health))
+				fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness), 
+			                               (pastEnemyHealth - m_EMFSM.Health));
+			else 
+				fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health), 
+				                               (pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness));
+		}
+		// Reward for loss of health of the player main cell
+		if (pastPlayerHealth > PlayerMain.s_Instance.Health) {
+			if (((pastPlayerHealth - PlayerMain.s_Instance.Health) / Mathf.Sqrt(m_EMFSM.InitialAggressiveness)) < 
+			    (pastPlayerHealth - PlayerMain.s_Instance.Health))
+				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.InitialAggressiveness), 
+			                               (pastPlayerHealth - PlayerMain.s_Instance.Health));
+			else 
+				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health), 
+				                               (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.InitialAggressiveness));
+		}
 		#endregion
 		#region Peculiar transition probability changes
 		// Production state
-		if (state== EMState.Production)
+		if (state == EMState.Production)
 		{
-			fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Sqrt(10f) / m_EMFSM.InitialAggressiveness) / 1.5f,
-			                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Sqrt(10f) / m_EMFSM.InitialAggressiveness) * 1.5f);
+			fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Sqrt(20f) / m_EMFSM.InitialAggressiveness) * 1f,
+			                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Sqrt(20f) / m_EMFSM.InitialAggressiveness) * 2f);
 		}
 		// Defned state
 		if (state == EMState.Defend && Mathf.Abs(pastEnemyChild - currentEnemyChild) != 0)
@@ -61,18 +110,66 @@ public class EMLeraningAgent : MonoBehaviour
 		// AggressiveAttack, CautiousAttack and Landmine state
 		if (state == EMState.AggressiveAttack || state == EMState.CautiousAttack || state == EMState.Landmine)
 		{
+			// Reward for player child cells killed, vice versa
+			if (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.InitialAggressiveness * .5f) < 
+				((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.InitialAggressiveness * 1f))
+				fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.InitialAggressiveness) * .5f, 
+				                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.InitialAggressiveness) * 1f);
+			else 
+				fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.InitialAggressiveness) * 1f, 
+				                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.InitialAggressiveness) * .5f);
+			// Reward for squad child cells killed, vice versa
+			if (((float)(pastSquadChild - currentSquadChild) * m_EMFSM.InitialAggressiveness * .5f) < 
+				((float)(pastSquadChild - currentSquadChild) * m_EMFSM.InitialAggressiveness * 1f))
+				fOverallScore += Random.Range (((float)(pastSquadChild - currentSquadChild) * m_EMFSM.InitialAggressiveness) * .5f,
+			                             	  ((float)(pastSquadChild - currentSquadChild) * m_EMFSM.InitialAggressiveness) * 1f);
+			else 
+				fOverallScore += Random.Range (((float)(pastSquadChild - currentSquadChild) * m_EMFSM.InitialAggressiveness) * 1f,
+				                               ((float)(pastSquadChild - currentSquadChild) * m_EMFSM.InitialAggressiveness) * .5f);
+
+			// Penalty for loss of health of the enemy main cell
+			if (pastEnemyHealth > m_EMFSM.Health) {
+				if (((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness)) < 
+				    (pastEnemyHealth - m_EMFSM.Health))
+					fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness), 
+					                               (pastEnemyHealth - m_EMFSM.Health));
+				else 
+					fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health), 
+					                               (pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness));
+			}
+
+			// Reward for loss of health of the player main cell
+			if (pastPlayerHealth > PlayerMain.s_Instance.Health) {
+				if (((pastPlayerHealth - PlayerMain.s_Instance.Health) / Mathf.Sqrt(m_EMFSM.InitialAggressiveness)) < 
+				    (pastPlayerHealth - PlayerMain.s_Instance.Health))
+					fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.InitialAggressiveness), 
+					                               (pastPlayerHealth - PlayerMain.s_Instance.Health));
+				else 
+					fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health), 
+					                               (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.InitialAggressiveness));
+			}
+
+			// Change the aggressiveness of the enemy accroding to the current score
 			if (fOverallScore > 0f)
 				EnemyMainFSM.Instance().CurrentAggressiveness += 1f;
 			else if (fOverallScore < 0f)
 				EnemyMainFSM.Instance().CurrentAggressiveness -= 1f;
 		}
+		// Landmine state
+		if (state == EMState.Landmine)
+		{
+			fOverallScore += Mathf.Sqrt (currentEnemyChild);
+			fOverallScore += Random.Range (Mathf.Sqrt (currentPlayerChild), Mathf.Sqrt (currentPlayerChild) * m_EMFSM.InitialAggressiveness);
+		}
 		// Main state
-		if (fOverallScore < 0f && state != EMState.Maintain)
+		if (fOverallScore < 0f && state == EMState.Maintain)
 		{
 			EnemyMainFSM.Instance().LearningDictionary[EMState.Maintain] += Mathf.Sqrt(Mathf.Abs (fOverallScore) * 2f);
 		}
 		#endregion
+
 		fOverallScore = ScoreCompressor (state, fOverallScore);
+		EnemyMainFSM.Instance ().LearningDictionary [state] += fOverallScore;
 	}
 	// Critic Tells the learning element how well the agent is doing with respect to a fixed performance measure
 	private void Critic ()
@@ -80,31 +177,100 @@ public class EMLeraningAgent : MonoBehaviour
 		EMState currentStateEnum = m_EMFSM.CurrentStateIndex;
 		int nCurrentEnemyChild = m_EMFSM.AvailableChildNum;
 		int nCurrentPlayerChild = PlayerChildFSM.GetActiveChildCount ();
-        int nCurrentSquadChild = PlayerSquadFSM.Instance.AliveChildCount();
-        bool bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
+		int nCurrentSquadChild = PlayerSquadFSM.Instance.AliveChildCount ();
+		bool bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
+		int nCurrentEnemyHealth = m_EMFSM.Health;
+		int nCurrentPlayerHealth = PlayerMain.s_Instance.Health;
 		// Pause calling the function for checking and wait for the result
-		StartCoroutine (ConstantCheck (fCheckFreq));
-		// If we are still in the same state then proceed
-		if (currentStateEnum == m_EMFSM.CurrentStateIndex && !bChecking) 
-		{
-			LearningElement (currentStateEnum, nCurrentEnemyChild, m_EMFSM.AvailableChildNum, nCurrentPlayerChild, PlayerChildFSM.GetActiveChildCount(),
-                             nCurrentSquadChild, PlayerSquadFSM.Instance.AliveChildCount(), bSquadCaptainIsAlive, PlayerSquadFSM.Instance.IsAlive);
-		}
+		fCheckFreq = Random.Range (0.5f, 1.5f);
+		StartCoroutine (PauseCheck (fCheckFreq, currentStateEnum, nCurrentEnemyChild, nCurrentPlayerChild, nCurrentSquadChild, bSquadCaptainIsAlive, 
+		                            nCurrentEnemyHealth, nCurrentPlayerHealth));
 	}
 	// Check only once within a given perio of time
-	IEnumerator ConstantCheck (float checkFreq)
+	IEnumerator PauseCheck (float checkFreq, EMState pastState,int pastEnemyChild, int pastPlayerChild, int pastSquadChild, bool squadCaptainWasAlive, 
+	                        int pastEnemyHealth, int pastPlayerHealth)
 	{
-		bChecking = true;
+		bCanStartCheck = false;		// One check at a time
 		yield return new WaitForSeconds (checkFreq);
-		bChecking = false;
+
+		// If we are still in the same state then proceed
+		if (pastState == m_EMFSM.CurrentStateIndex)
+			LearningElement (pastState, pastEnemyChild, m_EMFSM.AvailableChildNum, pastPlayerChild, PlayerChildFSM.GetActiveChildCount(),
+			                 pastSquadChild, PlayerSquadFSM.Instance.AliveChildCount (), squadCaptainWasAlive, PlayerSquadFSM.Instance.IsAlive, 
+			                 pastEnemyHealth, pastPlayerHealth);
+	
+		bCanStartCheck = true;		//Reset the checking availability
 	}
 
 	float ScoreCompressor (EMState state, float score)
 	{
-		if (EnemyMainFSM.Instance ().LearningDictionary [state] != 0f) {
-			return score / Mathf.Sqrt (EnemyMainFSM.Instance ().LearningDictionary [state]);
-		}
+		if (EnemyMainFSM.Instance ().LearningDictionary [state] > 0f) {
+			return score / Mathf.Sqrt (Mathf.Abs(EnemyMainFSM.Instance ().LearningDictionary [state]));
+		} 
 		else 
 			return score;
+	}
+
+	public float RealScore (EMState state)
+	{
+		return 2f * Mathf.Sqrt (EnemyMainFSM.Instance().LearningDictionary[state]);
+	}
+
+	void ScoreLimit ()
+	{
+		Mathf.Clamp (EnemyMainFSM.Instance ().LearningDictionary [EMState.Production], -100f, 100f);
+		Mathf.Clamp (EnemyMainFSM.Instance ().LearningDictionary [EMState.Maintain], -100f, 100f);
+		Mathf.Clamp (EnemyMainFSM.Instance ().LearningDictionary [EMState.Defend], -100f, 100f);
+		Mathf.Clamp (EnemyMainFSM.Instance ().LearningDictionary [EMState.AggressiveAttack], -100f, 100f);
+		Mathf.Clamp (EnemyMainFSM.Instance ().LearningDictionary [EMState.CautiousAttack], -100f, 100f);
+		Mathf.Clamp (EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine], -100f, 100f);
+	}
+
+	void RegainScoreCall ()
+	{
+		fRegainFreq = Random.Range (1f, 2f);
+		StartCoroutine (RegainPause (fRegainFreq));
+	}
+
+	IEnumerator RegainPause (float regainFreq)
+	{
+		bCanRegain = false;
+		yield return new WaitForSeconds (regainFreq);
+		RegainFunction ();
+		bCanRegain = true;
+	}
+
+	void RegainFunction ()
+	{
+		// Production state
+		if (EnemyMainFSM.Instance ().LearningDictionary [EMState.Production] > 1f || EnemyMainFSM.Instance ().LearningDictionary [EMState.Production] < -1f)
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Production] *= 0.95f;
+		else 
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Production] = 0f;
+		// Maintain state
+		if (EnemyMainFSM.Instance ().LearningDictionary [EMState.Maintain] > 1f || EnemyMainFSM.Instance ().LearningDictionary [EMState.Maintain] < -1f)
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Maintain] *= 0.95f;
+		else 
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Maintain] = 0f;
+		// Defend state
+		if (EnemyMainFSM.Instance ().LearningDictionary [EMState.Defend] > 1f || EnemyMainFSM.Instance ().LearningDictionary [EMState.Defend] < -1f)
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Defend] *= 0.95f;
+		else 
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Defend] = 0f;
+		// AggressiveAttack state
+		if (EnemyMainFSM.Instance ().LearningDictionary [EMState.AggressiveAttack] > 1f || EnemyMainFSM.Instance ().LearningDictionary [EMState.AggressiveAttack] < -1f)
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.AggressiveAttack] *= 0.95f;
+		else 
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.AggressiveAttack] = 0f;
+		// CautiousAttack state
+		if (EnemyMainFSM.Instance ().LearningDictionary [EMState.CautiousAttack] > 1f || EnemyMainFSM.Instance ().LearningDictionary [EMState.CautiousAttack] < -1f)
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.CautiousAttack] *= 0.95f;
+		else 
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.CautiousAttack] = 0f;
+		// Landmine state
+		if (EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine] > 1f || EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine] < -1f)
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine] *= 0.95f;
+		else 
+			EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine] = 0f;
 	}
 }

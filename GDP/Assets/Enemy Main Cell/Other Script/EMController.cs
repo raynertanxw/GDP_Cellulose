@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+[RequireComponent (typeof (EnemyMainFSM))]
+[RequireComponent (typeof (Rigidbody2D))]
 public class EMController : MonoBehaviour 
 {	
 	// Instance of the class

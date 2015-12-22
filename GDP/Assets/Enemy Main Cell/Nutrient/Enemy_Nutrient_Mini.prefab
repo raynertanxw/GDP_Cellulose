@@ -11,11 +11,10 @@ GameObject:
   - 212: {fileID: 21216358}
   - 58: {fileID: 5877926}
   - 50: {fileID: 5044840}
-  - 114: {fileID: 11444382}
-  - 114: {fileID: 11461550}
+  - 114: {fileID: 11422286}
   m_Layer: 10
-  m_Name: Enemy_Nutrient_Main
-  m_TagString: EnemyMainNutrient
+  m_Name: Enemy_Nutrient_Mini
+  m_TagString: EnemyMiniNutrient
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -61,7 +60,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: .100000001
---- !u!114 &11444382
+--- !u!114 &11422286
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -69,31 +68,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 177402}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc2bd37b0160fe24eb0194c831356cf9, type: 3}
+  m_Script: {fileID: 11500000, guid: 15f628d96aa6fdf458bd956f9b5dddfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fMaxVelocity: 1
-  currentVelocity: {x: 0, y: 0}
-  fMass: 10
-  fFriction: .0500000007
-  bRotating: 1
---- !u!114 &11461550
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 177402}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7af125e1cfd2af44fbb43a50389081ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  FlockWeight: 1
-  SeekWeight: .300000012
-  fNeighbourRadius: 1.5
-  fAlignmentWeight: .699999988
-  fCohesionWeigth: .400000006
-  fSeperationWeight: .5
+  intervalTime: .5
 --- !u!212 &21216358
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -121,7 +99,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: 1, g: .517241359, b: 0, a: 1}
+  m_Color: {r: 0, g: 1, b: .337931156, a: 1}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -135,15 +113,15 @@ Prefab:
       objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 0}
       propertyPath: m_Color.r
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Color.g
-      value: .517241359
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Color.b
-      value: 0
+      value: .337931156
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Enabled
@@ -175,7 +153,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.x
-      value: 1
+      value: .25
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_LocalScale.y
@@ -210,8 +188,12 @@ Prefab:
       value: .400000006
       objectReference: {fileID: 0}
     - target: {fileID: 0}
+      propertyPath: intervalTime
+      value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
       propertyPath: m_TagString
-      value: EnemyMainNutrient
+      value: EnemyMiniNutrient
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Constraints

@@ -17,11 +17,16 @@ public class EMLandmineState : IEMState
 		Debug.Log ("Enter EMLandmineState");
 
 		transition = m_EMFSM.emTransition;
+		helper = m_EMFSM.emHelper;
+
+		// Reset availability to command mini cell to Landmine state
+		if (!helper.CanAddLandmine)
+			helper.CanAddLandmine = true;
 		
 		// Reset transition availability
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
-		float fPauseTime = Random.Range (1.5f, 3f);
+		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 2f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness));
 		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 
@@ -34,7 +39,7 @@ public class EMLandmineState : IEMState
 		int nCommandNum = 0;
 		
 		#region Landmine Behaviour
-		if (m_EMFSM.AvailableChildNum > PlayerChildFSM.GetActiveChildCount () && helper.CanAddLandmine) 
+		if (helper.CanAddLandmine) 
 		{
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
@@ -48,6 +53,7 @@ public class EMLandmineState : IEMState
 					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
+						Debug.Log ("Lanmine Message Sent.");
 						helper.CanAddLandmine = false;
 					}
 				}
@@ -84,6 +90,13 @@ public class EMLandmineState : IEMState
 			m_EMFSM.StartPauseAddLandmine ((float)nCommandNum);
 		}
 		#endregion
+
+		#region Transition
+		if (transition.CanTransit && controller.NutrientNum > 0)
+			m_EMFSM.ChangeState (EMState.Production);
+		else if (transition.CanTransit && controller.NutrientNum == 0)
+			m_EMFSM.ChangeState (EMState.Maintain);
+		#endregion
 	}
 
 	public override void Exit ()
@@ -91,7 +104,10 @@ public class EMLandmineState : IEMState
 		Debug.Log ("Exit EMLandmineState");
 
 		transition = m_EMFSM.emTransition;
-		
+
+		// Reset availability to command mini cell to Landmine state
+		if (!helper.CanAddLandmine)
+			helper.CanAddLandmine = true;
 		// Reset transition availability
 		transition.CanTransit = true;
 	}

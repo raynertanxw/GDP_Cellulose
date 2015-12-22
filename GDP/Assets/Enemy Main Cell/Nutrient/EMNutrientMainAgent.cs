@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof (CircleCollider2D))]
 public class EMNutrientMainAgent : MonoBehaviour 
 {
 	// Size
