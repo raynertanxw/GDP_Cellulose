@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof (CircleCollider2D))]
 public class MapManager : MonoBehaviour
 {
 	// Single instance of the MapManager class

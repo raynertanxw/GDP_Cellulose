@@ -56,6 +56,7 @@ public class EMController : MonoBehaviour
 	[SerializeField] private int nNutrientNum;
 	public int NutrientNum { get { return nNutrientNum; } }
 	public void ReduceNutrient () { nNutrientNum--; }
+	public void AddNutrient () { nNutrientNum++; }
 	private Vector2 initialScale;
 	private Vector2 currentScale;
 	#endregion

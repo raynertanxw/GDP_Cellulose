@@ -5,6 +5,14 @@ using System.Collections;
 [RequireComponent (typeof (EMController))]
 public class EMTransition : MonoBehaviour 
 {
+	// Instance of the class
+	private static EMTransition instance;
+	// Singleton
+	public static EMTransition Instance()
+	{
+		return instance;
+	}
+
 	EnemyMainFSM m_EMFSM;
 	private EMController controller;
 
@@ -16,6 +24,9 @@ public class EMTransition : MonoBehaviour
 
 	void Start ()
 	{
+		if (instance == null)
+			instance = this;
+
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		controller = GetComponent<EMController> ();
 

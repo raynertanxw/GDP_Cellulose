@@ -8,6 +8,8 @@ TagManager:
   - EnemyChild
   - PlayerChild
   - Wall
+  - EnemyMainNutrient
+  - EnemyMiniNutrient
   layers:
   - Default
   - TransparentFX
@@ -19,13 +21,13 @@ TagManager:
   - 
   - EnemyChild
   - PlayerChild
-  - EnemyNutrient
+  - EnemyMainNutrient
+  - EnemyMiniNutrient
   - EnemyMain
   - SquadCaptain
   - SquadChild
   - PlayerMain
   - PlayerNutrient
-  - 
   - 
   - 
   - 

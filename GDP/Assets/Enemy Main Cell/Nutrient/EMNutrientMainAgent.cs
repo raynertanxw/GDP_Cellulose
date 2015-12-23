@@ -130,7 +130,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	void OnTriggerEnter2D (Collider2D collision)
 	{
 		// Assign one nutrient to be sucked during collision
-		if (collision.gameObject.layer == LayerMask.NameToLayer ("EnemyNutrient") && !collision.GetComponent<EMNutrientMainAgent>().Sucked) 
+		if (collision.gameObject.tag == Constants.s_strEnemyMainNutrient && !collision.GetComponent<EMNutrientMainAgent>().Sucked) 
 		{
 			if (collision.gameObject.transform.position.y > this.gameObject.transform.position.y)
 			{
@@ -145,7 +145,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	void OnTriggerStay2D (Collider2D collision)
 	{
 		// Check collisions with other enemy nutrient
-		if (collision.gameObject.layer == LayerMask.NameToLayer("EnemyNutrient")) 
+		if (collision.gameObject.tag == Constants.s_strEnemyMainNutrient)
 		{
 			// Only one of the two nutrient on collision can perform actions
 			if (!bSucked)

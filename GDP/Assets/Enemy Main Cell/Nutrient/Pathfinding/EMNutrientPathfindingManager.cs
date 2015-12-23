@@ -54,7 +54,7 @@ public class EMNutrientPathfindingManager : MonoBehaviour
 		if (pathArray == null) {
 			return;
 		}
-		
+
 		if (pathArray.Count > 0)
 		{
 			int index = 1;
