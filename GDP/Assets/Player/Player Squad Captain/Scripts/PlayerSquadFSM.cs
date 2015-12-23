@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 // SquadCaptain.cs: Function of script here.
-public class PlayerSquadFSM : MonoBehaviour 
+public class PlayerSquadFSM : MonoBehaviour
 {
     /* SquadCaptain.cs API - Everything you need to know about SquadCaptain
      * ------------------------------------------------------------------------------------------------------------------------------
@@ -28,11 +29,7 @@ public class PlayerSquadFSM : MonoBehaviour
     // Static Fields
     private static PlayerSquadFSM s_m_Instance;   // m_Instance: Stores this instance in this variable, used for singleton purposes
 
-	// Editables Fields
-    [Header("Costs")]
-    [Tooltip("The cost to initiate a squad")]
-    [SerializeField] private int nCostPoints = 50;
-
+    // Editables Fields
     [Header("Child Spawn: Generic")]
     [Tooltip("The maximum number of squad child cell")]
     [SerializeField] private int nMaximumChildCount = 50;
@@ -49,23 +46,33 @@ public class PlayerSquadFSM : MonoBehaviour
     [SerializeField] private float fStrafingRadius = 1.0f;
     [Tooltip("The speed of the rotation for strafing")]
     [SerializeField] private float fStrafingSpeed = 0.5f;
-	
-	// Uneditables Fields
-    private float fNextCooldown = 0.0f;         // fNextCooldown: Stores the time of the cooldown
-    private bool bIsAlive = false;              // bIsAlive: Returns if the squad captain is alive
-    private Vector3 m_strafingVector;           // m_strafingVector: The current direction of the strafing vector
-    private bool isStrafeVectorUpdated = true;  // isStrafeVectorUpdated: Checks if the strafing vector is updated
+
+    // Uneditables Fields
+    [HideInInspector] public bool bIsAlive = false;     // bIsAlive: Returns if the squad captain is alive
+
+    private PS_Logicaliser m_Brain;                     // brain: Access the brain of the Player Squad Captain
+    private Dictionary<PSState, IPSState> dict_States;  // dict_States: The dictionary to store the states
+    private PSState m_CurrentEnumState;                 // m_CurrentEnumState: The current enum state of the squad captain
+    private IPSState m_CurrentState;                    // m_CurrentState: The current state of the squad captain
+    private bool bIsProduce = false;                    // bIsProduce: Returns (or define) if the spawn routine is activated
+
+    public SpriteRenderer m_SpriteRenderer;             // m_SpriteRenderer: It is public so that states can references it
+    public CircleCollider2D m_Collider;                 // m_Collider: It is public so that states can references it
+
+    private float fNextCooldown = 0.0f;                 // fNextCooldown: Stores the time of the cooldown
 
     // Co-Routines
     IEnumerator SpawnRoutine()
     {
-        bool isLoop = true;
-        while (isLoop)
+        while (bIsProduce)
         {
+            Debug.Log("Wait for " + fNextCooldown + " till next spawn");
             yield return new WaitForSeconds(fNextCooldown);
 
-            if (!this.CalculateCooldown())
-                isLoop = false;
+            if (!this.CalculateCooldown() || SquadChildFSM.StateCount(SCState.Produce) == 0)
+            {
+                bIsProduce = false;
+            }
             else
             {
                 SquadChildFSM.Spawn(transform.position);
@@ -73,7 +80,7 @@ public class PlayerSquadFSM : MonoBehaviour
         }
     }
 
-	// Private Functions
+    // Private Functions
     // Awake(): Called when the object is instantiated
     void Awake()
     {
@@ -88,45 +95,71 @@ public class PlayerSquadFSM : MonoBehaviour
     void Start()
     {
         // Variable Initialisation
-        m_strafingVector = Vector3.up;
+        m_Brain = this.GetComponent<PS_Logicaliser>();
 
-        SquadChildFSM.Spawn(transform.position);
+        dict_States = new Dictionary<PSState, IPSState>();
+        dict_States.Add(PSState.Idle, new PS_IdleState(this, m_Brain));
+        dict_States.Add(PSState.Attack, new PS_AttackState(this));
+        dict_States.Add(PSState.Defend, new PS_DefendState(this));
+        dict_States.Add(PSState.Produce, new PS_ProduceState(this));
+        dict_States.Add(PSState.FindResource, new PS_FindResourceState(this));
+        dict_States.Add(PSState.Dead, new PS_DeadState(this));
+        m_CurrentEnumState = PSState.Dead;
+        m_CurrentState = dict_States[m_CurrentEnumState];
+        m_CurrentState.Enter();
     }
 
     // Update(): is called once every frame
     void Update()
     {
-        if (SquadChildFSM.StateCount(SCState.Produce) > 0)
-            StartCoroutine(SpawnRoutine());
+        // Pre-Execution
 
-        if (!isStrafeVectorUpdated)
-        {
-            float fCurrentRadius = Mathf.PingPong(Time.time * 0.5f, fStrafingRadius);
-            if (fCurrentRadius < 0.4f)
-                fCurrentRadius = 0.4f;
-            // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE
-            m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
-            isStrafeVectorUpdated = true;
-        }
+        // Execution
+        m_CurrentState.Execute();
+
+        // Post-Execution
+        if (Input.GetKeyDown(KeyCode.P))
+            if (m_CurrentEnumState != PSState.Idle)
+                this.Initialise(new Vector3(-1.5f, -4f, 0f));
     }
-	
-	// Public Functions
-    // Initialise(): Make alive of Squad Captain <-------------------------------------------------------------------------------- EDIT
-    public bool Initialise()
+
+    // Public Functions
+    /// <summary>
+    /// Spawns the squad captain
+    /// </summary>
+    /// <param name="_position"> The position in which the squad captain to spawn in </param>
+    public bool Initialise(Vector3 _position)
     {
+        transform.position = _position;
+        this.Advance(PSState.Idle);
+        SquadChildFSM.Spawn(transform.position);
         return false;
+    }
+
+    /// <summary>
+    /// Advance the squad captain to the next state
+    /// </summary>
+    /// <param name="_enumState"></param>
+    public void Advance(PSState _enumState)
+    {
+        m_CurrentState.Exit();
+        m_CurrentEnumState = _enumState;
+        m_CurrentState = dict_States[m_CurrentEnumState];
+        m_CurrentState.Enter();
+    }
+
+    /// <summary>
+    /// Returns the number of squad child cells that is alive
+    /// </summary>
+    /// <returns></returns>
+    public int AliveChildCount()
+    {
+        return SquadChildFSM.AliveCount();
     }
 
     // CalculateCooldown(): Call this function to re-calculate the cooldown of production
     public bool CalculateCooldown()
     {
-        // if: There is max number of production (all cells are alive)
-        if (SquadChildFSM.AliveCount() == nMaximumChildCount)
-        {
-            fNextCooldown = fMinimumCooldown;
-            return true;
-        }
-
         fNextCooldown = (fMaximumCooldown - fMinimumCooldown) * ((float)(nMaximumChildCount - SquadChildFSM.StateCount(SCState.Idle)) / (float)nMaximumChildCount) + fMinimumCooldown;
 
         if (fNextCooldown <= 0f)
@@ -140,24 +173,25 @@ public class PlayerSquadFSM : MonoBehaviour
             return true;
     }
 
-    // AliveChildCount(): Returns the number of squad child cells that is alive
-    public int AliveChildCount()
+    // EnableSpawnRoutine(): Enables the spawn routine
+    public void EnableSpawnRoutine()
     {
-        return SquadChildFSM.AliveCount();
-    }
-
-    // StrafingVector(): calculates and return the strafing vector
-    public Vector3 StrafingVector()
-    {
-        isStrafeVectorUpdated = false;
-        return m_strafingVector;
+        if (!bIsProduce)
+        {
+            bIsProduce = true;
+            StartCoroutine(SpawnRoutine());
+        }
     }
 
     // Public Static Functions
     public static PlayerSquadFSM Instance { get { return s_m_Instance; } }
 
-	// Getter-Setter Functions
+    // Getter-Setter Functions
     public float Cooldown { get { return fNextCooldown; } }
     public int MaximumCount { get { return nMaximumChildCount; } }
+
+    public float StrafingRadius { get { return fStrafingRadius; } }
+    public float StrafingSpeed { get { return fStrafingSpeed; } }
+
     public bool IsAlive { get { return bIsAlive; } }
 }

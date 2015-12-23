@@ -9,9 +9,10 @@ GameObject:
   m_Component:
   - 4: {fileID: 419224}
   - 212: {fileID: 21262188}
-  - 114: {fileID: 11423594}
-  - 61: {fileID: 6129446}
   - 50: {fileID: 5038718}
+  - 58: {fileID: 5832618}
+  - 114: {fileID: 11423594}
+  - 114: {fileID: 11420688}
   m_Layer: 12
   m_Name: Squad_Captain_Cell
   m_TagString: Untagged
@@ -47,8 +48,8 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!61 &6129446
-BoxCollider2D:
+--- !u!58 &5832618
+CircleCollider2D:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
@@ -59,7 +60,21 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Size: {x: .140000001, y: .140000001}
+  m_Radius: .0799999982
+--- !u!114 &11420688
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 175278}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba07b66454e910547becc757f3154b50, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fAggressiveToDefensive: 50
+  fThinkCooldown: .5
+  fMininumChildCount: 4
 --- !u!114 &11423594
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -71,12 +86,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 313b03c94c5ea9048adbb48d49dabf38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nCostPoints: 50
   nMaximumChildCount: 50
-  fMinimumCooldown: 1
-  fMaximumCooldown: 3
+  fMinimumCooldown: 3
+  fMaximumCooldown: 10
   fStrafingRadius: 1
   fStrafingSpeed: .5
+  bIsAlive: 0
+  m_SpriteRenderer: {fileID: 21262188}
+  m_Collider: {fileID: 5832618}
 --- !u!212 &21262188
 SpriteRenderer:
   m_ObjectHideFlags: 1

@@ -49,13 +49,6 @@ public class SC_IdleState : ISCState
 
     public override void Execute()
     {
-        // if: The number of squad child cells is less than 30 <- Production Check
-        if (SquadChildFSM.AliveCount() < 4f)
-        {
-            m_scFSM.Advance(SCState.Produce);
-            return;
-        }
-
         // if: the distance to target is smaller than 0.1f -> then sets a new targetPosition
         if ((targetPosition - m_scFSM.transform.position).sqrMagnitude < 0.1f)
         {
@@ -102,8 +95,6 @@ public class SC_ProduceState : ISCState
 
     public override void Execute()
     {
-        if (SquadChildFSM.AliveCount() >= 4f)
-            SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 10f);
 
         m_scFSM.Strafing();
     }

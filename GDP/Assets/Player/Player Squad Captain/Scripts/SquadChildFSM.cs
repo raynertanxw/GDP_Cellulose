@@ -27,6 +27,11 @@ public class SquadChildFSM : MonoBehaviour
     // s_dict_SingleTransition: Limits the execution of Advance to happen one per frame, eliminates the stacked transition that is called by multiple cell at once
     private static List<StatesAndPercentage> s_list_SingleAdvance = new List<StatesAndPercentage>();
 
+    private static Vector3 m_strafingVector;                    // m_strafingVector: The current direction of the strafing vector
+    private static bool isStrafeVectorUpdated = true;           // isStrafeVectorUpdated: Checks if the strafing vector is updated
+    private static float fStrafingRadius;                       // fStrafingRadius: The maximum strafing radius of the child cells during production
+    private static float fStrafingSpeed;                        // fStrafingSpeed: The maximum strafing speed of the child cells during production
+
     // Uneditable Fields
     [HideInInspector] public float fStrafingOffsetAngle = 0f;   // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
 
@@ -70,7 +75,6 @@ public class SquadChildFSM : MonoBehaviour
     // Start(): Use this for initialisation
     void Start()
     {
-
         // Initialisation of Dictionary
         dict_States = new Dictionary<SCState, ISCState>();
         dict_States.Add(SCState.Dead, new SC_DeadState(this));
@@ -79,6 +83,11 @@ public class SquadChildFSM : MonoBehaviour
         dict_States.Add(SCState.Defend, new SC_DefendState(this));
         dict_States.Add(SCState.Produce, new SC_ProduceState(this));
         dict_States.Add(SCState.FindResource, new SC_FindResourceState(this));
+
+        // Initialisation
+        m_strafingVector = Vector3.up;
+        fStrafingRadius = PlayerSquadFSM.Instance.StrafingRadius;
+        fStrafingSpeed = PlayerSquadFSM.Instance.StrafingSpeed;
 
         // Initialisation of first state
         m_currentEnumState = SCState.Dead;
@@ -100,7 +109,7 @@ public class SquadChildFSM : MonoBehaviour
 
         // Post-Excution
 
-        // Advancement Transition Execution
+        // Advancement Transition Execution - Execution of all requested percentage advancements
         while (s_list_SingleAdvance.Count > 0)
         {
             // for: Checks through all the child in the array
@@ -116,6 +125,19 @@ public class SquadChildFSM : MonoBehaviour
                 }
             }
             s_list_SingleAdvance.RemoveAt(0);
+        }
+    }
+
+    void LateUpdate()
+    {
+        if (!isStrafeVectorUpdated)
+        {
+            float fCurrentRadius = Mathf.PingPong(Time.time * 0.5f, fStrafingRadius);
+            if (fCurrentRadius < 0.4f)
+                fCurrentRadius = 0.4f;
+            // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE
+            m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
+            isStrafeVectorUpdated = true;
         }
     }
 
@@ -149,10 +171,18 @@ public class SquadChildFSM : MonoBehaviour
         }
 
         // targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
-        Vector3 targetPosition = Quaternion.Euler(Vector3.forward * fStrafingOffsetAngle) * PlayerSquadFSM.Instance.StrafingVector() + PlayerSquadFSM.Instance.transform.position;
+        Vector3 targetPosition = Quaternion.Euler(Vector3.forward * fStrafingOffsetAngle) * StrafingVector() + PlayerSquadFSM.Instance.transform.position;
         transform.position = Vector3.Lerp(transform.position, targetPosition, 3f * Time.deltaTime);
 
         return true;
+    }
+
+    // StrafingVector(): calculates and return the strafing vector
+    //                   NOTE: This is handled in Update() because it should only be executed once every update (method may be called multiple times in the update)
+    public Vector3 StrafingVector()
+    {
+        isStrafeVectorUpdated = false;
+        return m_strafingVector;
     }
 
     // Public Static Functions
