@@ -14,6 +14,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	// Velocity
 	public float fMaxVelocity = 1;
 	public Vector2 currentVelocity;
+	[SerializeField]
 	private bool bSucked;
 	public bool Sucked { get { return bSucked; } }
 	private GameObject suckedTarget;
@@ -67,6 +68,9 @@ public class EMNutrientMainAgent : MonoBehaviour
 
 		position = this.gameObject.transform.position;
 
+		if (fMass != nSize * 2f)
+			fMass = nSize * 2f;
+
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 		    transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
 
@@ -116,25 +120,31 @@ public class EMNutrientMainAgent : MonoBehaviour
 		for (int i = 0; i < AgentList.Count; i++)
 		{
 			// Initialize the position of the nutrient
-			AgentList[i].gameObject.transform.position = new Vector3 (Random.Range(fInitialRadius * -10f, fInitialRadius * 10f), 
-			                                                          Random.Range(fInitialRadius * -10f, fInitialRadius * 10f));
+			AgentList[i].gameObject.transform.position = new Vector3 (Random.Range(fInitialRadius * -15f, fInitialRadius * 15f), 
+			                                                          Random.Range(fInitialRadius * -15f, fInitialRadius * 15f));
 			// Change the position of the nutrient if it is too close to the preceding one
 			if (i != 0)
 			{
 				while (true)
 				{
 					// Check for all preceding nutrient cells
+					bool bNotTooClose = true; 
+
 					for (int j = 0; j < i; j++)
 					{
 						// Only proceed to break the while loop of initializing position when the nutrient is not too close with any preceding nutrient
-						if (Vector3.Distance (AgentList[i-1].gameObject.transform.position, AgentList[i].gameObject.transform.position) <=
-						    fInitialRadius * 5f)
+						if (Vector3.Distance (AgentList[j].gameObject.transform.position, AgentList[i].gameObject.transform.position) <=
+						    fInitialRadius * 6f)
 						{
-							AgentList[i].gameObject.transform.position = new Vector3 (Random.Range(-0.3f, 0.3f), Random.Range(-0.3f, 0.3f));
+							AgentList[i].gameObject.transform.position = new Vector3 (Random.Range(fInitialRadius * -15f, fInitialRadius * 15f), 
+							                                                          Random.Range(fInitialRadius * -15f, fInitialRadius * 15f));
+							bNotTooClose = false;
 							break;
 						}
 					}
-					break;
+
+					if (bNotTooClose)
+						break;
 				}
 			}
 		}
@@ -170,7 +180,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		if (collision.gameObject.tag == Constants.s_strEnemyMainNutrient)
 		{
 			// Only one of the two nutrient on collision can perform actions
-			if (!bSucked)
+			if (!bSucked && collision.GetComponent<EMNutrientMainAgent>().Sucked)
 			{
 				if (Vector2.Distance (transform.position, collision.gameObject.transform.position) < 0.1f)
 				{
@@ -179,14 +189,27 @@ public class EMNutrientMainAgent : MonoBehaviour
 					Destroy(collision.gameObject);
 				}
 			}
+
+			if (!bSucked && !collision.GetComponent<EMNutrientMainAgent>().Sucked) 
+			{
+				if (collision.gameObject.transform.position.y > position.y)
+				{
+					suckedTarget = collision.gameObject;
+					bSucked = true;
+					// Unregister the sucked nutrient from the list
+					AgentList.Remove(this);
+				}
+			}
 		}
 	}
 
 	void OnTriggerExit2D (Collider2D collision)
 	{
-		bSucked = false;
-		// Assign the nutrient back to the list
-		AgentList.Add(this);
+		if (bSucked) {
+			bSucked = false;
+			// Assign the nutrient back to the list
+			AgentList.Add (this);
+		}
 	}
 
 	void OnDestroy()

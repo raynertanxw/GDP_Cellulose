@@ -74,6 +74,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fMaxVelocity: 1
   currentVelocity: {x: 0, y: 0}
+  bSucked: 0
   fMass: 10
   fFriction: .0500000007
   bRotating: 1
@@ -93,8 +94,8 @@ MonoBehaviour:
   SeekWeight: .300000012
   fNeighbourRadius: 1.5
   fAlignmentWeight: .699999988
-  fCohesionWeigth: .400000006
-  fSeperationWeight: .5
+  fCohesionWeigth: .5
+  fSeperationWeight: .600000024
 --- !u!212 &21216358
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -192,7 +193,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fSeperationWeight
-      value: .5
+      value: .600000024
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: SeekWeight
@@ -208,7 +209,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fCohesionWeigth
-      value: .400000006
+      value: .5
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_TagString
