@@ -21,6 +21,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 	public float fMass = 10;
 	public float fFriction = .05f;
 	public bool bRotating = true;
+	public GameObject miniNutrient;
+	private bool bCanSpawn;
 	
 	public static List<EMNutrientMainAgent> AgentList = new List<EMNutrientMainAgent>();
 	
@@ -45,6 +47,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		fInitialRadius = GetComponent<CircleCollider2D> ().bounds.size.x / 2;
 
 		bSucked = false;
+		bCanSpawn = true;
 	}
 
 	void Start()
@@ -91,6 +94,12 @@ public class EMNutrientMainAgent : MonoBehaviour
 				transform.eulerAngles = new Vector3 (transform.eulerAngles.x, transform.eulerAngles.y, angle);
 			}
 		}
+
+		// Instantiate mini nutrient
+		if (bCanSpawn) 
+		{
+
+		}
 	}
 
 	void Sucking ()
@@ -125,6 +134,14 @@ public class EMNutrientMainAgent : MonoBehaviour
 				}
 			}
 		}
+	}
+
+	IEnumerator PauseSpawn ()
+	{
+		bCanSpawn = false;
+		yield return new WaitForSeconds (Random.Range (nSize, Mathf.Sqrt (Mathf.Pow (nSize, 3f))));
+		Instantiate (miniNutrient, this.gameObject.transform.position, Quaternion.identity);
+		bCanSpawn = true;
 	}
 
 	void OnTriggerEnter2D (Collider2D collision)
