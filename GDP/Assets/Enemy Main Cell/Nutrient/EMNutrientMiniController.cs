@@ -63,14 +63,14 @@ public class EMNutrientMiniController : MonoBehaviour
 
 		InitialMovement ();
 
-		yield return new WaitForSeconds (Random.Range (3f, 5f));
+		yield return new WaitForSeconds (Random.Range (2f, 3f));
 
 		bCanFindPath = true;
 	}
 
 	void InitialMovement ()
 	{
-		thisRB.AddRelativeForce (Vector2.up * Random.Range (30f, 50f));
+		thisRB.AddForce ((EnemyMainFSM.Instance().Position - (Vector2)this.gameObject.transform.position) * Random.Range (20f, 30f));
 	}
 
 	void OnTriggerEnter2D (Collider2D collision)

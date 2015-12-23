@@ -170,7 +170,7 @@ public class MapManager : MonoBehaviour
 		float width = nNumOfColumns * fUniversalnodeSize;
 		float height = nNumOfRows * fUniversalnodeSize;
 		
-		return (position.x >= Origin.x &&  position.x <= Origin.x + width && position.x <= Origin.y + height && position.y >= Origin.y);
+		return (position.x >= Origin.x && position.x <= Origin.x + width && position.y <= Origin.y + height && position.y >= Origin.y);
 	}
 
 	// Get the  neighouring nodes in 4 cardinal directions

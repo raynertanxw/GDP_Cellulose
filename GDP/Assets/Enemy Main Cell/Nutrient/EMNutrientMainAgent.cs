@@ -23,6 +23,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	public bool bRotating = true;
 	public GameObject miniNutrient;
 	private bool bCanSpawn;
+	private Vector2 position;
 	
 	public static List<EMNutrientMainAgent> AgentList = new List<EMNutrientMainAgent>();
 	
@@ -48,6 +49,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 
 		bSucked = false;
 		bCanSpawn = true;
+		position = this.gameObject.transform.position;
 	}
 
 	void Start()
@@ -62,6 +64,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Remove destroyed from the list
 		AgentList.RemoveAll(item => item == null);
+
+		position = this.gameObject.transform.position;
 
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 		    transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
@@ -96,9 +100,9 @@ public class EMNutrientMainAgent : MonoBehaviour
 		}
 
 		// Instantiate mini nutrient
-		if (bCanSpawn) 
+		if (bCanSpawn && MapManager.instance.IsInBounds ((Vector2)(position * 1.5f))) 
 		{
-
+			StartCoroutine (PauseSpawn ());
 		}
 	}
 
@@ -139,8 +143,9 @@ public class EMNutrientMainAgent : MonoBehaviour
 	IEnumerator PauseSpawn ()
 	{
 		bCanSpawn = false;
-		yield return new WaitForSeconds (Random.Range (nSize, Mathf.Sqrt (Mathf.Pow (nSize, 3f))));
-		Instantiate (miniNutrient, this.gameObject.transform.position, Quaternion.identity);
+		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 3f)), Mathf.Pow (nSize, 2f)));
+		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.5f)))
+			Instantiate (miniNutrient, position, Quaternion.identity);
 		bCanSpawn = true;
 	}
 
@@ -149,7 +154,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Assign one nutrient to be sucked during collision
 		if (collision.gameObject.tag == Constants.s_strEnemyMainNutrient && !collision.GetComponent<EMNutrientMainAgent>().Sucked) 
 		{
-			if (collision.gameObject.transform.position.y > this.gameObject.transform.position.y)
+			if (collision.gameObject.transform.position.y > position.y)
 			{
 				suckedTarget = collision.gameObject;
 				bSucked = true;
