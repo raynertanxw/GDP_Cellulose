@@ -25,9 +25,9 @@ public class EMNutrientMainAgent : MonoBehaviour
 	public GameObject miniNutrient;
 	private bool bCanSpawn;
 	private Vector2 position;
-	
+	// List stores all activated agents
 	public static List<EMNutrientMainAgent> AgentList = new List<EMNutrientMainAgent>();
-	
+	// List stores behavior of the agent
 	List<EMNutrientMainFlock> behaviours = new List<EMNutrientMainFlock>();
 	
 	public void AddBehaviour(EMNutrientMainFlock behaviour)
@@ -65,15 +65,15 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Remove destroyed from the list
 		AgentList.RemoveAll(item => item == null);
-
+		// Update the current position of the agent
 		position = this.gameObject.transform.position;
-
+		// Update mass of the agent
 		if (fMass != nSize * 2f)
 			fMass = nSize * 2f;
-
+		// Update localScale of the agent
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 		    transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
-
+		// Different behavior depends on whether the agent is sucked
 		if (bSucked)
 			Sucking ();
 		else 
@@ -109,12 +109,12 @@ public class EMNutrientMainAgent : MonoBehaviour
 			StartCoroutine (PauseSpawn ());
 		}
 	}
-
+	// Sucking behavior
 	void Sucking ()
 	{
 		transform.Translate (suckedTarget.transform.position * Time.deltaTime * .5f);
 	}
-
+	// Initialize the position of all agents so that all agents keep a fair distance from others
 	void InitialPosition ()
 	{
 		for (int i = 0; i < AgentList.Count; i++)
@@ -142,18 +142,20 @@ public class EMNutrientMainAgent : MonoBehaviour
 							break;
 						}
 					}
-
+					// If checked all preceding agents are not too close, then exit the loop
 					if (bNotTooClose)
 						break;
 				}
 			}
 		}
 	}
-
+	// Pause the spawning process so that there are not too many mini cells taking too much computing power at the same time
 	IEnumerator PauseSpawn ()
 	{
 		bCanSpawn = false;
+		// Pause for random amount of time depending on the size of the agent
 		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 3f)), Mathf.Pow (nSize, 2f)));
+		// Double check if the main nutrient is in the map
 		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.5f)))
 			Instantiate (miniNutrient, position, Quaternion.identity);
 		bCanSpawn = true;
@@ -205,7 +207,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 
 	void OnTriggerExit2D (Collider2D collision)
 	{
-		if (bSucked) {
+		if (bSucked) 
+		{
 			bSucked = false;
 			// Assign the nutrient back to the list
 			AgentList.Add (this);
@@ -214,6 +217,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 
 	void OnDestroy()
 	{
+		// Remove the agent from the list if it is destroyed
 		AgentList.Remove(this);
 	}
 }

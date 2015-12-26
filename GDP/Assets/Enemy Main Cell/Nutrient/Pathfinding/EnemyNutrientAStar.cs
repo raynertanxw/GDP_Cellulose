@@ -1,15 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// Using A* algorithm instead of other informed (heuristic) search strategies such as memory-bounded heuristic search
+// The reason is by using algorithms such as iterative-deepening A* (IDA*), recursive best-first search (RBFS) and memory-bounded A* (MA*),
+// they certainly help to save memory space, by a lot actually for some of them, but at a fairly big cost in exection time.
+// Since time complexity is out biggest problem rather than space complexity, A* is optimally efficient for any given consistent heuristic and thus is 
+// the best solution to out pathfinding problem here
 public class EnemyNutrientAStar
 {
 	#region List fields
 	
-	public static Frontier_ExploredSet  closedList, openList;
+	public static Frontier_ExploredSet  exploredSet, frontier;
 	
 	#endregion
 
-	// Calculate the final path in the path finding
+	// Get the real path by reversing the path found
 	private static ArrayList CalculatePath(EnemyNutrientNode node)
 	{
 		ArrayList list = new ArrayList();
@@ -22,10 +27,10 @@ public class EnemyNutrientAStar
 		return list;
 	}
 
-	// Calculate the estimated Heuristic cost to the goal
+	// Calculate the estimated Heuristic cost to the goal node
 	private static float HeuristicEstimateCost(EnemyNutrientNode currentNode, EnemyNutrientNode goalNode)
 	{
-		Vector2 vecCost = (Vector2)currentNode.position - (Vector2)goalNode.position;
+		Vector2 vecCost = currentNode.position - goalNode.position;
 		return vecCost.magnitude;
 	}
 
@@ -33,19 +38,23 @@ public class EnemyNutrientAStar
 	public static ArrayList FindPath(EnemyNutrientNode start, EnemyNutrientNode goal)
 	{
 		// Start Finding the path
-		openList = new Frontier_ExploredSet ();
-		openList.Push(start);
-		start.fTotalCost = 0.0f;
-		start.fEstimatedCost = HeuristicEstimateCost(start, goal);
-		
-		closedList = new Frontier_ExploredSet ();
-		EnemyNutrientNode node = null;
-		
-		while (openList.Length != 0)
+		frontier = new Frontier_ExploredSet ();						// Initialize the frontier
+		exploredSet = new Frontier_ExploredSet ();					// Initialize the explored set
+		frontier.Push(start);										// Add the start node to the frontier
+		start.fTotalCost = 0.0f;									// Initialize the total cost for the start node
+		start.fEstimatedCost = HeuristicEstimateCost(start, goal);	// Calculate the heuristic
+
+		EnemyNutrientNode node = null;								// Initialize a node to use
+
+		// While the frontier isnot empty
+		while (frontier.Length != 0)
 		{
-			node = openList.First();
-			
-			if (node.position == goal.position)
+			node = frontier.First();								// Take the first node in the frontier
+
+			// If the node is the goal node, then the path is found
+			// Instead of checking after adding the node to the explored set, we check it when it's first generated
+			// The purpose is to save time from looking for a more optimal path
+			if (node.position == goal.position)					
 			{
 				return CalculatePath(node);
 			}
@@ -61,7 +70,7 @@ public class EnemyNutrientAStar
 				// Cost between neighbour nodes
 				EnemyNutrientNode neighbourNode = (EnemyNutrientNode)neighbours[i];
 				
-				if (!closedList.Contains(neighbourNode))
+				if (!exploredSet.Contains(neighbourNode))
 				{					
 					// Cost from current node to this neighbour node
 					float cost = HeuristicEstimateCost(node, neighbourNode);	
@@ -77,18 +86,18 @@ public class EnemyNutrientAStar
 					neighbourNode.parent = node;
 					neighbourNode.fEstimatedCost = totalCost + neighbourNodeEstCost;
 					
-					// Add the neighbour node to the list if not already existed in the list
-					if (!openList.Contains(neighbourNode))
+					// Add the neighbour node to the frontier if not already existed in the frontier
+					if (!frontier.Contains(neighbourNode))
 					{
-						openList.Push(neighbourNode);
+						frontier.Push(neighbourNode);
 					}
 				}
 			}
 			
 			#endregion
 			
-			closedList.Push(node);
-			openList.Remove(node);
+			exploredSet.Push(node);									// Add the node to the explored set as it is expanded
+			frontier.Remove(node);									// Remove the node from the frontier
 		}
 		
 		// If finished looping and cannot find the goal then return null

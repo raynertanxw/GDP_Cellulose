@@ -7,24 +7,26 @@ public class EMNutrientPathfindingManager : MonoBehaviour
 	public EnemyNutrientNode startNode { get; set; }
 	public EnemyNutrientNode goalNode { get; set; }
 	
-	public ArrayList pathArray;
+	public ArrayList pathArray;						// ArrayList stores the path
 	
 	GameObject startObject, goalObject;
 	
-	private float elapsedTime = 0.0f;
-	public float intervalTime = 1.0f; //Interval time between path finding
+	private float elapsedTime = 0.0f;				// Timer to pause refind the path
+	public float intervalTime = 1.0f; 				// Interval time between path finding
 
 	void Start () 
 	{
+		// Start object is the current object and the goal object is the enemy main cell
 		startObject = this.gameObject;
 		goalObject = GameObject.FindGameObjectWithTag(Constants.s_strEnemyTag);
-
+		// Find a path by default
 		pathArray = new ArrayList();
 		FindPath();
 	}
 
 	void Update () 
 	{
+		#region Find path every few seconds depending on the interval time
 		elapsedTime += Time.deltaTime;
 		
 		if(elapsedTime >= intervalTime)
@@ -32,6 +34,7 @@ public class EMNutrientPathfindingManager : MonoBehaviour
 			elapsedTime = 0.0f;
 			FindPath();
 		}
+		#endregion
 	}
 	
 	void FindPath()
@@ -42,9 +45,9 @@ public class EMNutrientPathfindingManager : MonoBehaviour
 		// Initialize start and goal node
 		startNode = new EnemyNutrientNode(MapManager.instance.GetNodeCenter(MapManager.instance.GetGridIndex((Vector2)startPos.position)));
 		goalNode = new EnemyNutrientNode(MapManager.instance.GetNodeCenter(MapManager.instance.GetGridIndex((Vector2)endPos.position)));
-
+		// Update the size and position of all obstacles in map
 		MapManager.instance.GetObstacles ();
-
+		// Find a new path between the start and goal node
 		pathArray = EnemyNutrientAStar.FindPath(startNode, goalNode);
 	}
 
