@@ -55,18 +55,14 @@ public class Node_Manager : MonoBehaviour
 		{
 		case 0:
 			return Node_Manager.nodeLeft;
-			break;
 		case 1:
 			return Node_Manager.nodeMiddle;
-			break;
 		case 2:
 			return Node_Manager.nodeRight;
-			break;
 		default:
-			return null;
 			Debug.Log("Error: No such node index");
-			break;
-		}
+            return null;
+        }
 	}
 	#endregion
 
