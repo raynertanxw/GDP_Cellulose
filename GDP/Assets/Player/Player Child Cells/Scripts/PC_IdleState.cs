@@ -59,13 +59,11 @@ public class PC_IdleState : IPCState
     }
 
     // Draw the radius of the cohesion neighbourhood in green and the radius of the separation neightbouthood in red, in the scene view.
-    #if UNITY_EDITOR
+    #if UNITY_EDITOR    
     public override void ExecuteOnDrawGizmos()
     {
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(m_pcFSM.transform.position, cohesionRadius);
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(m_pcFSM.transform.position, separationRadius);
+        m_pcFSM.fGizmoCohesionRadius = cohesionRadius;
+        m_pcFSM.fGizmoSeparationRadius = separationRadius;
     }
     #endif
 

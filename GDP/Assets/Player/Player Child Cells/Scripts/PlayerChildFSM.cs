@@ -149,7 +149,7 @@ public class PlayerChildFSM : MonoBehaviour
 	void Update ()
 	{
 		m_currentState.Execute();
-	}
+    }
 
     void FixedUpdate()
     {
@@ -177,10 +177,18 @@ public class PlayerChildFSM : MonoBehaviour
 	}
 
     #if UNITY_EDITOR
-    void OnDrawGizmosSelected()
-    {
-        m_currentState.ExecuteOnDrawGizmos();
-    }
+    public float fGizmoCohesionRadius = 0f;
+    public float fGizmoSeparationRadius = 0f;
+
+    //void OnDrawGizmos()
+    //{
+    //    m_currentState.ExecuteOnDrawGizmos();
+
+    //    Gizmos.color = Color.green;
+    //    Gizmos.DrawWireSphere(transform.position, fGizmoCohesionRadius);
+    //    Gizmos.color = Color.red;
+    //    Gizmos.DrawWireSphere(transform.position, fGizmoSeparationRadius);
+    //}
     #endif
 }
 
