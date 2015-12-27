@@ -18,7 +18,8 @@ public class PlayerChildFSM : MonoBehaviour
 			// If disabled, thn it's available.
 			if (currentPCFSM.m_currentEnumState == PCState.Dead)
 			{
-				// Set it up
+                // Set it up
+                spawnPoint.z = 0; // Enforce all the spawnpoints to spawn at z = 0.
 				(currentPCFSM.m_statesDictionary[PCState.Dead] as PC_DeadState).CallFromPool(spawnPoint);
 				
 				// return a reference to the caller.

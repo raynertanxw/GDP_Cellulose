@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class player_control : MonoBehaviour
 {
 	public static int s_nResources;
-	public int m_nSpawnCost = 10;
+	public int m_nSpawnCost = 5;
 
 	private SpriteRenderer[] m_nodePointsRen;
 	private int m_nActiveNode = 1;
@@ -14,8 +14,8 @@ public class player_control : MonoBehaviour
 
 	void Awake()
 	{
-		m_unselectedNodeCol = new Color(0, 1, 0.867f, 1);
-		m_selectedNodeCol = new Color(0.75f, 1, 0.25f, 1);
+		m_unselectedNodeCol = new Color(0, 1, 0.867f, 0.2f);
+		m_selectedNodeCol = new Color(0.75f, 1, 0.25f, 0.2f);
 
 		m_nodePointsRen = new SpriteRenderer[transform.childCount];
 		for (int i = 0; i < transform.childCount; i++)
@@ -32,7 +32,7 @@ public class player_control : MonoBehaviour
 		m_nodePointsRen[m_nActiveNode].color = m_unselectedNodeCol;
 		m_nActiveNode = nNewNode;
 		m_nodePointsRen[m_nActiveNode].color = m_selectedNodeCol;
-		Debug.Log("Active Node: " + m_nActiveNode);
+		//Debug.Log("Active Node: " + m_nActiveNode);
 	}
 
 	
@@ -55,8 +55,6 @@ public class player_control : MonoBehaviour
 
 	public void ActionDefend()
 	{
-		Debug.Log("Defend Action called");
-
 		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
@@ -68,8 +66,6 @@ public class player_control : MonoBehaviour
 
 	public void ActionAvoid()
 	{
-		Debug.Log("Avoid Action called");
-
 		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
@@ -81,8 +77,6 @@ public class player_control : MonoBehaviour
 
 	public void ActionChargeMain()
 	{
-		Debug.Log("Charge Main Action Called");
-
 		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
@@ -92,8 +86,6 @@ public class player_control : MonoBehaviour
 
 	public void ActionChargeChild()
 	{
-		Debug.Log("Charge Child Action Called");
-
 		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 		for (int i = 0; i < listOfChildCells.Count; i++)
 		{
