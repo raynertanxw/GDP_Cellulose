@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class player_control : MonoBehaviour
 {
 	public static int s_nResources;
-	public int m_nSpawnCost = 5;
+	private int m_nSpawnCost = 5;
 
 	private SpriteRenderer[] m_nodePointsRen;
 	private int m_nActiveNode = 1;
