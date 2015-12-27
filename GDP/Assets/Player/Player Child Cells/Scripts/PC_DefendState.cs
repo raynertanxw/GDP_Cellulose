@@ -50,6 +50,13 @@ public class PC_DefendState : IPCState
         
     }
 
+    #if UNITY_EDITOR
+    public override void ExecuteOnDrawGizmos()
+    {
+        
+    }
+    #endif
+
     // Constructor.
     public PC_DefendState(PlayerChildFSM pcFSM)
 	{

@@ -13,6 +13,10 @@ public abstract class IPCState : IState
 	protected PlayerChildFSM m_pcFSM = null;
 
     public virtual void FixedExecute() {}
+
+    #if UNITY_EDITOR
+    public virtual void ExecuteOnDrawGizmos() {}
+    #endif
 }
 
 public abstract class IECState : IState

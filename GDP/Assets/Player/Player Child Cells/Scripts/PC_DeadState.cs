@@ -55,6 +55,13 @@ public class PC_DeadState : IPCState
 
     }
 
+    #if UNITY_EDITOR
+    public override void ExecuteOnDrawGizmos()
+    {
+
+    }
+    #endif
+
     // Constructor.
     public PC_DeadState(PlayerChildFSM pcFSM)
 	{

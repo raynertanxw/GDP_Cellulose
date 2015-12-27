@@ -175,4 +175,12 @@ public class PlayerChildFSM : MonoBehaviour
 			KillPlayerChildCell();
 		}
 	}
+
+    #if UNITY_EDITOR
+    void OnDrawGizmosSelected()
+    {
+        m_currentState.ExecuteOnDrawGizmos();
+    }
+    #endif
 }
+

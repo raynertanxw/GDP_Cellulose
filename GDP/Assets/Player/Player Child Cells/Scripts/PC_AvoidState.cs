@@ -42,6 +42,13 @@ public class PC_AvoidState : IPCState
 
     }
 
+    #if UNITY_EDITOR
+    public override void ExecuteOnDrawGizmos()
+    {
+        
+    }
+    #endif
+
     // Constructor.
     public PC_AvoidState(PlayerChildFSM pcFSM)
 	{

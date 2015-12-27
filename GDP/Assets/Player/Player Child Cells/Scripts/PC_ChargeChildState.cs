@@ -66,6 +66,13 @@ public class PC_ChargeChildState : IPCState
 
     }
 
+    #if UNITY_EDITOR
+    public override void ExecuteOnDrawGizmos()
+    {
+        
+    }
+    #endif
+
     // Constructor.
     public PC_ChargeChildState(PlayerChildFSM pcFSM)
 	{
