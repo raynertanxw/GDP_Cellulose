@@ -4,28 +4,19 @@ using System.Collections.Generic;
 
 public class PC_IdleState : IPCState
 {
-	private Vector3 m_nodeOrigin;
-	private float m_fMaxDisplacement = 1f;
-	private float m_fTargetReachRadius = 0.1f;
-	private bool m_bReachedTarget = true;
-	private Vector3 m_currentTarget;
-
-	private Vector3 m_currentVelocity;
-	private static float s_fPlayerChildIdleSpeed = 1f;
+	private Vector2 m_nodeOrigin;
 	private static float s_fDetectionRangeRadius = 0.6f;
 
 	public override void Enter()
 	{
 		m_nodeOrigin = m_pcFSM.m_assignedNode.transform.position;
-		m_currentVelocity = Vector3.zero;
 
         // Give a random velocity.
-        m_pcFSM.rigidbody2D.velocity = Random.insideUnitCircle;
+        m_pcFSM.rigidbody2D.velocity = (Random.insideUnitCircle * 0.1f);
 	}
 	
 	public override void Execute()
 	{
-		MoveAroundNode();
 		if (DetectedEnemyInRange() == true)
 		{
 			if (m_pcFSM.m_bIsDefending == true)
@@ -49,21 +40,22 @@ public class PC_IdleState : IPCState
 	
 	public override void Exit()
 	{
-		m_bReachedTarget = true;
+		
 	}
 
     public override void FixedExecute()
     {
-        //// Get the cohesion, alignment, and separation components of the flocking.
-        //Vector2 acceleration = Cohesion() * cohesionWeight;
-        //acceleration += Alignment() * alignmentWeight;
-        //acceleration += Separation() * separationWeight;
-        //// Clamp the acceleration to a maximum value
-        //acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
+        // Get the cohesion, alignment, and separation components of the flocking.
+        Vector2 acceleration = Cohesion() * cohesionWeight;
+        acceleration += Alignment() * alignmentWeight;
+        acceleration += Separation() * separationWeight;
+        acceleration += OriginPull() * originPullWeight;
+        // Clamp the acceleration to a maximum value
+        acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
 
-        //// Add the force to the rigidbody and face the direction of movement
-        //rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
-        //FaceTowardsHeading();
+        // Add the force to the rigidbody and face the direction of movement
+        m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+        FaceTowardsHeading();
     }
 
     // Draw the radius of the cohesion neighbourhood in green and the radius of the separation neightbouthood in red, in the scene view.
@@ -109,46 +101,6 @@ public class PC_IdleState : IPCState
 			return false;
 		}
 	}
-
-	private void MoveAroundNode()
-	{
-		if (m_bReachedTarget == true)
-		{
-			SetNewWanderTarget();
-		}
-		else
-		{
-			// Calculate "force" vector.
-			Vector3 direction = m_currentTarget - m_pcFSM.transform.position;
-			m_currentVelocity += direction.normalized * s_fPlayerChildIdleSpeed;
-			CapSpeed();
-		}
-
-		// Apply velocity vector.
-		m_pcFSM.transform.position += m_currentVelocity * Time.deltaTime;
-
-		// If reached target.
-		if ((m_pcFSM.transform.position - m_currentTarget).sqrMagnitude < Mathf.Pow(m_fTargetReachRadius, 2))
-		{
-			m_bReachedTarget = true;
-		}
-	}
-
-	private void SetNewWanderTarget()
-	{
-		m_currentTarget = (Vector3)(Random.insideUnitCircle * m_fMaxDisplacement) + m_nodeOrigin;
-		m_bReachedTarget = false;
-	}
-
-	private void CapSpeed()
-	{
-		float sqrMag = m_currentVelocity.sqrMagnitude;
-		if (sqrMag > Mathf.Pow(s_fPlayerChildIdleSpeed, 2))
-		{
-			float scalar = Mathf.Pow(s_fPlayerChildIdleSpeed, 2) / sqrMag;
-			m_currentVelocity *= scalar;
-		}
-	}
     #endregion
 
 
@@ -160,13 +112,14 @@ public class PC_IdleState : IPCState
 
     #region Flocking
     // Flocking related variables
-    private static float s_fCohesionRadius = 1.0f;
-    private static float s_fseparationRadius = 0.5f;
+    private static float s_fCohesionRadius = 2.0f;
+    private static float s_fseparationRadius = 0.25f;
     private static float s_fMaxAcceleration = 10f;
     // Weights
-    private static float s_fCohesionWeight = 30;
-    private static float s_fAlignmentWeight = 1000;
+    private static float s_fCohesionWeight = 300;
+    private static float s_fAlignmentWeight = 100;
     private static float s_fSeparationWeight = 5000;
+    private static float s_fOriginPullWeight = 500;
 
 
     // Getters for the various values.
@@ -176,6 +129,7 @@ public class PC_IdleState : IPCState
     public static float cohesionWeight { get { return s_fCohesionWeight; } }
     public static float alignmentWeight { get { return s_fAlignmentWeight; } }
     public static float separationWeight { get { return s_fSeparationWeight; } }
+    public static float originPullWeight { get { return s_fOriginPullWeight; } }
 
     // Flocking related Helper functions
     void FaceTowardsHeading()
@@ -198,7 +152,6 @@ public class PC_IdleState : IPCState
             // If it is itself skip itself.
             if (nodeChildren[i] == m_pcFSM)
             {
-                Debug.Log("Ignoring case boid against itself");
                 continue;
             }
 
@@ -235,7 +188,6 @@ public class PC_IdleState : IPCState
             // If it is itself skip itself.
             if (nodeChildren[i] == m_pcFSM)
             {
-                Debug.Log("Ignoring case boid against itself");
                 continue;
             }
 
@@ -271,7 +223,6 @@ public class PC_IdleState : IPCState
             // If it is itself skip itself.
             if (nodeChildren[i] == m_pcFSM)
             {
-                Debug.Log("Ignoring case boid against itself");
                 continue;
             }
 
@@ -289,6 +240,13 @@ public class PC_IdleState : IPCState
         {
             sumVector /= count;
         }
+
+        return sumVector;
+    }
+
+    public Vector2 OriginPull()
+    {
+        Vector2 sumVector = m_nodeOrigin - m_pcFSM.rigidbody2D.position;
 
         return sumVector;
     }
