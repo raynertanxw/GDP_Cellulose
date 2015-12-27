@@ -60,9 +60,14 @@ public class PC_ChargeChildState : IPCState
 		// Clean up
 		m_pcFSM.m_currentEnemyCellTarget = null;
 	}
-	
-	// Constructor.
-	public PC_ChargeChildState(PlayerChildFSM pcFSM)
+
+    public override void FixedExecute()
+    {
+
+    }
+
+    // Constructor.
+    public PC_ChargeChildState(PlayerChildFSM pcFSM)
 	{
 		m_pcFSM = pcFSM;
 	}

@@ -36,9 +36,14 @@ public class PC_ChargeMainState : IPCState
 	{
 
 	}
-	
-	// Constructor.
-	public PC_ChargeMainState(PlayerChildFSM pcFSM)
+
+    public override void FixedExecute()
+    {
+
+    }
+
+    // Constructor.
+    public PC_ChargeMainState(PlayerChildFSM pcFSM)
 	{
 		m_pcFSM = pcFSM;
 	}

@@ -50,6 +50,10 @@ public class PC_IdleState : IPCState
 	
 	// Constructor.
 	public PC_IdleState(PlayerChildFSM pcFSM)
+    public override void FixedExecute()
+    {
+
+    }
 	{
 		m_pcFSM = pcFSM;
 	}

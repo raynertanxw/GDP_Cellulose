@@ -36,9 +36,14 @@ public class PC_AvoidState : IPCState
 	{
 
 	}
-	
-	// Constructor.
-	public PC_AvoidState(PlayerChildFSM pcFSM)
+
+    public override void FixedExecute()
+    {
+
+    }
+
+    // Constructor.
+    public PC_AvoidState(PlayerChildFSM pcFSM)
 	{
 		m_pcFSM = pcFSM;
 	}

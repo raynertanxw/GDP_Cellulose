@@ -151,6 +151,11 @@ public class PlayerChildFSM : MonoBehaviour
 		m_currentState.Execute();
 	}
 
+    void FixedUpdate()
+    {
+        m_currentState.FixedExecute();
+    }
+
 	void OnCollisionEnter2D(Collision2D col)
 	{
 		// Hit Enemy Child

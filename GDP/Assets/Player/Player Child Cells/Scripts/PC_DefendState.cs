@@ -44,9 +44,14 @@ public class PC_DefendState : IPCState
 	{
 
 	}
-	
-	// Constructor.
-	public PC_DefendState(PlayerChildFSM pcFSM)
+
+    public override void FixedExecute()
+    {
+        
+    }
+
+    // Constructor.
+    public PC_DefendState(PlayerChildFSM pcFSM)
 	{
 		m_pcFSM = pcFSM;
 	}

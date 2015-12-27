@@ -11,6 +11,8 @@ public abstract class IState
 public abstract class IPCState : IState
 {
 	protected PlayerChildFSM m_pcFSM = null;
+
+    public virtual void FixedExecute() {}
 }
 
 public abstract class IECState : IState

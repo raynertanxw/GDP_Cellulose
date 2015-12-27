@@ -50,8 +50,13 @@ public class PC_DeadState : IPCState
 		PlayerChildFSM.SetActiveChildCount(true);
 	}
 
-	// Constructor.
-	public PC_DeadState(PlayerChildFSM pcFSM)
+    public override void FixedExecute()
+    {
+
+    }
+
+    // Constructor.
+    public PC_DeadState(PlayerChildFSM pcFSM)
 	{
 		m_pcFSM = pcFSM;
 	}
