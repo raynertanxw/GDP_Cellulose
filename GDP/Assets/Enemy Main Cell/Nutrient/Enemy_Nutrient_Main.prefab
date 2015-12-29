@@ -89,11 +89,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FlockWeight: 1
-  SeekWeight: .400000006
+  SeekWeight: .5
   fNeighbourRadius: 1
-  fAlignmentWeight: .699999988
-  fCohesionWeigth: .5
-  fSeperationWeight: .5
+  fAlignmentWeight: .400000006
+  fCohesionWeigth: .600000024
+  fSeperationWeight: .600000024
 --- !u!212 &21216358
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -191,11 +191,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fSeperationWeight
-      value: .5
+      value: .600000024
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: SeekWeight
-      value: .400000006
+      value: .5
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fNeighbourRadius
@@ -203,11 +203,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fAlignmentWeight
-      value: .200000003
+      value: .400000006
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fCohesionWeigth
-      value: .5
+      value: .600000024
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_TagString
