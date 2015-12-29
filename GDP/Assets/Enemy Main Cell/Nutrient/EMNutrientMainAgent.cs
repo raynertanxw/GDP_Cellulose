@@ -19,9 +19,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 	public bool Sucked { get { return bSucked; } }
 	private GameObject suckedTarget;
 	// Property
-	public float fMass = 10;
-	public float fFriction = .05f;
-	public bool bRotating = true;
+	private float fMass;
+	public float fFriction = 0f;
 	public GameObject miniNutrient;
 	private bool bCanSpawn;
 	private Vector2 position;
@@ -43,7 +42,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	void Awake()
 	{
 		// Initialiation
-		nSize = 5;
+		nSize = Random.Range (4, 9);
 		initialScale = gameObject.transform.localScale;
 		transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
 		fInitialRadius = GetComponent<CircleCollider2D> ().bounds.size.x / 2;
@@ -68,8 +67,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Update the current position of the agent
 		position = this.gameObject.transform.position;
 		// Update mass of the agent
-		if (fMass != nSize * 2f)
-			fMass = nSize * 2f;
+		if (fMass != nSize * 5f)
+			fMass = nSize * 5f;
 		// Update localScale of the agent
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 		    transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
@@ -94,9 +93,9 @@ public class EMNutrientMainAgent : MonoBehaviour
 			if (currentVelocity.magnitude > fMaxVelocity)
 				currentVelocity = currentVelocity.normalized * fMaxVelocity;
 			
-			transform.position = new Vector2 (transform.position.x + currentVelocity.x * Time.deltaTime, transform.position.y + currentVelocity.y * Time.deltaTime);
+			transform.position = transform.position + (Vector3)currentVelocity * Time.deltaTime;
 
-			if (bRotating && currentVelocity.magnitude > 0.0001f) {
+			if (currentVelocity.magnitude > 0f) {
 				float angle = Mathf.Atan2 (currentVelocity.y, currentVelocity.x) * Mathf.Rad2Deg;
 				
 				transform.eulerAngles = new Vector3 (transform.eulerAngles.x, transform.eulerAngles.y, angle);
@@ -154,65 +153,11 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		bCanSpawn = false;
 		// Pause for random amount of time depending on the size of the agent
-		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 3f)), Mathf.Pow (nSize, 2f)));
+		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 3f)), Mathf.Pow (nSize, 3f)));
 		// Double check if the main nutrient is in the map
 		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.5f)))
 			Instantiate (miniNutrient, position, Quaternion.identity);
 		bCanSpawn = true;
-	}
-
-	void OnTriggerEnter2D (Collider2D collision)
-	{
-		// Assign one nutrient to be sucked during collision
-		if (collision.gameObject.tag == Constants.s_strEnemyMainNutrient && !collision.GetComponent<EMNutrientMainAgent>().Sucked) 
-		{
-			if (collision.gameObject.transform.position.y > position.y)
-			{
-				suckedTarget = collision.gameObject;
-				bSucked = true;
-				// Unregister the sucked nutrient from the list
-				AgentList.Remove(this);
-			}
-		}
-	}
-
-	void OnTriggerStay2D (Collider2D collision)
-	{
-		// Check collisions with other enemy nutrient
-		if (collision.gameObject.tag == Constants.s_strEnemyMainNutrient)
-		{
-			// Only one of the two nutrient on collision can perform actions
-			if (!bSucked && collision.GetComponent<EMNutrientMainAgent>().Sucked)
-			{
-				if (Vector2.Distance (transform.position, collision.gameObject.transform.position) < 0.1f)
-				{
-					// Add the size of the nutrient destroyed to the one stays
-					nSize += collision.gameObject.GetComponent<EMNutrientMainAgent>().Size;
-					Destroy(collision.gameObject);
-				}
-			}
-
-			if (!bSucked && !collision.GetComponent<EMNutrientMainAgent>().Sucked) 
-			{
-				if (collision.gameObject.transform.position.y > position.y)
-				{
-					suckedTarget = collision.gameObject;
-					bSucked = true;
-					// Unregister the sucked nutrient from the list
-					AgentList.Remove(this);
-				}
-			}
-		}
-	}
-
-	void OnTriggerExit2D (Collider2D collision)
-	{
-		if (bSucked) 
-		{
-			bSucked = false;
-			// Assign the nutrient back to the list
-			AgentList.Add (this);
-		}
 	}
 
 	void OnDestroy()

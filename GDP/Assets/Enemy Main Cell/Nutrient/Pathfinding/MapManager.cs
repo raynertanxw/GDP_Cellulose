@@ -239,16 +239,18 @@ public class MapManager : MonoBehaviour
 	// Draw debug grid map and unaccessible areas
 	void OnDrawGizmos()
 	{
-		//Draw Grid
+		// Draw Grid
 		if (bShowGrid)
 		{
 			DebugDrawGrid(transform.position, nNumOfRows, nNumOfColumns, fUniversalnodeSize, Color.blue);
 		}
 		
-		//Grid Start Position
-		Gizmos.DrawSphere(transform.position, 0.5f);
+		// Grid Start Position
+		Gizmos.color = Color.red;
+		Gizmos.DrawSphere(transform.position, 0.3f);
 		
-		//Draw Obstacle obstruction
+		// Draw Obstacle obstruction
+		Gizmos.color = Color.white;
 		if (bShowObstacleBlocks)
 		{
 			Vector2 cellSize = new Vector2(fUniversalnodeSize, fUniversalnodeSize);

@@ -75,9 +75,7 @@ MonoBehaviour:
   fMaxVelocity: 1
   currentVelocity: {x: 0, y: 0}
   bSucked: 0
-  fMass: 10
-  fFriction: .0500000007
-  bRotating: 1
+  fFriction: 0
   miniNutrient: {fileID: 177402, guid: aa178aef9cc10b04ca6a02aca967f5d8, type: 2}
 --- !u!114 &11461550
 MonoBehaviour:
@@ -91,11 +89,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FlockWeight: 1
-  SeekWeight: .300000012
-  fNeighbourRadius: 1.5
+  SeekWeight: .400000006
+  fNeighbourRadius: 1
   fAlignmentWeight: .699999988
   fCohesionWeigth: .5
-  fSeperationWeight: .600000024
+  fSeperationWeight: .5
 --- !u!212 &21216358
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -122,7 +120,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: .517241359, b: 0, a: 1}
 --- !u!1001 &100100000
 Prefab:
@@ -134,7 +132,7 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+      objectReference: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 0}
       propertyPath: m_Color.r
       value: 1
@@ -193,19 +191,19 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fSeperationWeight
-      value: .600000024
+      value: .5
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: SeekWeight
-      value: .300000012
+      value: .400000006
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fNeighbourRadius
-      value: 1.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fAlignmentWeight
-      value: .699999988
+      value: .200000003
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fCohesionWeigth
@@ -223,6 +221,26 @@ Prefab:
       propertyPath: miniNutrient
       value: 
       objectReference: {fileID: 177402, guid: aa178aef9cc10b04ca6a02aca967f5d8, type: 2}
+    - target: {fileID: 0}
+      propertyPath: FlockWeight
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: Weight
+      value: .200000003
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: DrawGizmos
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: fFriction
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: fMass
+      value: 20
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 177402}

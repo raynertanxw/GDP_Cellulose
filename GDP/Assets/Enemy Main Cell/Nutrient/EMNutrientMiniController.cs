@@ -70,7 +70,7 @@ public class EMNutrientMiniController : MonoBehaviour
 
 	void InitialMovement ()
 	{
-		thisRB.AddForce ((EnemyMainFSM.Instance().Position - (Vector2)this.gameObject.transform.position) * Random.Range (20f, 30f));
+		thisRB.AddForce ((EnemyMainFSM.Instance().Position - (Vector2)this.gameObject.transform.position) * Random.Range (10f, 20f));
 	}
 
 	void OnTriggerEnter2D (Collider2D collision)

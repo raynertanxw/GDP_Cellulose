@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public class EMNutrientMainFlock : MonoBehaviour 
 {
 	public float FlockWeight = 1f;
-	public float SeekWeight = .2f;
+	public float SeekWeight = .3f;
 	
 	EMNutrientMainAgent agent;
 
@@ -28,12 +28,6 @@ public class EMNutrientMainFlock : MonoBehaviour
 	void Update ()
 	{
 		targetPosition = EnemyMainFSM.Instance ().Position;
-	}
-	
-	void OnDestroy()
-	{
-		if (agent != null)
-			agent.RemoveBehaviour(this);
 	}
 
 	#region Behaviour
@@ -67,28 +61,29 @@ public class EMNutrientMainFlock : MonoBehaviour
 	
 	private Vector2 Cohesion()
 	{
-		Vector2 averagePosition = Vector2.zero;
+		Vector2 direction = Vector2.zero;
 		
 		foreach (EMNutrientMainAgent agent in neighbouringAgents)
-			averagePosition += (Vector2)agent.transform.position;
+			direction += (Vector2)agent.transform.position;
 		
-		averagePosition /= neighbouringAgents.Count;
+		direction /= neighbouringAgents.Count;
 		
-		return (averagePosition - currentPosition).normalized;
+		return (direction - currentPosition).normalized;
 	}
 	
 	private Vector2 Seperation()
 	{
-		Vector2 moveDirection = Vector2.zero;
+		Vector2 direction = Vector2.zero;
 		
 		foreach (var agent in neighbouringAgents)
-			moveDirection += (Vector2)agent.transform.position - currentPosition;
+			direction += (Vector2)agent.transform.position - currentPosition;
 		
-		return (moveDirection * -1);
+		return (direction * -1);
 	}
 	
 	void UpdateNeighbours()
 	{
+		// Clean up the list of neighbouring agents
 		neighbouringAgents.Clear();
 		
 		foreach (EMNutrientMainAgent agent in EMNutrientMainAgent.AgentList)
@@ -98,4 +93,10 @@ public class EMNutrientMainFlock : MonoBehaviour
 		}
 	}
 	#endregion
+
+	void OnDestroy()
+	{
+		if (agent != null)
+			agent.RemoveBehaviour(this);
+	}
 }
