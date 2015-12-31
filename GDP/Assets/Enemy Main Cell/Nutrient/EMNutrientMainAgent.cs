@@ -6,6 +6,7 @@ using System.Collections.Generic;
 public class EMNutrientMainAgent : MonoBehaviour 
 {
 	// Size
+	[SerializeField]
 	private int nSize;
 	public int Size { get { return nSize; } }
 	private Vector2 initialScale;
@@ -20,7 +21,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	private GameObject suckedTarget;
 	// Property
 	private float fMass;
-	public float fFriction = 0f;
+	public float fFriction;
 	public GameObject miniNutrient;
 	private bool bCanSpawn;
 	private Vector2 position;
@@ -43,6 +44,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Initialiation
 		nSize = Random.Range (4, 9);
+		fFriction = 0.02f;
 		initialScale = gameObject.transform.localScale;
 		transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
 		fInitialRadius = GetComponent<CircleCollider2D> ().bounds.size.x / 2;
@@ -67,8 +69,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Update the current position of the agent
 		position = this.gameObject.transform.position;
 		// Update mass of the agent
-		if (fMass != nSize * 5f)
-			fMass = nSize * 5f;
+		if (fMass != nSize * 1f)
+			fMass = nSize * 1f;
 		// Update localScale of the agent
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 		    transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
@@ -77,18 +79,19 @@ public class EMNutrientMainAgent : MonoBehaviour
 			Sucking ();
 		else 
 		{
+			// Reset acceleration
 			Vector2 acceleration = Vector2.zero;
-			
+			// Modify acceleration based on the velocity returned by each behavior attached on the agent and its weight
 			foreach (EMNutrientMainFlock behaviour in behaviours) {
 				if (behaviour.enabled) {
 					acceleration += behaviour.GetVelocity () * behaviour.FlockWeight;
 					acceleration += behaviour.GetTargetVelocity () * behaviour.SeekWeight;
 				}
 			}
-			
-			currentVelocity += acceleration / fMass;
-			
-			currentVelocity -= currentVelocity * fFriction;
+			// Lower acceleratin for heavier agent
+			currentVelocity += acceleration / Mathf.Sqrt (Mathf.Pow(fMass, 3));
+			// Reduce based on the friction
+			currentVelocity *= (1f - fFriction);
 			
 			if (currentVelocity.magnitude > fMaxVelocity)
 				currentVelocity = currentVelocity.normalized * fMaxVelocity;

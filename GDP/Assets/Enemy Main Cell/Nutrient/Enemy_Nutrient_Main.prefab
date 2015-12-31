@@ -72,6 +72,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc2bd37b0160fe24eb0194c831356cf9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nSize: 0
   fMaxVelocity: 1
   currentVelocity: {x: 0, y: 0}
   bSucked: 0
@@ -89,9 +90,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FlockWeight: 1
-  SeekWeight: .5
+  SeekWeight: .300000012
   fNeighbourRadius: 1
-  fAlignmentWeight: .400000006
+  fAlignmentWeight: .5
   fCohesionWeigth: .600000024
   fSeperationWeight: .600000024
 --- !u!212 &21216358
@@ -195,7 +196,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: SeekWeight
-      value: .5
+      value: .300000012
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fNeighbourRadius
@@ -203,7 +204,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fAlignmentWeight
-      value: .400000006
+      value: .5
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: fCohesionWeigth
