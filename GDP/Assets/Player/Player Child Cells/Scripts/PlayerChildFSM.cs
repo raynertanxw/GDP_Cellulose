@@ -88,6 +88,12 @@ public class PlayerChildFSM : MonoBehaviour
 		m_currentEnumState = newState;
 	}
 
+	public void RefreshState()
+	{
+		m_currentState.Exit();
+		m_currentState.Enter();
+	}
+
 	public void DeferredChangeState(PCState newState)
 	{
 		m_deferredState = newState;
