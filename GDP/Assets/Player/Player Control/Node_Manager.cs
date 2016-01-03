@@ -8,7 +8,7 @@ public class Node_Manager : MonoBehaviour
 	
 	private player_control m_playerCtrl;
 	public int m_nNodeIndex;
-	public static int s_nNodeIdexWithSquadCaptain = -1; // -1 means no squad captain in play.
+	public static int s_nNodeIndexWithSquadCaptain = -1; // -1 means no squad captain in play.
 	
 	private List<PlayerChildFSM> m_playerChildInNode;
 	

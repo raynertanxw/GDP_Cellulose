@@ -40,7 +40,7 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn()
 	{
-		if (m_nActiveNode == Node_Manager.s_nNodeIdexWithSquadCaptain)
+		if (m_nActiveNode == Node_Manager.s_nNodeIndexWithSquadCaptain)
 		{
 			Debug.Log("Node is squad manager, can only disperse");
 			return;
@@ -62,7 +62,7 @@ public class player_control : MonoBehaviour
 
 	public void ActionDefend()
 	{
-		if (m_nActiveNode == Node_Manager.s_nNodeIdexWithSquadCaptain)
+		if (m_nActiveNode == Node_Manager.s_nNodeIndexWithSquadCaptain)
 		{
 			Debug.Log("Node is squad manager, can only disperse");
 			return;
@@ -79,7 +79,7 @@ public class player_control : MonoBehaviour
 
 	public void ActionAvoid()
 	{
-		if (m_nActiveNode == Node_Manager.s_nNodeIdexWithSquadCaptain)
+		if (m_nActiveNode == Node_Manager.s_nNodeIndexWithSquadCaptain)
 		{
 			Debug.Log("Node is squad manager, can only disperse");
 			return;
@@ -96,7 +96,7 @@ public class player_control : MonoBehaviour
 
 	public void ActionChargeMain()
 	{
-		if (m_nActiveNode == Node_Manager.s_nNodeIdexWithSquadCaptain)
+		if (m_nActiveNode == Node_Manager.s_nNodeIndexWithSquadCaptain)
 		{
 			Debug.Log("Node is squad manager, can only disperse");
 			return;
@@ -111,7 +111,7 @@ public class player_control : MonoBehaviour
 
 	public void ActionChargeChild()
 	{
-		if (m_nActiveNode == Node_Manager.s_nNodeIdexWithSquadCaptain)
+		if (m_nActiveNode == Node_Manager.s_nNodeIndexWithSquadCaptain)
 		{
 			Debug.Log("Node is squad manager, can only disperse");
 			return;
@@ -127,7 +127,7 @@ public class player_control : MonoBehaviour
 	public void ActionSpawnCaptain()
 	{
 		// Need to check if no current captain is spawned and also check if node conditions are met.
-		if (Node_Manager.s_nNodeIdexWithSquadCaptain == -1)
+		if (Node_Manager.s_nNodeIndexWithSquadCaptain == -1)
 		{
 			List<PlayerChildFSM> childList = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 
@@ -142,7 +142,7 @@ public class player_control : MonoBehaviour
 
 				// Move aside the rest of the children.
 				int nTargetNode;
-				if (Node_Manager.s_nNodeIdexWithSquadCaptain == 1)
+				if (Node_Manager.s_nNodeIndexWithSquadCaptain == 1)
 					nTargetNode = 2;
 				else
 					nTargetNode = 1;
@@ -163,7 +163,7 @@ public class player_control : MonoBehaviour
 
 
 				// Set the s_nNodeIndexWithSquadCaptain to the active node.
-				Node_Manager.s_nNodeIdexWithSquadCaptain = m_nActiveNode;
+				Node_Manager.s_nNodeIndexWithSquadCaptain = m_nActiveNode;
 			}
 			else
 			{
@@ -178,11 +178,11 @@ public class player_control : MonoBehaviour
 
 	public void ActionDisperse()
 	{
-		if (Node_Manager.s_nNodeIdexWithSquadCaptain == -1)
+		if (Node_Manager.s_nNodeIndexWithSquadCaptain == -1)
 		{
 			Debug.Log("No squad captain is active, nothing to disperse");
 		}
-		else if (Node_Manager.s_nNodeIdexWithSquadCaptain == m_nActiveNode)
+		else if (Node_Manager.s_nNodeIndexWithSquadCaptain == m_nActiveNode)
 		{
 			// Despawn the Squad Captain and it's child cells.
 			// CODE NOT DONE HERE YET.
@@ -195,7 +195,7 @@ public class player_control : MonoBehaviour
 			}
 
 			// Set back to -1 to indicate that there is no more squad captain active.
-			Node_Manager.s_nNodeIdexWithSquadCaptain = -1;
+			Node_Manager.s_nNodeIndexWithSquadCaptain = -1;
 		}
 		else
 		{
