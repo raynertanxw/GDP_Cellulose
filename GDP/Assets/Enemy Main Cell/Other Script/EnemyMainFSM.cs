@@ -165,6 +165,7 @@ public class EnemyMainFSM : MonoBehaviour
 		//Initialize and refresh the point database for Enemy Child Cells
 		PointDatabase.Instance.InitializeDatabase();
 		PointDatabase.Instance.RefreshDatabase();
+		FormationDatabase.Instance.RefreshDatabases(ECList);
 		
         // Initialise the enemy child list
         /*

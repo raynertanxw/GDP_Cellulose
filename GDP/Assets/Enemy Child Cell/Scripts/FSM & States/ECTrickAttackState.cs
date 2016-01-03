@@ -63,6 +63,8 @@ public class ECTrickAttackState : IECState {
 		//reach the teleport starting position, start the teleport corountine. The coroutine will disable the
 		//enemy child cell for 1.5 second become teleport the enemy child cell to the next position and then
 		//move towards the player main cell
+		m_ecFSM.RotateToHeading();
+		
 		if(!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
 			ChargeTowards(CurrentTargetPoint.Position);
@@ -71,7 +73,7 @@ public class ECTrickAttackState : IECState {
 		{
 			CurrentTargetIndex++;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
-			//Utility.DrawCross(PathToTarget[CurrentTargetIndex].Position,Color.cyan,0.1f);
+			Utility.DrawCross(PathToTarget[CurrentTargetIndex].Position,Color.cyan,0.1f);
 			//Debug.Log("point: " + CurrentTargetPoint.Index);
 		}
 		else if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported == false)
@@ -169,7 +171,7 @@ public class ECTrickAttackState : IECState {
 		float fInitialY = Random.Range(fYLimit/2,fYLimit);
 		
 		//find a side of the Wall to teleport from
-		GameObject m_InitialWall = GetClosestWall(m_Child.transform.position);
+		GameObject m_InitialWall = GetWall();
 		
 		//calculate the appropriate position to start teleporting 
 		Vector2 m_StartPos = new Vector2(m_InitialWall.transform.position.x, fInitialY);
@@ -211,6 +213,18 @@ public class ECTrickAttackState : IECState {
 			return m_LWall;
 		}
 		return m_RWall;
+	}
+	
+	private GameObject GetWall()
+	{
+		GameObject m_LeftWall = GameObject.Find("Left Wall");
+		GameObject m_RightWall = GameObject.Find("Right Wall");
+		int random = Random.Range(0,2);
+		if(random == 0)
+		{
+			return m_LeftWall;
+		}
+		return m_RightWall;
 	}
 	
 	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation

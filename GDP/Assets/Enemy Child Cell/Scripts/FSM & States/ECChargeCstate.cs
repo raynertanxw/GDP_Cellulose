@@ -37,6 +37,8 @@ public class ECChargeCState : IECState {
 	
 	public override void Execute()
 	{
+		 m_ecFSM.RotateToHeading();
+		
 		//If the child cell reach the charge target but the target is lost and there is no more cells in the target's node
 		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && m_TargetNode.GetNodeChildList().Count <= 0)
 		{

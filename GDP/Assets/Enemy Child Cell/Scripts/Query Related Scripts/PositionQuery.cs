@@ -176,12 +176,12 @@ public class PositionQuery
 		return CurrentPoint;
 	}
 	
-	private Vector2 InduceNoiseToPosition (Vector2 _TargetPos)
+	public Vector2 InduceNoiseToPosition (Vector2 _TargetPos)
 	{
 		float fRandomXNeg = Random.Range(-0.5f, 0f);
 		float fRandomXPos = Random.Range(0f, 0.5f);
 		float fRandomYNeg = Random.Range(-0.5f, 0f);
-		float fRandomYPos = Random.Range(0f, 0.5f);
+		float fRandomYPos = Random.Range(0f, 0.75f);
 		
 		float fNoiseToX = Random.Range(fRandomXNeg,fRandomXPos);
 		Debug.Log(fNoiseToX);
@@ -259,6 +259,7 @@ public class PositionQuery
 				{
 					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 				}
+				targetPos = CurrentPoint.Position;
 			}
 		}
 		else if(PType == PositionType.Defensive)
@@ -279,46 +280,46 @@ public class PositionQuery
 		else if(PType == PositionType.Neutral)
 		{
 			Debug.Log("Netural");
-			if(IsAllNodesEmpty())
-			{
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
-				targetPos = CurrentPoint.Position;
-			}
-			else
-			{
-				GameObject TargetNode = null;
-				
-				if(CurrentNodeTarget == 0)
-				{
-					TargetNode = GameObject.Find("Node_Left");
-				}
-				else if(CurrentNodeTarget == 1)
-				{
-					TargetNode = GameObject.Find("Node_Top");
-				}
-				else if(CurrentNodeTarget == 2)
-				{
-					TargetNode = GameObject.Find("Node_Right");
-				}
-				
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position,false);
-				targetPos = CurrentPoint.Position;
-				
-				if(CurrentNodeTarget >= 2)
-				{
-					CurrentNodeTarget = 0;
-				}
-				else
-				{
-					CurrentNodeTarget++;
-				}
-			}
+			Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
+			targetPos = CurrentPoint.Position;
 		}
 		
-		//Utility.DrawCross(targetPos,Color.green,0.5f);
-		return targetPos;//InduceNoiseToPosition(targetPos);
+	    Utility.DrawCross(targetPos,Color.green,0.5f);
+		return targetPos;
 	}
-	
+
+	public Formation GetDefensiveFormation()
+	{
+		GameObject EMain = GameObject.Find("Enemy_Cell");
+		/*if(EMain.transform.position.x >= -0.05f && EMain.transform.position.x <= 0.05f)
+		{
+			int Choice = Random.Range(0, 4);
+			if(Choice == 0)
+			{
+				Debug.Log("Crescent");
+				return Formation.Crescent;
+			}
+			else if(Choice == 1)
+			{
+				Debug.Log("ReverseCrescent");
+				return Formation.ReverseCrescent;
+			}
+			else if(Choice == 2)
+			{
+				Debug.Log("CircularSurround");
+				return Formation.CircularSurround;
+			}
+			else if(Choice == 3)
+			{
+				Debug.Log("AreaBlock");
+				return Formation.AreaBlock;
+			}
+		}
+		Debug.Log("CircularSurround");
+		return Formation.CircularSurround;*/
+		return Formation.Crescent;
+	}
+		
 	/*
 	public static Vector2[] GetPathToPM(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
 	{

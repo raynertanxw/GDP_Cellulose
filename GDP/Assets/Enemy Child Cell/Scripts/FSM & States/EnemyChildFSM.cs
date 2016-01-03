@@ -23,11 +23,18 @@ public class EnemyChildFSM : MonoBehaviour
 	//declare a dictoary to store various IECstate with the key being ECState
 	private Dictionary<ECState,IECState> m_StatesDictionary;
 	
+	private float fRotationTarget;
+	private bool bRotateCW;
+	private bool bRotateACW;
+	
 	void Start()
 	{
 		//Initialize the variables and data structure
 		fSpeed = 0.01f;
+		fRotationTarget = Random.Range(0f,360f);
 		bIsMine = false;
+		bRotateCW = false;
+		bRotateACW = false;
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
 		m_ChargeTarget = null;
@@ -97,8 +104,9 @@ public class EnemyChildFSM : MonoBehaviour
 	{
 		m_CurrentState.Exit();
 		m_CurrentState = m_StatesDictionary[_state];
-		m_CurrentState.Enter();
 		m_CurrentEnum = _state;
+		m_CurrentState.Enter();
+		
 	}
 	
 	//a function to update the enemy child state based on the currentcommand variable in the enemy child FSM
@@ -259,5 +267,48 @@ public class EnemyChildFSM : MonoBehaviour
 		yield return new WaitForSeconds(1f);
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,this.gameObject,MessageType.Dead,0);
 		Debug.Log("EC Kill Self: " + gameObject.name);
+	}
+	
+	public void RotateToHeading()
+	{
+		Vector2 Heading = gameObject.GetComponent<Rigidbody2D>().velocity.normalized;
+		float Rotation = -Mathf.Atan2(Heading.x, Heading.y) * Mathf.Rad2Deg;
+		gameObject.GetComponent<Rigidbody2D>().MoveRotation(Rotation);
+	}
+	
+	public void RandomRotation(float _RotateSpeed)
+	{
+		if(bRotateCW == false && bRotateACW == false)
+		{
+			if(fRotationTarget > gameObject.transform.eulerAngles.z)
+			{
+				bRotateCW = true;
+			}
+			else
+			{
+				bRotateACW = true;
+			}
+		}
+		
+		if(bRotateCW && !bRotateACW && gameObject.transform.eulerAngles.z < fRotationTarget)
+		{
+			gameObject.transform.eulerAngles += new Vector3(0f,0f,_RotateSpeed);
+			if(gameObject.transform.eulerAngles.z >= fRotationTarget)
+			{
+				bRotateCW = false;
+				bRotateACW = true;
+				fRotationTarget = Random.Range(0f,360f);
+			}
+		}
+		else if(!bRotateCW && bRotateACW && gameObject.transform.eulerAngles.z > fRotationTarget)
+		{
+			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed); 
+			if(gameObject.transform.eulerAngles.z <= fRotationTarget)
+			{
+				bRotateCW = true;
+				bRotateACW = false;
+				fRotationTarget = Random.Range(0f,360f);
+			}
+		}
 	}
 }

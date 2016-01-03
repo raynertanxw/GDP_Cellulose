@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public static class Utility
 {
@@ -45,5 +46,13 @@ public static class Utility
 	public static void DrawLine(Vector2 _Start, Vector2 _End)
 	{
 		Debug.DrawLine(_Start,_End,Color.red,Mathf.Infinity,true);
+	}
+	
+	public static void DrawPath(List<Point> _Path, Color _Color, float _CrossSize)
+	{
+		foreach(Point point in _Path)
+		{
+			DrawCross(point.Position,_Color,_CrossSize);
+		}
 	}
 }

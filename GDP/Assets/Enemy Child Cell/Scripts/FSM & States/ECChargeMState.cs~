@@ -37,6 +37,8 @@ public class ECChargeMState : IECState {
 	
 	public override void Execute()
 	{
+		m_ecFSM.RotateToHeading();
+	
 		//if the enemy child cell had not reach the player main cell, continue charge towards the player main cell
 		if (!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
@@ -75,16 +77,5 @@ public class ECChargeMState : IECState {
 		fChargeSpeed += 0.2f;
 		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
 	}
-	
-	/*private void ChargeTowards(GameObject _PM)
-	{
-		Vector2 m_TargetPos = _PM.transform.position;
-		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
-		Vector2 m_Direction = -m_Difference.normalized;
-		
-		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
-		fChargeSpeed += 0.2f;
-		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
-	}*/
 }
 

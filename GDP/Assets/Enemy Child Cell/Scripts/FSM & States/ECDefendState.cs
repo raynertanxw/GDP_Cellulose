@@ -7,6 +7,7 @@ public class ECDefendState : IECState {
 	//a boolean to track whether the position of the enemy child cell had reach the guiding position for 
 	//the defence formation
 	private bool bReachPos;
+	private static bool bGathered;
 	
 	//a float to store the movement speed of the enemy child towards the defending position
 	private float fMoveSpeed;
@@ -14,10 +15,11 @@ public class ECDefendState : IECState {
 	//a vector2 to store the defending position that the enemy child cell need to move to
     private Vector2 m_TargetPos;
     
-    //a static vector to store the central positon of the defending position for all defending enemy child cells
-    private static Vector2 s_m_FormationCenter;
-    
     private float fDefendTime;
+    private float fLeftLimit;
+    private float fRightLimit;
+    
+    private static Formation CurrentFormation;
 
 	//Constructor
     public ECDefendState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -27,6 +29,9 @@ public class ECDefendState : IECState {
 		m_Main = _ecFSM.m_EMain;
 		fMoveSpeed = 3f;
 		fDefendTime = 0f;
+		fLeftLimit = Vector2.Distance(new Vector2(0f,0f),GameObject.Find("Left Wall").transform.position) - m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 - GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
+		fRightLimit = Vector2.Distance(new Vector2(0f,0f),GameObject.Find("Right Wall").transform.position) - m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 - GameObject.Find("Right Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
+		CurrentFormation = Formation.Empty;
     }
 
     public override void Enter()
@@ -37,40 +42,47 @@ public class ECDefendState : IECState {
 
     public override void Execute()
     {
-		//Update the center point of defensive formation
-		s_m_FormationCenter = new Vector2(m_Main.transform.position.x, m_Main.transform.position.y - (m_Child.GetComponent<SpriteRenderer>().bounds.size.y + m_Main.GetComponent<SpriteRenderer>().bounds.size.y));
-   
-		//if the enemy child cell had not reach the central positon of the defending position, move the enemy
-		//child cell towards the target position
-		if(!HasCellReachTargetPos(s_m_FormationCenter) && bReachPos == false && !IsPlayerChildPassingBy())
+		if(CurrentFormation == Formation.Empty)
 		{
-			MoveTowards(s_m_FormationCenter);
-		}		
-		else if(HasCellReachTargetPos(s_m_FormationCenter) && bReachPos == false && !IsPlayerChildPassingBy())
+			CurrentFormation = PositionQuery.Instance.GetDefensiveFormation();
+			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,GetDefendingCellsFSM());
+			//Debug.Log(GetDefendingCells().Count);
+		}
+    
+		m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(m_Child);
+		
+		if(HasAllCellsGathered())
+		{
+			bGathered = true;
+		}
+		
+		if(!HasCellReachTargetPos(m_Main.transform.position) && !HasAllCellsGathered() && !bGathered)
+		{
+			m_Child.GetComponent<Rigidbody2D>().velocity = SteeringBehavior.Seek(m_Child,m_Main.transform.position,fMoveSpeed);
+		}
+		
+		if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos)
+		{
+			m_Child.GetComponent<Rigidbody2D>().velocity = SteeringBehavior.Seek(m_Child,m_TargetPos,fMoveSpeed);
+		}
+		else if(HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos)
 		{
 			bReachPos = true;
 		}
-	
-		//if the enemy child cell had reached the central positon of the defending position, move towards 
-		//and maintain its own defending position in the formation
-		if(bReachPos == true && !IsPlayerChildPassingBy())
+		
+		if(bReachPos)
 		{
-			Vector2 m_SteeringVelo = SpreadAcrossLine();
-			m_SteeringVelo.x += m_Main.GetComponent<Rigidbody2D>().velocity.x;
-			m_SteeringVelo.y += m_Main.GetComponent<Rigidbody2D>().velocity.y;
-			m_Child.GetComponent<Rigidbody2D>().velocity = m_SteeringVelo;
+			m_Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
 		}
 		
-		if(IsPlayerChildPassingBy())
+		if(!IsThereNoAttackers() && IsPlayerChildPassingBy())
 		{
-			GameObject target = GetClosestAttacker();
-			MoveTowards(target.transform.position);
+			m_Child.GetComponent<Rigidbody2D>().velocity = SteeringBehavior.Seek(m_Child,GetClosestAttacker().transform.position,fMoveSpeed);
 		}
-		
-		if(IsThereNoAttackers())
+		else if(IsThereNoAttackers())
 		{
 			fDefendTime += Time.deltaTime;
-			if(fDefendTime > 1.5f)
+			if(fDefendTime >= 2f)
 			{
 				MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0f);
 			}
@@ -80,24 +92,13 @@ public class ECDefendState : IECState {
     public override void Exit()
     {
 		fDefendTime = 0f;
+		if(GetDefendingCells().Count <= 1)
+		{
+			CurrentFormation = Formation.Empty;
+		}
     }
-    
-    public bool ReachPos
-    {
-		get { return bReachPos; }
-    }
-    
-	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
-	private void MoveTowards(Vector2 _targetPos)
-	{
-		Vector2 m_TargetPos = _targetPos;
-		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
-		Vector2 m_Direction = -m_Difference.normalized;
-		
-		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fMoveSpeed;
-	}
 
-	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
+		//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
 		if (Vector2.Distance(m_Child.transform.position, _Pos) <= m_Child.GetComponent<SpriteRenderer>().bounds.size.x)
@@ -107,46 +108,6 @@ public class ECDefendState : IECState {
 		return false;
 	}
 
-	//a function to return a velocity that direct the enemy child cell to spread from each other to from a defensive 
-	//line in front of the enemy main cell
-    private Vector2 SpreadAcrossLine()
-    {
-		Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
-		List<GameObject> m_DefendingChilds = new List<GameObject>();
-		
-		for(int i = 0; i < m_NeighbourChilds.Length; i++)
-		{
-			if(m_NeighbourChilds[i] != null && m_NeighbourChilds[i].tag == Constants.s_strEnemyChildTag && m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend)
-			{
-				m_DefendingChilds.Add(m_NeighbourChilds[i].gameObject);
-			}
-		}
-		
-		int nDefendingCount = 0;
-		Vector2 m_Steering = new Vector2(0f,0f);
-		foreach(GameObject child in m_DefendingChilds)
-		{
-			if(child != null && child != m_Child)
-			{
-				m_Steering.x += child.transform.position.x - m_Child.transform.position.x;
-				m_Steering.y += (child.transform.position.y - m_Child.transform.position.y)/2;
-				nDefendingCount++;
-			}
-		}
-		
-		if (nDefendingCount <= 0)
-		{
-			return m_Steering;
-		}
-		else
-		{
-			m_Steering /= nDefendingCount;
-			m_Steering *= -1f;
-			m_Steering.Normalize();
-			return m_Steering;
-		}
-    }
-    
     private bool IsPlayerChildPassingBy()
     {
 		Collider2D[] PasserBy = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
@@ -189,5 +150,46 @@ public class ECDefendState : IECState {
 		}
 		
 		return ClosestAttacker;
+	}
+	
+	private List<GameObject> GetDefendingCells()
+	{
+		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
+		List<GameObject> Defenders = new List<GameObject>();
+		foreach(GameObject Child in EnemyChild)
+		{
+			if(Child.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend)
+			{
+				Defenders.Add(Child);
+			}
+		}
+		return Defenders;
+	}
+	
+	private List<EnemyChildFSM> GetDefendingCellsFSM()
+	{
+		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
+		List<EnemyChildFSM> Defenders = new List<EnemyChildFSM>();
+		foreach(GameObject Child in EnemyChild)
+		{
+			if(Child.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend)
+			{
+				Defenders.Add(Child.GetComponent<EnemyChildFSM>());
+			}
+		}
+		return Defenders;
+	}
+	
+	private bool HasAllCellsGathered()
+	{
+		List<GameObject> DefendingCells = GetDefendingCells();
+		foreach(GameObject DefendingCell in DefendingCells)
+		{
+			if(!HasCellReachTargetPos(m_Main.transform.position))
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 }

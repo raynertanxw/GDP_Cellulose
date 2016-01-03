@@ -157,6 +157,23 @@ public class PathQuery
 		return true;
 	}
 	
+	private List<Point> RemoveExcessWallPoints(List<Point> _Path)
+	{
+		bool identifiedFirstWP = false;
+		for(int i = 0; i < _Path.Count; i++)
+		{
+			if(i != 0 && (_Path[i].LIndex == "0" || _Path[i].LIndex == "8") && identifiedFirstWP == false)
+			{
+				identifiedFirstWP = true;
+			}
+			else if(i != 0 && (_Path[i].LIndex == "0" || _Path[i].LIndex == "8") && identifiedFirstWP == true)
+			{
+				_Path.Remove(_Path[i]);
+			}
+		}
+		return _Path;
+	}
+	
 	public List<Point> GetPathToTarget(Directness _directness)
 	{
 		List<Point> Path = new List<Point>();
@@ -167,6 +184,7 @@ public class PathQuery
 		{
 			currentKey = ShortestPath[currentKey].Start.Index;
 			Path.Insert(0,m_Database.Database[currentKey]);
+			//Utility.DrawCross(m_Database.Database[currentKey].Position,Color.green,0.1f);
 		}
 		
 		//Debug.Log("Before smoothing");
@@ -232,10 +250,35 @@ public class PathQuery
 			}
 		}
 		
-		//Debug.Log("After smoothing");
+		Path = RemoveExcessWallPoints(Path);
+		
+		/*foreach(Point point in Path)
+		{
+			Utility.DrawCross(point.Position,Color.yellow,0.1f);
+		}*/
+		
+		//Debug.Log("After smooth: ");
 		//DebugAllPathPoints(Path);
 		
 		return Path;
+	}
+	
+	public List<Point> InduceNoiseToPath(List<Point> _Path)
+	{
+		float fRandomXNeg = Random.Range(-0.15f, 0f);
+		float fRandomXPos = Random.Range(0f, 0.15f);
+		float fRandomYNeg = Random.Range(-0.1f, 0f);
+		float fRandomYPos = Random.Range(0f, 0.1f);
+		
+		float fNoiseToX = Random.Range(fRandomXNeg,fRandomXPos);
+		float fNoiseToY = Random.Range(fRandomYNeg,fRandomYPos);
+		
+		for(int i = 0; i < _Path.Count; i++)
+		{
+			_Path[i].Position += new Vector2(fNoiseToX,fNoiseToY);
+		}
+		
+		return _Path;
 	}
 	
 	private void DebugAllPathPoints(List<Point> _Path)
@@ -244,5 +287,112 @@ public class PathQuery
 		{
 			Debug.Log("Point: " + point.Index);
 		}
+	}
+	
+	public bool IsThereVerticalSequence(List<Point> _Path)
+	{
+		int SequenceCount = 0;
+		Point ReferencePoint = _Path[_Path.Count - 1];
+		for(int i = _Path.Count - 1; i >= 0; i--)
+		{
+			if(i != _Path.Count - 1 && _Path[i].Position.x == ReferencePoint.Position.x)
+			{
+				SequenceCount++;
+			}
+			else if(i != _Path.Count - 1 && _Path[i].Position.x != ReferencePoint.Position.x)
+			{
+				break;
+			}
+		}
+		if(SequenceCount > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	private bool IsPointInPath(Point _Point, List<Point> _Path)
+	{
+		foreach(Point point in _Path)
+		{
+			if(point == _Point)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private bool IsSuitableStartPoint(Point _Start, Point _Reference)
+	{
+		if(_Start.Position.x == _Reference.Position.x && _Start.Position.y >= _Reference.Position.y)
+		{
+			return true;
+		}
+		return false;
+		
+		/*for(int i = 0; i < _Start.Edges.Count; i++)
+		{
+			if(_Start.Edges[i].End.Position.y < _Reference.Position.y && (_Start.Edges[i].End.Position.x > _Reference.Position.x || _Start.Edges[i].End.Position.x < _Reference.Position.x))
+			{
+				for(int a = 0; a < _Path.Count; a++)
+				{
+					if(_Path[a] == _Start.Edges[i].End)
+					{
+						return false;
+					}
+				}
+			}
+		}
+		return true;*/
+		//if(_Start.Position.x == _Reference.Position.x)
+		//{
+			/*for(int a = 0; a < _Start.Edges.Count; a++)
+			{
+				for(int b = 0; b < _Path.Count; b++)
+				{
+				    if(_Start.Edges[a].End.Position.y <  _Start.Position.y && _Start.Edges[a].End.Position.x != _Start.Position.x && _Path[b] == _Start.Edges[a].End)
+					{
+						return false;
+					}
+				}
+			}
+			return true;*/
+		//}
+		//return false;
+	}
+	
+	public Point ReturnVertSequenceStartPoint(List<Point> _Path)
+	{
+		Point ReferencePoint = _Path[_Path.Count - 1];
+		Point StartPoint = _Path[_Path.Count - 1];
+		for(int i = _Path.Count - 1; i >= 0; i--)
+		{
+			if(_Path[i].Position.x == ReferencePoint.Position.x)
+			{
+				StartPoint = _Path[i];
+			}
+			else
+			{
+				break;
+			}
+		}
+		return StartPoint;
+	
+		/*Point ReferencePoint = _Path[_Path.Count - 1];
+		Point StartPoint = _Path[_Path.Count - 1];
+		for(int i = _Path.Count - 1; i >= 0; i--)
+		{
+			if(i != _Path.Count - 1 && IsSuitableStartPoint(_Path[i],ReferencePoint))//StartPoint.Position.x == ReferencePoint.Position.x && (StartPoint.Position.y == ReferencePoint.Position.y || StartPoint.Position.y > ReferencePoint.Position.y))//IsSuitableStartPoint(_Path[i],ReferencePoint,_Path))
+			{
+				StartPoint = _Path[i];
+			}
+			else if(i != _Path.Count - 1 && !IsSuitableStartPoint(_Path[i],ReferencePoint))//!IsSuitableStartPoint(_Path[i],ReferencePoint,_Path))
+			{
+				break;
+			}
+		}*/
+		
+		return StartPoint;
 	}
 }

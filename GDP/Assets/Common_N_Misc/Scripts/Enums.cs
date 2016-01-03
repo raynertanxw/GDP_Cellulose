@@ -23,3 +23,4 @@ public enum RangeValue  {Min, Max, None};
 
 public enum Directness  {Low, Mid, High};
 
+public enum Formation{Empty, Crescent, ReverseCrescent, CircularSurround, AreaBlock};
