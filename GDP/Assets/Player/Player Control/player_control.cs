@@ -160,6 +160,10 @@ public class player_control : MonoBehaviour
 				Vector3 spawnPos = Node_Manager.GetNode(m_nActiveNode).transform.position;
 				spawnPos.z = 0.0f;
 				PlayerSquadFSM.Instance.Initialise(spawnPos);
+
+
+				// Set the s_nNodeIndexWithSquadCaptain to the active node.
+				Node_Manager.s_nNodeIdexWithSquadCaptain = m_nActiveNode;
 			}
 			else
 			{
