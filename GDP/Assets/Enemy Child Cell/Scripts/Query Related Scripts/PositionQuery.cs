@@ -317,7 +317,7 @@ public class PositionQuery
 		}
 		Debug.Log("CircularSurround");
 		return Formation.CircularSurround;*/
-		return Formation.Crescent;
+		return Formation.ReverseCrescent;
 	}
 		
 	/*
