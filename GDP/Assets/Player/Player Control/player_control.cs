@@ -7,6 +7,7 @@ public class player_control : MonoBehaviour
 	public static int s_nResources;
 	private int m_nSpawnCost = 5;
 	private int m_nSqaudCaptainChildCost = 10;
+	private Transform m_SquadCaptainNode;
 
 	private SpriteRenderer[] m_nodePointsRen;
 	private int m_nActiveNode = 1;
@@ -26,6 +27,8 @@ public class player_control : MonoBehaviour
 		m_nodePointsRen[m_nActiveNode].color = m_selectedNodeCol;
 
 		s_nResources = 100;
+
+		m_SquadCaptainNode = transform.GetChild(1).transform;
 	}
 
 	public void ChangeActiveNode(int nNewNode)
@@ -101,20 +104,21 @@ public class player_control : MonoBehaviour
 		// Child count criteria met.
 		if (childList.Count >= m_nSqaudCaptainChildCost)
 		{
-			// Remove the requred number of child cells.
+			// Move them to the center and remove the requred number of child cells.
 			for (int i = 0; i < m_nSqaudCaptainChildCost; i++)
 			{
+				// Move to center.
+
+
+				// Converge to center.
+
+
+				// Kill them.
 				childList[i].KillPlayerChildCell();
 			}
 
-			// Move aside the rest of the children.
-			for (int i = m_nSqaudCaptainChildCost; i < childList.Count; i++)
-			{
-
-			}
-
 			// Spawn in the Squad Captain.
-			Vector3 spawnPos = Node_Manager.GetNode(m_nActiveNode).transform.position;
+			Vector3 spawnPos = m_SquadCaptainNode.position;
 			spawnPos.z = 0.0f;
 			PlayerSquadFSM.Instance.Initialise(spawnPos);
 		}
