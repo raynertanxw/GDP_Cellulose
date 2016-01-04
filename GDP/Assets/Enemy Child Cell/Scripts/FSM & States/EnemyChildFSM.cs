@@ -292,7 +292,7 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		if(bRotateCW && !bRotateACW && gameObject.transform.eulerAngles.z < fRotationTarget)
 		{
-			Debug.Log("Rotate CW: " + gameObject.name);
+			//Debug.Log("Rotate CW: " + gameObject.name);
 			gameObject.transform.eulerAngles += new Vector3(0f,0f,_RotateSpeed);
 			if(gameObject.transform.eulerAngles.z >= fRotationTarget)
 			{
@@ -303,7 +303,7 @@ public class EnemyChildFSM : MonoBehaviour
 		}
 		else if(!bRotateCW && bRotateACW && gameObject.transform.eulerAngles.z > fRotationTarget)
 		{
-			Debug.Log("Rotate ACW: " + gameObject.name);
+			//Debug.Log("Rotate ACW: " + gameObject.name);
 			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed); 
 			if(gameObject.transform.eulerAngles.z <= fRotationTarget)
 			{
