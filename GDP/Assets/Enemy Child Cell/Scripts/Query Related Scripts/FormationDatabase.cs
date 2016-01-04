@@ -197,7 +197,7 @@ public class FormationDatabase
 			Vector2 CurrentFormationPos = new Vector2(0f,-0.65f);
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
 			float XInterval = 0.34f;
-			float YInterval = 0.2f;
+			float YInterval = 0.34f;
 			float NextLineInterval = -0.4f;
 			int RightCount = 0;
 			int LeftCount = 0;
@@ -254,12 +254,12 @@ public class FormationDatabase
 					else if(RightCount == 5)
 					{
 						//CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[0]].x + 2 * XInterval, FPositionDatabase[CircularCentral[0]].y + 4 * YInterval);
-						//CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 1].x + XInterval, FPositionDatabase[FIndex - 1].y + YInterval);
-						CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[1]].x + XInterval, FPositionDatabase[CircularCentral[1]].y);
+						CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 2].x - XInterval, FPositionDatabase[FIndex - 2].y + YInterval);
+						//CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[1]].x + XInterval, FPositionDatabase[CircularCentral[1]].y);
 					}
 					else
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[0]].x + 2 * XInterval, FPositionDatabase[CircularCentral[0]].y + (FIndex - 1) * YInterval);
+						CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[0]].x + 2 * XInterval, FPositionDatabase[CircularCentral[0]].y + (RightCount - 1) * YInterval);
 					}
 					
 					StoredFormationPos = CurrentFormationPos;
@@ -278,12 +278,12 @@ public class FormationDatabase
 					else if(LeftCount == 5)
 					{
 						//CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[0]].x - 2 * XInterval, FPositionDatabase[CircularCentral[0]].y + 4 * YInterval);
-						//CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 1].x - XInterval, FPositionDatabase[FIndex - 1].y + YInterval);
-						CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[1]].x - XInterval, FPositionDatabase[CircularCentral[1]].y);
+						CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 2].x + XInterval, FPositionDatabase[FIndex - 2].y + YInterval);
+						//CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[1]].x - XInterval, FPositionDatabase[CircularCentral[1]].y);
 					}
 					else
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[0]].x - 2 * XInterval, FPositionDatabase[CircularCentral[0]].y + (FIndex - 1) * YInterval);
+						CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[0]].x - 2 * XInterval, FPositionDatabase[CircularCentral[0]].y + (LeftCount - 1) * YInterval);
 					}
 					
 					StoredFormationPos = CurrentFormationPos;

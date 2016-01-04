@@ -67,13 +67,13 @@ public class ECMineState : IECState {
 			}
 		}
 		
-		if(PathToTarget != null && HasCellReachTarget(PathToTarget[PathToTarget.Count - 1].Position) || IsCollidingWithPlayerCell() || m_Child.transform.position.y < GameObject.Find("Node_Top").transform.position.y)
+		if(PathToTarget != null && HasCellReachTarget(PathToTarget[PathToTarget.Count - 1].Position) || IsCollidingWithPlayerCell() || Vector2.Distance(m_Child.transform.position,m_ecFSM.m_PMain.transform.position) < 0.3f)
 		{
 			bReachTarget = true;
 			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, m_Child.GetComponent<Rigidbody2D>().velocity.y);
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());
 		}
-		if(Target == GameObject.Find("Node_Top") && Target.GetComponent<Node_Manager>().GetNodeChildList().Count <= 0)
+		if(Target.name.Contains("Squad") && Target.GetComponent<PlayerSquadFSM>().AliveChildCount() <= 0)
 		{
 			Debug.Log("ChangeTargeT");
 			Target = PositionQuery.Instance.GetLandmineTarget(PositionType.Aggressive,m_Child);
@@ -295,7 +295,7 @@ public class ECMineState : IECState {
 		{
 			return PositionType.Defensive;
 		}*/
-		return PositionType.Aggressive;
+		return PositionType.Defensive;
 	}
 	
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter

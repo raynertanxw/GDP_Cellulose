@@ -20,6 +20,7 @@ public class ECTrickAttackState : IECState {
 	
 	//an array of gameobject to store the player nodes
 	private GameObject[] m_Nodes;
+	private GameObject m_SquadCaptain;
 	
 	private List<Point> PathToTarget;
 	private int CurrentTargetIndex;
@@ -39,8 +40,10 @@ public class ECTrickAttackState : IECState {
 	public override void Enter()
 	{
 		m_Nodes[0] = GameObject.Find("Node_Left");
-		m_Nodes[1] = GameObject.Find("Node_Top");
-		m_Nodes[2] = GameObject.Find("Node_Right");
+		m_Nodes[1] = GameObject.Find("Node_Right");
+
+		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
+
 		m_AttackTarget = GetTarget();
 		bReachStart = false;
 		fChargeSpeed = 1f;
@@ -89,39 +92,64 @@ public class ECTrickAttackState : IECState {
 	}
 	
 	//a function that return a boolean that state whether all the player nodes is empty
-	private bool IsAllNodesEmpty()
+	private bool IsAllThreatEmpty ()
 	{
-		for(int i = 0; i < m_Nodes.Length; i++)
+		List<GameObject> Threats = new List<GameObject>();
+		Threats.Add(m_Nodes[0]);
+		Threats.Add(m_Nodes[1]);
+		Threats.Add(m_SquadCaptain);
+		
+		bool bResult = false;
+		for(int i = 0; i < Threats.Count; i++)
 		{
-			if(m_Nodes[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			{
+				return false;
+			}
+			else if(Threats[i].GetComponent<PlayerSquadFSM>() != null && Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 			{
 				return false;
 			}
 		}
-		
 		return true;
 	}
 	
 	//a function to return the least threatening node from the player
-	private GameObject GetWeakestNode()
+	private GameObject GetWeakestPoint()
 	{
-		int[] m_Scores = new int[3];
-		m_Scores[0] = EvaluteNode(m_Nodes[0]);
-		m_Scores[1] = EvaluteNode(m_Nodes[1]);
-		m_Scores[2] = EvaluteNode(m_Nodes[2]);
-		
-		int nIndex = 0;
-		int nLowestScore = 999;
-		for(int i = 0; i < m_Scores.Length; i++)
+		int ScoreLeft = EvaluteNode(m_Nodes[0]);
+		int ScoreRight = EvaluteNode(m_Nodes[1]);
+
+		if(m_SquadCaptain != null)
 		{
-			if(m_Scores[i] < nLowestScore)
+			int ScoreSquad = m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
+			int[] Scores = new int[3];
+			Scores[0] = ScoreLeft;
+			Scores[1] = ScoreRight;
+			Scores[2] = ScoreSquad;
+			int nLowestScore = 999;
+			int nLowestIndex = 0;
+			for(int i = 0; i < Scores.Length; i++)
 			{
-				nIndex = i;
-				nLowestScore = m_Scores[i];
+				if(Scores[i] < nLowestScore)
+				{
+					nLowestScore = Scores[i];
+					nLowestIndex = i;
+				}
 			}
+			if(nLowestIndex == 0)
+			{
+				return m_Nodes[0];
+			}
+			else if(nLowestIndex == 1)
+			{
+				return m_Nodes[1];
+			}
+
+			return m_SquadCaptain;
 		}
-		
-		return m_Nodes[nIndex];
+
+		return ScoreLeft < ScoreRight ? m_Nodes[0] : m_Nodes[1];
 	}
 	
 	//a function that evluate a specific node based on several conditions and return an integer that represent the score of threat
@@ -138,25 +166,19 @@ public class ECTrickAttackState : IECState {
 		//increase score based on amount of cells in that node
 		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
 		
-		//increase score if that node have formed together and has a node captain
-		if(_Node.GetComponent<PlayerSquadFSM>() != null)
-		{
-			nthreatLevel+= 50;
-		}
-		
 		return nthreatLevel;
 	}
 	
 	//a function to return the target object that the enemy child should aim towards
 	private GameObject GetTarget()
 	{
-		if(IsAllNodesEmpty())
+		if(IsAllThreatEmpty())
 		{
 			return m_ecFSM.m_PMain;
 		}
 		else
 		{
-			return GetWeakestNode();
+			return GetWeakestPoint();
 		}
 	} 
 	

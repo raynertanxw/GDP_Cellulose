@@ -62,6 +62,10 @@ public static class SteeringBehavior
 				} 
 			}
 		}
+
+		Steering.x *= 1.7f;
+		Steering.y *= 0.4f;
+
 		return Steering;
 		
 		//My modification on Conrad Parker's setup

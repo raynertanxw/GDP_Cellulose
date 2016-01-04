@@ -102,7 +102,7 @@ public class ECDefendState : IECState {
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
 		//Debug.Log(m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
-		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.1f)//m_Child.GetComponent<SpriteRenderer>().bounds.size.x)
+		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f)//m_Child.GetComponent<SpriteRenderer>().bounds.size.x)
 		{
 			return true;
 		}

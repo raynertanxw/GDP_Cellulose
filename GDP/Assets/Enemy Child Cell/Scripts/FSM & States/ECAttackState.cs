@@ -2,9 +2,10 @@
 using System.Collections;
 
 public class ECAttackState : IECState {
-	
-	//Three Node_Manager variables to store the 3 individial nodes of the player
-	private Node_Manager m_TopNode;
+
+	private GameObject m_SquadCaptain;
+
+	//Three Node_Manager variables to store the 3 individial nodes of the player;
 	private Node_Manager m_LeftNode;
 	private Node_Manager m_RightNode;
 	
@@ -14,9 +15,10 @@ public class ECAttackState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
-		
-		//Initialize the 3 nodes of the player
-		m_TopNode = GameObject.Find("Node_Top").GetComponent<Node_Manager>();
+
+		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
+
+		//Initialize the 2 nodes of the player
 		m_LeftNode = GameObject.Find("Node_Left").GetComponent<Node_Manager>();
 		m_RightNode = GameObject.Find("Node_Right").GetComponent<Node_Manager>();
 	}
@@ -58,14 +60,14 @@ public class ECAttackState : IECState {
 	//of total player cells and the amount of cells in each node
 	private bool IsThereThreatToMain()
 	{
-		int PlayerTotalCells = m_TopNode.GetNodeChildList().Count + m_LeftNode.GetNodeChildList().Count + m_RightNode.GetNodeChildList().Count;
+		int PlayerTotalCells = GetSquadCellCount() + m_LeftNode.GetNodeChildList().Count + m_RightNode.GetNodeChildList().Count;
 		int OwnTotalCells = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag).Length; //m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
 		
 		if(PlayerTotalCells > OwnTotalCells)
 		{
 			return true;
 		}
-		else if (m_TopNode.GetNodeChildList().Count > 5 || m_LeftNode.GetNodeChildList().Count > 5 || m_RightNode.GetNodeChildList().Count > 5)
+		else if (GetSquadCellCount() > 5 || m_LeftNode.GetNodeChildList().Count > 5 || m_RightNode.GetNodeChildList().Count > 5)
 		{
 			return true;
 		}
@@ -74,4 +76,9 @@ public class ECAttackState : IECState {
 			return false;
 		}
 	} 
+
+	private int GetSquadCellCount()
+	{
+		return m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
+	}
 }

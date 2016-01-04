@@ -36,17 +36,21 @@ public class PositionQuery
 		}
 	}
 	
-	private bool IsAllNodesEmpty ()
+	private bool IsAllThreatEmpty ()
 	{
-		List<GameObject> NodeList = new List<GameObject>();
-		NodeList.Add(GameObject.Find("Node_Left"));
-		NodeList.Add(GameObject.Find("Node_Right"));
-		NodeList.Add(GameObject.Find("Node_Top"));
+		List<GameObject> Threats = new List<GameObject>();
+		Threats.Add(GameObject.Find("Node_Left"));
+		Threats.Add(GameObject.Find("Node_Right"));
+		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
 		
 		bool bResult = false;
-		for(int i = 0; i < NodeList.Count; i++)
+		for(int i = 0; i < Threats.Count; i++)
 		{
-			if(NodeList[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			{
+				return false;
+			}
+			else if(Threats[i].GetComponent<PlayerSquadFSM>() != null && Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 			{
 				return false;
 			}
@@ -55,47 +59,57 @@ public class PositionQuery
 	}
 	
 	//A function that evaluate all the nodes of the player and return the most threatening node
-	private GameObject GetMostThreateningNode()
+	private GameObject GetMostThreateningThreat()
 	{
-		List<GameObject> NodeList = new List<GameObject>();
-		NodeList.Add(GameObject.Find("Node_Left"));
-		NodeList.Add(GameObject.Find("Node_Right"));
-		NodeList.Add(GameObject.Find("Node_Top"));
+		List<GameObject> Threats = new List<GameObject>();
+		Threats.Add(GameObject.Find("Node_Left"));
+		Threats.Add(GameObject.Find("Node_Right"));
+		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
 		int nIndexForMostThreating = 0;
 		int nHighestScore = 0;
 		
-		for(int i = 0; i < NodeList.Count; i++)
+		for(int i = 0; i < Threats.Count; i++)
 		{
-			if(EvaluateNode(NodeList[i]) > nHighestScore)
+			if(Threats[i].name.Contains("Node") && EvaluateNode(Threats[i]) > nHighestScore)
 			{
 				nIndexForMostThreating = i;
-				nHighestScore = EvaluateNode(NodeList[i]);
+				nHighestScore = EvaluateNode(Threats[i]);
+			}
+			else if(Threats[i].name.Contains("Squad") && Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount() > nHighestScore)
+			{
+				nIndexForMostThreating = i;
+				nHighestScore = Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount();
 			}
 		}
 		
-		return NodeList[nIndexForMostThreating];
+		return Threats[nIndexForMostThreating];
 	}
 	
 	//A function that evaluate all the nodes of the player and return the most weak node
 	private GameObject GetMostWeakNode ()
 	{
-		List<GameObject> NodeList = new List<GameObject>();
-		NodeList.Add(GameObject.Find("Node_Left"));
-		NodeList.Add(GameObject.Find("Node_Right"));
-		NodeList.Add(GameObject.Find("Node_Top"));
+		List<GameObject> Threats = new List<GameObject>();
+		Threats.Add(GameObject.Find("Node_Left"));
+		Threats.Add(GameObject.Find("Node_Right"));
+		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
 		int nIndexForMostWeak = 0;
-		int nLowestScore = 0;
+		int nLowestScore = 999;
 		
-		for(int i = 0; i < NodeList.Count; i++)
+		for(int i = 0; i < Threats.Count; i++)
 		{
-			if(EvaluateNode(NodeList[i]) < nLowestScore)
+			if(Threats[i].name.Contains("Node") && EvaluateNode(Threats[i]) < nLowestScore)
 			{
 				nIndexForMostWeak = i;
-				nLowestScore = EvaluateNode(NodeList[i]);
+				nLowestScore = EvaluateNode(Threats[i]);
+			}
+			else if(Threats[i].name.Contains("Squad") && Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount() < nLowestScore)
+			{
+				nIndexForMostWeak = i;
+				nLowestScore = Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount();
 			}
 		}
 		
-		return NodeList[nIndexForMostWeak];
+		return Threats[nIndexForMostWeak];
 	}
 	
 	//a function that evalute the given node and return a score
@@ -195,17 +209,17 @@ public class PositionQuery
 	public GameObject GetLandmineTarget(PositionType PType, GameObject Agent)
 	{
 		GameObject target = null;
-		if(IsAllNodesEmpty())
+		if(IsAllThreatEmpty())
 		{
 			return GameObject.Find("Player_Cell");
 		}
 		
 		if(PType == PositionType.Aggressive)
 		{
-			GameObject TopNode = GameObject.Find("Node_Top");
-			if(TopNode.GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			GameObject SquadCaptain = GameObject.Find("Squad_Captain_Cell");
+			if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 			{
-				return TopNode;
+				return SquadCaptain;
 			}
 			else
 			{
@@ -214,7 +228,7 @@ public class PositionQuery
 		}
 		else if(PType == PositionType.Defensive)
 		{
-			return GetMostThreateningNode();
+			return GetMostThreateningThreat();
 		}
 		else if(PType == PositionType.Neutral)
 		{
@@ -224,7 +238,7 @@ public class PositionQuery
 			}
 			else if(CurrentNodeTarget == 1)
 			{
-				return GameObject.Find("Node_Top");
+				return GameObject.Find("Squad_Captain_Cell");
 			}
 			else if(CurrentNodeTarget == 2)
 			{
@@ -242,18 +256,18 @@ public class PositionQuery
 		if(PType == PositionType.Aggressive)
 		{
 			Debug.Log("Aggressive");
-			if(IsAllNodesEmpty())
+			if(IsAllThreatEmpty())
 			{
 				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 			else
 			{
-				GameObject TopNode = GameObject.Find("Node_Top");
+				GameObject SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 				Point CurrentPoint = null;
-				if(TopNode.GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+				if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 				{
-					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TopNode.transform.position,false);
+					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(SquadCaptain.transform.position,false);
 				}
 				else
 				{
@@ -265,15 +279,15 @@ public class PositionQuery
 		else if(PType == PositionType.Defensive)
 		{
 			Debug.Log("Defensive");
-			if(IsAllNodesEmpty())
+			if(IsAllThreatEmpty())
 			{
 				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 			else
 			{
-				GameObject TargetNode = GetMostThreateningNode();
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(TargetNode.transform.position,false);
+				GameObject Target = GetMostThreateningThreat();
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(Target.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 		}
@@ -317,7 +331,7 @@ public class PositionQuery
 		}
 		Debug.Log("CircularSurround");
 		return Formation.CircularSurround;*/
-		return Formation.ReverseCrescent;
+		return Formation.CircularSurround;
 	}
 		
 	/*
