@@ -276,6 +276,13 @@ public class EMController : MonoBehaviour
 	}
 	#endregion
     
+	// Checking whether the enemy main cell goes out of the screen in which the player loses
+	void LoseCheck ()
+	{
+		if (transform.position.y - GetComponent<CircleCollider2D>().bounds.size.y / 2f > EMHelper.topLimit)
+			Destroy (this.gameObject);
+	}
+
     // Recevice nutrient from incoming enemy mini nutrient and destroy the mini nutrient
 	void OnCollisionEnter2D (Collision2D collision)
 	{

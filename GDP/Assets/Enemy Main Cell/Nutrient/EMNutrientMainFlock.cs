@@ -97,8 +97,10 @@ public class EMNutrientMainFlock : MonoBehaviour
 		// Add neighbouring agents into the list if they are within the radius
 		foreach (EMNutrientMainAgent agent in EMNutrientMainAgent.AgentList)
 		{
-			if (Vector3.Distance(agent.transform.position, currentPosition) < fNeighbourRadius)
+			if (Vector2.Distance((Vector2)agent.transform.position, currentPosition) < fNeighbourRadius)
+			{
 				neighbouringAgents.Add(agent);
+			}
 		}
 	}
 	#endregion

@@ -156,9 +156,10 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		bCanSpawn = false;
 		// Pause for random amount of time depending on the size of the agent
-		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 2f)), Mathf.Sqrt (Mathf.Pow (nSize, 5f))));
-		// Double check if the main nutrient is in the map
-		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.25f)))
+		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 1f)), Mathf.Sqrt (Mathf.Pow (nSize, 4f))));
+		// Double check if the main nutrient is in the map and not too close to the enemy main cell
+		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.25f)) && 
+		    Vector2.Distance (EnemyMainFSM.Instance ().Position, transform.position) > fInitialRadius * 10f)
 			Instantiate (miniNutrient, position, Quaternion.identity);
 		bCanSpawn = true;
 	}
