@@ -329,9 +329,8 @@ public class PositionQuery
 				return Formation.AreaBlock;
 			}
 		}
-		Debug.Log("CircularSurround");
-		return Formation.CircularSurround;*/
-		return Formation.CircularSurround;
+		Debug.Log("CircularSurround");*/
+		return Formation.ReverseCrescent;
 	}
 		
 	/*
