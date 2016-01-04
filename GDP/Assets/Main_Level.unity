@@ -3004,9 +3004,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d34db3a02dacfd54fbac5d9df1f03d86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nNumOfRows: 30
-  nNumOfColumns: 20
-  fUniversalnodeSize: .25
+  nNumOfRows: 15
+  nNumOfColumns: 10
+  fUniversalnodeSize: .5
   bShowGrid: 1
   bShowObstacleBlocks: 1
 --- !u!4 &614561518
