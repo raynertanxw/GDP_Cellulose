@@ -19,7 +19,7 @@ public class player_control : MonoBehaviour
 		m_selectedNodeCol = new Color(0.75f, 1, 0.25f, 0.2f);
 
 		m_nodePointsRen = new SpriteRenderer[transform.childCount];
-		for (int i = 0; i < transform.childCount; i++)
+		for (int i = 0; i < transform.childCount-1; i++)
 		{
 			m_nodePointsRen[i] = Node_Manager.GetNode(i).gameObject.GetComponent<SpriteRenderer>();
 		}
