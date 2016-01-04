@@ -4,12 +4,12 @@ using System.Collections;
 public class PC_DefendState : IPCState
 {
 	private Vector3 m_currentVelocity;
-	private static float s_fPlayerChildDefendSpeed = 5.0f;
-	private static float s_fDetectionRange = 1.0f;
+	private static float s_fPlayerChildDefendSpeed = 4.0f;
+	private static float s_fNearDetectionRange = 1.0f;
 
 	public override void Enter()
 	{
-
+		FindNewTarget();
 	}
 	
 	public override void Execute()
@@ -83,6 +83,12 @@ public class PC_DefendState : IPCState
 
 	private void MoveTowardsTarget()
 	{
+		if (IsTargetWithinDangerRange() == false)
+		{
+			m_pcFSM.m_currentEnemyCellTarget = null;
+			return;
+		}
+
 		// Calculate "force" vector.
 		Vector3 direction = m_pcFSM.m_currentEnemyCellTarget.transform.position - m_pcFSM.transform.position;
 		m_currentVelocity += direction.normalized * s_fPlayerChildDefendSpeed;
@@ -90,6 +96,28 @@ public class PC_DefendState : IPCState
 		
 		// Apply velocity vector.
 		m_pcFSM.transform.position += m_currentVelocity * Time.deltaTime;
+	}
+
+	private bool IsTargetWithinDangerRange()
+	{
+		if (m_pcFSM.m_currentEnemyCellTarget == null)
+			return false;
+
+		if (Vector2.Distance(PlayerMain.s_Instance.transform.position, m_pcFSM.m_currentEnemyCellTarget.transform.position) > PlayerMain.s_Instance.m_fDetectionRadius)
+		{
+			if (Vector2.Distance(m_pcFSM.transform.position, m_pcFSM.m_currentEnemyCellTarget.transform.position) > s_fNearDetectionRange)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	private void CapSpeed()
@@ -102,18 +130,39 @@ public class PC_DefendState : IPCState
 		}
 	}
 
-	private bool FindNewTarget()
+	private bool FindNewLocalTarget()
 	{
-		Collider2D enemyCell = Physics2D.OverlapCircle(m_pcFSM.transform.position, s_fDetectionRange, Constants.s_onlyEnemeyChildLayer);
-		if (enemyCell != null)
+		Collider2D enemyChild = Physics2D.OverlapCircle(m_pcFSM.transform.position, s_fNearDetectionRange, Constants.s_onlyEnemeyChildLayer);
+		if (enemyChild != null)
 		{
 			// Assign the currentEnemyCellTarget in the FSM to the returned enemy cell.
-			m_pcFSM.m_currentEnemyCellTarget = enemyCell.gameObject.GetComponent<EnemyChildFSM>();
+			m_pcFSM.m_currentEnemyCellTarget = enemyChild.gameObject.GetComponent<EnemyChildFSM>();
 			return true;
 		}
 		else
 		{
 			return false;
+		}
+	}
+
+	private bool FindNewTarget()
+	{
+		if (FindNewLocalTarget() == false)
+		{
+			Collider2D enemyChild = Physics2D.OverlapCircle(PlayerMain.s_Instance.transform.position, PlayerMain.s_Instance.m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
+			if (enemyChild != null)
+			{
+				m_pcFSM.m_currentEnemyCellTarget = enemyChild.gameObject.GetComponent<EnemyChildFSM>();
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
 		}
 	}
 
