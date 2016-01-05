@@ -94,12 +94,12 @@ public class ECDefendState : IECState {
 		//once reach position in formation, move based on the main cell's velocity
 		if(bReachPos && !IsCellReachingWall())
 		{
-			m_ecFSM.RandomRotation(0.75f);
+			m_ecFSM.RandomRotation(0.85f);
 			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y);
 
 			if(!HasCellReachTargetPos(m_TargetPos))
 			{
-				m_ecFSM.RotateToHeading();
+				//m_ecFSM.RotateToHeading();
 				m_Child.GetComponent<Rigidbody2D>().velocity = SteeringBehavior.Seek(m_Child,m_TargetPos,fMoveSpeed/15f);
 			}
 		}

@@ -290,27 +290,24 @@ public class EnemyChildFSM : MonoBehaviour
 			}
 		}
 		
+		//Debug.Log(gameObject.name + "'s info: " + bRotateCW + " , " + bRotateACW + " , " + gameObject.transform.eulerAngles.z + " , " + fRotationTarget);
+		
+		if(bRotateCW && !bRotateACW && gameObject.transform.eulerAngles.z >= fRotationTarget || !bRotateCW && bRotateACW && gameObject.transform.eulerAngles.z <= fRotationTarget)
+		{
+			bRotateCW = !bRotateCW;
+			bRotateACW = !bRotateACW;
+			fRotationTarget = Random.Range(0f,360f);
+		}
+		
 		if(bRotateCW && !bRotateACW && gameObject.transform.eulerAngles.z < fRotationTarget)
 		{
 			//Debug.Log("Rotate CW: " + gameObject.name);
 			gameObject.transform.eulerAngles += new Vector3(0f,0f,_RotateSpeed);
-			if(gameObject.transform.eulerAngles.z >= fRotationTarget)
-			{
-				bRotateCW = false;
-				bRotateACW = true;
-				fRotationTarget = Random.Range(0f,360f);
-			}
 		}
 		else if(!bRotateCW && bRotateACW && gameObject.transform.eulerAngles.z > fRotationTarget)
 		{
 			//Debug.Log("Rotate ACW: " + gameObject.name);
 			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed); 
-			if(gameObject.transform.eulerAngles.z <= fRotationTarget)
-			{
-				bRotateCW = true;
-				bRotateACW = false;
-				fRotationTarget = Random.Range(0f,360f);
-			}
 		}
 	}
 }

@@ -330,7 +330,7 @@ public class PositionQuery
 			}
 		}
 		Debug.Log("CircularSurround");*/
-		return Formation.ReverseCrescent;
+		return Formation.AreaBlock;
 	}
 		
 	/*

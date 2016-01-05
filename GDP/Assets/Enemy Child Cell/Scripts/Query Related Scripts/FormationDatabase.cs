@@ -254,7 +254,6 @@ public class FormationDatabase
 				{
 					RightCount++;
 					int[] CircularCentral = GetCircularCenterIndexes(FIndex);
-					Debug.Log("Right Center0: " + CircularCentral[0] + " Center1: " + CircularCentral[1]);
 					
 					if(RightCount == 1)
 					{
@@ -278,8 +277,7 @@ public class FormationDatabase
 				{
 					LeftCount++;
 					int[] CircularCentral = GetCircularCenterIndexes(FIndex);
-					Debug.Log("Left Center0: " + CircularCentral[0] + " Center1: " + CircularCentral[1]);
-
+					
 					if(LeftCount == 1)
 					{
 						CurrentFormationPos = new Vector2(FPositionDatabase[CircularCentral[0]].x - XInterval, FPositionDatabase[CircularCentral[0]].y);
