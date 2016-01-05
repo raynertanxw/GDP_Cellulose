@@ -28,17 +28,17 @@ public class SquadChildFSM : MonoBehaviour
     private static List<StatesAndPercentage> s_list_SingleAdvance = new List<StatesAndPercentage>();
 
     private static Vector3 m_strafingVector;                    // m_strafingVector: The current direction of the strafing vector
-    private static bool isStrafeVectorUpdated = true;           // isStrafeVectorUpdated: Checks if the strafing vector is updated
     private static float fStrafingRadius;                       // fStrafingRadius: The maximum strafing radius of the child cells during production
     private static float fStrafingSpeed;                        // fStrafingSpeed: The maximum strafing speed of the child cells during production
 
     // Uneditable Fields
-    [HideInInspector] public float fStrafingOffsetAngle = 0f;   // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
+    private float fStrafingOffsetAngle = 0f;                    // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
 
     private Dictionary<SCState, ISCState> dict_States;          // dict_States: The dictionary to store all the states
     private SCState m_currentEnumState;                         // m_currentEnumState: The current enum state of the FSM
     private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
     [HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
+    private Vector3 parentPosition;
 
     // GameObject/Component References
     public SpriteRenderer m_SpriteRenderer;                     // m_SpriteRenderer: It is public so that states can references it
@@ -48,12 +48,25 @@ public class SquadChildFSM : MonoBehaviour
     // Private Functions
     void OnCollisionEnter2D(Collision2D _collision)
     {
-        if (_collision.contacts[0].collider.gameObject.layer == Constants.s_onlyEnemeyChildLayer.value)
+        // Hit Enemy Child
+        if (_collision.gameObject.tag == Constants.s_strEnemyChildTag)
         {
-            Debug.Log(":D");
+            // Kill Enemy.
+            _collision.gameObject.GetComponent<EnemyChildFSM>().KillChildCell();
+            // Kill Self.
+            KillSquadChild();
+        }
+        // Hit Enemy Main.
+        else if (_collision.gameObject.tag == Constants.s_strEnemyTag)
+        {
+            // Damage Enemy.
+            EMController.Instance().CauseDamageOne();
+
+            KillSquadChild();
         }
     }
 
+    // Awake(): is called at the start of the program
     void Awake()
     {
         // Initialisation of Array
@@ -98,11 +111,16 @@ public class SquadChildFSM : MonoBehaviour
             if (s_array_SquadChildFSM[i] == null)
                 Debug.Log(i + ": D:");
     }
-
+    
     // Private Functions
     void Update()
     {
         // Pre-Excution
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            ExecuteMethod.OnceInUpdate("SquadChildFSM.CalculateStrafingOffset", null, null);
+            Debug.Log("<---- Production Count: " + SquadChildFSM.StateCount(SCState.Produce));
+        }
 
         // Excution of the current state
         m_currentState.Execute();
@@ -125,19 +143,6 @@ public class SquadChildFSM : MonoBehaviour
                 }
             }
             s_list_SingleAdvance.RemoveAt(0);
-        }
-    }
-
-    void LateUpdate()
-    {
-        if (!isStrafeVectorUpdated)
-        {
-            float fCurrentRadius = Mathf.PingPong(Time.time * 0.5f, fStrafingRadius);
-            if (fCurrentRadius < 0.4f)
-                fCurrentRadius = 0.4f;
-            // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE
-            m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
-            isStrafeVectorUpdated = true;
         }
     }
 
@@ -170,19 +175,25 @@ public class SquadChildFSM : MonoBehaviour
             return false;
         }
 
+        ExecuteMethod.OnceInUpdate("SquadChildFSM.StrafingVector", null, null);
         // targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
-        Vector3 targetPosition = Quaternion.Euler(Vector3.forward * fStrafingOffsetAngle) * StrafingVector() + PlayerSquadFSM.Instance.transform.position;
+        Vector3 targetPosition = Quaternion.Euler(0.0f, 0.0f, fStrafingOffsetAngle) * m_strafingVector + parentPosition;
         transform.position = Vector3.Lerp(transform.position, targetPosition, 3f * Time.deltaTime);
 
         return true;
     }
 
-    // StrafingVector(): calculates and return the strafing vector
-    //                   NOTE: This is handled in Update() because it should only be executed once every update (method may be called multiple times in the update)
-    public Vector3 StrafingVector()
+    // KillSquadChild(): Call this method to kill the current cell
+    public bool KillSquadChild()
     {
-        isStrafeVectorUpdated = false;
-        return m_strafingVector;
+        if (m_currentEnumState == SCState.Dead)
+            return false;
+        else
+        {
+            Advance(SCState.Dead);
+            PlayerSquadFSM.Instance.CheckDieable();
+            return true;
+        }
     }
 
     // Public Static Functions
@@ -202,7 +213,6 @@ public class SquadChildFSM : MonoBehaviour
         return nStateCount;
     }
 
-    
     /// <summary>
     /// Returns the number of squad child that is alive
     /// </summary>
@@ -228,40 +238,17 @@ public class SquadChildFSM : MonoBehaviour
     {
         for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
-            if (s_array_SquadChildFSM[i].EnumState.Equals(SCState.Dead))
+            if (s_array_SquadChildFSM[i].EnumState == SCState.Dead)
             {
-                s_array_SquadChildFSM[i].Advance(SCState.Produce);
                 s_array_SquadChildFSM[i].transform.position = _position;
+                s_array_SquadChildFSM[i].Advance(SCState.Produce);
+                s_array_SquadChildFSM[i].parentPosition = _position;
                 return s_array_SquadChildFSM[i];
             }
         }
         Debug.LogWarning("SquadChildFSM.Spawn(): Cannot spawn child. All child is alive.");
         return null;
     }
-
-    /// <summary>
-    /// Recalculates all the offset angle that is used in strafing. This is called in SC_ProduceState.cs, within Enter() and Exit() functions
-    /// </summary>
-    public static bool CalculateStrafingOffset()
-    {
-        // if: There is no squad child cells in produce state
-        if (StateCount(SCState.Produce) == 0)
-            return false;
-
-        // Resets all the strafing offset to 0
-        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
-            s_array_SquadChildFSM[i].fStrafingOffsetAngle = 0f;
-
-        // for: Calculates strafing angle for squad child cells that are in production state
-        // Calculation: Angles are split equally among each cells, which is also based on the number of production cells
-        //              1 cell = 360 deg apart, 2 cells = 180 deg apart, 3 cells = 120 deg apart, 4 cells = 90 deg apart...
-        for (int i = 0; i < SquadChildFSM.StateCount(SCState.Produce); i++)
-            if (s_array_SquadChildFSM[i].EnumState.Equals(SCState.Produce))
-                s_array_SquadChildFSM[i].fStrafingOffsetAngle = 360f / SquadChildFSM.StateCount(SCState.Produce) * i;
-
-        return true;
-    }
-
 
     /// <summary>
     /// Goes through the child array and kill the identified child
@@ -274,7 +261,7 @@ public class SquadChildFSM : MonoBehaviour
             // if: The states matches
             if (s_array_SquadChildFSM[i] == m_GOchild.GetComponent<SquadChildFSM>())
             {
-                s_array_SquadChildFSM[i].Advance(SCState.Dead);
+                s_array_SquadChildFSM[i].KillSquadChild();
                 return true;
             }
         }
@@ -300,6 +287,40 @@ public class SquadChildFSM : MonoBehaviour
         }
         s_list_SingleAdvance.Add(new StatesAndPercentage(_currentState, _nextState, _chance));
         return true;
+    }
+
+    // CalculateStrafiungOffset(): Calling this method will recalculates all strafing offsets for all production cells
+    public static bool CalculateStrafingOffset()
+    {
+        // if: There is no squad child cells in produce state
+        if (StateCount(SCState.Produce) == 0)
+            return false;
+
+        // Resets all the strafing offset to 0
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+            s_array_SquadChildFSM[i].fStrafingOffsetAngle = 0f;
+
+        int produceCount = SquadChildFSM.StateCount(SCState.Produce);
+        // for: Calculates strafing angle for squad child cells that are in production state
+        // Calculation: Angles are split equally among each cells, which is also based on the number of production cells
+        //              1 cell = 360 deg apart, 2 cells = 180 deg apart, 3 cells = 120 deg apart, 4 cells = 90 deg apart...
+        for (int i = 0; i < produceCount; i++)
+            if (s_array_SquadChildFSM[i].EnumState == SCState.Produce)
+                s_array_SquadChildFSM[i].fStrafingOffsetAngle = 360f / produceCount * i;
+
+        return true;
+    }
+
+    // StrafingVector(): calculates and return the strafing vector
+    //                   NOTE: This is handled in Update() because it should only be executed once every update (method may be called multiple times in the update)
+    public static Vector3 StrafingVector()
+    {
+        float fCurrentRadius = Mathf.PingPong(Time.time * 0.5f, fStrafingRadius);
+        if (fCurrentRadius < 0.4f)
+            fCurrentRadius = 0.4f;
+        // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE
+        m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
+        return m_strafingVector;
     }
 
     // Getter-Setter Functions

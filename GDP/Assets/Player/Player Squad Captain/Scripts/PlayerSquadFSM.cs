@@ -118,9 +118,6 @@ public class PlayerSquadFSM : MonoBehaviour
         m_CurrentState.Execute();
 
         // Post-Execution
-        if (Input.GetKeyDown(KeyCode.P))
-            if (m_CurrentEnumState != PSState.Idle)
-                this.Initialise(new Vector3(-1.5f, -4f, 0f));
     }
 
     // Public Functions
@@ -132,7 +129,7 @@ public class PlayerSquadFSM : MonoBehaviour
     {
         transform.position = _position;
         this.Advance(PSState.Idle);
-        SquadChildFSM.Spawn(transform.position);
+        SquadChildFSM.Spawn(_position);
         return false;
     }
 
@@ -181,6 +178,18 @@ public class PlayerSquadFSM : MonoBehaviour
             bIsProduce = true;
             StartCoroutine(SpawnRoutine());
         }
+    }
+
+    // CheckDieable(): Since the health of the squad captain is determine by the number of squad child, it checks if the health reaches 0
+    public bool CheckDieable()
+    {
+        if (SquadChildFSM.AliveCount() == 0)
+        {
+            Advance(PSState.Dead);
+            return true;
+        }
+        else
+            return false;
     }
 
     // Public Static Functions

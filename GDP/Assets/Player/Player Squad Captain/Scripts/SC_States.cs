@@ -90,18 +90,17 @@ public class SC_ProduceState : ISCState
 
     public override void Enter()
     {
-        SquadChildFSM.CalculateStrafingOffset();
+        ExecuteMethod.OnceInUpdate("SquadChildFSM.CalculateStrafingOffset", null, null);
     }
 
     public override void Execute()
     {
-
         m_scFSM.Strafing();
     }
 
     public override void Exit()
     {
-        SquadChildFSM.CalculateStrafingOffset();
+        ExecuteMethod.OnceInUpdate("SquadChildFSM.CalculateStrafingOffset", null, null);
     }
 }
 
