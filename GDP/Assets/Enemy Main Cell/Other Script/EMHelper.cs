@@ -22,17 +22,16 @@ public class EMHelper : MonoBehaviour
 	private bool bCanAddLandmine;
 	public bool CanAddLandmine { get { return bCanAddLandmine; } set { bCanAddLandmine = value; } }
 
-	private EMTransition transition;
-	private EMController controller;
-
 	void Start () 
 	{
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 
-		controller = GetComponent<EMController> ();
 		width = GetComponent<CircleCollider2D> ().bounds.size.x;
 
+		// Able to command child cells to any state by default
 		bCanAddDefend = true;
+		bCanAddAttack = true;
+		bCanAddLandmine = true;
 	}
 	
 	void Update () 
@@ -51,26 +50,29 @@ public class EMHelper : MonoBehaviour
 		m_EMFSM.Position = this.gameObject.transform.position;
 	}
 
+	#region Functions for pausing commanding child cells
+	// Pause to command child cells to Attack state
 	public IEnumerator PauseAddAttack (float fTime)
 	{
 		bCanAddAttack = false;
 		yield return new WaitForSeconds (fTime);
 		bCanAddAttack = true;
 	}
-
+	// Pause to command child cells to Defend state
 	public IEnumerator PauseAddDefend (float fTime)
 	{
 		bCanAddDefend = false;
 		yield return new WaitForSeconds (fTime);
 		bCanAddDefend = true;
 	}
-
+	// Pause to command child cells to Landmine state
 	public IEnumerator PauseAddLandmine (float fTime)
 	{
 		bCanAddLandmine = false;
 		yield return new WaitForSeconds (fTime);
 		bCanAddLandmine = true;
 	}
+	#endregion
 
 	// Camera limit update
 	void CameraLimit ()
@@ -84,7 +86,7 @@ public class EMHelper : MonoBehaviour
     void PositionLimit ()
 	{
 		if (transform.position.x <= EMHelper.leftLimit + width / 2 || transform.position.x >= EMHelper.rightLimit - width / 2)
-			controller.ChangeDirection ();
+			EMController.Instance ().ChangeDirection ();
 	}
     // Update width of enemy main cell
 	void widthUpdate ()
@@ -94,16 +96,17 @@ public class EMHelper : MonoBehaviour
 	}
 
 	#region Math
+	// Returns value raised to power
 	public float Pow (float value, float power)
 	{
 		return Mathf.Pow (value, power);
 	}
-
+	// Returns square root of value
 	public float Sqrt (float value)
 	{
 		return Mathf.Sqrt (value);
 	}
-
+	// Returns the absolute value of value
 	public float Abs (float value)
 	{
 		return Mathf.Abs (value);

@@ -246,7 +246,9 @@ public class EnemyMainFSM : MonoBehaviour
 			emController.ReduceNutrient ();
 			*/
 			emController.ReduceNutrient ();
-			yield return new WaitForSeconds (2);
+			// Randomize the interval time between spawns of child cells in terms of num of available child cells
+			yield return new WaitForSeconds (UnityEngine.Random.Range (Mathf.Sqrt(Mathf.Sqrt((float)nAvailableChildNum)), 
+			                                               Mathf.Sqrt ((float)nAvailableChildNum)));
 			bCanSpawn = true;
 		}
 	}
