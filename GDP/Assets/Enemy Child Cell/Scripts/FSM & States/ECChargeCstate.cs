@@ -10,10 +10,7 @@ public class ECChargeCState : IECState {
 	private float fSeekWeight;
 	private float fSeperateWeight;
 	
-	private List<Point> PathToTarget;
 	private GameObject m_Target;
-	private Point CurrentTargetPoint;
-	private int CurrentTargetIndex;
 	private bool bReachTarget;
 	
 	//Constructor
@@ -23,31 +20,43 @@ public class ECChargeCState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 		m_Child = _childCell;
 		fChargeSpeed = 0.3f;
-		fMaxAcceleration = 10f;
+		fMaxAcceleration = 30f;
 	}
 	
 	
 	public override void Enter()
 	{
 		//Set the charge target to be one of the player child cell
-		m_ecFSM.m_ChargeTarget = FindTargetChild();
+		m_Target = FindTargetChild();
 		bReachTarget = false;
 		
-		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_ecFSM.m_ChargeTarget.transform.position,false);
-		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
-		CurrentTargetIndex = 0;
-		CurrentTargetPoint = PathToTarget[0];
-		
-		m_Child.GetComponent<Rigidbody2D>().drag = 2f;
-		
-		Utility.DrawPath(PathToTarget,Color.green,0.1f);
+		if(m_Target == null)
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+		else if(m_Target != null)
+		{
+			m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
+		}
 	}
 	
 	public override void Execute()
 	{
-		//If the child cell reach the charge target but the target is lost and there is no more cells in the target's node
-		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) || m_Target.name.Contains("Player_Child") && m_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead || m_Target.name.Contains("Squad_Child") && m_Target.GetComponent<SquadChildFSM>().EnumState == SCState.Dead)
+		if(m_ecFSM.OutOfBound())
 		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
+		}
+	
+		//If the target of this cell is dead, find another target if there is one, else just pass through and die/return back to main cell
+		if(m_Target != null && (m_Target.name.Contains("Player_Child") && m_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Avoid || m_Target.name.Contains("Player_Child") && m_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead || m_Target.name.Contains("Squad_Child") && m_Target.GetComponent<SquadChildFSM>().EnumState == SCState.Dead))
+		{
+			GameObject NewTarget = FindTargetChild();
+			if(NewTarget != null)
+			{
+				m_Target = NewTarget;
+				return;
+			}
+
 			bReachTarget = true;
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
 		}
@@ -55,22 +64,14 @@ public class ECChargeCState : IECState {
 	
 	public override void FixedExecute()
 	{
-		if(bReachTarget == false)
+		if(bReachTarget == false && m_Target != null)
 		{
 			Vector2 Acceleration = Vector2.zero;
 			
-			if(!HasCellReachTargetPos(CurrentTargetPoint.Position))
+			if(!HasCellReachTargetPos(m_Target.transform.position))
 			{
-				Utility.DrawCross(CurrentTargetPoint.Position,Color.red,0.1f);
-				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,fChargeSpeed);
-				fChargeSpeed += 0.12f;
-				fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
-			}
-			else if(CurrentTargetIndex + 1 < PathToTarget.Count)
-			{
-				Debug.Log("CheckPoint");
-				CurrentTargetIndex++;
-				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+				Acceleration += SteeringBehavior.Seek(m_Child,m_Target.transform.position,24f);
+				Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 24f;
 			}
 			
 			Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
@@ -127,21 +128,12 @@ public class ECChargeCState : IECState {
 			
 			for (int i = 0; i < m_PotentialTargets.Count; i++)
 			{
-				if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween && m_PotentialTargets[i].GetCurrentState() != PCState.Dead)
+				if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween && m_PotentialTargets[i].GetCurrentState() != PCState.Dead && m_PotentialTargets[i].GetCurrentState() != PCState.Avoid)
 				{
 					fDistanceBetween = Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position);
 					m_TargetCell = m_PotentialTargets[i].gameObject;
 				}
 			}
-			
-			//If there is no more available player child to be targeted, stop this state and shift back to idle state
-			if(m_TargetCell == null)
-			{
-				MessageDispatcher.Instance.DispatchMessage(m_Child, m_Child, MessageType.Idle, 0);
-				return null;
-			}
-			
-			Debug.Log("name: " + m_Target.name);
 			
 			return m_TargetCell;
 		}
@@ -156,6 +148,7 @@ public class ECChargeCState : IECState {
 			return m_Target;
 		}
 
+		MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
 		return null;
 	}
 	
@@ -221,7 +214,7 @@ public class ECChargeCState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		if (Vector2.Distance(m_Child.transform.position, _Pos) <= m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 + m_ecFSM.m_ChargeTarget.GetComponent<SpriteRenderer>().bounds.size.x/2)
+		if (Vector2.Distance(m_Child.transform.position, _Pos) <= m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 + m_Target.GetComponent<SpriteRenderer>().bounds.size.x/2)
 		{
 			return true;
 		}
@@ -248,5 +241,23 @@ public class ECChargeCState : IECState {
 			}
 		}
 		return null;
+	}
+	
+	private List<GameObject> TagNeighbours()
+	{
+		List<GameObject> Neighbours = new List<GameObject>();
+		
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		//Debug.Log("Neighbouring count: " + Neighbouring.Length);
+		
+		for(int i = 0; i < Neighbouring.Length; i++)
+		{
+			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeChild)
+			{
+				Neighbours.Add(Neighbouring[i].gameObject);
+			}
+		}
+		
+		return Neighbours;
 	}
 }

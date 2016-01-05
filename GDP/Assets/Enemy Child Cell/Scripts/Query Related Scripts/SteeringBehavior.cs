@@ -63,9 +63,6 @@ public static class SteeringBehavior
 			}
 		}
 
-		Steering.x *= 1.7f;
-		Steering.y *= 0.4f;
-
 		return Steering;
 		
 		//My modification on Conrad Parker's setup
@@ -147,9 +144,7 @@ public static class SteeringBehavior
 			CenterPoint /= NeighbourCount;
 			Steering = Seek(_Agent,CenterPoint,_Speed);
 		}
-		
-		//Debug.Log("steering: " + Steering);
-		
+
 		return Steering;
 	}
 	

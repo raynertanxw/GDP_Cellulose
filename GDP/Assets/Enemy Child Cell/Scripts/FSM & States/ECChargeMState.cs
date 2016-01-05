@@ -15,8 +15,6 @@ public class ECChargeMState : IECState {
 	private Point CurrentTargetPoint;
 	private int CurrentTargetIndex;
 	
-	private Vector2 previous;
-	
 	//Constructor for ECChargeMState
 	public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
@@ -37,7 +35,6 @@ public class ECChargeMState : IECState {
 		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
-		Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 	}
@@ -49,15 +46,12 @@ public class ECChargeMState : IECState {
 	
 	public override void FixedExecute()
 	{
-		previous = m_Child.GetComponent<Rigidbody2D>().velocity;
-	
 		Vector2 Acceleration = Vector2.zero;
 		
 		if (!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,24f);
-			fChargeSpeed += 0.12f;
-			fChargeSpeed = Mathf.Clamp(fChargeSpeed,12f,12f);
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 24f;
 		}
 		else if(CurrentTargetIndex + 1 < PathToTarget.Count)
 		{
@@ -73,6 +67,7 @@ public class ECChargeMState : IECState {
 	public override void Exit()
 	{
 		//set the velocity of the enemy child cell to be 0
+		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
 	}
 	
@@ -84,6 +79,24 @@ public class ECChargeMState : IECState {
 			return true;
 		}
 		return false;
+	}
+	
+	private List<GameObject> TagNeighbours()
+	{
+		List<GameObject> Neighbours = new List<GameObject>();
+		
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		//Debug.Log("Neighbouring count: " + Neighbouring.Length);
+		
+		for(int i = 0; i < Neighbouring.Length; i++)
+		{
+			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeMain)
+			{
+				Neighbours.Add(Neighbouring[i].gameObject);
+			}
+		}
+		
+		return Neighbours;
 	}
 }
 

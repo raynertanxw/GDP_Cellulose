@@ -53,7 +53,7 @@ public class ECAttackState : IECState {
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.ChargeMain, 0);
 		}*/
-		MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.ChargeMain, 0);
+		MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.ChargeChild, 0);
 	}
 	
 	//A function that a boolean to see whether there is any threat to the enemy main cell based on the amount

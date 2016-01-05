@@ -17,6 +17,7 @@ public class ECTrickAttackState : IECState {
 	
 	//float to store the speed of movement for the enemy child cell in trick attacking
 	private float fChargeSpeed;
+	private float fMaxAcceleration;
 	
 	//an array of gameobject to store the player nodes
 	private GameObject[] m_Nodes;
@@ -26,6 +27,7 @@ public class ECTrickAttackState : IECState {
 	private int CurrentTargetIndex;
 	private Point CurrentTargetPoint;
 	private bool bTeleported;
+	private bool bReachTarget;
 	
 	//constructor
 	public ECTrickAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -34,19 +36,20 @@ public class ECTrickAttackState : IECState {
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
 		m_Nodes = new GameObject[3];
+		fChargeSpeed = 1f;
+		fMaxAcceleration = 60f;
+		
+		m_Nodes[0] = GameObject.Find("Node_Left");
+		m_Nodes[1] = GameObject.Find("Node_Right");
+		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 	}
 	
 	//initialize the array and various variables for the trick attack
 	public override void Enter()
 	{
-		m_Nodes[0] = GameObject.Find("Node_Left");
-		m_Nodes[1] = GameObject.Find("Node_Right");
-
-		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
-
 		m_AttackTarget = GetTarget();
 		bReachStart = false;
-		fChargeSpeed = 1f;
+		bReachTarget = false;
 		
 		List<Vector2> m_Positions = CalculateKeyPositions();
 		m_StartTelePos = m_Positions[0];
@@ -58,37 +61,54 @@ public class ECTrickAttackState : IECState {
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
 		bTeleported = false;
+		Utility.DrawPath(PathToTarget,Color.red,0.1f);
+		
+		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
 	}
 	
 	public override void Execute()
+	{
+		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported && bReachStart)
+		{
+			bReachTarget = true;
+			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
+		}
+	}
+	
+	public override void FixedExecute()
 	{
 		//if the cell have not reach the teleport starting position, continue charge forward. If the cell
 		//reach the teleport starting position, start the teleport corountine. The coroutine will disable the
 		//enemy child cell for 1.5 second become teleport the enemy child cell to the next position and then
 		//move towards the player main cell
-		m_ecFSM.RotateToHeading();
-		
-		if(!HasCellReachTargetPos(CurrentTargetPoint.Position))
+		Vector2 Acceleration = Vector2.zero;
+
+		if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
 		{
-			ChargeTowards(CurrentTargetPoint.Position);
+			Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 24f;
 		}
-		else if(CurrentTargetIndex + 1 < PathToTarget.Count)
+		else if(CurrentTargetIndex + 1 < PathToTarget.Count && !bReachTarget)
 		{
+			Utility.DrawCross(CurrentTargetPoint.Position,Color.black,0.2f);
 			CurrentTargetIndex++;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
-			Utility.DrawCross(PathToTarget[CurrentTargetIndex].Position,Color.cyan,0.1f);
-			//Debug.Log("point: " + CurrentTargetPoint.Index);
 		}
 		else if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported == false)
 		{
 			bTeleported = true;
 			m_ecFSM.StartChildCorountine(Teleport());
 		}
+		
+		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.RotateToHeading();
 	}
 	
 	public override void Exit()
 	{
-		
+		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
+		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 	}
 	
 	//a function that return a boolean that state whether all the player nodes is empty
@@ -115,7 +135,7 @@ public class ECTrickAttackState : IECState {
 	}
 	
 	//a function to return the least threatening node from the player
-	private GameObject GetWeakestPoint()
+	private GameObject GetMostThreatPoint()
 	{
 		int ScoreLeft = EvaluteNode(m_Nodes[0]);
 		int ScoreRight = EvaluteNode(m_Nodes[1]);
@@ -123,44 +143,22 @@ public class ECTrickAttackState : IECState {
 		if(m_SquadCaptain != null)
 		{
 			int ScoreSquad = m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
-			int[] Scores = new int[3];
-			Scores[0] = ScoreLeft;
-			Scores[1] = ScoreRight;
-			Scores[2] = ScoreSquad;
-			int nLowestScore = 999;
-			int nLowestIndex = 0;
-			for(int i = 0; i < Scores.Length; i++)
+			int HighestScore = Mathf.Max(ScoreSquad,Mathf.Max(ScoreLeft,ScoreRight));
+			
+			if(HighestScore == ScoreSquad)
 			{
-				if(Scores[i] < nLowestScore)
-				{
-					nLowestScore = Scores[i];
-					nLowestIndex = i;
-				}
+				return m_SquadCaptain;
 			}
-			if(nLowestIndex == 0)
-			{
-				return m_Nodes[0];
-			}
-			else if(nLowestIndex == 1)
-			{
-				return m_Nodes[1];
-			}
-
-			return m_SquadCaptain;
+			
+			return HighestScore == ScoreLeft ? m_Nodes[0] : m_Nodes[1];
 		}
 
-		return ScoreLeft < ScoreRight ? m_Nodes[0] : m_Nodes[1];
+		return ScoreLeft > ScoreRight ? m_Nodes[0] : m_Nodes[1];
 	}
 	
 	//a function that evluate a specific node based on several conditions and return an integer that represent the score of threat
 	private int EvaluteNode(GameObject _Node)
 	{
-		//if the node contains no cell, it serve no threat to the enemy main cell
-		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
-		{
-			return 0;
-		}
-		
 		int nthreatLevel = 0;
 		
 		//increase score based on amount of cells in that node
@@ -178,7 +176,7 @@ public class ECTrickAttackState : IECState {
 		}
 		else
 		{
-			return GetWeakestPoint();
+			return GetMostThreatPoint();
 		}
 	} 
 	
@@ -248,29 +246,7 @@ public class ECTrickAttackState : IECState {
 		}
 		return m_RightWall;
 	}
-	
-	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
-	private void ChargeTowards(Vector2 _Pos)
-	{
-		Vector2 m_TargetPos = _Pos;
-		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
-		Vector2 m_Direction = -m_Difference.normalized;
-		
-		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
-		fChargeSpeed += 0.2f;
-		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,8f);
-	}
-	
-	//a function that direct the enemy child cell towards a gameObject by maintaining its velocity through calculation
-	private void MoveTowards(Vector2 _Pos)
-	{
-		Vector2 m_TargetPos = _Pos;
-		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
-		Vector2 m_Direction = -m_Difference.normalized;
-		
-		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * 8f;
-	}
-	
+
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
@@ -302,11 +278,30 @@ public class ECTrickAttackState : IECState {
 		//and, change the position of the enemy child cell to the end of teleport position
 		m_Child.transform.position = m_EndTelePos;
 		
-		bReachStart = true;
-		
 		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_TargetPos,true);
 		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
+		Utility.DrawPath(PathToTarget,Color.red,0.1f);
+		
+		bReachStart = true;
+	}
+	
+	private List<GameObject> TagNeighbours()
+	{
+		List<GameObject> Neighbours = new List<GameObject>();
+		
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		//Debug.Log("Neighbouring count: " + Neighbouring.Length);
+		
+		for(int i = 0; i < Neighbouring.Length; i++)
+		{
+			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.TrickAttack)
+			{
+				Neighbours.Add(Neighbouring[i].gameObject);
+			}
+		}
+		
+		return Neighbours;
 	}
 }

@@ -13,6 +13,8 @@ public class EnemyChildFSM : MonoBehaviour
 	public GameObject m_PMain;
 	public GameObject m_EMain;
 	public GameObject m_ChargeTarget;
+	private GameObject m_LeftWall;
+	private GameObject m_RightWall;
 	
 	//3 variables to store the current state, the enumeration of the current state and the current command for
 	//the child cell
@@ -37,6 +39,8 @@ public class EnemyChildFSM : MonoBehaviour
 		bRotateACW = false;
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
+		m_LeftWall = GameObject.Find("Left Wall");
+		m_RightWall = GameObject.Find("Right Wall");
 		m_ChargeTarget = null;
 		m_StatesDictionary = new Dictionary<ECState,IECState>();
 		
@@ -65,7 +69,6 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsThereEnoughDefence())
 		{
-			Debug.Log("AutoDefend");
 			AutoDefend();
 		}	
 	}
@@ -121,7 +124,7 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			return;
 		}
-	
+
 		if (m_CurrentCommand == MessageType.Avoid)
 		{
 			ChangeState(ECState.Avoid);
@@ -268,10 +271,10 @@ public class EnemyChildFSM : MonoBehaviour
 
 	public IEnumerator PassThroughDeath()
 	{
-		GetComponent<Rigidbody2D>().velocity = new Vector2(0f,GetComponent<Rigidbody2D>().velocity.y);
+		GetComponent<Rigidbody2D>().drag = 0f;
+		GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * 0.75f,GetComponent<Rigidbody2D>().velocity.y);
 		yield return new WaitForSeconds(1f);
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,this.gameObject,MessageType.Dead,0);
-		Debug.Log("EC Kill Self: " + gameObject.name);
 	}
 	
 	public void RotateToHeading()
@@ -314,5 +317,15 @@ public class EnemyChildFSM : MonoBehaviour
 			//Debug.Log("Rotate ACW: " + gameObject.name);
 			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed); 
 		}
+	}
+	
+	public bool OutOfBound()
+	{
+		if(gameObject.transform.position.x < m_LeftWall.transform.position.x || gameObject.transform.position.x > m_RightWall.transform.position.x || gameObject.transform.position.y < -5f)
+		{
+			return true;
+		}
+
+		return false;
 	}
 }
