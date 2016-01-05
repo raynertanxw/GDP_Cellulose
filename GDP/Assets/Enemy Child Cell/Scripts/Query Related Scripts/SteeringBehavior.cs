@@ -199,4 +199,11 @@ public static class SteeringBehavior
 		
 		return new Vector2((PercievedVelo.x - AgentVelo.x)/8f, (PercievedVelo.y - AgentVelo.y)/8f);
 	}
+	
+	public static Vector2 ShakeOnSpot(GameObject _Agent, float _ShakeDistance, float _ShakeStrength)
+	{
+		Vector2 RandomPoint = Random.insideUnitCircle * _ShakeDistance;
+		Vector2 RandomPosition = new Vector2(_Agent.transform.position.x + RandomPoint.x, _Agent.transform.position.y + RandomPoint.y);
+		return Seek(_Agent,RandomPosition,_ShakeStrength);
+	}
 }

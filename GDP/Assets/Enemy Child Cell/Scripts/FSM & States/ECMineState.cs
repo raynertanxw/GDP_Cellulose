@@ -7,6 +7,7 @@ public class ECMineState : IECState {
 	private bool bReachTarget;
 	private float bSeperateRate;
 	private float bGatherRate;
+	private float fMaxAcceleration;
 	
 	private PositionType CurrentPositionType;
 	private GameObject Target;
@@ -21,6 +22,7 @@ public class ECMineState : IECState {
 	
 	private float fSpeed;
 	private float fSeperateInterval;
+	private int ECMineNearby;
 	private Spread CurrentSpreadness;
 
 	private enum Spread{Empty,Tight, Wide};
@@ -32,6 +34,7 @@ public class ECMineState : IECState {
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
 		fSpeed = 1.5f;
+		fMaxAcceleration = 30f;
 	}
 	
 	public override void Enter()
@@ -39,12 +42,40 @@ public class ECMineState : IECState {
 		GatherTogether = false;
 		bReachTarget = false;
 		bSeperateRate = 0f;
-		bGatherRate = 0f;
+		bGatherRate = 1f;
+		ECMineNearby = 0;
 		CurrentSpreadness = Spread.Empty;
+		
+		m_Main.GetComponent<Rigidbody2D>().drag = 2.6f;
 	}
 	
 	public override void Execute()
 	{
+		/*if(!GatherTogether)
+		{
+			ECMineNearby = GetNearbyECMineAmount();
+			if(ECMineNearby == GetLandmines().Count)
+			{
+				CurrentPositionType = DeterminePositionType();
+				Target = PositionQuery.Instance.GetLandmineTarget(CurrentPositionType,m_Child);
+				TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),CurrentPositionType,m_Child);
+				Utility.DrawCross(TargetLandminePos,Color.red,0.5f);
+				PathQuery.Instance.AStarSearch(m_Child.transform.position,TargetLandminePos,false);
+				PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Low);
+				GeneralTargetIndex = 0;
+				GeneralTargetPoint = PathToTarget[GeneralTargetIndex];
+				
+				ReachSpreadPoint = false;
+				SpreadPoint = PathQuery.Instance.ReturnVertSequenceStartPoint(PathToTarget);
+				Utility.DrawPath(PathToTarget,Color.black,0.1f);
+				
+				fSeperateInterval = CalculateSpreadRate(GetCenterOfMines(GetLandmines()),Target);
+				GatherTogether = true;
+			}
+		}*/
+		
+		///////////////////////////////////////////////////////////
+		
 		if(GatherTogether == false)
 		{
 			GatherMovement();
@@ -73,7 +104,7 @@ public class ECMineState : IECState {
 			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, m_Child.GetComponent<Rigidbody2D>().velocity.y);
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());
 		}
-		if(Target.name.Contains("Squad") && Target.GetComponent<PlayerSquadFSM>().AliveChildCount() <= 0)
+		if(Target != null && Target.name.Contains("Squad") && Target.GetComponent<PlayerSquadFSM>().AliveChildCount() <= 0)
 		{
 			Debug.Log("ChangeTargeT");
 			Target = PositionQuery.Instance.GetLandmineTarget(PositionType.Aggressive,m_Child);
@@ -84,6 +115,40 @@ public class ECMineState : IECState {
 			GeneralTargetPoint = PathToTarget[GeneralTargetIndex];
 			bReachTarget = false;
 		}
+	}
+	
+	public override void FixedExecute()
+	{
+		/*Vector2 Acceleration = Vector2.zero;
+	
+		if(!GatherTogether)
+		{
+			Acceleration += SteeringBehavior.GatherAllECSameState(m_Child,ECState.Landmine, 24f);
+		}
+		
+		
+		if(GatherTogether && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive))
+		{
+		
+		}
+		else if(GatherTogether && CurrentPositionType == PositionType.Neutral)
+		{
+		
+		}
+		
+		
+		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		
+		
+		if(!GatherTogether)
+		{
+			m_ecFSM.RotateToHeading();
+		}
+		else
+		{
+			m_ecFSM.RandomRotation(0.75f);
+		}*/
 	}
 	
 	public override void Exit()
@@ -476,6 +541,22 @@ public class ECMineState : IECState {
 				m_Child.transform.position = targetPos;
 			}
 		}
+	}
+	
+	private int GetNearbyECMineAmount()
+	{
+		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/8);
+		int ECMineCount = 0;
+		
+		for(int i = 0; i < Collisions.Length; i++)
+		{
+			if(Collisions[i].tag == Constants.s_strEnemyChildTag && Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
+			{
+				ECMineCount++;
+			}
+		}
+		
+		return ECMineCount;
 	}
 	
 	//a function for any potential sound effects or visual effects to be played 

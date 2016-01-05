@@ -96,7 +96,7 @@ public class FormationDatabase
 					}
 					else
 					{
-						Debug.Log("Previous one: " + FPositionDatabase[FIndex - 9]);
+						//Debug.Log("Previous one: " + FPositionDatabase[FIndex - 9]);
 						CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 9].x, FPositionDatabase[FIndex - 9].y + NextLineInterval);
 						StoredFormationPos = CurrentFormationPos;
 						FPositionDatabase[FIndex] = StoredFormationPos;
@@ -109,7 +109,7 @@ public class FormationDatabase
 					
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
 					
-					Debug.Log("CurrentCenter = " + CurrentCenterIndex);
+					//Debug.Log("CurrentCenter = " + CurrentCenterIndex);
 					//Debug.Log("empos.y: " + EMPos.y + " fposDatabase.y: " + FPositionDatabase[CurrentCenterIndex].y + " rightCount * yInterval: " + RightCount * YInterval); 
 					
 					CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x + RightCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + RightCount * YInterval);
@@ -124,7 +124,7 @@ public class FormationDatabase
 					
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
 					
-					Debug.Log("CurrentCenter = " + CurrentCenterIndex);
+					//Debug.Log("CurrentCenter = " + CurrentCenterIndex);
 					
 					CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x - LeftCount * XInterval,FPositionDatabase[CurrentCenterIndex].y + LeftCount * YInterval);
 					StoredFormationPos = CurrentFormationPos;
@@ -138,7 +138,7 @@ public class FormationDatabase
 		{
 			Vector2 CurrentFormationPos = new Vector2(0f,-1.2f);
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.65f;// and -0.65 for left side
+			float XInterval = 0.55f;// and -0.65 for left side
 			float YInterval = -0.3f;
 			float NextLineInterval = -0.6f;
 			int RightCount = 0;

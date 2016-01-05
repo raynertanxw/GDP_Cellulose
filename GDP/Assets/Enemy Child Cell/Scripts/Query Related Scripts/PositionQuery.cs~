@@ -278,7 +278,7 @@ public class PositionQuery
 		}
 		else if(PType == PositionType.Defensive)
 		{
-			Debug.Log("Defensive");
+			//Debug.Log("Defensive");
 			if(IsAllThreatEmpty())
 			{
 				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
@@ -305,7 +305,7 @@ public class PositionQuery
 	public Formation GetDefensiveFormation()
 	{
 		GameObject EMain = GameObject.Find("Enemy_Cell");
-		/*if(EMain.transform.position.x >= -0.05f && EMain.transform.position.x <= 0.05f)
+		if(EMain.transform.position.x >= -0.05f && EMain.transform.position.x <= 0.05f)
 		{
 			int Choice = Random.Range(0, 4);
 			if(Choice == 0)
@@ -329,8 +329,8 @@ public class PositionQuery
 				return Formation.AreaBlock;
 			}
 		}
-		Debug.Log("CircularSurround");*/
-		return Formation.AreaBlock;
+		Debug.Log("CircularSurround");
+		return Formation.Crescent;
 	}
 		
 	/*
