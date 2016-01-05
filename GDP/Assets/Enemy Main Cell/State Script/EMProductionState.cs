@@ -19,6 +19,8 @@ public class EMProductionState : IEMState
 		
 		// Reset transition availability
 		EMTransition.Instance().CanTransit = true;
+		// Reset spawn availability
+
 		// Pause the transition for randomized time
 		float fPauseTime = Random.Range (2f, 4f);
 		m_EMFSM.StartPauseTransition (fPauseTime);

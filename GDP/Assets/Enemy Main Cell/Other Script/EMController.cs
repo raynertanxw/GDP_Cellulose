@@ -3,6 +3,7 @@ using System.Collections;
 
 [RequireComponent (typeof (EnemyMainFSM))]
 [RequireComponent (typeof (Rigidbody2D))]
+[RequireComponent (typeof (CircleCollider2D))]
 public class EMController : MonoBehaviour 
 {	
 	// Instance of the class
@@ -205,7 +206,12 @@ public class EMController : MonoBehaviour
 	{
 		bCanChangeHori = false;
 		int bDirection = Random.Range (0, 2);
-		float fTime = Random.Range (1f, 5f);
+		// Frequency of checking for changing of direction in terms of health of enemy main cell
+		float fTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt((float)m_EMFSM.Health / 2f)), Mathf.Sqrt((float)m_EMFSM.Health));
+		// Make sure the frequency of changing direction is not higher not once per second
+		if (fTime <= 1.5f)
+			fTime = Random.Range (1f, 1.5f);
+		// Horizontal speed in terms of num of nutrient
 		float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nNutrientNum));
 		
 		if (bDirection == 0) 
