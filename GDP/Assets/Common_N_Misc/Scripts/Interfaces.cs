@@ -24,6 +24,8 @@ public abstract class IECState : IState
     protected GameObject m_Child = null;
     protected GameObject m_Main = null;
     protected EnemyChildFSM m_ecFSM = null;
+    
+    public virtual void FixedExecute(){}
 }
 
 public abstract class ISCState : IState

@@ -6,6 +6,7 @@ public class ECChargeMState : IECState {
 
 	//a float that determine the speed to charge towards a player child cell
 	private float fChargeSpeed;
+	private float fMaxAcceleration;
 	
 	//a gameobject instance that store the player main cell
 	private GameObject m_PlayerMain;
@@ -13,6 +14,8 @@ public class ECChargeMState : IECState {
 	private List<Point> PathToTarget;
 	private Point CurrentTargetPoint;
 	private int CurrentTargetIndex;
+	
+	private Vector2 previous;
 	
 	//Constructor for ECChargeMState
 	public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -22,6 +25,7 @@ public class ECChargeMState : IECState {
 		m_PlayerMain = m_ecFSM.m_PMain;
 		PathToTarget = new List<Point>();
 		fChargeSpeed = 1f; //min 3f max 10f;
+		fMaxAcceleration = 30f;
 	}
 	
 	public override void Enter()
@@ -33,22 +37,37 @@ public class ECChargeMState : IECState {
 		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+		Utility.DrawPath(PathToTarget,Color.red,0.1f);
+		
+		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 	}
 	
 	public override void Execute()
 	{
-		m_ecFSM.RotateToHeading();
+
+	}
 	
-		//if the enemy child cell had not reach the player main cell, continue charge towards the player main cell
+	public override void FixedExecute()
+	{
+		previous = m_Child.GetComponent<Rigidbody2D>().velocity;
+	
+		Vector2 Acceleration = Vector2.zero;
+		
 		if (!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
-			ChargeTowards(CurrentTargetPoint);
+			Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,24f);
+			fChargeSpeed += 0.12f;
+			fChargeSpeed = Mathf.Clamp(fChargeSpeed,12f,12f);
 		}
 		else if(CurrentTargetIndex + 1 < PathToTarget.Count)
 		{
 			CurrentTargetIndex++;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
+	
+		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.RotateToHeading();
 	}
 	
 	public override void Exit()
@@ -65,17 +84,6 @@ public class ECChargeMState : IECState {
 			return true;
 		}
 		return false;
-	}
-	
-	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
-	private void ChargeTowards(Point _Point)
-	{
-		Vector2 targetPos = _Point.Position;
-		Vector2 difference = new Vector2(targetPos.x - m_Child.transform.position.x, targetPos.y - m_Child.transform.position.y);
-		Vector2 direction = difference.normalized;
-		m_Child.GetComponent<Rigidbody2D>().velocity = direction * fChargeSpeed;
-		fChargeSpeed += 0.2f;
-		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
 	}
 }
 

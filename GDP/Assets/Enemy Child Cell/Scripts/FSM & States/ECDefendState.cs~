@@ -77,13 +77,11 @@ public class ECDefendState : IECState {
 		}
 		else if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && bAdjustNeeded && !IsCellReachingWall()) 
 		{
-			//m_ecFSM.RotateToHeading();
 			m_Child.GetComponent<Rigidbody2D>().velocity = SteeringBehavior.Seek(m_Child,m_TargetPos,fMoveSpeed/15f);
 		}
 		else if(!bReachPos && IsCellReachingWall())
 		{
 			bAdjustNeeded = true;
-			//m_ecFSM.RotateToHeading();
 			m_Child.GetComponent<Rigidbody2D>().velocity = GetAwayFromWall();
 		}
 		else if(HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos)
@@ -99,7 +97,6 @@ public class ECDefendState : IECState {
 
 			if(!HasCellReachTargetPos(m_TargetPos))
 			{
-				//m_ecFSM.RotateToHeading();
 				m_Child.GetComponent<Rigidbody2D>().velocity = SteeringBehavior.Seek(m_Child,m_TargetPos,fMoveSpeed/15f);
 			}
 		}
@@ -135,8 +132,7 @@ public class ECDefendState : IECState {
 		//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		//Debug.Log(m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
-		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f)//m_Child.GetComponent<SpriteRenderer>().bounds.size.x)
+		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f)
 		{
 			return true;
 		}

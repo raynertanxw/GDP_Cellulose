@@ -6,6 +6,9 @@ public class ECChargeCState : IECState {
 	
 	//a float that determine the speed to charge towards a player child cell
 	private float fChargeSpeed;
+	private static float fMaxAcceleration;
+	private float fSeekWeight;
+	private float fSeperateWeight;
 	
 	private List<Point> PathToTarget;
 	private GameObject m_Target;
@@ -20,6 +23,7 @@ public class ECChargeCState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 		m_Child = _childCell;
 		fChargeSpeed = 0.3f;
+		fMaxAcceleration = 10f;
 	}
 	
 	
@@ -33,42 +37,53 @@ public class ECChargeCState : IECState {
 		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
+		
+		m_Child.GetComponent<Rigidbody2D>().drag = 2f;
+		
+		Utility.DrawPath(PathToTarget,Color.green,0.1f);
 	}
 	
 	public override void Execute()
 	{
-		 m_ecFSM.RotateToHeading();
-		
 		//If the child cell reach the charge target but the target is lost and there is no more cells in the target's node
-		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && (m_Target.GetComponent<Node_Manager>().GetNodeChildList().Count <= 0 || m_Target.GetComponent<PlayerSquadFSM>().AliveChildCount() <= 0))
+		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) || m_Target.name.Contains("Player_Child") && m_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead || m_Target.name.Contains("Squad_Child") && m_Target.GetComponent<SquadChildFSM>().EnumState == SCState.Dead)
 		{
 			bReachTarget = true;
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
 		}
-		
-		if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && bReachTarget == false)
+	}
+	
+	public override void FixedExecute()
+	{
+		if(bReachTarget == false)
 		{
-			ChargeTowards(CurrentTargetPoint);
+			Vector2 Acceleration = Vector2.zero;
+			
+			if(!HasCellReachTargetPos(CurrentTargetPoint.Position))
+			{
+				Utility.DrawCross(CurrentTargetPoint.Position,Color.red,0.1f);
+				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,fChargeSpeed);
+				fChargeSpeed += 0.12f;
+				fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
+			}
+			else if(CurrentTargetIndex + 1 < PathToTarget.Count)
+			{
+				Debug.Log("CheckPoint");
+				CurrentTargetIndex++;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			}
+			
+			Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+			m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration);
 		}
-		else if(CurrentTargetIndex + 1 < PathToTarget.Count && bReachTarget == false)
-		{
-			CurrentTargetIndex++;
-			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
-		}
-		
-		if(m_ecFSM.m_ChargeTarget.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead && m_ecFSM.m_ChargeTarget.GetComponent<PlayerChildFSM>().m_assignedNode == GameObject.Find("Node_Top"))
-		{
-			m_ecFSM.m_ChargeTarget = FindTargetChild();
-			PathQuery.Instance.AStarSearch(m_Child.transform.position,m_ecFSM.m_ChargeTarget.transform.position,false);
-			PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
-			CurrentTargetIndex = 0;
-			CurrentTargetPoint = PathToTarget[0];
-		}
+
+		m_ecFSM.RotateToHeading();
 	}
 	
 	public override void Exit()
 	{
 		//stop the child cell from moving after it charges finish
+		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, 0.0f);
 	}
 	
@@ -95,6 +110,11 @@ public class ECChargeCState : IECState {
 	{
 		//Find the node to obtain a target child by evaluating which node is the most threatening
 		m_Target = GetMostThreateningSource();
+		
+		if(m_Target == null)
+		{
+			return null;
+		}
 
 		if(m_Target.name.Contains("Node"))
 		{
@@ -121,6 +141,8 @@ public class ECChargeCState : IECState {
 				return null;
 			}
 			
+			Debug.Log("name: " + m_Target.name);
+			
 			return m_TargetCell;
 		}
 		else if(m_Target.name.Contains("Squad"))
@@ -128,6 +150,9 @@ public class ECChargeCState : IECState {
 			//List<SquadChildFSM> m_PotentialTargets = m_Target.GetComponent<PlayerSquadFSM>().
 
 			//WAIT FOR IMPLEMENTAION OF ALIVE SQUAD CHILD LIST//
+			
+			Debug.Log("name: " + m_Target.name);
+			
 			return m_Target;
 		}
 
@@ -143,7 +168,7 @@ public class ECChargeCState : IECState {
 		
 		//Scores for the 3 different nodes
 		int nSquadScore = 0;
-		if(m_Squad != null)
+		if(m_Squad != null && m_Squad.transform.position.y != 1000f)
 		{
 			nSquadScore = m_Squad.GetComponent<PlayerSquadFSM>().AliveChildCount();
 		}
@@ -154,6 +179,11 @@ public class ECChargeCState : IECState {
 		//Compare the score of the nodes and obtain the highest threat score, then return the most threatening
 		//node
 		int nHighestThreat = Mathf.Max(Mathf.Max(nSquadScore,nLeftScore),nRightScore);
+		
+		if(nHighestThreat == 0)
+		{
+			return null;
+		}
 		
 		if(nHighestThreat == nSquadScore)
 		{
@@ -196,18 +226,6 @@ public class ECChargeCState : IECState {
 			return true;
 		}
 		return false;
-	}
-	
-	//a function that direct the enemy child cell towards a gameObject by changing its velocity through calculation
-	private void ChargeTowards(Point _Point)
-	{
-		Vector2 m_TargetPos = _Point.Position;
-		Vector2 m_Difference = new Vector2(m_Child.transform.position.x- m_TargetPos.x, m_Child.transform.position.y - m_TargetPos.y);
-		Vector2 m_Direction = -m_Difference.normalized;
-		
-		m_Child.GetComponent<Rigidbody2D>().velocity = m_Direction * fChargeSpeed;
-		fChargeSpeed += 0.2f;
-		fChargeSpeed = Mathf.Clamp(fChargeSpeed,1f,12f);
 	}
 	
 	//a function that return a boolean to show the target gameobject is dead 

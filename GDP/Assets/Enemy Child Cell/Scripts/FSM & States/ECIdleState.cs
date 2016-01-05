@@ -16,6 +16,7 @@ public class ECIdleState : IECState
 	private float fWanderRadius;
 	private float fWanderDistance;
 	private float fWanderJitter;
+	private float fMaxAcceleration;
 	
 	//Booleans to track whether the enemy child cell is wondering or reach the initial position
 	private bool bIsWondering;

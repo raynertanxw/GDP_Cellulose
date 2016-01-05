@@ -70,6 +70,11 @@ public class EnemyChildFSM : MonoBehaviour
 		}	
 	}
 	
+	void FixedUpdate()
+	{
+		m_CurrentState.FixedExecute();
+	}
+	
 	//Various getter functionss
 	public Dictionary<ECState,IECState> StateDictionary
 	{

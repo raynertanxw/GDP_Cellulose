@@ -204,23 +204,4 @@ public static class SteeringBehavior
 		
 		return new Vector2((PercievedVelo.x - AgentVelo.x)/8f, (PercievedVelo.y - AgentVelo.y)/8f);
 	}
-
-	/*public static Vector2 WanderInPosition(GameObject _Agent)
-	{
-		Vector2[] Targets = new Vector2[8];
-		Vector2 AgentPos = _Agent.transform.position;
-		float AgentRadius = _Agent.GetComponent<SpriteRenderer>().bounds.size.x/2;
-		
-		Targets[0] = new Vector2(AgentPos.x - AgentRadius, AgentPos.y + AgentRadius);
-		Targets[1] = new Vector2(AgentPos.x, AgentPos.y + AgentRadius);
-		Targets[2] = new Vector2(AgentPos.x + AgentRadius, AgentPos.y + AgentRadius);
-		Targets[3] = new Vector2(AgentPos.x + AgentRadius, AgentPos.y);
-		Targets[4] = new Vector2(AgentPos.x + AgentRadius, AgentPos.y - AgentRadius);
-		Targets[5] = new Vector2(AgentPos.x, AgentPos.y - AgentRadius);
-		Targets[6] = new Vector2(AgentPos.x - AgentRadius, AgentPos.y - AgentRadius);
-		Targets[7] = new Vector2(AgentPos.x - AgentRadius, AgentPos.y);
-		
-		
-	}*/
-
 }
