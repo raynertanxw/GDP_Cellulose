@@ -2814,8 +2814,8 @@ MonoBehaviour:
   nNumOfRows: 15
   nNumOfColumns: 10
   fUniversalnodeSize: .5
-  bShowGrid: 0
-  bShowObstacleBlocks: 0
+  bShowGrid: 1
+  bShowObstacleBlocks: 1
 --- !u!4 &614561518
 Transform:
   m_ObjectHideFlags: 0
