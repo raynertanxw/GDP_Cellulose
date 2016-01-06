@@ -265,9 +265,10 @@ public class SquadChildFSM : MonoBehaviour
 		// for: Checks through all the child in the array
 		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
 		{
-			// if: The current cell is the targeted cell that has a transition
+			// if: The current cell type is the trageted cell type
 			if (s_array_SquadChildFSM[i].EnumState == _currentState)
 			{
+				// if: The it is within the chance range
 				if (UnityEngine.Random.value <= _chance)
 				{
 					s_array_SquadChildFSM[i].Advance(_nextState);
@@ -278,9 +279,37 @@ public class SquadChildFSM : MonoBehaviour
     }
 
 	/// <summary>
-	/// Gets the alive child list.
+	/// Advance _chance amount of alive cells to _nextsState
 	/// </summary>
-	/// <returns>The alive child list.</returns>
+	/// <returns><c>true</c> There was transition happening <c>false</c> There wasn't any transition happening </returns>
+	/// <param name="_nextState"> The state in which the squad child advances to </param>
+	/// <param name="_chance"> The chance in which the squad child cell will advance </param>
+	public static bool AdvanceSquadPercentage(SCState _nextState, float _chance)
+	{
+		// if: All the alive child is the _nextstate state
+		if (SquadChildFSM.AliveCount() == SquadChildFSM.StateCount(_nextState))
+			return false;
+
+		// for: Checksthrough all the child in the array
+		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+		{
+			// if: the current cell type is NOT the targeted cell type, as transition would be useless
+			if (s_array_SquadChildFSM[i].EnumState != _nextState)
+			{
+				// if: The it is within the chance range
+				if (UnityEngine.Random.value <= _chance)
+				{
+					s_array_SquadChildFSM[i].Advance(_nextState);
+				}
+			}
+		}
+		return true;
+	}
+
+	/// <summary>
+	/// Returns an list of alive squad children, in SquadChildFSM format
+	/// </summary>
+	/// <returns> The list of alive squad children </returns>
 	public static List<SquadChildFSM> GetAliveChildList()
 	{
 		List<SquadChildFSM> list_AliveChild = new List<SquadChildFSM>();
@@ -293,7 +322,7 @@ public class SquadChildFSM : MonoBehaviour
 		return list_AliveChild;
 	}
 
-    // CalculateStrafiungOffset(): Calling this method will recalculates all strafing offsets for all production cells
+    // CalculateStrafingOffset(): Calling this method will recalculates all strafing offsets for all production cells
     public static bool CalculateStrafingOffset()
     {
         // if: There is no squad child cells in produce state
@@ -319,7 +348,7 @@ public class SquadChildFSM : MonoBehaviour
     //                   NOTE: This is handled in Update() because it should only be executed once every update (method may be called multiple times in the update)
     public static Vector3 StrafingVector()
     {
-        float fCurrentRadius = Mathf.PingPong(Time.time * 0.5f, fStrafingRadius);
+        float fCurrentRadius = Mathf.PingPong(Time.time, fStrafingRadius);
         if (fCurrentRadius < 0.4f)
             fCurrentRadius = 0.4f;
         // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE

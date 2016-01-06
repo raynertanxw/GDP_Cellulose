@@ -42,10 +42,13 @@ public class PS_Logicaliser : MonoBehaviour
         }
 
         // Production State Check
+		// if: The number of alive squad child is less than fMininumChildCount <--------------------------------------------------- DEPERATE TIMES
         if (PlayerSquadFSM.Instance.AliveChildCount() < fMininumChildCount)
         {
-            m_PlayerSquadFSM.Advance(PSState.Produce);
+			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 1f);
+			m_PlayerSquadFSM.Advance(PSState.Produce);
         }
+		// else if: There is more than enough child cells producing, moves to idle <----------------------------------------------- RECOVERY
 		else if (SquadChildFSM.StateCount(SCState.Produce) > fMaximumChildCount)
 		{
 			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 0.5f);

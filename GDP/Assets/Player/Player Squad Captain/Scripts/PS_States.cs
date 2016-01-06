@@ -52,7 +52,6 @@ public class PS_ProduceState : IPSState
     public override void Enter()
     {
         m_psFSM.EnableSpawnRoutine();
-        SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Produce, 50f);
 
         m_psFSM.Advance(PSState.Idle);
     }
