@@ -4486,6 +4486,7 @@ GameObject:
   - 92: {fileID: 970196080}
   - 124: {fileID: 970196079}
   - 81: {fileID: 970196078}
+  - 114: {fileID: 970196083}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4560,6 +4561,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 5
+--- !u!114 &970196083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 970196077}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1067007055e643c4ab01f313994b31ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &973093879
 Prefab:
   m_ObjectHideFlags: 0
@@ -9674,6 +9686,10 @@ Prefab:
     - target: {fileID: 419224, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
       propertyPath: m_RootOrder
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fMaximumCooldown
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
