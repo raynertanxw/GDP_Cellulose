@@ -184,7 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 872e55326991c4b188382ba7f3d574f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_fDetectionRadius: 4
+  m_fDetectionRadius: 3
 --- !u!114 &11489008
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -196,7 +196,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 373eae5b2efa44fa1908be39e881e838, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SquadCaptainNode: {fileID: 0}
 --- !u!114 &11495356
 MonoBehaviour:
   m_ObjectHideFlags: 1

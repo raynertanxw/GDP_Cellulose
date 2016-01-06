@@ -10267,29 +10267,7 @@ Prefab:
       propertyPath: m_RootOrder
       value: 2
       objectReference: {fileID: 0}
-    - target: {fileID: 21273838, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
-      propertyPath: m_Color.r
-      value: .014705658
-      objectReference: {fileID: 0}
-    - target: {fileID: 21273838, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
-      propertyPath: m_Color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 21273838, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 11464766, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
-      propertyPath: m_nNodeIndex
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 145798, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
-      propertyPath: m_Name
-      value: Node_Captain
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 11480844, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
-    - {fileID: 6118202, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
+    m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a1177e87dbb8942f7ba7779efd82e422, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &2139443035 stripped
