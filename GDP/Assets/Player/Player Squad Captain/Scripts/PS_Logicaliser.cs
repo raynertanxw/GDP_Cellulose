@@ -14,6 +14,8 @@ public class PS_Logicaliser : MonoBehaviour
     [Header("Conditions: Production")]
     [Tooltip("The minimum amount of child to consider producing")]
     [SerializeField] private int fMininumChildCount = 4;
+	[Tooltip("The maximum amount of child to be at production")]
+	[SerializeField] private int fMaximumChildCount = 10;
 
     // Uneditable Fields
     private PlayerSquadFSM m_PlayerSquadFSM;    // m_SquadCaptain: The instance of the squad captain
@@ -44,6 +46,10 @@ public class PS_Logicaliser : MonoBehaviour
         {
             m_PlayerSquadFSM.Advance(PSState.Produce);
         }
+		else if (SquadChildFSM.StateCount(SCState.Produce) > fMaximumChildCount)
+		{
+			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 0.5f);
+		}
     }
 }
 

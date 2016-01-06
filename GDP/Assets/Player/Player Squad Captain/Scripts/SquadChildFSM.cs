@@ -24,8 +24,6 @@ public class SquadChildFSM : MonoBehaviour
 
     // Static Fields
     private static SquadChildFSM[] s_array_SquadChildFSM;     // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
-    // s_dict_SingleTransition: Limits the execution of Advance to happen one per frame, eliminates the stacked transition that is called by multiple cell at once
-    private static List<StatesAndPercentage> s_list_SingleAdvance = new List<StatesAndPercentage>();
 
     private static Vector3 m_strafingVector;                    // m_strafingVector: The current direction of the strafing vector
     private static float fStrafingRadius;                       // fStrafingRadius: The maximum strafing radius of the child cells during production
@@ -126,24 +124,6 @@ public class SquadChildFSM : MonoBehaviour
         m_currentState.Execute();
 
         // Post-Excution
-
-        // Advancement Transition Execution - Execution of all requested percentage advancements
-        while (s_list_SingleAdvance.Count > 0)
-        {
-            // for: Checks through all the child in the array
-            for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
-            {
-                // if: The current cell is the targeted cell that has a transition
-                if (s_array_SquadChildFSM[i].EnumState == s_list_SingleAdvance[0].FromState)
-                {
-                    if (UnityEngine.Random.value * 100f <= s_list_SingleAdvance[0].Percentage)
-                    {
-                        Advance(s_list_SingleAdvance[0].ToState);
-                    }
-                }
-            }
-            s_list_SingleAdvance.RemoveAt(0);
-        }
     }
 
     // Public Functions
@@ -277,16 +257,24 @@ public class SquadChildFSM : MonoBehaviour
     /// <param name="_chance"> The chance of which the squad child cell will advance </param>
     public static bool AdvanceSquadPercentage(SCState _currentState, SCState _nextState, float _chance)
     {
-        for (int i = 0; i < s_list_SingleAdvance.Count; i++)
-        {
-            // if: Check if the transition is already in the list
-            if (s_list_SingleAdvance[i].FromState == _currentState && s_list_SingleAdvance[i].ToState == _nextState)
-            {
-                return false;
-            }
-        }
-        s_list_SingleAdvance.Add(new StatesAndPercentage(_currentState, _nextState, _chance));
-        return true;
+		if (_currentState == _nextState)
+			return false;
+		else if (SquadChildFSM.StateCount(_currentState) == 0)
+			return false;
+
+		// for: Checks through all the child in the array
+		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+		{
+			// if: The current cell is the targeted cell that has a transition
+			if (s_array_SquadChildFSM[i].EnumState == _currentState)
+			{
+				if (UnityEngine.Random.value <= _chance)
+				{
+					s_array_SquadChildFSM[i].Advance(_nextState);
+				}
+			}
+		}
+		return true;
     }
 
 	/// <summary>
@@ -343,21 +331,4 @@ public class SquadChildFSM : MonoBehaviour
     public SCState EnumState { get { return m_currentEnumState; } }
     public ISCState State { get { return m_currentState; } }
     public bool IsAlive { get { return bIsAlive; } }
-}
-
-// StatesAndPercentage.cs: Stores a structure for advancing of cells purposes
-public struct StatesAndPercentage
-{
-    // Constructor
-    public StatesAndPercentage(SCState _fromState, SCState _toState, float _percentage)
-    {
-        FromState = _fromState;
-        ToState = _toState;
-        Percentage = _percentage;
-    }
-
-    // Editable Field
-    public SCState FromState;
-    public SCState ToState;
-    public float Percentage;
 }
