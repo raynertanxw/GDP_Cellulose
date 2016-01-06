@@ -33,6 +33,10 @@ public class ECManualStateControl : MonoBehaviour {
 			{
 				MessageDispatcher.Instance.DispatchMessage(gameObject,gameObject,MessageType.TrickAttack,0);
 			}
+			if(Input.GetKeyDown(KeyCode.Alpha6))
+			{
+				MessageDispatcher.Instance.DispatchMessage(gameObject,gameObject,MessageType.Avoid,0);
+			}
 		}
 	}
 }

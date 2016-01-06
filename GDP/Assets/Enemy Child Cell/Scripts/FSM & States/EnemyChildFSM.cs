@@ -69,6 +69,7 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsThereEnoughDefence())
 		{
+			if(gameObject.name.Contains("22")){Debug.Log("AutoDEfend");}
 			AutoDefend();
 		}	
 	}
@@ -110,11 +111,12 @@ public class EnemyChildFSM : MonoBehaviour
 	//a function to change the enemy child state and make the appropriate changes to the enemy child cell
 	public void ChangeState(ECState _state)
 	{
+		//if(gameObject.name.Contains("22")){Debug.Log("From: " + m_CurrentEnum);}
 		m_CurrentState.Exit();
 		m_CurrentState = m_StatesDictionary[_state];
 		m_CurrentEnum = _state;
 		m_CurrentState.Enter();
-		
+		//if(gameObject.name.Contains("22")){Debug.Log("To: " + m_CurrentEnum);}
 	}
 	
 	//a function to update the enemy child state based on the currentcommand variable in the enemy child FSM
@@ -123,6 +125,11 @@ public class EnemyChildFSM : MonoBehaviour
 		if(m_CurrentCommand == MessageType.Empty)
 		{
 			return;
+		}
+
+		if(gameObject.name.Contains("22"))
+		{
+			//Debug.Log(CurrentStateEnum);
 		}
 
 		if (m_CurrentCommand == MessageType.Avoid)
@@ -317,6 +324,19 @@ public class EnemyChildFSM : MonoBehaviour
 			//Debug.Log("Rotate ACW: " + gameObject.name);
 			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed); 
 		}
+	}
+
+	private bool EMTanking()
+	{
+		List<EnemyChildFSM> Children = m_EMain.GetComponent<EnemyMainFSM>().ECList;
+		foreach(EnemyChildFSM Child in Children)
+		{
+			if(Child.CurrentStateEnum == ECState.Avoid)
+			{
+				return true;
+			}
+		}
+		return true;
 	}
 	
 	public bool OutOfBound()

@@ -4,9 +4,11 @@ using System.Collections.Generic;
 
 public class ECAvoidState : IECState {
 
-	//A list of gameobjects that is used to store all the attacking player child cell towards the Enemy Child
-	//Cell
-	private List<GameObject> m_Attackers;
+	private float fMaxAcceleration;
+	private float fDetectRange;
+
+	private GameObject ClosestAttacker;
+	private List<GameObject> AttackersNearby;
 
     //Constructor
     public ECAvoidState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -14,78 +16,72 @@ public class ECAvoidState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
-    }
+		fMaxAcceleration = 30f;
+		fDetectRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 10;
+		AttackersNearby = new List<GameObject>();
+	}
     
 	public override void Enter()
 	{
-		
+		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 	}
 	
     public override void Execute()
     {
-		//Calculate a target velocity for the Enemy Child cell to avoid any near player attacking cell
-		Vector2 targetVelo = Avoid();
-		
-		//Add the velocity of the enemy main cell in order to keep up with it
-		targetVelo.x += m_Main.GetComponent<Rigidbody2D>().velocity.x;
-		targetVelo.y += m_Main.GetComponent<Rigidbody2D>().velocity.y;
-		
-		//Set the enemy child velocity to the target velocity
-		m_Child.GetComponent<Rigidbody2D>().velocity = targetVelo;
+		UpdateAttackerList();
+		ClosestAttacker = GetClosestAttacker();
     }
+
+	public override void FixedExecute()
+	{
+		Vector2 Acceleration = Vector2.zero;
+
+		if(AttackersNearby.Count > 0 && ClosestAttacker != null)
+		{
+			Acceleration += SteeringBehavior.Evade(m_Child,ClosestAttacker,24f);
+		}
+
+		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.RotateToHeading();
+	}
 
     public override void Exit()
     {
-		
+		m_Child.GetComponent<Rigidbody2D>().drag = 0.0f;
     }
 
-	//Return a list of attacking player child cells that are nearby
-	private List<GameObject> ReturnAttackersNearby()
+	private void UpdateAttackerList()
 	{
-		Collider2D[] Attackers = Physics2D.OverlapCircleAll(m_Child.transform.position, 3 * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
-		List<GameObject> PlayerChildAttacking = new List<GameObject>();
+		AttackersNearby.Clear();
 
-		for(int i = 0; i < Attackers.Length; i++)
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fDetectRange);
+		for(int i = 0; i < NearbyObjects.Length; i++)
 		{
-			if(Attackers[i].gameObject.tag == Constants.s_strPlayerChildTag && Attackers[i].gameObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			if(NearbyObjects[i].tag == Constants.s_strPlayerChildTag && (NearbyObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || NearbyObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain))
 			{
-				PlayerChildAttacking.Add(Attackers[i].gameObject);
+				AttackersNearby.Add(NearbyObjects[i].gameObject);
 			}
 		}
-
-		return PlayerChildAttacking;
 	}
-
-	//A function that return a velocity to drive the child cell to avoid any attacking player cells nearby
-    private Vector2 Avoid()
+	
+	private GameObject GetClosestAttacker()
 	{
-		m_Attackers = ReturnAttackersNearby();
-
-		int AttackerCount = 0;
-		Vector2 Steering = new Vector2(0f,0f);
-
-		foreach(GameObject Attacker in m_Attackers)
+		if(AttackersNearby.Count <= 0)
 		{
-			if(Attacker != null)
+			return null;
+		}
+
+		float ClosestDistance = Mathf.Infinity;
+		GameObject ClosestAttacker = AttackersNearby[0];
+		foreach(GameObject Attacker in AttackersNearby)
+		{
+			if(Vector2.Distance(m_Child.transform.position,Attacker.transform.position) < ClosestDistance)
 			{
-				Steering.x += Attacker.transform.position.x;
-				Steering.y += Attacker.transform.position.y;
-				AttackerCount++;
+				ClosestAttacker = Attacker;
+				ClosestDistance = Vector2.Distance(m_Child.transform.position,Attacker.transform.position);
 			}
 		}
-
-		if(AttackerCount <= 0)
-		{
-			return Steering;
-		}
-		else
-		{
-			Steering /= AttackerCount;
-			Steering = new Vector2(Steering.x - m_Child.transform.position.x, Steering.y - m_Child.transform.position.y);
-			Steering.Normalize();
-			return Steering;
-		}
-
+		return ClosestAttacker;
 	}
-
 }
