@@ -289,6 +289,22 @@ public class SquadChildFSM : MonoBehaviour
         return true;
     }
 
+	/// <summary>
+	/// Gets the alive child list.
+	/// </summary>
+	/// <returns>The alive child list.</returns>
+	public static List<SquadChildFSM> GetAliveChildList()
+	{
+		List<SquadChildFSM> list_AliveChild = new List<SquadChildFSM>();
+
+		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+		{
+			if (s_array_SquadChildFSM[i].EnumState != SCState.Dead)
+				list_AliveChild.Add(s_array_SquadChildFSM[i]);
+		}
+		return list_AliveChild;
+	}
+
     // CalculateStrafiungOffset(): Calling this method will recalculates all strafing offsets for all production cells
     public static bool CalculateStrafingOffset()
     {
