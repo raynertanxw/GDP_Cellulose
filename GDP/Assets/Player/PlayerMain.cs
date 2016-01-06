@@ -4,6 +4,7 @@ using System.Collections;
 [RequireComponent (typeof (Collider2D))]
 public class PlayerMain : MonoBehaviour
 {
+	[SerializeField]
 	private int m_nHealth = 100;
 	public int Health { get { return m_nHealth; } }
 

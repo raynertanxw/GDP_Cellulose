@@ -88,10 +88,16 @@ public class EMController : MonoBehaviour
 		fSpeedTemp = fSpeed;
 		bIsDefend = false;
 		fDefendFactor = 0.9f;
-		// Horizontal movement
-		bMovingLeft = true;
+		// Initialization of horizontal movement
+		// Randomize direction
+		int nDirection = Random.Range (0, 2);
+		if (nDirection == 0)
+			bMovingLeft = true;
+		else 
+			bMovingLeft = false;
+		// Randomize speed
+		fHoriSpeed = Random.Range (0.06f, 0.12f);
 		bCanChangeHori = true;
-		fHoriSpeed = 0f;
 		// Velocity
 		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
@@ -204,24 +210,56 @@ public class EMController : MonoBehaviour
 	// Move the enemy main cell left or right
 	IEnumerator MovingHorizontally ()
 	{
-		bCanChangeHori = false;
-		int bDirection = Random.Range (0, 2);
-		// Frequency of checking for changing of direction in terms of health of enemy main cell
-		float fTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt((float)m_EMFSM.Health / 2f)), Mathf.Sqrt((float)m_EMFSM.Health));
-		// Make sure the frequency of changing direction is not higher not once per second
-		if (fTime <= 1.5f)
-			fTime = Random.Range (1f, 1.5f);
-		// Horizontal speed in terms of num of nutrient
-		float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nNutrientNum));
+		if (m_EMFSM.CurrentStateIndex == EMState.Production) 
+		{
+			bCanChangeHori = false;
+			// Change direction based on the position of enemy nutrient and enemy main cell
+			int nDirCount = 0;
+			for (int i = 0; i < EMNutrientMainAgent.AgentList.Count; i++)
+			{
+				if (EMNutrientMainAgent.AgentList[i] != null)
+				{
+					if (EMNutrientMainAgent.AgentList[i].transform.position.x > transform.position.x)
+						nDirCount ++;
+					else if (EMNutrientMainAgent.AgentList[i].transform.position.x < transform.position.x)
+						nDirCount --;
+				}
+			}
+			if (nDirCount < 0 && !bMovingLeft) 
+				bMovingLeft = true;
+			else if (nDirCount > 0 && MovingLeft) 
+				bMovingLeft = false;
+
+			// Change speed based on num of nutrient on one side of the enemy main cell
+			float fSpeed = Random.Range (.05f, (float)nDirCount / 10f);
+
+			// Frequency of checking for changing of direction in terms of health of enemy main cell
+			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)) * 1.5f, Mathf.Sqrt ((float)m_EMFSM.Health) * 1.5f);
+
+			yield return new WaitForSeconds (fTime);
+			bCanChangeHori = true;
+		} 
+		else 
+		{
+			bCanChangeHori = false;
+			int bDirection = Random.Range (0, 2);
+			// Frequency of checking for changing of direction in terms of health of enemy main cell
+			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)), Mathf.Sqrt ((float)m_EMFSM.Health));
+			// Make sure the frequency of changing direction is not higher not once per second
+			if (fTime <= 1.5f)
+				fTime = Random.Range (1f, 1.5f);
+			// Horizontal speed in terms of num of nutrient
+			float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nNutrientNum));
 		
-		if (bDirection == 0) 
-			bMovingLeft = !bMovingLeft;
+			if (bDirection == 0) 
+				bMovingLeft = !bMovingLeft;
 
-		fHoriSpeed = fSpeed;
-		ResetVelocity ();
+			fHoriSpeed = fSpeed;
+			ResetVelocity ();
 
-		yield return new WaitForSeconds (fTime);
-		bCanChangeHori = true;
+			yield return new WaitForSeconds (fTime);
+			bCanChangeHori = true;
+		}
 	}
 
 	// Check the direction of horizontal movement is correct

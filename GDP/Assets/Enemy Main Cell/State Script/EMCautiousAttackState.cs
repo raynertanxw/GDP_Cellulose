@@ -26,7 +26,7 @@ public class EMCautiousAttackState : IEMState
 		// Reset transition availability
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
-		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 2f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness));
+		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness), Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 2f);
 		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 	
