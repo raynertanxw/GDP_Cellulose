@@ -6,6 +6,8 @@ public class ECAvoidState : IECState {
 
 	private float fMaxAcceleration;
 	private float fDetectRange;
+	private float fAvoidTimer;
+	private float fTimerLimit;
 
 	private GameObject ClosestAttacker;
 	private List<GameObject> AttackersNearby;
@@ -16,13 +18,15 @@ public class ECAvoidState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
-		fMaxAcceleration = 30f;
+		fMaxAcceleration = 4f;
+		fTimerLimit = 1.5f;
 		fDetectRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 10;
 		AttackersNearby = new List<GameObject>();
 	}
     
 	public override void Enter()
 	{
+		fAvoidTimer = 0f;
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 	}
 	
@@ -30,11 +34,23 @@ public class ECAvoidState : IECState {
     {
 		UpdateAttackerList();
 		ClosestAttacker = GetClosestAttacker();
+		
+		if(AttackersNearby.Count <= 0)
+		{
+			fAvoidTimer += Time.deltaTime;
+		}
+		
+		if(fAvoidTimer >= fTimerLimit)
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
     }
 
 	public override void FixedExecute()
 	{
 		Vector2 Acceleration = Vector2.zero;
+
+		Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity ;
 
 		if(AttackersNearby.Count > 0 && ClosestAttacker != null)
 		{
@@ -43,7 +59,15 @@ public class ECAvoidState : IECState {
 
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
-		m_ecFSM.RotateToHeading();
+		
+		if(Acceleration.magnitude > m_Main.GetComponent<Rigidbody2D>().velocity.magnitude)
+		{
+			m_ecFSM.RotateToHeading();
+		}
+		else
+		{
+			m_ecFSM.RandomRotation(0.75f);
+		}
 	}
 
     public override void Exit()

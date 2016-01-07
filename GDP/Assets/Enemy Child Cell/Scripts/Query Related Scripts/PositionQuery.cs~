@@ -255,7 +255,6 @@ public class PositionQuery
 		
 		if(PType == PositionType.Aggressive)
 		{
-			Debug.Log("Aggressive");
 			if(IsAllThreatEmpty())
 			{
 				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
@@ -293,7 +292,6 @@ public class PositionQuery
 		}
 		else if(PType == PositionType.Neutral)
 		{
-			Debug.Log("Netural");
 			Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
 			targetPos = CurrentPoint.Position;
 		}
@@ -310,26 +308,21 @@ public class PositionQuery
 			int Choice = Random.Range(0, 4);
 			if(Choice == 0)
 			{
-				Debug.Log("Crescent");
 				return Formation.Crescent;
 			}
 			else if(Choice == 1)
 			{
-				Debug.Log("ReverseCrescent");
 				return Formation.ReverseCrescent;
 			}
 			else if(Choice == 2)
 			{
-				Debug.Log("CircularSurround");
 				return Formation.CircularSurround;
 			}
 			else if(Choice == 3)
 			{
-				Debug.Log("AreaBlock");
 				return Formation.AreaBlock;
 			}
 		}
-		Debug.Log("CircularSurround");
 		return Formation.Crescent;
 	}
 		

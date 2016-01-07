@@ -66,12 +66,16 @@ public class EnemyChildFSM : MonoBehaviour
 	{
 		m_CurrentState.Execute();
 		UpdateState();
-		
-		if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsThereEnoughDefence())
+
+		if((m_CurrentEnum == ECState.Idle || m_CurrentEnum == ECState.Defend) && IsMainBeingAttacked() && ShouldEMTank())
 		{
-			if(gameObject.name.Contains("22")){Debug.Log("AutoDEfend");}
+			AutoAvoid();
+		}
+		else if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsThereEnoughDefence() && !IsEMTanking())
+		{
 			AutoDefend();
-		}	
+		}
+		
 	}
 	
 	void FixedUpdate()
@@ -111,12 +115,10 @@ public class EnemyChildFSM : MonoBehaviour
 	//a function to change the enemy child state and make the appropriate changes to the enemy child cell
 	public void ChangeState(ECState _state)
 	{
-		//if(gameObject.name.Contains("22")){Debug.Log("From: " + m_CurrentEnum);}
 		m_CurrentState.Exit();
 		m_CurrentState = m_StatesDictionary[_state];
 		m_CurrentEnum = _state;
 		m_CurrentState.Enter();
-		//if(gameObject.name.Contains("22")){Debug.Log("To: " + m_CurrentEnum);}
 	}
 	
 	//a function to update the enemy child state based on the currentcommand variable in the enemy child FSM
@@ -125,11 +127,6 @@ public class EnemyChildFSM : MonoBehaviour
 		if(m_CurrentCommand == MessageType.Empty)
 		{
 			return;
-		}
-
-		if(gameObject.name.Contains("22"))
-		{
-			//Debug.Log(CurrentStateEnum);
 		}
 
 		if (m_CurrentCommand == MessageType.Avoid)
@@ -200,7 +197,6 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			if(comingObject.tag == Constants.s_strPlayerChildTag)
 			{
-				Debug.Log("main detect");
 				return true;
 			}
 		}
@@ -211,7 +207,6 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			if(comingObject.tag == Constants.s_strPlayerChildTag && comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
-				Debug.Log("child detect");
 				return true;
 			}
 		}
@@ -244,10 +239,8 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		if(attackerAmount > defenderAmount)
 		{
-			Debug.Log("Attacker more than defender");
 			return false;
 		}
-		Debug.Log("defender more than Attacker");
 		return true;
 	}
 	
@@ -261,6 +254,20 @@ public class EnemyChildFSM : MonoBehaviour
 			if(nearby.tag == Constants.s_strEnemyChildTag && nearby.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 			{
 				MessageDispatcher.Instance.DispatchMessage(gameObject,nearby.gameObject,MessageType.Defend,0);
+			}
+		}
+	}
+	
+	private void AutoAvoid()
+	{
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 3 * GetComponent<SpriteRenderer>().bounds.size.x/2);
+		
+		//Dispatch a message to all nearby enemy child cells that are idling to defend the main cell
+		foreach(Collider2D nearby in NearbyObjects)
+		{
+			if(nearby.tag == Constants.s_strEnemyChildTag && (nearby.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle || nearby.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend))
+			{
+				MessageDispatcher.Instance.DispatchMessage(gameObject,nearby.gameObject,MessageType.Avoid,0);
 			}
 		}
 	}
@@ -326,7 +333,18 @@ public class EnemyChildFSM : MonoBehaviour
 		}
 	}
 
-	private bool EMTanking()
+	private bool ShouldEMTank()
+	{
+		EnemyMainFSM EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
+		PlayerMain PM = m_PMain.GetComponent<PlayerMain>();
+		if(EMFSM.Health > PM.Health && EMFSM.ECList.Count > GameObject.FindGameObjectsWithTag("PlayerChild").Length && PM.Health < 35)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	private bool IsEMTanking()
 	{
 		List<EnemyChildFSM> Children = m_EMain.GetComponent<EnemyMainFSM>().ECList;
 		foreach(EnemyChildFSM Child in Children)
@@ -336,7 +354,7 @@ public class EnemyChildFSM : MonoBehaviour
 				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	public bool OutOfBound()

@@ -121,14 +121,14 @@ public class ECDefendState : IECState {
 			//Debug.Log("vibrate point 1");
 			Acceleration += SteeringBehavior.Seek(m_Child,GetClosestAttacker().transform.position,24f);
 		}
-		/*else if(IsThereNoAttackers())
+		else if(IsThereNoAttackers())
 		{
 			fDefendTime += Time.deltaTime;
 			if(fDefendTime >= 2f)
 			{
 				MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0f);
 			}
-		}*/
+		}
 		
 		
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);

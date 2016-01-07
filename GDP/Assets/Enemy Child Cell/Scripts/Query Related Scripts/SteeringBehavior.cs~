@@ -40,13 +40,11 @@ public static class SteeringBehavior
 		float LookAhead = DirectionToHunter.magnitude /(2 * _Hunter.GetComponent<Rigidbody2D>().velocity.magnitude);
 		
 		Vector2 PredictedVelocity = new Vector2(_Hunter.GetComponent<Rigidbody2D>().velocity.x * LookAhead, _Hunter.GetComponent<Rigidbody2D>().velocity.y * LookAhead);
-		return Flee(_Agent,new Vector2(_Hunter.transform.position.x + PredictedVelocity.x, _Hunter.transform.position.y + PredictedVelocity.y),_Speed);
+		return -Flee(_Agent,new Vector2(_Hunter.transform.position.x + PredictedVelocity.x, _Hunter.transform.position.y + PredictedVelocity.y),_Speed);
 	}
 	
 	public static Vector2 Seperation(GameObject _Agent, List<GameObject> _SameGOType)
 	{
-		//modified boid's seperation (Different if statement to get the ideal formation)
-		
 		//Conrad Parker's setup
 		Vector2 Steering = new Vector2(0f,0f);
 		foreach(GameObject GO in _SameGOType)
@@ -64,31 +62,16 @@ public static class SteeringBehavior
 		}
 
 		return Steering;
-		
-		//My modification on Conrad Parker's setup
-		/*Vector2 Steering = new Vector2(0f,0f);
-		foreach(GameObject GO in _SameGOType)
+	}
+	
+	public static Vector2 SeperationByPos(GameObject _Agent, List<Vector2> _Positions)
+	{
+		Vector2 Steering = new Vector2(0f,0f);
+		foreach(Vector2 Position in _Positions)
 		{
-			if(GO != _Agent)
+			if(Position.x != _Agent.transform.position.x && Position.y != _Agent.transform.position.y)
 			{
-				Vector2 difference = new Vector2(GO.transform.position.x - _Agent.transform.position.x, GO.transform.position.y - _Agent.transform.position.y);
-				float distance = Mathf.Sqrt(0.4f * Mathf.Pow(difference.x,2f) + 2f * Mathf.Pow(difference.y,2f));//difference.magnitude;//Mathf.Sqrt(1f * Mathf.Pow(difference.x,2f) + Mathf.Pow(difference.y,2f));
-				if(distance <= 1f)
-				{
-					Steering.x -= difference.x;
-					Steering.y -= difference.y;
-				} 
-			}
-		}
-		return Steering;*/
-		
-		//boid's seperation http://www.vergenet.net/~conrad/boids/pseudocode.html
-		/*Vector2 Steering = new Vector2(0f,0f);
-		foreach(GameObject GO in _SameGOType)
-		{
-			if(GO != _Agent)
-			{
-				Vector2 difference = new Vector2(GO.transform.position.x - _Agent.transform.position.x, GO.transform.position.y - _Agent.transform.position.y);
+				Vector2 difference = new Vector2(Position.x - _Agent.transform.position.x, Position.y - _Agent.transform.position.y);
 				float distance = difference.magnitude;
 				if(distance <= 1f)
 				{
@@ -97,32 +80,8 @@ public static class SteeringBehavior
 				} 
 			}
 		}
-		return Steering;*/
-	
-		//normal seperation
-		/*int NeighbourCount = 0;
-		Vector2 Steering = new Vector2(0f,0f);
-		foreach(GameObject child in _Neighbours)
-		{
-			if(child != null && child != _Agent)
-			{
-				Steering.x += child.transform.position.x - _Agent.transform.position.x;
-				Steering.y += child.transform.position.y - _Agent.transform.position.y;
-				NeighbourCount++;
-			}
-		}
 		
-		if (NeighbourCount <= 0)
-		{
-			return Steering;
-		}
-		else
-		{
-			Steering /= NeighbourCount;
-			Steering *= -1f;
-			Steering.Normalize();
-			return Steering;
-		}*/
+		return Steering;
 	}
 	
 	public static Vector2 Cohesion(GameObject _Agent, List<GameObject> Neighbours, float _Speed)
