@@ -47,6 +47,12 @@ public class PlayerSquadFSM : MonoBehaviour
     [Tooltip("The speed of the rotation for strafing")]
     [SerializeField] private float fStrafingSpeed = 0.5f;
 
+    [Header("Child State: Defence")]
+    [Tooltip("The angle of formation of the defence mechanism")]
+    [SerializeField] private float fDefenceAngle = 30f;
+    [Tooltip("The distance of the shield from the player main")]
+    [SerializeField] private float fDefenceRadius = 3f;
+
     // Uneditables Fields
     [HideInInspector] public bool bIsAlive = false;     // bIsAlive: Returns if the squad captain is alive
 
@@ -66,7 +72,6 @@ public class PlayerSquadFSM : MonoBehaviour
     {
         while (bIsProduce)
         {
-            Debug.Log("Wait for " + fNextCooldown + " till next spawn");
             yield return new WaitForSeconds(fNextCooldown);
 
             if (!this.CalculateCooldown() || SquadChildFSM.StateCount(SCState.Produce) == 0)
@@ -201,6 +206,8 @@ public class PlayerSquadFSM : MonoBehaviour
 
     public float StrafingRadius { get { return fStrafingRadius; } }
     public float StrafingSpeed { get { return fStrafingSpeed; } }
+    public float DefenceAngle { get { return fDefenceAngle; } }
+    public float DefenceRadius { get { return fDefenceRadius; } }
 
     public bool IsAlive { get { return bIsAlive; } }
 }

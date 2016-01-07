@@ -28,15 +28,22 @@ public class SquadChildFSM : MonoBehaviour
     private static Vector3 m_strafingVector;                    // m_strafingVector: The current direction of the strafing vector
     private static float fStrafingRadius;                       // fStrafingRadius: The maximum strafing radius of the child cells during production
     private static float fStrafingSpeed;                        // fStrafingSpeed: The maximum strafing speed of the child cells during production
+    private static float fDefenceAngle;
+    private static float fDefenceRadius;
 
     // Uneditable Fields
     private float fStrafingOffsetAngle = 0f;                    // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
+    private float fDefenceOffsetAngle = 0f;                     // fDefenceOffsetAngle: Stores the angular distances away from the leftmost angle 
 
     private Dictionary<SCState, ISCState> dict_States;          // dict_States: The dictionary to store all the states
     private SCState m_currentEnumState;                         // m_currentEnumState: The current enum state of the FSM
     private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
+    private Vector2 mainDefenceVector;                          // mainDefenceVector: The main defence vector, this will be initilised at the start and will be use without change
+
+    private Vector3 parentPosition;                             // parentPosition: The position of the squad captain
+    private Vector3 playerPosition;                             // playerPosition: The position of the player main
+
     [HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
-    private Vector3 parentPosition;
 
     // GameObject/Component References
     public SpriteRenderer m_SpriteRenderer;                     // m_SpriteRenderer: It is public so that states can references it
@@ -96,9 +103,15 @@ public class SquadChildFSM : MonoBehaviour
         dict_States.Add(SCState.FindResource, new SC_FindResourceState(this));
 
         // Initialisation
+        playerPosition = PlayerMain.s_Instance.transform.position;
         m_strafingVector = Vector3.up;
+
         fStrafingRadius = PlayerSquadFSM.Instance.StrafingRadius;
         fStrafingSpeed = PlayerSquadFSM.Instance.StrafingSpeed;
+        fDefenceAngle = PlayerSquadFSM.Instance.DefenceAngle;
+        fDefenceRadius = PlayerSquadFSM.Instance.DefenceRadius;
+
+        mainDefenceVector = Quaternion.Euler(0f, 0f, -(fDefenceAngle / 2.0f)) * Vector2.up * fDefenceRadius;
 
         // Initialisation of first state
         m_currentEnumState = SCState.Dead;
@@ -114,11 +127,10 @@ public class SquadChildFSM : MonoBehaviour
     void Update()
     {
         // Pre-Excution
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            ExecuteMethod.OnceInUpdate("SquadChildFSM.CalculateStrafingOffset", null, null);
-            Debug.Log("<---- Production Count: " + SquadChildFSM.StateCount(SCState.Produce));
-        }
+        //if (Input.GetKeyDown(KeyCode.P))
+        //{
+        //    SquadChildFSM.AdvanceSquadPercentage(SCState.Defend, 1f);
+        //}
 
         // Excution of the current state
         m_currentState.Execute();
@@ -158,8 +170,22 @@ public class SquadChildFSM : MonoBehaviour
         ExecuteMethod.OnceInUpdate("SquadChildFSM.StrafingVector", null, null);
         // targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
         Vector3 targetPosition = Quaternion.Euler(0.0f, 0.0f, fStrafingOffsetAngle) * m_strafingVector + parentPosition;
-        transform.position = Vector3.Lerp(transform.position, targetPosition, 3f * Time.deltaTime);
+        m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * 3.0f + transform.position);
 
+        return true;
+    }
+
+    // DefenceSheild(): Handles the movement when the cells in defence state
+    public bool DefenceSheild()
+    {
+        if (m_currentEnumState != SCState.Produce)
+        {
+            Debug.LogWarning(gameObject.name + ".SquadChildFSM.DefenceSheild(): Current state is not SCState.Defend! Ignore Defence!");
+            return false;
+        }
+
+        Vector3 targetPosition = Quaternion.Euler(0f, 0f, fDefenceAngle) * mainDefenceVector + playerPosition;
+        m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * 10.0f + transform.position);
         return true;
     }
 
@@ -322,16 +348,16 @@ public class SquadChildFSM : MonoBehaviour
 		return list_AliveChild;
 	}
 
-    // CalculateStrafingOffset(): Calling this method will recalculates all strafing offsets for all production cells
+    // CalculateStrafingOffset(): Calling this method will recalculate all strafing offsets for all production cells
     public static bool CalculateStrafingOffset()
     {
-        // if: There is no squad child cells in produce state
-        if (StateCount(SCState.Produce) == 0)
-            return false;
-
         // Resets all the strafing offset to 0
         for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
             s_array_SquadChildFSM[i].fStrafingOffsetAngle = 0f;
+
+        // if: There is no squad child cells in produce state
+        if (StateCount(SCState.Produce) == 0)
+            return false;
 
         int produceCount = SquadChildFSM.StateCount(SCState.Produce);
         // for: Calculates strafing angle for squad child cells that are in production state
@@ -342,6 +368,53 @@ public class SquadChildFSM : MonoBehaviour
                 s_array_SquadChildFSM[i].fStrafingOffsetAngle = 360f / produceCount * i;
 
         return true;
+    }
+
+    // CalculateDefenceSheildOffset(): Calling this method will recalculates all defence offsets for all defence cells
+    public static bool CalculateDefenceSheildOffset()
+    {
+        // Resets all the strafing offset to 0
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+            s_array_SquadChildFSM[i].fDefenceOffsetAngle = 0f;
+
+        // if: There is no squad cells in defence state
+        if (StateCount(SCState.Defend) == 0)
+            return false;
+
+        int defenceCount = SquadChildFSM.StateCount(SCState.Defend);
+        // if: there is only 1 defence cell
+        if (defenceCount == 1)
+        {
+            for (int i = 0; i < defenceCount; i++)
+            {
+                if (s_array_SquadChildFSM[i].EnumState == SCState.Defend)
+                {
+                    s_array_SquadChildFSM[i].fDefenceOffsetAngle = 0.5f * fDefenceAngle;
+                    return true;
+                }
+            }
+            return false;
+        }
+        else
+        {
+            // for: Calculates the distribution of the angle offset from the main vector
+            int j = 0;
+            for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+            {
+                if (s_array_SquadChildFSM[i].EnumState == SCState.Defend)
+                {
+                    s_array_SquadChildFSM[i].fDefenceOffsetAngle = j / (defenceCount - 1f) * fDefenceAngle;
+                    Debug.Log(j + ": fDefenceOffsetAngle = " + s_array_SquadChildFSM[i].fDefenceOffsetAngle);
+                    j++;
+                }
+                if (j == defenceCount)
+                {
+                    Debug.Log(":D");
+                    break;
+                }
+            }
+            return true;
+        }
     }
 
     // StrafingVector(): calculates and return the strafing vector
