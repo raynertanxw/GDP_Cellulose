@@ -122,6 +122,21 @@ public class SC_DefendState : ISCState
     {
         m_scFSM = m_SquadChildFSM;
     }
+
+    public override void Enter()
+    {
+        Debug.Log(SquadChildFSM.CalculateDefenceSheildOffset());
+    }
+
+    public override void Execute()
+    {
+        m_scFSM.DefenceSheild();
+    }
+
+    public override void Exit()
+    {
+        ExecuteMethod.OnceInUpdate("SquadChildFSM.CalculateDefenceSheildOffset", null, null);
+    }
 }
 
 // SC_AttackState: The attack state of the player squad's captain FSM
