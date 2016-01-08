@@ -83,7 +83,7 @@ public class EMController : MonoBehaviour
 		initialScale = gameObject.transform.localScale;
 		currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
 		// Speed
-		fSpeed = .1f;
+		fSpeed = .05f;
 		fSpeedFactor = 1f;
 		fSpeedTemp = fSpeed;
 		bIsDefend = false;
