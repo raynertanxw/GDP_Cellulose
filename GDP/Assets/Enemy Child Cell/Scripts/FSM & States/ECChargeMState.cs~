@@ -23,7 +23,7 @@ public class ECChargeMState : IECState {
 		m_PlayerMain = m_ecFSM.m_PMain;
 		PathToTarget = new List<Point>();
 		fChargeSpeed = 1f; //min 3f max 10f;
-		fMaxAcceleration = 30f;
+		fMaxAcceleration = 10f;
 	}
 	
 	public override void Enter()

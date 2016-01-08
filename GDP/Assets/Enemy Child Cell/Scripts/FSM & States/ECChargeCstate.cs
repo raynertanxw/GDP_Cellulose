@@ -20,7 +20,7 @@ public class ECChargeCState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 		m_Child = _childCell;
 		fChargeSpeed = 0.3f;
-		fMaxAcceleration = 30f;
+		fMaxAcceleration = 10f;
 	}
 	
 	

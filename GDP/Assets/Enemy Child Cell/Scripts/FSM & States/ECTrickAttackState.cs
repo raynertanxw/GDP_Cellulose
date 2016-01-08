@@ -37,7 +37,7 @@ public class ECTrickAttackState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 		m_Nodes = new GameObject[3];
 		fChargeSpeed = 1f;
-		fMaxAcceleration = 60f;
+		fMaxAcceleration = 20f;
 		
 		m_Nodes[0] = GameObject.Find("Node_Left");
 		m_Nodes[1] = GameObject.Find("Node_Right");
@@ -61,7 +61,7 @@ public class ECTrickAttackState : IECState {
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
 		bTeleported = false;
-		Utility.DrawPath(PathToTarget,Color.red,0.1f);
+		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
 	}
@@ -282,7 +282,7 @@ public class ECTrickAttackState : IECState {
 		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
-		Utility.DrawPath(PathToTarget,Color.red,0.1f);
+		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		
 		bReachStart = true;
 	}

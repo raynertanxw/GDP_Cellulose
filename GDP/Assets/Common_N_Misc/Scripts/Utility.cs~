@@ -55,4 +55,9 @@ public static class Utility
 			DrawCross(point.Position,_Color,_CrossSize);
 		}
 	}
+	
+	public static void DebugVector(Vector2 _Pos)
+	{
+		Debug.Log(_Pos.ToString("F4"));
+	}
 }
