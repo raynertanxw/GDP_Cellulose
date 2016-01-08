@@ -23,7 +23,7 @@ public class EMNutrientMainFlock : MonoBehaviour
 	void Start () 
 	{
 		// Initialization
-		fNeighbourRadius = 3f;
+		fNeighbourRadius = 1f;
 		fAlignmentWeight = .5f;
 		fCohesionWeigth = .5f;
 		fSeperationWeight = .5f;
