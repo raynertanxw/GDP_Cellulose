@@ -4,9 +4,6 @@ using System.Collections.Generic;
 
 public class PC_AvoidState : IPCState
 {
-	private Vector3 m_currentVelocity;
-	private static float s_fPlayerChildAvoidSpeed = 5.0f;
-	private static float s_fAvoidRange = 1.0f;
 	private Vector2 m_nodeOrigin;
 
 	public override void Enter()
@@ -16,7 +13,7 @@ public class PC_AvoidState : IPCState
 	
 	public override void Execute()
 	{
-		if (findClosestEnemy() == false)
+		if (DetectedEnemyInRange() == false)
 		{
 			// If nothing to avoid then change back to idle.
 			m_pcFSM.ChangeState(PCState.Idle);
@@ -32,12 +29,23 @@ public class PC_AvoidState : IPCState
 	
 	public override void Exit()
 	{
-
-	}
+        Debug.Log("Exited Avoid State.");
+    }
 
     public override void FixedExecute()
     {
+        // Get the cohesion, alignment, and separation components of the flocking.
+        Vector2 acceleration = Cohesion() * cohesionWeight;
+        acceleration += Alignment() * alignmentWeight;
+        acceleration += Separation() * separationWeight;
+        acceleration += OriginPull() * originPullWeight;
+        acceleration += Avoidance() * avoidanceWeight;
+        // Clamp the acceleration to a maximum value
+        acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
 
+        // Add the force to the rigidbody and face the direction of movement
+        m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+        FaceTowardsHeading();
     }
 
     #if UNITY_EDITOR
@@ -59,58 +67,61 @@ public class PC_AvoidState : IPCState
 
 
 
-	
-
-	#region Helper functions
-	private bool findClosestEnemy()
-	{
-		Collider2D[] enemyCells = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, s_fAvoidRange, Constants.s_onlyEnemeyChildLayer);
-		if (enemyCells.Length > 0)
-		{
-			// Assign the closest currentEnemyCellTarget in the FSM to the returned enemy cell.
-			int nClosestEnemyCell = 0;
-			float fClosestDistance = 1000.0f;
-			for (int i = 0; i < enemyCells.Length; i++)
-			{
-				float fDistance = (enemyCells[i].transform.position - m_pcFSM.transform.position).sqrMagnitude;
-				if (fDistance < fClosestDistance)
-				{
-					fClosestDistance = fDistance;
-					nClosestEnemyCell = i;
-				}
-			}
-
-			m_pcFSM.m_currentEnemyCellTarget = enemyCells[nClosestEnemyCell].gameObject.GetComponent<EnemyChildFSM>();
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-	#endregion
 
 
-	#region Flocking
-	// Flocking related variables
-	private static float s_fCohesionRadius = 2.0f;
+    #region Helper functions
+    private bool DetectedEnemyInRange()
+    {
+        Collider2D enemyChild = Physics2D.OverlapCircle(PlayerMain.s_Instance.transform.position, PlayerMain.s_Instance.m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
+        if (enemyChild != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    #endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    #region Flocking
+    // Flocking related variables
+    private static float s_fCohesionRadius = 2.0f;
 	private static float s_fseparationRadius = 0.25f;
-	private static float s_fMaxAcceleration = 10f;
+    private static float s_fAvoidRadius = 5.0f;
+    private static float s_fMaxAcceleration = 500f;
 	// Weights
-	private static float s_fCohesionWeight = 300;
-	private static float s_fAlignmentWeight = 100;
-	private static float s_fSeparationWeight = 5000;
-	private static float s_fOriginPullWeight = 500;
+	private static float s_fCohesionWeight = 0;
+	private static float s_fAlignmentWeight = 0;
+	private static float s_fSeparationWeight = 100;
+	private static float s_fOriginPullWeight = 5;
+    private static float s_fAvoidanceWeight = 1000;
 	
 	
 	// Getters for the various values.
 	public static float cohesionRadius { get { return s_fCohesionRadius; } }
 	public static float separationRadius { get { return s_fseparationRadius; } }
+    public static float avoidRadius { get { return s_fAvoidRadius; } }
 	public static float maxAcceleration { get { return s_fMaxAcceleration; } }
 	public static float cohesionWeight { get { return s_fCohesionWeight; } }
 	public static float alignmentWeight { get { return s_fAlignmentWeight; } }
 	public static float separationWeight { get { return s_fSeparationWeight; } }
 	public static float originPullWeight { get { return s_fOriginPullWeight; } }
+    public static float avoidanceWeight { get { return s_fAvoidanceWeight; } }
 	
 	// Flocking related Helper functions
 	void FaceTowardsHeading()
@@ -224,6 +235,35 @@ public class PC_AvoidState : IPCState
 		
 		return sumVector;
 	}
+
+    // Calculate the sumVector for avoiding all the enemy child cells.
+    public Vector2 Avoidance()
+    {
+        Vector2 sumVector = Vector2.zero;
+        int count = 0;
+
+        Collider2D[] enemyCells = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, avoidRadius, Constants.s_onlyEnemeyChildLayer);
+
+        Vector2 tmp_enemyPos = Vector2.zero;
+        for (int i = 0; i < enemyCells.Length; i++)
+        {
+            tmp_enemyPos.x = enemyCells[i].transform.position.x;
+            tmp_enemyPos.y = enemyCells[i].transform.position.y;
+
+            float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, tmp_enemyPos);
+            sumVector += (m_pcFSM.rigidbody2D.position - tmp_enemyPos).normalized / fDist;
+
+            count++;
+        }
+
+        // Average the sumVector and clamp magnitude
+        if (count > 0)
+        {
+            sumVector /= count;
+        }
+
+        return sumVector;
+    }
 	
 	public Vector2 OriginPull()
 	{
