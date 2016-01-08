@@ -23,7 +23,7 @@ public class EMNutrientMainFlock : MonoBehaviour
 	void Start () 
 	{
 		// Initialization
-		fNeighbourRadius = 1f;
+		fNeighbourRadius = 3f;
 		fAlignmentWeight = .5f;
 		fCohesionWeigth = .5f;
 		fSeperationWeight = .5f;
@@ -84,8 +84,14 @@ public class EMNutrientMainFlock : MonoBehaviour
 	{
 		Vector2 direction = Vector2.zero;
 		
-		foreach (var agent in neighbouringAgents)
-			direction += (Vector2)agent.transform.position - currentPosition;
+		foreach (var agent in neighbouringAgents) 
+		{
+			if (Vector2.Distance ((Vector2)agent.transform.position, currentPosition) != 0f)
+				direction += ((Vector2)agent.transform.position - currentPosition).normalized / 
+					Vector2.Distance ((Vector2)agent.transform.position, currentPosition);
+		}
+
+		direction /= neighbouringAgents.Count;
 		
 		return (direction * -1);
 	}
