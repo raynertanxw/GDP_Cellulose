@@ -4,7 +4,8 @@ using System.Collections.Generic;
 
 public class ECIdleState : IECState
 {
-	private static float fMaxAcceleration;
+	private static float fMinMagnitude;
+	private static float fMaxMagnitude;
 	private static float fPreviousStatusTime;
 	private bool bAllCellInMain;
 	private static IdleStatus CurrentIdleState;
@@ -18,32 +19,29 @@ public class ECIdleState : IECState
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
-		fMaxAcceleration = 8f;
-	
+		fMinMagnitude = 1.25f;
+		fMaxMagnitude = 7f;
+	}
+
+	public override void Enter()
+	{
 		if(CurrentIdleState == null)
 		{
 			CurrentIdleState = IdleStatus.Seperate;
 			fPreviousStatusTime = Time.time;
 		}
-		else
+		/*else
 		{
 			m_ecFSM.StartChildCorountine(WaitForNextCohesion());
-		}
-	}
-
-	public override void Enter()
-	{
-		SeperateDirection = DirectionDatabase.Instance.Extract();//new Vector2(Random.Range(-1f,1f),Random.Range(-1f,1f));
+		}*/
 		
-		//Debug.Log(m_Child.name + " direction: " + SeperateDirection);
+		SeperateDirection = DirectionDatabase.Instance.Extract();
 	}
 	
 	public override void Execute()
 	{  
 		if(CurrentIdleState == IdleStatus.Cohesion && IsAllCellsWithinMain())
 		{
-			//SeperateDirection = new Vector2(Random.Range(-1f,1f),Random.Range(-1f,1f));
-			
 			m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 			CurrentIdleState = IdleStatus.Seperate;
 			fPreviousStatusTime = Time.time;
@@ -51,6 +49,7 @@ public class ECIdleState : IECState
 		}
 		else if(CurrentIdleState == IdleStatus.Cohesion && IsCurrentCellInMain())
 		{
+			m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 			m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 			m_Child.transform.position = m_Main.transform.position;
 		}
@@ -68,17 +67,28 @@ public class ECIdleState : IECState
 		if(CurrentIdleState == IdleStatus.Cohesion && !IsCurrentCellInMain())
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,6f);
+			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + " seek");}
 		}
 		else if(CurrentIdleState == IdleStatus.Seperate)
 		{
 			Acceleration += SeperateDirection.normalized * 0.75f;
 			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
+			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + " Seperate");}
+			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + ": SD normal: " + SeperateDirection.normalized * 0.75f + " main velo: " + m_Main.GetComponent<Rigidbody2D>().velocity + "Seperation velo: " + SteeringBehavior.Seperation(m_Child,TagNeighbours()) + " Actual velo: " + Acceleration);}
 		}
-		
-		//Debug.Log(m_Child.name + ": " + Acceleration.magnitude);
-		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
-		if(Acceleration.magnitude >= 8f){Debug.Log("ping");}
+
+		Vector2 DirectionNormal = Acceleration.normalized;
+		float AccelerationMagnitude = Acceleration.magnitude;
+		if(CurrentIdleState == IdleStatus.Seperate)
+		{
+			Acceleration = Mathf.Clamp(AccelerationMagnitude,fMinMagnitude,4f) * DirectionNormal;
+		}
+		else if(CurrentIdleState == IdleStatus.Cohesion)
+		{
+			Acceleration = Mathf.Clamp(AccelerationMagnitude,fMinMagnitude,6f) * DirectionNormal;
+		}
+		//if(CurrentIdleState == IdleStatus.Seperate && Acceleration.magnitude > 3.5f){Debug.Log(Acceleration.magnitude);}
 		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
 		m_ecFSM.RotateToHeading();
 	}
@@ -173,6 +183,6 @@ public class ECIdleState : IECState
 		{
 			yield return new WaitForSeconds(0.1f);
 		}
-		yield return new WaitForSeconds(1.25f);
+		//yield return new WaitForSeconds(2.5f);
 	}
 }
