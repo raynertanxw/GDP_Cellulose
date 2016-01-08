@@ -75,6 +75,7 @@ MonoBehaviour:
   fAggressiveToDefensive: 50
   fThinkCooldown: .5
   fMininumChildCount: 4
+  fMaximumChildCount: 10
 --- !u!114 &11423594
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -87,10 +88,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nMaximumChildCount: 50
-  fMinimumCooldown: 3
-  fMaximumCooldown: 10
+  fMinimumCooldown: 2
+  fMaximumCooldown: 2
   fStrafingRadius: 1
   fStrafingSpeed: .5
+  fDefenceAngle: 80
+  fDefenceRadius: 3
   bIsAlive: 0
   m_SpriteRenderer: {fileID: 21262188}
   m_Collider: {fileID: 5832618}

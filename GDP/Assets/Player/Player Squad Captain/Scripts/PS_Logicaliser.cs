@@ -51,7 +51,7 @@ public class PS_Logicaliser : MonoBehaviour
 		// else if: There is more than enough child cells producing, moves to idle <----------------------------------------- RECOVERY
 		else if (SquadChildFSM.StateCount(SCState.Produce) > fMaximumChildCount)
 		{
-			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 0.5f);
+			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 0.75f);
 		}
 
         // if: There is child idling, assign them to defence <-------------------------------------------------------------- ASSIGN JOB

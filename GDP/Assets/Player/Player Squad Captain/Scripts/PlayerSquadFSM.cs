@@ -63,7 +63,7 @@ public class PlayerSquadFSM : MonoBehaviour
     private bool bIsProduce = false;                    // bIsProduce: Returns (or define) if the spawn routine is activated
 
     public SpriteRenderer m_SpriteRenderer;             // m_SpriteRenderer: It is public so that states can references it
-    public CircleCollider2D m_Collider;                 // m_Collider: It is public so that states can references it
+    public Collider2D m_Collider;                       // m_Collider: It is public so that states can references it
 
     private float fNextCooldown = 0.0f;                 // fNextCooldown: Stores the time of the cooldown
 

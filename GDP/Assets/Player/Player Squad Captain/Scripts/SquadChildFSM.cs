@@ -48,9 +48,21 @@ public class SquadChildFSM : MonoBehaviour
     // GameObject/Component References
     public SpriteRenderer m_SpriteRenderer;                     // m_SpriteRenderer: It is public so that states can references it
     public Rigidbody2D m_RigidBody;                             // m_RigidBody: It is public so that states can references it
-    public BoxCollider2D m_Collider;                            // m_Collider: It is public so that states can references it
+    public Collider2D m_Collider;                            // m_Collider: It is public so that states can references it
 
     // Private Functions
+    void OnDrawGizmos()
+    {
+        if (mainDefenceVector != null)
+        {
+            Vector3 targetPosition = (Vector3)mainDefenceVector + playerPosition;
+            Gizmos.color = Color.blue;
+            Gizmos.DrawLine(targetPosition + new Vector3(-1f, 0f, 0f), targetPosition + new Vector3(1f, 0f, 0f));
+            Gizmos.DrawLine(targetPosition + new Vector3(0f, -1f, 0f), targetPosition + new Vector3(0f, 1f, 0f));
+        }
+
+    }
+
     void OnCollisionEnter2D(Collision2D _collision)
     {
         // Hit Enemy Child
@@ -111,7 +123,7 @@ public class SquadChildFSM : MonoBehaviour
         fDefenceAngle = PlayerSquadFSM.Instance.DefenceAngle;
         fDefenceRadius = PlayerSquadFSM.Instance.DefenceRadius;
 
-        mainDefenceVector = Quaternion.Euler(0f, 0f, -(fDefenceAngle / 2.0f)) * Vector2.up * fDefenceRadius;
+        mainDefenceVector = Quaternion.Euler(0f, 0f, (fDefenceAngle / 2.0f)) * Vector2.up * fDefenceRadius;
 
         // Initialisation of first state
         m_currentEnumState = SCState.Dead;
@@ -178,13 +190,13 @@ public class SquadChildFSM : MonoBehaviour
     // DefenceSheild(): Handles the movement when the cells in defence state
     public bool DefenceSheild()
     {
-        if (m_currentEnumState != SCState.Produce)
+        if (m_currentEnumState != SCState.Defend)
         {
             Debug.LogWarning(gameObject.name + ".SquadChildFSM.DefenceSheild(): Current state is not SCState.Defend! Ignore Defence!");
             return false;
         }
 
-        Vector3 targetPosition = Quaternion.Euler(0f, 0f, fDefenceAngle) * mainDefenceVector + playerPosition;
+        Vector3 targetPosition = Quaternion.Euler(0f, 0f, -fDefenceOffsetAngle) * mainDefenceVector + playerPosition;
         m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * 10.0f + transform.position);
         return true;
     }
@@ -363,9 +375,18 @@ public class SquadChildFSM : MonoBehaviour
         // for: Calculates strafing angle for squad child cells that are in production state
         // Calculation: Angles are split equally among each cells, which is also based on the number of production cells
         //              1 cell = 360 deg apart, 2 cells = 180 deg apart, 3 cells = 120 deg apart, 4 cells = 90 deg apart...
-        for (int i = 0; i < produceCount; i++)
+        int j = 0;
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+        {
             if (s_array_SquadChildFSM[i].EnumState == SCState.Produce)
-                s_array_SquadChildFSM[i].fStrafingOffsetAngle = 360f / produceCount * i;
+            {
+                s_array_SquadChildFSM[i].fStrafingOffsetAngle = 360f / produceCount * j;
+                j++;
+            }
+            // if: The loop have checked through all production state cells, then it would break the loop
+            if (j == produceCount)
+                break;
+        }
 
         return true;
     }
@@ -404,14 +425,11 @@ public class SquadChildFSM : MonoBehaviour
                 if (s_array_SquadChildFSM[i].EnumState == SCState.Defend)
                 {
                     s_array_SquadChildFSM[i].fDefenceOffsetAngle = j / (defenceCount - 1f) * fDefenceAngle;
-                    Debug.Log(j + ": fDefenceOffsetAngle = " + s_array_SquadChildFSM[i].fDefenceOffsetAngle);
                     j++;
                 }
+                // if: The loop have checked through all defence state cells, then it would break the loop
                 if (j == defenceCount)
-                {
-                    Debug.Log(":D");
                     break;
-                }
             }
             return true;
         }
