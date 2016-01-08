@@ -90,7 +90,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FlockWeight: 1
-  SeekWeight: .300000012
+  SeekWeight: .25
   fNeighbourRadius: 1
   fAlignmentWeight: .600000024
   fCohesionWeigth: .600000024
