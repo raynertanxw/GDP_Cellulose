@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 128030}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -13.7756767, y: 239.523376, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -72,12 +72,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_bIsDefending: 1
-  m_assignedNode: {fileID: 0}
+  m_bHasAwaitingDeferredStateChange: 0
   m_currentEnemyCellTarget: {fileID: 0}
-  m_assignedSquad: {fileID: 0}
+  m_assignedNode: {fileID: 0}
   rigidbody2D: {fileID: 0}
   collider2D: {fileID: 0}
   spriteRen: {fileID: 0}
+  fGizmoCohesionRadius: 0
+  fGizmoSeparationRadius: 0
 --- !u!212 &21274110
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -104,8 +106,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
-  m_Color: {r: .0514705777, g: 1, b: .37229678, a: 1}
+  m_Sprite: {fileID: 21300000, guid: 2c03907f8ac50475c9d97c7149519fbd, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
 --- !u!1001 &100100000
 Prefab:
   m_ObjectHideFlags: 1
@@ -119,11 +121,11 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Color.r
-      value: .0514705777
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_Color.b
-      value: .37229678
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 0}
       propertyPath: m_TagString
@@ -132,6 +134,19 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_Layer
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2c03907f8ac50475c9d97c7149519fbd,
+        type: 3}
+    - target: {fileID: 0}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_LocalScale.y
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

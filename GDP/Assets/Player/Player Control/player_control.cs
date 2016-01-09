@@ -26,7 +26,7 @@ public class player_control : MonoBehaviour
 		}
 		m_nodePointsRen[m_nActiveNode].color = m_selectedNodeCol;
 
-		s_nResources = 100;
+		s_nResources = 1000;
 
 		m_SquadCaptainNode = transform.GetChild(1).transform;
 	}
