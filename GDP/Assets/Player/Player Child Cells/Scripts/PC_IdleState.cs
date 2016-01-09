@@ -5,14 +5,14 @@ using System.Collections.Generic;
 public class PC_IdleState : IPCState
 {
 	private Vector2 m_nodeOrigin;
-	private static float s_fDetectionRangeRadius = 0.6f;
+	private static float s_fDetectionRangeRadius = 1.0f;
 
 	public override void Enter()
 	{
 		m_nodeOrigin = m_pcFSM.m_assignedNode.transform.position;
 
         // Give a random velocity.
-        m_pcFSM.rigidbody2D.velocity = (Random.insideUnitCircle * 0.1f);
+        m_pcFSM.rigidbody2D.velocity = (Random.insideUnitCircle * 0.25f);
 	}
 	
 	public override void Execute()
@@ -111,7 +111,7 @@ public class PC_IdleState : IPCState
     #region Flocking
     // Flocking related variables
     private static float s_fCohesionRadius = 2.0f;
-    private static float s_fseparationRadius = 0.25f;
+    private static float s_fseparationRadius = 0.5f;
     private static float s_fMaxAcceleration = 10f;
     // Weights
     private static float s_fCohesionWeight = 300;

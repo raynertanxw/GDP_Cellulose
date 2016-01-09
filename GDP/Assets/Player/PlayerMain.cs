@@ -8,7 +8,7 @@ public class PlayerMain : MonoBehaviour
 	private int m_nHealth = 100;
 	public int Health { get { return m_nHealth; } }
 
-	public float m_fDetectionRadius = 3.0f;
+	public float m_fDetectionRadius = 5.0f;
 
 	public static PlayerMain s_Instance;
 
