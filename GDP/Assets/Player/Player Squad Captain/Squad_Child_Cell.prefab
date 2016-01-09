@@ -46,7 +46,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &5890906
 CircleCollider2D:
   m_ObjectHideFlags: 1
@@ -72,6 +72,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bIsAlive: 0
+  attackTarget: {fileID: 0}
   m_SpriteRenderer: {fileID: 21298998}
   m_RigidBody: {fileID: 5065968}
   m_Collider: {fileID: 5890906}

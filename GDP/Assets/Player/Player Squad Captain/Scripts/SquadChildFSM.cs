@@ -30,6 +30,8 @@ public class SquadChildFSM : MonoBehaviour
     private static float fStrafingSpeed;                        // fStrafingSpeed: The maximum strafing speed of the child cells during production
     private static float fDefenceAngle;
     private static float fDefenceRadius;
+    private static float fDefenceSpeed;
+    private static float fAttackSpeed;
 
     // Uneditable Fields
     private float fStrafingOffsetAngle = 0f;                    // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
@@ -40,10 +42,11 @@ public class SquadChildFSM : MonoBehaviour
     private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
     private Vector2 mainDefenceVector;                          // mainDefenceVector: The main defence vector, this will be initilised at the start and will be use without change
 
-    private Vector3 parentPosition;                             // parentPosition: The position of the squad captain
-    private Vector3 playerPosition;                             // playerPosition: The position of the player main
+    private static Vector3 parentPosition;                             // parentPosition: The position of the squad captain
+    private static Vector3 playerPosition;                             // playerPosition: The position of the player main
 
     [HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
+    [HideInInspector] public EnemyChildFSM attackTarget;        // attackTarget: The target to attack
 
     // GameObject/Component References
     public SpriteRenderer m_SpriteRenderer;                     // m_SpriteRenderer: It is public so that states can references it
@@ -53,14 +56,11 @@ public class SquadChildFSM : MonoBehaviour
     // Private Functions
     void OnDrawGizmos()
     {
-        if (mainDefenceVector != null)
+        if (attackTarget != null)
         {
-            Vector3 targetPosition = (Vector3)mainDefenceVector + playerPosition;
-            Gizmos.color = Color.blue;
-            Gizmos.DrawLine(targetPosition + new Vector3(-1f, 0f, 0f), targetPosition + new Vector3(1f, 0f, 0f));
-            Gizmos.DrawLine(targetPosition + new Vector3(0f, -1f, 0f), targetPosition + new Vector3(0f, 1f, 0f));
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(attackTarget.transform.position, 1f);
         }
-
     }
 
     void OnCollisionEnter2D(Collision2D _collision)
@@ -122,6 +122,8 @@ public class SquadChildFSM : MonoBehaviour
         fStrafingSpeed = PlayerSquadFSM.Instance.StrafingSpeed;
         fDefenceAngle = PlayerSquadFSM.Instance.DefenceAngle;
         fDefenceRadius = PlayerSquadFSM.Instance.DefenceRadius;
+        fDefenceSpeed = PlayerSquadFSM.Instance.DefenceSpeed;
+        fAttackSpeed = PlayerSquadFSM.Instance.AttackSpeed;
 
         mainDefenceVector = Quaternion.Euler(0f, 0f, (fDefenceAngle / 2.0f)) * Vector2.up * fDefenceRadius;
 
@@ -197,7 +199,27 @@ public class SquadChildFSM : MonoBehaviour
         }
 
         Vector3 targetPosition = Quaternion.Euler(0f, 0f, -fDefenceOffsetAngle) * mainDefenceVector + playerPosition;
-        m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * 10.0f + transform.position);
+        m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * fDefenceSpeed + transform.position);
+        return true;
+    }
+    
+    // AttackTarget(): Handles the movement when the cells in attack state
+    public bool AttackTarget()
+    {
+        if (m_currentEnumState != SCState.Attack)
+        {
+            Debug.LogWarning(gameObject.name + ".SquadChildFSM.AttackTarget(): Current state is not SCState.Attack! Ignore Attack!");
+            return false;
+        }
+
+        // if: The target is dead, somehow.
+        if (attackTarget == null || attackTarget.CurrentStateEnum == ECState.Dead)
+        {
+            Advance(SCState.Idle);
+            return false;
+        }
+
+        m_RigidBody.AddForce((attackTarget.transform.position - transform.position) * Time.deltaTime * fAttackSpeed, ForceMode2D.Force);
         return true;
     }
 
@@ -254,13 +276,15 @@ public class SquadChildFSM : MonoBehaviour
     /// <returns></returns>
     public static SquadChildFSM Spawn(Vector3 _position)
     {
+        // Since there is at least one child now, sets the position for reference
+        parentPosition = _position;
+
         for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
             if (s_array_SquadChildFSM[i].EnumState == SCState.Dead)
             {
                 s_array_SquadChildFSM[i].transform.position = _position;
                 s_array_SquadChildFSM[i].Advance(SCState.Produce);
-                s_array_SquadChildFSM[i].parentPosition = _position;
                 return s_array_SquadChildFSM[i];
             }
         }
@@ -295,70 +319,70 @@ public class SquadChildFSM : MonoBehaviour
     /// <param name="_chance"> The chance of which the squad child cell will advance </param>
     public static bool AdvanceSquadPercentage(SCState _currentState, SCState _nextState, float _chance)
     {
-		if (_currentState == _nextState)
-			return false;
-		else if (SquadChildFSM.StateCount(_currentState) == 0)
-			return false;
+        if (_currentState == _nextState)
+            return false;
+        else if (SquadChildFSM.StateCount(_currentState) == 0)
+            return false;
 
-		// for: Checks through all the child in the array
-		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
-		{
-			// if: The current cell type is the trageted cell type
-			if (s_array_SquadChildFSM[i].EnumState == _currentState)
-			{
-				// if: The it is within the chance range
-				if (UnityEngine.Random.value <= _chance)
-				{
-					s_array_SquadChildFSM[i].Advance(_nextState);
-				}
-			}
-		}
-		return true;
+        // for: Checks through all the child in the array
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+        {
+            // if: The current cell type is the trageted cell type
+            if (s_array_SquadChildFSM[i].EnumState == _currentState)
+            {
+                // if: The it is within the chance range
+                if (UnityEngine.Random.value <= _chance)
+                {
+                    s_array_SquadChildFSM[i].Advance(_nextState);
+                }
+            }
+        }
+        return true;
     }
 
-	/// <summary>
-	/// Advance _chance amount of alive cells to _nextsState
-	/// </summary>
-	/// <returns><c>true</c> There was transition happening <c>false</c> There wasn't any transition happening </returns>
-	/// <param name="_nextState"> The state in which the squad child advances to </param>
-	/// <param name="_chance"> The chance in which the squad child cell will advance </param>
-	public static bool AdvanceSquadPercentage(SCState _nextState, float _chance)
-	{
-		// if: All the alive child is the _nextstate state
-		if (SquadChildFSM.AliveCount() == SquadChildFSM.StateCount(_nextState))
-			return false;
+    /// <summary>
+    /// Advance _chance amount of alive cells to _nextsState
+    /// </summary>
+    /// <returns><c>true</c> There was transition happening <c>false</c> There wasn't any transition happening </returns>
+    /// <param name="_nextState"> The state in which the squad child advances to </param>
+    /// <param name="_chance"> The chance in which the squad child cell will advance </param>
+    public static bool AdvanceSquadPercentage(SCState _nextState, float _chance)
+    {
+        // if: All the alive child is the _nextstate state
+        if (SquadChildFSM.AliveCount() == SquadChildFSM.StateCount(_nextState))
+            return false;
 
-		// for: Checksthrough all the child in the array
-		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
-		{
-			// if: the current cell type is NOT the targeted cell type, as transition would be useless
-			if (s_array_SquadChildFSM[i].EnumState != _nextState)
-			{
-				// if: The it is within the chance range
-				if (UnityEngine.Random.value <= _chance)
-				{
-					s_array_SquadChildFSM[i].Advance(_nextState);
-				}
-			}
-		}
-		return true;
-	}
+        // for: Checksthrough all the child in the array
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+        {
+            // if: the current cell type is NOT the targeted cell type, as transition would be useless
+            if (s_array_SquadChildFSM[i].EnumState != _nextState)
+            {
+                // if: The it is within the chance range
+                if (UnityEngine.Random.value <= _chance)
+                {
+                    s_array_SquadChildFSM[i].Advance(_nextState);
+                }
+            }
+        }
+        return true;
+    }
 
-	/// <summary>
-	/// Returns an list of alive squad children, in SquadChildFSM format
-	/// </summary>
-	/// <returns> The list of alive squad children </returns>
-	public static List<SquadChildFSM> GetAliveChildList()
-	{
-		List<SquadChildFSM> list_AliveChild = new List<SquadChildFSM>();
+    /// <summary>
+    /// Returns an list of alive squad children, in SquadChildFSM format
+    /// </summary>
+    /// <returns> The list of alive squad children </returns>
+    public static List<SquadChildFSM> GetAliveChildList()
+    {
+        List<SquadChildFSM> list_AliveChild = new List<SquadChildFSM>();
 
-		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
-		{
-			if (s_array_SquadChildFSM[i].EnumState != SCState.Dead)
-				list_AliveChild.Add(s_array_SquadChildFSM[i]);
-		}
-		return list_AliveChild;
-	}
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+        {
+            if (s_array_SquadChildFSM[i].EnumState != SCState.Dead)
+                list_AliveChild.Add(s_array_SquadChildFSM[i]);
+        }
+        return list_AliveChild;
+    }
 
     // CalculateStrafingOffset(): Calling this method will recalculate all strafing offsets for all production cells
     public static bool CalculateStrafingOffset()
@@ -433,6 +457,75 @@ public class SquadChildFSM : MonoBehaviour
             }
             return true;
         }
+    }
+
+    // GetNearestTargetPosition(): Assign a target to aggressive squad child cells.
+    public static bool GetNearestTargetPosition()
+    {
+        List<EnemyChildFSM> list_enemyChild = EnemyMainFSM.Instance().ECList;
+        // if: There is no enemy
+        if (list_enemyChild.Count == 0)
+            return false;
+
+        int attackCount = SquadChildFSM.StateCount(SCState.Attack);
+        // if: There are no attacking squad children
+        if (attackCount == 0)
+            return false;
+
+        // if: There are more aggressive squad child cells than enemies to attack
+        if (attackCount > list_enemyChild.Count)
+        {
+            attackCount = list_enemyChild.Count;
+
+            int toCheck = attackCount;
+            // for: Send the extra amount of aggressive squad child cells back to idle (Since there are more squad child than enemy child)
+            for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+            {
+                if (s_array_SquadChildFSM[i].EnumState == SCState.Attack)
+                {
+                    if (toCheck >= attackCount)
+                        s_array_SquadChildFSM[i].Advance(SCState.Idle);
+                    else
+                        toCheck++;
+                }
+            }
+        }
+
+        // array_nearestEnemyChild: An array to store the array of closest enemy child cells to Squad Captain
+        EnemyChildFSM[] array_nearestEnemyChild = new EnemyChildFSM[attackCount];
+
+        // for: Checks through all enemy child and creates a list of closest enemy child cells to Squad Captain
+        for (int i = 0; i < list_enemyChild.Count; i++)
+        {
+            for (int j = 0; j < array_nearestEnemyChild.Length; j++)
+            {
+                if (array_nearestEnemyChild[j] == null)
+                {
+                    array_nearestEnemyChild[j] = list_enemyChild[i];
+                    break;
+                }
+                // else if: The current enemy child is closer than the enemy child that are in the "TOP CLOSEST TO SQUAD CAPTAIN" list
+                // it will add the current enemy child into the list
+                else if (Vector3.Distance(parentPosition, list_enemyChild[i].transform.position) < Vector3.Distance(parentPosition, array_nearestEnemyChild[j].transform.position))
+                {
+                    array_nearestEnemyChild[j] = list_enemyChild[i];
+                    break;
+                }
+            }
+        }
+
+        // for: Assigning enemy child as targets to aggressive squad child cells
+        int k = 0;
+        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+        {
+            if (s_array_SquadChildFSM[i].EnumState == SCState.Attack)
+            {
+                s_array_SquadChildFSM[i].attackTarget = array_nearestEnemyChild[k];
+                k++;
+            }
+        }
+
+        return true;
     }
 
     // StrafingVector(): calculates and return the strafing vector

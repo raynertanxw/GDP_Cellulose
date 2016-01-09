@@ -11147,9 +11147,9 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5038718, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
-      propertyPath: m_IsKinematic
-      value: 1
+    - target: {fileID: 11420688, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fAggressiveToDefensive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}

@@ -58,9 +58,9 @@ public class SC_IdleState : ISCState
                 targetPosition = PlayerSquadFSM.Instance.transform.position - m_scFSM.transform.position;
                 // if: The cell is further away from the squad captain in the x-direction than the y-direction
                 if (targetPosition.x > targetPosition.y)
-                    targetPosition = Vector3.Cross(targetPosition, Vector3.right);
+                    targetPosition = new Vector3(0f, targetPosition.y, 0f);
                 else
-                    targetPosition = Vector3.Cross(targetPosition, Vector3.up);
+                    targetPosition = new Vector3(targetPosition.x, 0f, 0f);
                 targetPosition = m_scFSM.transform.position + targetPosition;
             }
             else
@@ -146,5 +146,20 @@ public class SC_AttackState : ISCState
     public SC_AttackState(SquadChildFSM m_SquadChildFSM)
     {
         m_scFSM = m_SquadChildFSM;
+    }
+
+    public override void Enter()
+    {
+        ExecuteMethod.OnceInUpdate("SquadChildFSM.GetNearestTargetPosition", null, null);
+    }
+
+    public override void Execute()
+    {
+        m_scFSM.AttackTarget();
+    }
+
+    public override void Exit()
+    {
+        m_scFSM.attackTarget = null;
     }
 }

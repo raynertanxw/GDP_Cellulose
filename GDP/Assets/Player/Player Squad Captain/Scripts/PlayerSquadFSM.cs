@@ -47,11 +47,17 @@ public class PlayerSquadFSM : MonoBehaviour
     [Tooltip("The speed of the rotation for strafing")]
     [SerializeField] private float fStrafingSpeed = 0.5f;
 
+    [Header("Child State: Attack")]
+    [Tooltip("The speed of the attack")]
+    [SerializeField] private float fAttackSpeed = 3f;
+
     [Header("Child State: Defence")]
     [Tooltip("The angle of formation of the defence mechanism")]
     [SerializeField] private float fDefenceAngle = 30f;
     [Tooltip("The distance of the shield from the player main")]
     [SerializeField] private float fDefenceRadius = 3f;
+    [Tooltip("The speed of cells when in defence mode")]
+    [SerializeField] private float fDefenceSpeed = 3f;
 
     // Uneditables Fields
     [HideInInspector] public bool bIsAlive = false;     // bIsAlive: Returns if the squad captain is alive
@@ -208,6 +214,8 @@ public class PlayerSquadFSM : MonoBehaviour
     public float StrafingSpeed { get { return fStrafingSpeed; } }
     public float DefenceAngle { get { return fDefenceAngle; } }
     public float DefenceRadius { get { return fDefenceRadius; } }
+    public float DefenceSpeed { get { return fDefenceSpeed; } }
+    public float AttackSpeed { get { return fAttackSpeed; } }
 
     public bool IsAlive { get { return bIsAlive; } }
 }
