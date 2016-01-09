@@ -71,7 +71,7 @@ public class ECChargeCState : IECState {
 			if(!HasCellReachTargetPos(m_Target.transform.position))
 			{
 				Acceleration += SteeringBehavior.Seek(m_Child,m_Target.transform.position,24f);
-				Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 24f;
+				Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
 			}
 			
 			Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);

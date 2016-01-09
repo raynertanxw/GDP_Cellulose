@@ -61,6 +61,13 @@ public static class SteeringBehavior
 			}
 		}
 
+		Vector2 SeperationNormal = Steering.normalized;
+		float SeperationMagnitude =  Steering.magnitude;
+		float MinimumMagnitude = 0.6f;
+		Steering = Mathf.Clamp(SeperationMagnitude,MinimumMagnitude,SeperationMagnitude) * SeperationNormal;
+
+		//if(Steering.magnitude < 0.4f) {Debug.Log(_Agent.name + ": " + Steering.magnitude);}
+
 		return Steering;
 	}
 	
@@ -128,41 +135,35 @@ public static class SteeringBehavior
 		return Cohesion(_Agent,Filtered,_Speed);
 	}
 	
-	public static bool IsTwoCellOverlapped(GameObject _EC1, GameObject _EC2)
-	{
-		Collider2D[] Cover = Physics2D.OverlapCircleAll(_EC1.transform.position,_EC1.GetComponent<SpriteRenderer>().bounds.size.x/2);
-		foreach(Collider2D Overlapping in Cover)
-		{
-			if(Overlapping.gameObject == _EC2)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	public static Vector2 MatchVeloWithNearby(GameObject _Agent, List<GameObject> _Neighbours)
-	{
-		Vector2 PercievedVelo = new Vector2(0f,0f);
-		Vector2 AgentVelo = _Agent.GetComponent<Rigidbody2D>().velocity;
-		
-		foreach(GameObject GO in _Neighbours)
-		{
-			if(GO != _Agent && GO.GetComponent<Rigidbody2D>().velocity != new Vector2(0f,0f))
-			{
-				//Debug.Log("GO name: " + GO.name);
-				PercievedVelo.x += GO.GetComponent<Rigidbody2D>().velocity.x;
-				PercievedVelo.y += GO.GetComponent<Rigidbody2D>().velocity.y;
-			}
-		}
-		
-		return new Vector2((PercievedVelo.x - AgentVelo.x)/8f, (PercievedVelo.y - AgentVelo.y)/8f);
-	}
-	
 	public static Vector2 ShakeOnSpot(GameObject _Agent, float _ShakeDistance, float _ShakeStrength)
 	{
 		Vector2 RandomPoint = Random.insideUnitCircle * _ShakeDistance;
 		Vector2 RandomPosition = new Vector2(_Agent.transform.position.x + RandomPoint.x, _Agent.transform.position.y + RandomPoint.y);
 		return Seek(_Agent,RandomPosition,_ShakeStrength);
+	}
+	
+	public static Vector2 EnsureZeroOverlap(GameObject _Agent, List<GameObject> Neighbours)
+	{
+		float OverlapLength = _Agent.GetComponent<SpriteRenderer>().bounds.size.x/4;
+		float SteerMagnitude = 10f;
+		int OverlapCount = 0;
+		Vector2 Steering = Vector2.zero;
+		
+		foreach(GameObject Neighbour in Neighbours)
+		{
+			if(Vector2.Distance(_Agent.transform.position, Neighbour.transform.position) < OverlapLength)
+			{
+				//OverlapCount++;
+				Steering.x += Neighbour.transform.position.x - _Agent.transform.position.x;
+				Steering.y += Neighbour.transform.position.y - _Agent.transform.position.y;
+				
+			}
+		}
+		
+		//Steering /= OverlapCount;
+		Steering = Steering.normalized;
+		Steering *= SteerMagnitude;
+		//Debug.Log("Agent: " +_Agent.name + " " + Steering);
+		return new Vector2(Steering.y,Steering.x);
 	}
 }

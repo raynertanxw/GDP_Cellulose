@@ -51,7 +51,7 @@ public class ECChargeMState : IECState {
 		if (!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,24f);
-			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 24f;
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
 		}
 		else if(CurrentTargetIndex + 1 < PathToTarget.Count)
 		{

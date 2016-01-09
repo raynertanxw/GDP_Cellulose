@@ -30,11 +30,7 @@ public class ECIdleState : IECState
 			CurrentIdleState = IdleStatus.Seperate;
 			fPreviousStatusTime = Time.time;
 		}
-		/*else
-		{
-			m_ecFSM.StartChildCorountine(WaitForNextCohesion());
-		}*/
-		
+				
 		SeperateDirection = DirectionDatabase.Instance.Extract();
 	}
 	
@@ -73,7 +69,14 @@ public class ECIdleState : IECState
 		{
 			Acceleration += SeperateDirection.normalized * 0.75f;
 			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
-			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
+			
+			Vector2 SeperationVelo = SteeringBehavior.Seperation(m_Child,TagNeighbours());
+			Vector2 SeperationNormal = SeperationVelo.normalized;
+			float SeperationMagnitude =  SeperationVelo.magnitude;
+			float MinimumMagnitude = 0.2f;
+			Acceleration += Mathf.Clamp(SeperationMagnitude,MinimumMagnitude,SeperationMagnitude) * SeperationNormal;
+			
+			//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
 			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + " Seperate");}
 			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + ": SD normal: " + SeperateDirection.normalized * 0.75f + " main velo: " + m_Main.GetComponent<Rigidbody2D>().velocity + "Seperation velo: " + SteeringBehavior.Seperation(m_Child,TagNeighbours()) + " Actual velo: " + Acceleration);}
 		}
