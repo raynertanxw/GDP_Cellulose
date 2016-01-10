@@ -238,16 +238,52 @@ public class EMController : MonoBehaviour
 				bMovingLeft = true;
 			else if (nDirCount > 0 && MovingLeft) 
 				bMovingLeft = false;
-
+			
 			// Change speed based on num of nutrient on one side of the enemy main cell
 			float fSpeed = Random.Range (.05f, (float)nDirCount / 10f);
-
+			
 			// Frequency of checking for changing of direction in terms of health of enemy main cell
 			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)) * 1.5f, Mathf.Sqrt ((float)m_EMFSM.Health) * 1.5f);
-
+			
 			yield return new WaitForSeconds (fTime);
 			bCanChangeHori = true;
 		} 
+		else if (m_EMFSM.CurrentStateIndex == EMState.AggressiveAttack) 
+		{
+			bCanChangeHori = false;
+			
+			// Change speed based on the current aggressiveness of the enemy main cell
+			float fSpeed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
+			
+			// Frequency of checking for changing of direction in terms of the current aggressiveness of the enemy main cell
+			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
+			                            Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 4f) * 1.5f);
+			
+			int bDirection = Random.Range (0, 2);
+			if (bDirection == 0) 
+				bMovingLeft = !bMovingLeft;
+			
+			yield return new WaitForSeconds (fTime);
+			bCanChangeHori = true;
+		} 
+		else if (m_EMFSM.CurrentStateIndex == EMState.CautiousAttack) 
+		{
+			bCanChangeHori = false;
+			
+			// Change speed based on the current aggressiveness of the enemy main cell
+			float fSpeed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
+			
+			// Frequency of checking for changing of direction in terms of the current aggressiveness of the enemy main cell
+			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
+			                            Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 4f) * 1.5f);
+			
+			int bDirection = Random.Range (0, 2);
+			if (bDirection == 0) 
+				bMovingLeft = !bMovingLeft;
+			
+			yield return new WaitForSeconds (fTime);
+			bCanChangeHori = true;
+		}
 		else 
 		{
 			bCanChangeHori = false;
