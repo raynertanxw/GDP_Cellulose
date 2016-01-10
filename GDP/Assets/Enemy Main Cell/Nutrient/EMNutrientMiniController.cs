@@ -23,7 +23,7 @@ public class EMNutrientMiniController : MonoBehaviour
 		// Initialization
 		currentNode = null;
 		nextNode = null;
-		fSpeed = Random.Range (.5f, 1f);
+		fSpeed = Random.Range (.4f, .8f);
 		// Not using A* by default
 		bCanFindPath = false;
 		// Call the PauseAStar function for initial movement
