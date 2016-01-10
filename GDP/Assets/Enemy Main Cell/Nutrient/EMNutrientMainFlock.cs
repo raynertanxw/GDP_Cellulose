@@ -5,8 +5,12 @@ using System.Collections.Generic;
 public class EMNutrientMainFlock : MonoBehaviour 
 {
 	// Weights for different behaviors
-	public float FlockWeight = 1f;
-	public float SeekWeight = .3f;
+	[SerializeField]
+	private float fFlockWeight;
+	public float FlockWeight { get { return fFlockWeight; } }
+	[SerializeField]
+	private float fSeekWeight;
+	public float SeekWeight { get { return fSeekWeight; } }
 	
 	EMNutrientMainAgent agent;
 
@@ -23,6 +27,8 @@ public class EMNutrientMainFlock : MonoBehaviour
 	void Start () 
 	{
 		// Initialization
+		fFlockWeight = 1f;
+		fSeekWeight = .31f / Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum));
 		fNeighbourRadius = 1f;
 		fAlignmentWeight = .5f;
 		fCohesionWeigth = .5f;
@@ -36,6 +42,9 @@ public class EMNutrientMainFlock : MonoBehaviour
 	{
 		// Update enemy main cell's position
 		targetPosition = EnemyMainFSM.Instance ().Position;
+		// Update seek weight
+		if (fSeekWeight != .31f / Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)))
+			fSeekWeight = .31f / Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum));
 	}
 
 	#region Behaviour

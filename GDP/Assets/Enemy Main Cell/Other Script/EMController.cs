@@ -51,20 +51,21 @@ public class EMController : MonoBehaviour
 	#endregion
 
 	#region Size
-	private int nInitialSize;
+	private int nInitialNutrientNum;
 	[Header("Number of nutrient")]
 	[Tooltip("Number of enemy nutrient")]
-	[SerializeField] private int nNutrientNum;
-	public int NutrientNum { get { return nNutrientNum; } }
-	public void ReduceNutrient () { nNutrientNum--; }
-	public void AddNutrient () { nNutrientNum++; }
+	[SerializeField] private int nCurrentNutrientNum;
+	public int NutrientNum { get { return nCurrentNutrientNum; } }
+	public void ReduceNutrient () { nCurrentNutrientNum--; }
+	public void AddNutrient () { nCurrentNutrientNum++; }
 	private Vector2 initialScale;
 	private Vector2 currentScale;
 	#endregion
 
 	private Rigidbody2D thisRB;
 	public Rigidbody2D Rigibody { get { return thisRB; } }
-
+	private float fRadius;
+	public float Radius { get { return fRadius; } }
 
 	void Awake ()
 	{
@@ -78,10 +79,11 @@ public class EMController : MonoBehaviour
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		thisRB = GetComponent<Rigidbody2D> ();
 		// Size
-		nInitialSize = 150;
-		nNutrientNum = 50;
+		nInitialNutrientNum = 50;
+		nCurrentNutrientNum = nInitialNutrientNum;
 		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
+		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(nCurrentNutrientNum));
+		transform.localScale = (Vector3)currentScale;
 		// Speed
 		fSpeed = .05f;
 		fSpeedFactor = 1f;
@@ -101,6 +103,8 @@ public class EMController : MonoBehaviour
 		// Velocity
 		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
+		// Radius
+		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Damage
 		nDamageNum = 0;
 		// State
@@ -142,10 +146,14 @@ public class EMController : MonoBehaviour
         // Check the direction of horizontal movement is correct
         HorizontalCheck();
 		// Check size
-		if (currentScale != initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum))) 
+		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nCurrentNutrientNum)))
 		{
-			currentScale = initialScale * (nInitialSize - Mathf.Sqrt(50 - nNutrientNum));
+			currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(nCurrentNutrientNum));
+			transform.localScale = (Vector3)currentScale;
 		}
+		// Update Radius
+		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
+			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Update Aggresiveness
 		UpdateAggressiveness ();
 	}
@@ -249,7 +257,7 @@ public class EMController : MonoBehaviour
 			if (fTime <= 1.5f)
 				fTime = Random.Range (1f, 1.5f);
 			// Horizontal speed in terms of num of nutrient
-			float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nNutrientNum));
+			float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nCurrentNutrientNum));
 		
 			if (bDirection == 0) 
 				bMovingLeft = !bMovingLeft;
@@ -323,7 +331,7 @@ public class EMController : MonoBehaviour
 	// Checking whether the enemy main cell goes out of the screen in which the player loses
 	void LoseCheck ()
 	{
-		if (transform.position.y - GetComponent<CircleCollider2D>().bounds.size.y / 2f > EMHelper.topLimit)
+		if (transform.position.y - fRadius / 2f > EMHelper.topLimit)
 			Destroy (this.gameObject);
 	}
 
@@ -332,7 +340,7 @@ public class EMController : MonoBehaviour
 	{
 		if (collision.gameObject.tag == "EnemyNutrient")
 		{
-			nNutrientNum++;
+			nCurrentNutrientNum++;
 			Destroy (collision.gameObject);
 		}
 	}
