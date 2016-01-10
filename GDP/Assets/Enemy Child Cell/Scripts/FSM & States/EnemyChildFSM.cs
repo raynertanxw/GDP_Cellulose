@@ -80,8 +80,8 @@ public class EnemyChildFSM : MonoBehaviour
 			AutoDefend();
 		}
 
-		if ((Vector2)transform.localScale != fOriginalScale / EMController.Instance ().CurrentScale.x)
-			transform.localScale = fOriginalScale / EMController.Instance ().CurrentScale.x;
+		/*if ((Vector2)transform.localScale != fOriginalScale / EMController.Instance ().CurrentScale.x)
+			transform.localScale = fOriginalScale / EMController.Instance ().CurrentScale.x;*/
 	}
 	
 	void FixedUpdate()
@@ -157,7 +157,6 @@ public class EnemyChildFSM : MonoBehaviour
 		}
 		else if (m_CurrentCommand == MessageType.Dead)
 		{
-			Debug.Log("Dead");
 			ChangeState(ECState.Dead);
 		}
 		else if (m_CurrentCommand == MessageType.Defend)
@@ -292,7 +291,6 @@ public class EnemyChildFSM : MonoBehaviour
 
 	public IEnumerator PassThroughDeath()
 	{
-		Debug.Log("PassThroughDeath");
 		GetComponent<Rigidbody2D>().drag = 0f;
 		GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * 0.75f,GetComponent<Rigidbody2D>().velocity.y);
 		yield return new WaitForSeconds(1f);

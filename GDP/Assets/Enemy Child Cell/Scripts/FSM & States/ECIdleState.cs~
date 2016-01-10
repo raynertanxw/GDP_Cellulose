@@ -7,7 +7,7 @@ public class ECIdleState : IECState
 	private static float fMinMagnitude;
 	private static float fMaxMagnitude;
 	private static float fPreviousStatusTime;
-	private bool bAllCellInMain;
+	private float fSpreadRange;
 	private static IdleStatus CurrentIdleState;
 	
 	private Vector2 SeperateDirection;
@@ -20,7 +20,9 @@ public class ECIdleState : IECState
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
 		fMinMagnitude = 1.25f;
-		fMaxMagnitude = 7f;
+		fMaxMagnitude = 7.5f;
+		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/10;
+		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 	}
 
 	public override void Enter()
@@ -30,69 +32,53 @@ public class ECIdleState : IECState
 			CurrentIdleState = IdleStatus.Seperate;
 			fPreviousStatusTime = Time.time;
 		}
-				
+		
 		SeperateDirection = DirectionDatabase.Instance.Extract();
 	}
 	
 	public override void Execute()
 	{  
-		if(CurrentIdleState == IdleStatus.Cohesion && IsAllCellsWithinMain())
+		if(CurrentIdleState == IdleStatus.Cohesion)
 		{
-			m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-			CurrentIdleState = IdleStatus.Seperate;
-			fPreviousStatusTime = Time.time;
-			bAllCellInMain = false;
+			if(HasChildEnterMain(m_Child))
+			{
+				//if(m_Child.name.Contains("35")){Debug.Log(m_Child.name + " locked");}
+				m_Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
+			}
+			
+			if(HasAllChildEnterMain())
+			{
+				//Debug.Log(m_Child.name + " seperate");
+				ResetAllChildVelocity();
+				CurrentIdleState = IdleStatus.Seperate;
+				fPreviousStatusTime = Time.time;
+			}
 		}
-		else if(CurrentIdleState == IdleStatus.Cohesion && IsCurrentCellInMain())
+		else if(CurrentIdleState == IdleStatus.Seperate && HasCellsSpreadOutMax() && Time.time - fPreviousStatusTime > 1.5f || CurrentIdleState == IdleStatus.Seperate && Time.time - fPreviousStatusTime > 1.75f)
 		{
-			m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-			m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-			m_Child.transform.position = m_Main.transform.position;
-		}
-		else if(CurrentIdleState == IdleStatus.Seperate && HasReachSpreadLimit() && Time.time - fPreviousStatusTime > 1f || Time.time - fPreviousStatusTime > 1.25f)
-		{
+			//Debug.Log(m_Child.name + " cohesion");
 			CurrentIdleState = IdleStatus.Cohesion;
 			fPreviousStatusTime = Time.time;
-		} 
+		}
 	}
 	
 	public override void FixedExecute()
 	{  
 		Vector2 Acceleration = Vector2.zero;
-	
-		if(CurrentIdleState == IdleStatus.Cohesion && !IsCurrentCellInMain())
+		
+		if(CurrentIdleState == IdleStatus.Cohesion && !HasChildEnterMain(m_Child))
 		{
-			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,6f);
-			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + " seek");}
+			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,20f);
 		}
 		else if(CurrentIdleState == IdleStatus.Seperate)
 		{
-			Acceleration += SeperateDirection.normalized * 1.5f;
+			Acceleration += SeperateDirection.normalized;
 			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
-			
-			Vector2 SeperationVelo = SteeringBehavior.Seperation(m_Child,TagNeighbours());
-			Vector2 SeperationNormal = SeperationVelo.normalized;
-			float SeperationMagnitude =  SeperationVelo.magnitude;
-			float MinimumMagnitude = 0.2f;
-			Acceleration += Mathf.Clamp(SeperationMagnitude,MinimumMagnitude,SeperationMagnitude) * SeperationNormal;
-			
-			//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
-			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + " Seperate");}
-			//if(m_Child.name.Contains("22")){Debug.Log(m_Child.name + ": SD normal: " + SeperateDirection.normalized * 0.75f + " main velo: " + m_Main.GetComponent<Rigidbody2D>().velocity + "Seperation velo: " + SteeringBehavior.Seperation(m_Child,TagNeighbours()) + " Actual velo: " + Acceleration);}
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
 		}
-
-		Vector2 DirectionNormal = Acceleration.normalized;
-		float AccelerationMagnitude = Acceleration.magnitude;
-		if(CurrentIdleState == IdleStatus.Seperate)
-		{
-			Acceleration = Mathf.Clamp(AccelerationMagnitude,fMinMagnitude,4f) * DirectionNormal;
-		}
-		else if(CurrentIdleState == IdleStatus.Cohesion)
-		{
-			Acceleration = Mathf.Clamp(AccelerationMagnitude,fMinMagnitude,6f) * DirectionNormal;
-		}
-		//if(CurrentIdleState == IdleStatus.Seperate && Acceleration.magnitude > 3.5f){Debug.Log(Acceleration.magnitude);}
-		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		
+		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxMagnitude);
+		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration);
 		m_ecFSM.RotateToHeading();
 	}
 	
@@ -101,52 +87,11 @@ public class ECIdleState : IECState
 		DirectionDatabase.Instance.Return(SeperateDirection);
 	}
 	
-	private bool IsCurrentCellInMain()
-	{
-		if(Vector2.Distance(m_Child.transform.position, m_Main.transform.position) < m_Main.GetComponent<SpriteRenderer>().bounds.size.x/4)
-		{
-			return true;
-		}
-		return false;
-	}
-	
-	private bool IsAllCellsWithinMain()
-	{
-		List<EnemyChildFSM> ECCells = m_ecFSM.m_EMain.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM Cell in ECCells)
-		{
-			if(Cell.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle && Vector2.Distance(Cell.transform.position, m_Main.transform.position) > m_Main.GetComponent<SpriteRenderer>().bounds.size.x/10)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private bool HasReachSpreadLimit()
-	{
-		List<EnemyChildFSM> ChildList = m_ecFSM.m_EMain.GetComponent<EnemyMainFSM>().ECList;
-		
-		foreach(EnemyChildFSM Child in ChildList)
-		{
-			Collider2D[] HittedObjects = Physics2D.OverlapCircleAll(Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2,Constants.s_onlyEnemeyChildLayer);
-			foreach(Collider2D HittedObject in HittedObjects)
-			{
-				if(HittedObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
-				{
-					return false;
-				}
-			}
-		}
-		
-		return true;
-	}
-	
 	private List<GameObject> TagNeighbours()
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position,fSpreadRange);//Change this value to how spread out the spreading is
 		
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
 		for(int i = 0; i < Neighbouring.Length; i++)
 		{
 			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
@@ -158,34 +103,57 @@ public class ECIdleState : IECState
 		return Neighbours;
 	}
 	
-	private List<Vector2> TagNeighboursPosition()
+	private bool HasCellsSpreadOutMax()
 	{
-		List<Vector2> Neighbours = new List<Vector2>();
-		Neighbours.Add(m_Main.transform.position);
+		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
-		for(int i = 0; i < Neighbouring.Length; i++)
+		foreach(EnemyChildFSM Child in ECList)
 		{
-			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+			Collider2D[] Collisions = Physics2D.OverlapCircleAll(Child.transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);
+			foreach(Collider2D Hit in Collisions)
 			{
-				Neighbours.Add(Neighbouring[i].gameObject.transform.position);
+				if(Hit.gameObject.tag == Constants.s_strEnemyChildTag && Hit.gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+				{
+					return false;
+				}
 			}
 		}
 		
-		return Neighbours;
+		return true;
 	}
 	
-	private Vector2 GetRandomDirection()
+	private bool HasChildEnterMain(GameObject _Child)
 	{
-		return Random.insideUnitCircle;
-	}
-	
-	private IEnumerator WaitForNextCohesion()
-	{
-		while(CurrentIdleState == IdleStatus.Seperate)
+		if(Vector2.Distance(_Child.transform.position,m_Main.transform.position) <= m_Main.GetComponent<SpriteRenderer>().bounds.size.x/9.5f)
 		{
-			yield return new WaitForSeconds(0.1f);
+			return true;
 		}
-		//yield return new WaitForSeconds(2.5f);
+		return false;
+	}
+	
+	private bool HasAllChildEnterMain()
+	{
+		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
+		foreach(EnemyChildFSM Child in ECList)
+		{
+			if(Child.CurrentStateEnum == ECState.Idle && !HasChildEnterMain(Child.gameObject))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private void ResetAllChildVelocity()
+	{
+		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
+		foreach(EnemyChildFSM Child in ECList)
+		{
+			if(Child.CurrentStateEnum == ECState.Idle)
+			{
+				Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
+			}
+		}
 	}
 }
+

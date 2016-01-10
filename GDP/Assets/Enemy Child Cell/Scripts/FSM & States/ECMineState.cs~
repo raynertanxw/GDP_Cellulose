@@ -14,7 +14,7 @@ public class ECMineState : IECState {
 	private Vector2 TargetLandminePos;
 	private List<Point> PathToTarget;
 	
-	private bool GatherTogether;
+	private static bool GatherTogether;
 	private static Point SpreadPoint;
 	private bool ReachSpreadPoint;
 	private static Point GeneralTargetPoint;
@@ -77,7 +77,6 @@ public class ECMineState : IECState {
 				
 				Target = PositionQuery.Instance.GetLandmineTarget(CurrentPositionType,m_Child);
 				TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),CurrentPositionType,m_Child);
-				Utility.DrawCross(TargetLandminePos,Color.red,0.5f);
 				PathQuery.Instance.AStarSearch(m_Child.transform.position,TargetLandminePos,false);
 				PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(Target));
 				GeneralTargetIndex = 0;
@@ -123,11 +122,19 @@ public class ECMineState : IECState {
 			m_Child.GetComponent<Rigidbody2D>().drag = 3f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,5f);
 		}
+		else if(GatherTogether && PathToTarget == null)
+		{
+			Target = PositionQuery.Instance.GetLandmineTarget(CurrentPositionType,m_Child);
+			TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),CurrentPositionType,m_Child);
+			PathQuery.Instance.AStarSearch(m_Child.transform.position,TargetLandminePos,false);
+			PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(Target));
+		}
 		
 		
 		else if(GatherTogether && !bExploding && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive))
 		{
 			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
+			//Utility.CheckEmpty<Point>(GeneralTargetPoint);
 			
 			if(!HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) && bReachTarget == false)
 			{
@@ -408,10 +415,6 @@ public class ECMineState : IECState {
 				if(m_NeighbourChilds[i] != null && m_NeighbourChilds[i] != m_Child.GetComponent<BoxCollider2D>() && m_NeighbourChilds[i].tag == Constants.s_strEnemyChildTag && m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
 				{
 					NeighbouringLandmine.Add(m_NeighbourChilds[i].gameObject);
-					/*if(m_Child.name.Contains("22"))
-					{
-						Debug.Log(m_NeighbourChilds[i].gameObject);
-					}*/
 				}
 			}
 		}
@@ -468,7 +471,7 @@ public class ECMineState : IECState {
 	
 	private int GetNearbyECMineAmount()
 	{
-		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/8);
+		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/4);
 		int ECMineCount = 0;
 		
 		for(int i = 0; i < Collisions.Length; i++)
@@ -485,7 +488,6 @@ public class ECMineState : IECState {
 	private bool HasReachedExplosiveRange()
 	{
 		float Range = 4f;
-		Debug.Log(Vector2.Distance(m_Child.transform.position,m_ecFSM.m_PMain.transform.position));
 		if(Vector2.Distance(m_Child.transform.position,m_ecFSM.m_PMain.transform.position) <= Range)
 		{
 			return true;

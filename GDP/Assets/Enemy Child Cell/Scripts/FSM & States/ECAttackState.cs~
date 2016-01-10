@@ -45,15 +45,14 @@ public class ECAttackState : IECState {
 	{
 		//if the player child cells become a threat to the enemy main cell, transition to the chargeChild state.
 		//If the player child cells is not a threat to the enemy main cell, transition to the chargeMain state
-		/*if(IsThereThreatToMain())
+		if(IsThereThreatToMain())
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.ChargeChild, 0);
 		}
 		else
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.ChargeMain, 0);
-		}*/
-		MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.ChargeChild, 0);
+		}
 	}
 	
 	//A function that a boolean to see whether there is any threat to the enemy main cell based on the amount

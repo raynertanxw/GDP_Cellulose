@@ -10,25 +10,26 @@ public class ECDefendState : IECState {
 	private static bool bGathered;
 	
 	private bool bAdjustNeeded;
+	private bool bReturnToMain;
 	
 	//a float to store the movement speed of the enemy child towards the defending position
 	private float fMoveSpeed;
 	
 	//a vector2 to store the defending position that the enemy child cell need to move to
-    private Vector2 m_TargetPos;
-
-    private float fDefendTime;
-    private float fLeftLimit;
-    private float fRightLimit;
-    private float fMaxAcceleration;
-    
-    private GameObject m_LeftWall;
-    private GameObject m_RightWall;
-    private static Formation CurrentFormation;
-
+	private Vector2 m_TargetPos;
+	
+	private float fDefendTime;
+	private float fLeftLimit;
+	private float fRightLimit;
+	private float fMaxAcceleration;
+	
+	private GameObject m_LeftWall;
+	private GameObject m_RightWall;
+	private static Formation CurrentFormation;
+	
 	//Constructor
-    public ECDefendState(GameObject _childCell, EnemyChildFSM _ecFSM)
-    {
+	public ECDefendState(GameObject _childCell, EnemyChildFSM _ecFSM)
+	{
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = _ecFSM.m_EMain;
@@ -40,64 +41,65 @@ public class ECDefendState : IECState {
 		//fLeftLimit = Vector2.Distance(new Vector2(0f,0f),GameObject.Find("Left Wall").transform.position) - m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 - GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
 		//fRightLimit = Vector2.Distance(new Vector2(0f,0f),GameObject.Find("Right Wall").transform.position) - m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 - GameObject.Find("Right Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
 		CurrentFormation = Formation.Empty;
-    }
-
-    public override void Enter()
-    {
+	}
+	
+	public override void Enter()
+	{
 		bReachPos = false;
 		bAdjustNeeded = false;
+		bReturnToMain = false;
 		fDefendTime = 0f;
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
-    }
-
-    public override void Execute()
-    {
+	}
+	
+	public override void Execute()
+	{
 		if(CurrentFormation == Formation.Empty)
 		{
 			CurrentFormation = PositionQuery.Instance.GetDefensiveFormation();
 			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,GetDefendingCellsFSM());
 		}
-    
+		
 		m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(CurrentFormation, m_Child);
 		
 		if(HasAllCellsGathered())
 		{
 			bGathered = true;
 		}
-    }
-    
-    public override void FixedExecute()
-    {
+	}
+	
+	public override void FixedExecute()
+	{
 		Vector2 Acceleration = Vector2.zero;
 		
-		if(!HasCellReachTargetPos(m_Main.transform.position) && !HasAllCellsGathered() && !bGathered)
+		if(!HasCellReachTargetPos(m_Main.transform.position) && !HasAllCellsGathered() && !bGathered && !bReturnToMain)
 		{
 			m_ecFSM.RotateToHeading();
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,24f);
 		}
 		
-		if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && !bAdjustNeeded && !IsCellReachingWall())
+		if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && !bAdjustNeeded && !IsCellReachingWall() && !bReturnToMain)
 		{
 			m_Child.GetComponent<Rigidbody2D>().drag = 5f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,15f);
 		}
-		else if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && bAdjustNeeded && !IsCellReachingWall()) 
+		else if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && bAdjustNeeded && !IsCellReachingWall() && !bReturnToMain) 
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,24f);
 		}
-		else if(!bReachPos && IsCellReachingWall())
+		else if(!bReachPos && IsCellReachingWall() && !bReturnToMain)
 		{
 			bAdjustNeeded = true;
 			Acceleration += GetAwayFromWall() * 24f;
 		}
-		else if(HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos)
+		else if(HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && !bReturnToMain)
 		{
 			bReachPos = true;
 		}
 		
 		
-		if(bReachPos && !IsCellReachingWall())
+		if(bReachPos && !IsCellReachingWall() && !bReturnToMain)
 		{
 			//Debug.Log("vibrate point 1");
 			Acceleration += new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y) * 24f;
@@ -109,27 +111,35 @@ public class ECDefendState : IECState {
 				Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,24f);
 			}
 		}
-		else if(bReachPos && IsCellReachingWall() && CurrentFormation == Formation.CircularSurround)
+		else if(bReachPos && IsCellReachingWall() && CurrentFormation == Formation.CircularSurround && !bReturnToMain)
 		{
 			//Debug.Log("vibrate point 3");
 			Acceleration += GetAwayFromWall() * 24f;
 		}
 		
 		
-		if(!IsThereNoAttackers() && IsPlayerChildPassingBy())
+		if(!IsThereNoAttackers() && IsPlayerChildPassingBy() && !bReturnToMain)
 		{
 			//Debug.Log("vibrate point 1");
 			Acceleration += SteeringBehavior.Seek(m_Child,GetClosestAttacker().transform.position,24f);
 		}
-		else if(IsThereNoAttackers())
+		else if(IsThereNoAttackers() && !bReturnToMain)
 		{
 			fDefendTime += Time.deltaTime;
 			if(fDefendTime >= 2f)
 			{
-				MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0f);
+				bReturnToMain = true;
 			}
 		}
 		
+		if(bReturnToMain && !HasCellReachTargetPos(m_Main.transform.position))
+		{
+			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,15f);
+		}
+		else if(bReturnToMain && HasCellReachTargetPos(m_Main.transform.position) && HasAllCellReachTargetPos(m_Main.transform.position))
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0.0f);
+		}
 		
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
@@ -142,18 +152,20 @@ public class ECDefendState : IECState {
 		{
 			m_ecFSM.RotateToHeading();
 		}
-    }
-
-    public override void Exit()
-    {
+	}
+	
+	public override void Exit()
+	{
 		fDefendTime = 0f;
 		if(GetDefendingCells().Count <= 1)
 		{
 			CurrentFormation = Formation.Empty;
 		}
-    }
-
-		//A function that return a boolean that show whether the cell had reached the given position in the perimeter
+		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		m_Child.GetComponent<Rigidbody2D>().drag = 0.0f;
+	}
+	
+	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
 		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f)
@@ -162,9 +174,22 @@ public class ECDefendState : IECState {
 		}
 		return false;
 	}
-
-    private bool IsPlayerChildPassingBy()
-    {
+	
+	private bool HasAllCellReachTargetPos(Vector2 _Pos)
+	{
+		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
+		foreach(EnemyChildFSM Child in ECList)
+		{
+			if(Child.CurrentStateEnum == ECState.Idle && !HasCellReachTargetPos(_Pos))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	private bool IsPlayerChildPassingBy()
+	{
 		Collider2D[] PasserBy = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
 		foreach(Collider2D obj in PasserBy)
 		{
@@ -174,9 +199,9 @@ public class ECDefendState : IECState {
 			}
 		}
 		return false;
-    }
-    
-    private bool IsThereNoAttackers()
+	}
+	
+	private bool IsThereNoAttackers()
 	{
 		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
 		foreach(GameObject child in PlayerChilds)
@@ -267,7 +292,7 @@ public class ECDefendState : IECState {
 		float DistToRightWall = Vector2.Distance(m_Child.transform.position,m_RightWall.transform.position);
 		
 		GameObject ClosestWall = DistToLeftWall <= DistToRightWall ? m_LeftWall : m_RightWall;
-
+		
 		if(ClosestWall.transform.position.x > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
 		{
 			return new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y);

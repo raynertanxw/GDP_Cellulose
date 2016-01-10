@@ -6,6 +6,7 @@ public class ECPoolManager : MonoBehaviour {
 
 	private static Queue<GameObject> s_ECPool;
 	public GameObject EnemyChildCell;
+	private int SpawnCount;
 
 	// Use this for initialization
 	void Start () 
@@ -23,6 +24,8 @@ public class ECPoolManager : MonoBehaviour {
 				s_ECPool.Enqueue(child.gameObject);
 			}
 		}
+		
+		SpawnCount = 0;
 	}
 	
 	//A function to add a Enemy Child Cell to the pool
@@ -39,10 +42,7 @@ public class ECPoolManager : MonoBehaviour {
 	public GameObject SpawnFromPool(Vector2 _SpawnPos)
 	{
 		EnemyMainFSM.Instance ().StartProduceChild ();
-		if(IsPoolEmpty())
-		{
-			RestockPool();
-		}
+		SpawnCount++;
 		
 		//Extract the enemy child cell pool from the pool and add it to the enemy child cell list
 		GameObject newChild = s_ECPool.Dequeue();
@@ -50,6 +50,11 @@ public class ECPoolManager : MonoBehaviour {
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,newChild,MessageType.Idle,0);
 		EnemyMainFSM.Instance ().ECList.Add (newChild.GetComponent<EnemyChildFSM> ());
 		EnemyMainFSM.Instance ().AvailableChildNum++;
+		
+		if(IsPoolEmpty())
+		{
+			RestockPool();
+		}
 		
 		return newChild;
 	}

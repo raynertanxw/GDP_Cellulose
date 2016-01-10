@@ -198,9 +198,7 @@ public class PositionQuery
 		float fRandomYPos = Random.Range(0f, 0.75f);
 		
 		float fNoiseToX = Random.Range(fRandomXNeg,fRandomXPos);
-		Debug.Log(fNoiseToX);
 		float fNoiseToY = Random.Range(fRandomYNeg,fRandomYPos);
-		Debug.Log(fNoiseToY);
 		Vector2 RandomResult = new Vector2(_TargetPos.x + fNoiseToX, _TargetPos.y + fNoiseToY);
 		
 		return RandomResult;
@@ -323,7 +321,7 @@ public class PositionQuery
 				return Formation.AreaBlock;
 			}
 		}*/
-		return Formation.Crescent;
+		return Formation.AreaBlock;
 	}
 		
 	/*

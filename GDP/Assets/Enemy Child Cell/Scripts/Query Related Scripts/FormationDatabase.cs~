@@ -71,11 +71,11 @@ public class FormationDatabase
     
 		if(_FormationType == Formation.Crescent)
 		{
-			Vector2 CurrentFormationPos = new Vector2(0f,-1.8f);//Although it is positive 1.4f here, it should be negative. It's left positive as it will be minus away from the main pos
+			Vector2 CurrentFormationPos = new Vector2(0f,-2.5f);//Although it is positive 1.4f here, it should be negative. It's left positive as it will be minus away from the main pos
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.55f;// and -0.65 for left side
-			float YInterval = 0.3f;//add -0.6f to the next line
-			float NextLineInterval = -0.6f;
+			float XInterval = 0.75f;// and -0.65 for left side
+			float YInterval = 0.5f;//add -0.6f to the next line
+			float NextLineInterval = -0.8f;
 			int RightCount = 0;
 			int LeftCount = 0;
 			List<int> Keys = new List<int>(FPositionDatabase.Keys);
@@ -206,8 +206,6 @@ public class FormationDatabase
 			
 			foreach(int FIndex in Keys)
 			{
-				Debug.Log(CircularCount);
-				
 				//front central cell
 				if(CircularCount == 0)
 				{
@@ -302,7 +300,7 @@ public class FormationDatabase
 		{
 			int ECAmount = FIndexDatabase.Count;
 			int SetAmount = (int) Mathf.Floor(ECAmount/9);
-			Vector2 CurrentFormationPos = new Vector2(0f, -1f);
+			Vector2 CurrentFormationPos = new Vector2(0f, -2f);
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
 			float XInterval = 0.45f;
 			float XBlockGap = 0.3f;
