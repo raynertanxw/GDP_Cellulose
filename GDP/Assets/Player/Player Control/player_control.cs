@@ -99,6 +99,8 @@ public class player_control : MonoBehaviour
 
 	public void ActionSpawnCaptain()
 	{
+		if (PlayerSquadFSM.Instance.bIsAlive == true) return;
+
 		List<PlayerChildFSM> childList = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
 
 		// Child count criteria met.
