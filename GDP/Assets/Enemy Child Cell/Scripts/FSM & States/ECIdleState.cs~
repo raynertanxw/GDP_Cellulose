@@ -67,7 +67,7 @@ public class ECIdleState : IECState
 		}
 		else if(CurrentIdleState == IdleStatus.Seperate)
 		{
-			Acceleration += SeperateDirection.normalized * 0.75f;
+			Acceleration += SeperateDirection.normalized * 1.5f;
 			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
 			
 			Vector2 SeperationVelo = SteeringBehavior.Seperation(m_Child,TagNeighbours());

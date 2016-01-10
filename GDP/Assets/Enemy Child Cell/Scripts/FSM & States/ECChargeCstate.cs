@@ -44,6 +44,7 @@ public class ECChargeCState : IECState {
 	{
 		if(m_ecFSM.OutOfBound())
 		{
+			Debug.Log("out of bound");
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 	

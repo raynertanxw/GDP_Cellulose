@@ -151,6 +151,7 @@ public class EnemyChildFSM : MonoBehaviour
 		}
 		else if (m_CurrentCommand == MessageType.Dead)
 		{
+			Debug.Log("Dead");
 			ChangeState(ECState.Dead);
 		}
 		else if (m_CurrentCommand == MessageType.Defend)
@@ -285,6 +286,7 @@ public class EnemyChildFSM : MonoBehaviour
 
 	public IEnumerator PassThroughDeath()
 	{
+		Debug.Log("PassThroughDeath");
 		GetComponent<Rigidbody2D>().drag = 0f;
 		GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * 0.75f,GetComponent<Rigidbody2D>().velocity.y);
 		yield return new WaitForSeconds(1f);
@@ -359,7 +361,8 @@ public class EnemyChildFSM : MonoBehaviour
 	
 	public bool OutOfBound()
 	{
-		if(gameObject.transform.position.x < m_LeftWall.transform.position.x || gameObject.transform.position.x > m_RightWall.transform.position.x || gameObject.transform.position.y < -5f)
+		Vector2 ScreenBottom = new Vector2(0f, -Screen.height);
+		if(gameObject.transform.position.x < m_LeftWall.transform.position.x || gameObject.transform.position.x > m_RightWall.transform.position.x || gameObject.transform.position.y < ScreenBottom.y)
 		{
 			return true;
 		}

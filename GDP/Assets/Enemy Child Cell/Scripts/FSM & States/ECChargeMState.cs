@@ -50,8 +50,8 @@ public class ECChargeMState : IECState {
 		
 		if (!HasCellReachTargetPos(CurrentTargetPoint.Position))
 		{
-			Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,24f);
-			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
+			Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,30f);
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 50f;
 		}
 		else if(CurrentTargetIndex + 1 < PathToTarget.Count)
 		{
@@ -85,7 +85,7 @@ public class ECChargeMState : IECState {
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
 		
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.25f);
 		//Debug.Log("Neighbouring count: " + Neighbouring.Length);
 		
 		for(int i = 0; i < Neighbouring.Length; i++)
