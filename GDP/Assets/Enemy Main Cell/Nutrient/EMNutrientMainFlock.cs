@@ -28,11 +28,11 @@ public class EMNutrientMainFlock : MonoBehaviour
 	{
 		// Initialization
 		fFlockWeight = 1f;
-		fSeekWeight = .31f / Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum));
+		fSeekWeight = .22f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)));
 		fNeighbourRadius = 1f;
-		fAlignmentWeight = .5f;
-		fCohesionWeigth = .5f;
-		fSeperationWeight = .5f;
+		fAlignmentWeight = .6f;
+		fCohesionWeigth = .6f;
+		fSeperationWeight = .8f;
 		// Add this behavior to the agent
 		agent = GetComponent<EMNutrientMainAgent>();
 		agent.AddBehaviour(this);
@@ -43,8 +43,8 @@ public class EMNutrientMainFlock : MonoBehaviour
 		// Update enemy main cell's position
 		targetPosition = EnemyMainFSM.Instance ().Position;
 		// Update seek weight
-		if (fSeekWeight != .31f / Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)))
-			fSeekWeight = .31f / Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum));
+		if (fSeekWeight != .22f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum))))
+			fSeekWeight = .22f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)));
 	}
 
 	#region Behaviour
