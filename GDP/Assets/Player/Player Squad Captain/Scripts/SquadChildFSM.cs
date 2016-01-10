@@ -131,20 +131,11 @@ public class SquadChildFSM : MonoBehaviour
         m_currentEnumState = SCState.Dead;
         m_currentState = dict_States[m_currentEnumState];
         m_currentState.Enter();
-
-        for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
-            if (s_array_SquadChildFSM[i] == null)
-                Debug.Log(i + ": D:");
     }
     
     // Private Functions
     void Update()
     {
-        // Pre-Excution
-        //if (Input.GetKeyDown(KeyCode.P))
-        //{
-        //    SquadChildFSM.AdvanceSquadPercentage(SCState.Defend, 1f);
-        //}
 
         // Excution of the current state
         m_currentState.Execute();
@@ -533,8 +524,8 @@ public class SquadChildFSM : MonoBehaviour
     public static Vector3 StrafingVector()
     {
         float fCurrentRadius = Mathf.PingPong(Time.time, fStrafingRadius);
-        if (fCurrentRadius < 0.4f)
-            fCurrentRadius = 0.4f;
+        if (fCurrentRadius < 0.6f)
+            fCurrentRadius = 0.6f;
         // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE
         m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
         return m_strafingVector;

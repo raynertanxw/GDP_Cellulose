@@ -1,28 +1,72 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+// Wall.cs: Handles the spawning of the renderer and collision of the wall.
 public class Wall : MonoBehaviour
 {
-    // Editable Fields
-    [Header("Nutrients Spawn")]
-    [Tooltip("The percentage of spawning when it tries to spawn")][Range(0.0f, 1.0f)]
-    [SerializeField] private float fNutrientsChance = 0.5f;
-    [Tooltip("The duration between each tries")]
-    [SerializeField] private float fNutrientsDelay = 1.0f;
-    [Tooltip("The nutrient gameObject to spawn")]
+	// Editable Fields
+	[Header("Nutrients Spawn")]
+	[Tooltip("The percentage of spawning when it tries to spawn")][Range(0.0f, 1.0f)]
+	[SerializeField] private float fNutrientsChance = 0.5f;
+	[Tooltip("The duration between each tries")]
+	[SerializeField] private float fNutrientsDelay = 1.0f;
+	[Tooltip("The nutrient gameObject to spawn")]
 	[SerializeField] private GameObject nutrientGO;
 
-    // Uneditable Fields
-    private float minY = -4f;
-    private float maxY = 4f;
+	[Header("Wall Properties")]
+	[Tooltip("The array of wall-sides")]
+	[SerializeField] private WallRenderer[] array_WallSidesGO;
+	[Tooltip("The array of wall-backgrounds")]
+	[SerializeField] private WallRenderer[] array_WallBackgroundGO;
+	[Tooltip("The travelling speed of wall-sides")]
+	[SerializeField] private float fWallSidesSpeed = 1f;
+	[Tooltip("The travelling speed of wall-background")]
+	[SerializeField] private float fWallBackgroundSpeed = 0.8f;
+	[Tooltip("The minimum RGB value for the artillery color")]
+	[SerializeField] private float fMinimumArtilleryRGB = 0.3f;
+	[Tooltip("The maximum RGB value for the artillery color")]
+	[SerializeField] private float fMaximumArtilleryRGB = 0.8f;
+
+	// Uneditable Fields
+	private static Wall s_Instance = null;
+
+	private float minY = -4f;
+	private float maxY = 4f;
+	private Color colorArtillery = Color.black;
+
+	// Private Functions
+	// Awake(): is called at the start of the program
+	void Awake()
+	{
+		// Singleton
+		if (s_Instance == null)
+			s_Instance = this;
+		else
+			Destroy(this.gameObject);
+
+		float resultColor;
+		// while: Initialise a color and checks if the color is acceptable
+		// Since HSV input of colors is harder to implement,
+		// it converts RGB into one OVERALL value and check if is within fMinimumArtilleryRGB and fMaximumArtilleryRGB range
+		do
+		{
+			colorArtillery = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
+			resultColor = colorArtillery.a + colorArtillery.g + colorArtillery.b;
+
+		} while (resultColor < 3f * fMinimumArtilleryRGB || resultColor > 3f * fMaximumArtilleryRGB);
+	}
 
 	// Start(): Use this for initialization
 	void Start ()
 	{
-		StartCoroutine(SpawnNutrients());	
+		// Nutrients Spawning Routine
+		StartCoroutine(SpawnNutrients());
+
+		SpawnWallSides();
+		SpawnWallBackground();
 	}
 	
-    // SpawnNutrients(): Handles the spawning of nutrients
+	// SpawnNutrients(): Handles the spawning of nutrients
 	IEnumerator SpawnNutrients()
 	{
 		while (true)
@@ -42,7 +86,48 @@ public class Wall : MonoBehaviour
 		}
 	}
 
-    // Getter-Setter Functions
-    public float NutrientsChance { get { return fNutrientsChance; } set { fNutrientsChance = value; } }
-    public float NutrientsDelay { get { return fNutrientsDelay; } set { fNutrientsDelay = value; } }
+	// SpawnWallSides(): Spawns a side-wall
+	public bool SpawnWallSides()
+	{
+		for (int i = 0; i < array_WallSidesGO.Length; i++)
+		{
+			// if: The current wall-side is not enabled
+			if (!array_WallSidesGO[i].enabled)
+			{
+				array_WallSidesGO[i].enabled = true;
+				array_WallSidesGO[i].BecomesEnable();
+				return true;
+			}
+		}
+		Debug.LogWarning("Wall.SpawnWallSides(): All walls-sides are active! Perhaps add more walls to pool to fix this problem?");
+		return false;
+	}
+
+	// SpawnWallBackground(): Spawns a background-wall
+	public bool SpawnWallBackground()
+	{
+		for (int i = 0; i < array_WallBackgroundGO.Length; i++)
+		{
+			// if: The current wall-side is not enabled
+			if (!array_WallBackgroundGO[i].enabled)
+			{
+				array_WallBackgroundGO[i].enabled = true;
+				array_WallBackgroundGO[i].BecomesEnable();
+				return true;
+			}
+		}
+		Debug.LogWarning("Wall.SpawnWallBackground(): All walls-background are active! Perhaps add more walls to pool to fix this problem?");
+		return false;
+	}
+
+	// Public Static Functions
+	public static Wall Instance { get { return s_Instance; } }
+
+	// Getter-Setter Functions
+	public float NutrientsChance { get { return fNutrientsChance; } set { fNutrientsChance = value; } }
+	public float NutrientsDelay { get { return fNutrientsDelay; } set { fNutrientsDelay = value; } }
+
+	public float WallSidesSpeed { get { return fWallSidesSpeed; } }
+	public float WallBackgroundSpeed { get { return fWallBackgroundSpeed; } }
+	public Color ArtilleryColor { get { return colorArtillery; } }
 }
