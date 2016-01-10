@@ -60,6 +60,7 @@ public class EMController : MonoBehaviour
 	public void AddNutrient () { nCurrentNutrientNum++; }
 	private Vector2 initialScale;
 	private Vector2 currentScale;
+	public Vector2 CurrentScale { get { return currentScale; } }
 	#endregion
 
 	private Rigidbody2D thisRB;
