@@ -58,10 +58,10 @@ public class ECTrickAttackState : IECState {
 		
 		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_StartTelePos,true);
 		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
+		PathToTarget = PathQuery.Instance.RefinePathForTA(PathToTarget,m_StartTelePos);
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
 		bTeleported = false;
-		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
 	}
@@ -86,15 +86,15 @@ public class ECTrickAttackState : IECState {
 		if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
-			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 24f;
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
 		}
 		else if(CurrentTargetIndex + 1 < PathToTarget.Count && !bReachTarget)
 		{
-			Utility.DrawCross(CurrentTargetPoint.Position,Color.black,0.2f);
+			//Utility.DrawCross(CurrentTargetPoint.Position,Color.black,0.2f);
 			CurrentTargetIndex++;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
-		else if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported == false)
+		else if((HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) || HasCellReachTargetPos(m_StartTelePos))  && bTeleported == false)
 		{
 			bTeleported = true;
 			m_ecFSM.StartChildCorountine(Teleport());
@@ -291,7 +291,7 @@ public class ECTrickAttackState : IECState {
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
 		
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
 		//Debug.Log("Neighbouring count: " + Neighbouring.Length);
 		
 		for(int i = 0; i < Neighbouring.Length; i++)

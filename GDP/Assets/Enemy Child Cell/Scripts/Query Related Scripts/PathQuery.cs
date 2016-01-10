@@ -74,17 +74,9 @@ public class PathQuery
 		while(priorityQueue.Count() != 0)
 		{
 			string nextClosestPoint = priorityQueue.Dequeue();
-			//Debug.Log("dequeue Index: " + nextClosestPoint);
-			
-			/*if(nextClosestPoint == SourceIndex || nextClosestPoint == TargetIndex)
-			{
-				Utility.DrawCross(m_Database.Database[nextClosestPoint].Position,Color.green,0.1f);
-			}
-			else
-			{
-				Utility.DrawCross(m_Database.Database[nextClosestPoint].Position,Color.magenta,0.1f);
-			}*/
-			
+
+			//Utility.DrawCross(m_Database.Database[nextClosestPoint].Position,Color.black,0.1f);
+
 			ShortestPath[nextClosestPoint] = SearchFrontier[nextClosestPoint];
 			
 			if(nextClosestPoint == TargetIndex)
@@ -252,15 +244,18 @@ public class PathQuery
 		
 		Path = RemoveExcessWallPoints(Path);
 		
-		/*foreach(Point point in Path)
-		{
-			Utility.DrawCross(point.Position,Color.yellow,0.1f);
-		}*/
-		
-		//Debug.Log("After smooth: ");
-		//DebugAllPathPoints(Path);
-		
 		return Path;
+	}
+	
+	public List<Point> RefinePathForTA(List<Point> _Path, Vector2 _TeleStart)
+	{
+		Point ClosestPointToStart = PointDatabase.Instance.GetClosestPointToPosition(_TeleStart,true);
+		if(!IsPointInPath(ClosestPointToStart,_Path))
+		{
+			_Path.Add(ClosestPointToStart);
+			return _Path;
+		}
+		return _Path;
 	}
 	
 	public List<Point> InduceNoiseToPath(List<Point> _Path)

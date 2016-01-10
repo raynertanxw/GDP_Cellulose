@@ -296,13 +296,13 @@ public class PositionQuery
 			targetPos = CurrentPoint.Position;
 		}
 		
-	    Utility.DrawCross(targetPos,Color.green,0.5f);
+	   // Utility.DrawCross(targetPos,Color.green,0.5f);
 		return targetPos;
 	}
 
 	public Formation GetDefensiveFormation()
 	{
-		GameObject EMain = GameObject.Find("Enemy_Cell");
+		/*GameObject EMain = GameObject.Find("Enemy_Cell");
 		if(EMain.transform.position.x >= -0.05f && EMain.transform.position.x <= 0.05f)
 		{
 			int Choice = Random.Range(0, 4);
@@ -322,7 +322,7 @@ public class PositionQuery
 			{
 				return Formation.AreaBlock;
 			}
-		}
+		}*/
 		return Formation.Crescent;
 	}
 		

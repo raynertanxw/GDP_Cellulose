@@ -24,6 +24,8 @@ public class Point
 			strLIndex = keys[0];
 			strHIndex = keys[1];
 		}
+		
+		//Utility.DrawCross(Position,Color.green,0.1f);
 	}
 	
 	public string Index

@@ -29,6 +29,7 @@ public class ECMineState : IECState {
 	private GameObject m_RightWall;
 	
 	private bool bExploding;
+	private bool bExploded;
 	private bool bExpanding;
 	private Vector2 ExpansionLimit;
 	private Vector2 ShrinkLimit;
@@ -46,9 +47,9 @@ public class ECMineState : IECState {
 		m_RightWall = GameObject.Find("Right Wall");
 		fSpeed = 1.5f;
 		fMaxAcceleration = 30f;
-		ExpansionLimit = new Vector2(0.6f,0.6f);
-		ShrinkLimit = new Vector2(0.3f,0.3f);
-		fExpansionSpeed = 0.025f;
+		ExpansionLimit = new Vector2(1.7f,1.7f);
+		ShrinkLimit = new Vector2(0.8f,0.8f);
+		fExpansionSpeed = 0.1f;
 		bExpanding = true;
 	}
 	
@@ -191,6 +192,12 @@ public class ECMineState : IECState {
 	{
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		
+		//if the landmine has not exploded and its going to die, it self-destruct instantly
+		if(!bExploded)
+		{
+			m_ecFSM.StartChildCorountine(ExplodeCorountine());
+		}
 	}
 	
 	private List<GameObject> GetLandmines()
@@ -477,7 +484,9 @@ public class ECMineState : IECState {
 	
 	private bool HasReachedExplosiveRange()
 	{
-		if(m_Child.transform.position.y < -2f)
+		float Range = 4f;
+		Debug.Log(Vector2.Distance(m_Child.transform.position,m_ecFSM.m_PMain.transform.position));
+		if(Vector2.Distance(m_Child.transform.position,m_ecFSM.m_PMain.transform.position) <= Range)
 		{
 			return true;
 		}
@@ -486,7 +495,7 @@ public class ECMineState : IECState {
 	
 	private bool IsMineReachingPlayer()
 	{
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.5f);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 3f);
 		foreach(Collider2D NearbyObject in NearbyObjects)
 		{
 			if(NearbyObject.tag == Constants.s_strPlayerChildTag && NearbyObject.GetComponent<PlayerChildFSM>().GetCurrentState() != PCState.Dead || NearbyObject.tag == Constants.s_strPlayerTag)
@@ -597,6 +606,7 @@ public class ECMineState : IECState {
 		}
 		
 		//After all the damaging and killing is done, transition the enemy child to a dead state
+		bExploded = true;
 		MessageDispatcher.Instance.DispatchMessage(m_Child, m_Child,MessageType.Dead,0);
 	}
 	
