@@ -7,7 +7,10 @@ public class EnemyChildFSM : MonoBehaviour
 	//2 variables to store the speed of the enemy child cell and whether the child cell is in landmine state
 	public float fSpeed;
 	private bool bIsMine;
-	
+
+	// origin scale of the game object
+	private Vector2 fOriginalScale;
+
 	//3 gameobjects variables to store the player main cell, enemy main cell and the target for this child
 	//cell to charge towards
 	public GameObject m_PMain;
@@ -33,6 +36,7 @@ public class EnemyChildFSM : MonoBehaviour
 	{
 		//Initialize the variables and data structure
 		fSpeed = 0.01f;
+		fOriginalScale = (Vector2)transform.localScale;
 		fRotationTarget = Random.Range(0f,360f);
 		bIsMine = false;
 		bRotateCW = false;
@@ -75,7 +79,9 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			AutoDefend();
 		}
-		
+
+		if ((Vector2)transform.localScale != fOriginalScale / EMController.Instance ().CurrentScale.x)
+			transform.localScale = fOriginalScale / EMController.Instance ().CurrentScale.x;
 	}
 	
 	void FixedUpdate()
