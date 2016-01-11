@@ -1540,6 +1540,10 @@ Prefab:
       propertyPath: m_Name
       value: WallBackground_Renderer
       objectReference: {fileID: 0}
+    - target: {fileID: 157670, guid: a39bb02a411f061438b528feb5b6e388, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a39bb02a411f061438b528feb5b6e388, type: 2}
   m_IsPrefabParent: 0
@@ -1710,6 +1714,18 @@ Prefab:
     - target: {fileID: 140794, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
       propertyPath: m_Name
       value: WallSides_Renderer (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 161526, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 156468, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 140794, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
@@ -2014,7 +2030,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 298939680}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Pool_WallBackgroundRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2842,7 +2858,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 5
 --- !u!114 &397147974
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3379,6 +3395,10 @@ Prefab:
     - target: {fileID: 157670, guid: a39bb02a411f061438b528feb5b6e388, type: 2}
       propertyPath: m_Name
       value: WallBackground_Renderer (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 157670, guid: a39bb02a411f061438b528feb5b6e388, type: 2}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a39bb02a411f061438b528feb5b6e388, type: 2}
@@ -3939,7 +3959,7 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 604525710}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Pool_WallSidesRenderer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4075,7 +4095,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 0
 --- !u!4 &616104463 stripped
 Transform:
   m_PrefabParentObject: {fileID: 498690, guid: 7455fdbd1e679ff47a04c28e65b9b1e1, type: 2}
@@ -6253,7 +6273,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
 --- !u!114 &970196083
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6978,6 +6998,18 @@ Prefab:
     - target: {fileID: 140794, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
       propertyPath: m_Name
       value: WallSides_Renderer (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 161526, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 156468, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 140794, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
@@ -9105,6 +9137,18 @@ Prefab:
       propertyPath: m_Name
       value: WallSides_Renderer
       objectReference: {fileID: 0}
+    - target: {fileID: 161526, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 156468, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 140794, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
+      propertyPath: m_Layer
+      value: 17
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 67fd91bb2ed918641971858620af2fdf, type: 2}
   m_IsPrefabParent: 0
@@ -9792,10 +9836,13 @@ GameObject:
   serializedVersion: 4
   m_Component:
   - 4: {fileID: 1547761444}
+  - 61: {fileID: 1547761448}
+  - 61: {fileID: 1547761447}
+  - 61: {fileID: 1547761446}
   - 114: {fileID: 1547761445}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Wall
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9838,8 +9885,47 @@ MonoBehaviour:
   - {fileID: 1120098073}
   fWallSidesSpeed: 5
   fWallBackgroundSpeed: 2.4000001
-  fMinimumArtilleryRGB: .5
-  fMaximumArtilleryRGB: .899999976
+  fMinimumArtilleryRGB: .300000012
+  fMaximumArtilleryRGB: .5
+--- !u!61 &1547761446
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1547761443}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 0, y: -10.5}
+  serializedVersion: 2
+  m_Size: {x: 11.1999998, y: 1}
+--- !u!61 &1547761447
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1547761443}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: 5.0999999, y: 0}
+  serializedVersion: 2
+  m_Size: {x: 1, y: 20}
+--- !u!61 &1547761448
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1547761443}
+  m_Enabled: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_Offset: {x: -5.0999999, y: 0}
+  serializedVersion: 2
+  m_Size: {x: 1, y: 20}
 --- !u!1001 &1555399250
 Prefab:
   m_ObjectHideFlags: 0
@@ -11696,7 +11782,7 @@ Transform:
   - {fileID: 1301289958}
   - {fileID: 1533846255}
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
 --- !u!1 &1875815789
 GameObject:
   m_ObjectHideFlags: 0
@@ -12704,6 +12790,10 @@ Prefab:
     - target: {fileID: 157670, guid: a39bb02a411f061438b528feb5b6e388, type: 2}
       propertyPath: m_Name
       value: WallBackground_Renderer (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 157670, guid: a39bb02a411f061438b528feb5b6e388, type: 2}
+      propertyPath: m_Layer
+      value: 17
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a39bb02a411f061438b528feb5b6e388, type: 2}

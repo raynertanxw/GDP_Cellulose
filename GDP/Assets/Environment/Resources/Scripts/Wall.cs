@@ -10,10 +10,12 @@ public class Wall : MonoBehaviour
 	[SerializeField] private float fNutrientsChance = 0.5f;
 	[Tooltip("The duration between each tries")]
 	[SerializeField] private float fNutrientsDelay = 1.0f;
+	[Tooltip("The length of the spawnable distance")]
+	[SerializeField] private float fSpawnYLimit = 20f;
 	[Tooltip("The nutrient gameObject to spawn")]
 	[SerializeField] private GameObject nutrientGO;
 
-	[Header("Wall Properties")]
+	[Header("Wall Renderer Properties")]
 	[Tooltip("The array of wall-sides")]
 	[SerializeField] private WallRenderer[] array_WallSidesGO;
 	[Tooltip("The array of wall-backgrounds")]
@@ -30,8 +32,8 @@ public class Wall : MonoBehaviour
 	// Uneditable Fields
 	private static Wall s_Instance = null;
 
-	private float minY = -4f;
-	private float maxY = 4f;
+	private float fUpperLimit;
+	private float fLowerLimit;
 	private Color colorArtillery = Color.black;
 
 	// Private Functions
@@ -51,7 +53,7 @@ public class Wall : MonoBehaviour
 		do
 		{
 			colorArtillery = new Color(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value, 1f);
-			resultColor = colorArtillery.a + colorArtillery.g + colorArtillery.b;
+			resultColor = colorArtillery.r + colorArtillery.g + colorArtillery.b;
 
 		} while (resultColor < 3f * fMinimumArtilleryRGB || resultColor > 3f * fMaximumArtilleryRGB);
 	}
@@ -59,9 +61,14 @@ public class Wall : MonoBehaviour
 	// Start(): Use this for initialization
 	void Start ()
 	{
-		// Nutrients Spawning Routine
-		StartCoroutine(SpawnNutrients());
+		// Fields Initialisation
+		fUpperLimit = fSpawnYLimit / 2f;
+		fLowerLimit = -(fSpawnYLimit / 2f);
 
+		// Initiate nutrients Spawning Routine
+		StartCoroutine("SpawnNutrients");
+
+		// Initiate Wall-rendering Routine
 		SpawnWallSides();
 		SpawnWallBackground();
 	}
@@ -72,15 +79,15 @@ public class Wall : MonoBehaviour
 		while (true)
 		{
 			yield return new WaitForSeconds(fNutrientsDelay);
-			if (Random.value * 10 >= fNutrientsChance * 10f)
+			if (UnityEngine.Random.value >= fNutrientsChance)
 			{
 				float xPos = 0;
 				if (Random.Range(0, 2) == 1)
-					xPos = 3.2f;
+					xPos = 6.5f;
 				else
-					xPos = -3.2f;
+					xPos = -6.5f;
 
-				Vector3 spawnPos = new Vector3(xPos, Random.Range(minY, maxY), 0);
+				Vector3 spawnPos = new Vector3(xPos, Random.Range(fLowerLimit, fUpperLimit), 0);
 				Instantiate(nutrientGO, spawnPos, Quaternion.identity);
 			}
 		}
