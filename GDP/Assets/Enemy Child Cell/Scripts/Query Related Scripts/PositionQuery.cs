@@ -81,7 +81,7 @@ public class PositionQuery
 				nHighestScore = Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount();
 			}
 		}
-		
+
 		return Threats[nIndexForMostThreating];
 	}
 	
@@ -207,41 +207,41 @@ public class PositionQuery
 	public GameObject GetLandmineTarget(PositionType PType, GameObject Agent)
 	{
 		GameObject target = null;
-		if(IsAllThreatEmpty())
-		{
-			return GameObject.Find("Player_Cell");
-		}
 		
 		if(PType == PositionType.Aggressive)
 		{
-			GameObject SquadCaptain = GameObject.Find("Squad_Captain_Cell");
-			if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
+			if(IsAllThreatEmpty())
 			{
-				return SquadCaptain;
+				return PlayerMain;
 			}
 			else
 			{
-				return GameObject.Find("Player_Cell");
+				GameObject SquadCaptain = GameObject.Find("Squad_Captain_Cell");
+				if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
+				{
+					return SquadCaptain;
+				}
+				else
+				{
+					return PlayerMain;
+				}
 			}
 		}
 		else if(PType == PositionType.Defensive)
 		{
-			return GetMostThreateningThreat();
+			//Debug.Log("Defensive");
+			if(IsAllThreatEmpty())
+			{
+				return PlayerMain;
+			}
+			else
+			{
+				return GetMostThreateningThreat();
+			}
 		}
 		else if(PType == PositionType.Neutral)
 		{
-			if(CurrentNodeTarget == 0)
-			{
-				return GameObject.Find("Node_Left");
-			}
-			else if(CurrentNodeTarget == 1)
-			{
-				return GameObject.Find("Squad_Captain_Cell");
-			}
-			else if(CurrentNodeTarget == 2)
-			{
-				return GameObject.Find("Node_Right");
-			}
+			return PlayerMain;
 		}
 		
 		return null;

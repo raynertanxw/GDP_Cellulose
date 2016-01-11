@@ -60,6 +60,8 @@ public class EnemyChildFSM : MonoBehaviour
 		m_CurrentEnum = ECState.Dead;
 		m_CurrentCommand = MessageType.Empty;
 		CurrentState.Enter();
+		
+		//Physics2D.IgnoreCollision(GetComponent<BoxCollider2D>(),
 	}
 	
 	void Update()
