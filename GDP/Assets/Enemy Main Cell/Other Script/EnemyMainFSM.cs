@@ -127,7 +127,7 @@ public class EnemyMainFSM : MonoBehaviour
 
 		nAvailableChildNum = 0;
 		// Initialise num of health and aggressiveness
-		nHealth = 50;
+		nHealth = 100;
 		nInitialAggressiveness = 5;
 		nCurrentAggressiveness = nInitialAggressiveness;
 		nAggressivenessSquadCap = 0;

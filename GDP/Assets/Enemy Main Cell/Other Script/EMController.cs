@@ -80,7 +80,7 @@ public class EMController : MonoBehaviour
 		nInitialNutrientNum = 50;
 		nCurrentNutrientNum = nInitialNutrientNum;
 		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(nCurrentNutrientNum));
+		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(m_EMFSM.Health)));
 		transform.localScale = (Vector3)currentScale;
 		// Speed
 		fSpeed = .05f;
@@ -144,9 +144,9 @@ public class EMController : MonoBehaviour
         // Check the direction of horizontal movement is correct
         HorizontalCheck();
 		// Check size
-		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nCurrentNutrientNum)))
+		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(m_EMFSM.Health))))
 		{
-			currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(nCurrentNutrientNum));
+			currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(m_EMFSM.Health)));
 			transform.localScale = (Vector3)currentScale;
 		}
 		// Update Radius
