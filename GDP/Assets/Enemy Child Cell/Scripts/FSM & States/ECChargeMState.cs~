@@ -41,7 +41,7 @@ public class ECChargeMState : IECState {
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		
-		Utility.DrawPath(PathToTarget,Color.red,0.1f);
+		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 	}

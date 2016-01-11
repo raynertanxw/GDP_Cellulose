@@ -284,11 +284,12 @@ public class EnemyChildFSM : MonoBehaviour
 		StopCoroutine(_childCorountine);
 	}
 
-	public IEnumerator PassThroughDeath()
+	public IEnumerator PassThroughDeath(float _Time)
 	{
 		GetComponent<Rigidbody2D>().drag = 0f;
 		GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * 0.75f,GetComponent<Rigidbody2D>().velocity.y);
-		yield return new WaitForSeconds(1f);
+		
+		yield return new WaitForSeconds(_Time);
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,this.gameObject,MessageType.Dead,0);
 	}
 	
