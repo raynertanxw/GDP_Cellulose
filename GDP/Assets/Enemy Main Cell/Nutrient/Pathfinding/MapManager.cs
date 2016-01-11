@@ -95,7 +95,8 @@ public class MapManager : MonoBehaviour
 						int range = (int)(obstacle.GetComponent<CircleCollider2D> ().bounds.size.x / fUniversalnodeSize);
 						
 						// Assign unaccessible area
-						//nodes[row, column].MarkAsUnaccessible();
+						nodes[row, column].MarkAsUnaccessible();
+						/*
 						for (int i = row - range; i < row + range; i++)
 						{
 							for (int j = column - range; j < column + range; j++)
@@ -107,6 +108,7 @@ public class MapManager : MonoBehaviour
 								}
 							}
 						}
+						*/
 					}
 				}
 			}

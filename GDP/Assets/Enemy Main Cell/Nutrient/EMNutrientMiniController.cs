@@ -32,13 +32,17 @@ public class EMNutrientMiniController : MonoBehaviour
 
 	void Update () 
 	{
+		// Update the rotation of the mini nutrient
+		RotationUpdate ();
+		// Friction of initial movement
 		if (!bCanFindPath) 
 		{
 			thisRB.velocity *= .99f;
 		}
-
+		// A* pathfinding
 		if (bCanFindPath) 
 		{
+			// Set the target to the next node
 			if (pathfindingManager.pathArray != null)
 			{
 				if (pathfindingManager.pathArray.Count > 1)
@@ -49,7 +53,7 @@ public class EMNutrientMiniController : MonoBehaviour
 			}
 			else 
 				nextNode = null;
-
+			// Move to the target node
 			if (currentNode != null)
 				thisRB.velocity = (currentNode.position - (Vector2)this.gameObject.transform.position) * fSpeed;
 		}
@@ -71,6 +75,16 @@ public class EMNutrientMiniController : MonoBehaviour
 	void InitialMovement ()
 	{
 		thisRB.AddForce ((EnemyMainFSM.Instance().Position - (Vector2)this.gameObject.transform.position) * Random.Range (5f, 10f));
+	}
+
+	void RotationUpdate ()
+	{
+		// Rotate the mini nutrient towards current velocity
+		if (thisRB.velocity != Vector2.zero) 
+		{
+			float angle = Mathf.Atan2(thisRB.velocity.y, thisRB.velocity.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+		}
 	}
 
 	void OnTriggerEnter2D (Collider2D collision)

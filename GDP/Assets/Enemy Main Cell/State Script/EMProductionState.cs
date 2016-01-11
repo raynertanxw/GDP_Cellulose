@@ -22,8 +22,8 @@ public class EMProductionState : IEMState
 		// Reset spawn availability
 
 		// Pause the transition for randomized time based on num of available nutrient
-		float fPauseTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 2f), 
-		                                 Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 10f));
+		float fPauseTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 2f) / EMDifficulty.Instance().CurrentDiff, 
+		                                 Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 10f) / EMDifficulty.Instance().CurrentDiff);
 		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 
@@ -40,7 +40,7 @@ public class EMProductionState : IEMState
 			m_EMFSM.ChangeState (EMState.Maintain);
 
 		// Start checking transition only when there are more than 10 available enemy mini cells, transition is allowed and has nutrient
-		if (m_EMFSM.AvailableChildNum > 10000 && EMTransition.Instance().CanTransit && controller.NutrientNum > 0) 
+		if (m_EMFSM.AvailableChildNum > 10 && EMTransition.Instance().CanTransit && controller.NutrientNum > 0) 
 		{
 			// If there are more than 10  and less than 25 available enemy mini cells
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25) 
