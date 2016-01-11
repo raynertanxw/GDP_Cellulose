@@ -23,10 +23,19 @@ public class ECTrickAttackState : IECState {
 	private GameObject[] m_Nodes;
 	private GameObject m_SquadCaptain;
 	
+	//A list of Point to store the A* path calculated for the enemy child cell to reach the target position
 	private List<Point> PathToTarget;
+	
+	//An integer to store the current target point's index that the cell is traveling to
 	private int CurrentTargetIndex;
+	
+	//A Point variable that store the current target point that the cell is traveling to
 	private Point CurrentTargetPoint;
+	
+	//A boolean that state whether the enemy child cell had teleported during the trick attack state
 	private bool bTeleported;
+	
+	//A boolean that state whether the enemy child cell had reached the last point of the calculated path
 	private bool bReachTarget;
 	
 	//constructor
@@ -35,6 +44,7 @@ public class ECTrickAttackState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
+		
 		m_Nodes = new GameObject[3];
 		fChargeSpeed = 1f;
 		fMaxAcceleration = 20f;
@@ -68,6 +78,7 @@ public class ECTrickAttackState : IECState {
 	
 	public override void Execute()
 	{
+		//If the cell had teleported and reach the final point of its travel, let it continue travel a short amount of distance before killing it
 		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported && bReachStart)
 		{
 			bReachTarget = true;
@@ -83,6 +94,7 @@ public class ECTrickAttackState : IECState {
 		//move towards the player main cell
 		Vector2 Acceleration = Vector2.zero;
 
+		//If the cell has not reached the current target position, continue seek towards that target position and remain seperate from rest of the enemy child cells
 		if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
@@ -90,23 +102,27 @@ public class ECTrickAttackState : IECState {
 		}
 		else if(CurrentTargetIndex + 1 < PathToTarget.Count && !bReachTarget)
 		{
-			//Utility.DrawCross(CurrentTargetPoint.Position,Color.black,0.2f);
 			CurrentTargetIndex++;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
+		//If the cell had reached the teleporting position and it hasn't teleported, start teleporting the cell to the calculated position
 		else if((HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) || HasCellReachTargetPos(m_StartTelePos))  && bTeleported == false)
 		{
 			bTeleported = true;
 			m_ecFSM.StartChildCorountine(Teleport());
 		}
 		
+		//Clamp the acceleration of the enemy child cell to a maximum value and then add that acceleration force to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		
+		//Rotate the enemy child cell based on the direction of travel
 		m_ecFSM.RotateToHeading();
 	}
 	
 	public override void Exit()
 	{
+		//Reset the force acting on the enemy child cell
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 	}
@@ -287,6 +303,7 @@ public class ECTrickAttackState : IECState {
 		bReachStart = true;
 	}
 	
+	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
 	private List<GameObject> TagNeighbours()
 	{
 		List<GameObject> Neighbours = new List<GameObject>();

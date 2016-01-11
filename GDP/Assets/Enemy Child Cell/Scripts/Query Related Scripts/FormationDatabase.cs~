@@ -61,7 +61,7 @@ public class FormationDatabase
 		FPositionDatabase.Clear();
     }
     
-	public void UpdateDatabaseFormation(Formation _FormationType, List<EnemyChildFSM> _EnemyChild)
+	public void UpdateDatabaseFormation(Formation _FormationType, List<EnemyChildFSM> _EnemyChild, float _MainScale)
     {
 		RefreshDatabases(_EnemyChild);
 
@@ -71,11 +71,11 @@ public class FormationDatabase
     
 		if(_FormationType == Formation.Crescent)
 		{
-			Vector2 CurrentFormationPos = new Vector2(0f,-2.5f);//Although it is positive 1.4f here, it should be negative. It's left positive as it will be minus away from the main pos
+			Vector2 CurrentFormationPos = new Vector2(0f,-2.5f * _MainScale);//Although it is positive 1.4f here, it should be negative. It's left positive as it will be minus away from the main pos
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.75f;// and -0.65 for left side
-			float YInterval = 0.5f;//add -0.6f to the next line
-			float NextLineInterval = -0.8f;
+			float XInterval = 0.75f * _MainScale;
+			float YInterval = 0.5f * _MainScale;
+			float NextLineInterval = -0.8f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
 			List<int> Keys = new List<int>(FPositionDatabase.Keys);
@@ -136,11 +136,11 @@ public class FormationDatabase
 		}
 		else if(_FormationType == Formation.ReverseCrescent)
 		{
-			Vector2 CurrentFormationPos = new Vector2(0f,-1.2f);
+			Vector2 CurrentFormationPos = new Vector2(0f,-1.6f * _MainScale);
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.55f;// and -0.65 for left side
-			float YInterval = -0.3f;
-			float NextLineInterval = -0.6f;
+			float XInterval = 0.75f * _MainScale;// and -0.65 for left side
+			float YInterval = -0.5f * _MainScale;
+			float NextLineInterval = -0.6f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
 			List<int> Keys = new List<int>(FPositionDatabase.Keys);
@@ -194,11 +194,11 @@ public class FormationDatabase
 		}
 		else if(_FormationType == Formation.CircularSurround)
 		{
-			Vector2 CurrentFormationPos = new Vector2(0f,-0.65f);
+			Vector2 CurrentFormationPos = new Vector2(0f,-1.6f * _MainScale);
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.34f;
-			float YInterval = 0.34f;
-			float NextLineInterval = -0.4f;
+			float XInterval = 1f * _MainScale;
+			float YInterval = 0.85f * _MainScale;
+			float NextLineInterval = -0.55f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
 			int CircularCount = 0;
@@ -223,8 +223,8 @@ public class FormationDatabase
 					else
 					{
 						//The circle will grow larger as more are being stack
-						XInterval *= 1.5f;
-						YInterval *= 1.5f;
+						XInterval *= 1.3f;
+						YInterval *= 1.3f;
 					
 						CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 12].x, FPositionDatabase[FIndex - 12].y + NextLineInterval);
 						StoredFormationPos = CurrentFormationPos;
@@ -300,11 +300,11 @@ public class FormationDatabase
 		{
 			int ECAmount = FIndexDatabase.Count;
 			int SetAmount = (int) Mathf.Floor(ECAmount/9);
-			Vector2 CurrentFormationPos = new Vector2(0f, -2f);
+			Vector2 CurrentFormationPos = new Vector2(0f, -2f * _MainScale);
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.45f;
-			float XBlockGap = 0.3f;
-			float YInterval = 0.35f;
+			float XInterval = 0.65f * _MainScale;
+			float XBlockGap = 0.45f * _MainScale;
+			float YInterval = 0.5f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
 			List<int> Keys = new List<int>(FPositionDatabase.Keys);

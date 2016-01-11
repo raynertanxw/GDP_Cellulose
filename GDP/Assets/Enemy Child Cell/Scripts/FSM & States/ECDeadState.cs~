@@ -1,12 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class ECDeadState : IECState {
 	
-	//a vector to store the position for respawning the dead enemy child cell
+	//A vector2 to store the position for respawning the dead enemy child cell
 	private Vector2 m_RespawnPos;
 	
-	//a boolean to track whether the enemy child cell is dead or not
+	//A boolean to track whether the enemy child cell is dead or not
 	private bool bDisable;
 	
 	//Contructor
@@ -15,6 +15,7 @@ public class ECDeadState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
+	
 		m_RespawnPos = new Vector2(0f,0f);
 	}
 	
@@ -36,14 +37,13 @@ public class ECDeadState : IECState {
 		EnableCell();
 	}
 	
-	//A function to disable the enemy child cells by disabling the visual and collisions of the child cell and
-	//add it back into the pool
+	//A function to disable the enemy child cells by disabling the visual and collisions of the child cell and add it back into the pool
 	private void DisableCell()
 	{
 		m_Child.GetComponent<SpriteRenderer>().enabled = false;
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
 		m_Child.GetComponent<Rigidbody2D>().isKinematic = true;
-		m_Child.transform.SetParent(m_Main.GetComponent<EnemyMainFSM>().Pool.transform);
+		//m_Child.transform.SetParent(m_Main.transform);
 		ECPoolManager.AddToPool(m_Child);
 	}
 	

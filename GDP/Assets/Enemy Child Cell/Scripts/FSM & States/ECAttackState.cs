@@ -3,9 +3,10 @@ using System.Collections;
 
 public class ECAttackState : IECState {
 
+	//A GameObject reference to Squad Captain cell
 	private GameObject m_SquadCaptain;
-
-	//Three Node_Manager variables to store the 3 individial nodes of the player;
+	
+	//Two GameObject references to player's left and right node
 	private Node_Manager m_LeftNode;
 	private Node_Manager m_RightNode;
 	
@@ -17,8 +18,6 @@ public class ECAttackState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 
 		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
-
-		//Initialize the 2 nodes of the player
 		m_LeftNode = GameObject.Find("Node_Left").GetComponent<Node_Manager>();
 		m_RightNode = GameObject.Find("Node_Right").GetComponent<Node_Manager>();
 	}
@@ -30,9 +29,10 @@ public class ECAttackState : IECState {
 	
 	public override void Execute()
 	{
-		//When the enemy child cell had entered into this state, it decide what attack type the enemy child
-		//cell it should take based on the game environment and other agents and transition the enemy child
-		//cell to another type of attack state 
+		/*When the enemy child cell had entered into this state, it decide what attack type the enemy child
+		cell it should take based on the game environment and game agents, it will then transition the enemy child
+		cell to another type of attack state*/
+		
 		DecideAttackType();
 	}
 	
@@ -43,8 +43,9 @@ public class ECAttackState : IECState {
 	
 	private void DecideAttackType()
 	{
-		//if the player child cells become a threat to the enemy main cell, transition to the chargeChild state.
-		//If the player child cells is not a threat to the enemy main cell, transition to the chargeMain state
+		/*if the player child cells become a threat to the enemy main cell, transition to the chargeChild state.
+		If the player child cells is not a threat to the enemy main cell, transition to the chargeMain state*/
+		
 		if(IsThereThreatToMain())
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child, m_ecFSM.gameObject, MessageType.ChargeChild, 0);
@@ -55,8 +56,8 @@ public class ECAttackState : IECState {
 		}
 	}
 	
-	//A function that a boolean to see whether there is any threat to the enemy main cell based on the amount
-	//of total player cells and the amount of cells in each node
+	/*A function that a boolean to see whether there is any threat to the enemy main cell based on the amount
+	of total player cells and the amount of cells in each node*/
 	private bool IsThereThreatToMain()
 	{
 		int PlayerTotalCells = GetSquadCellCount() + m_LeftNode.GetNodeChildList().Count + m_RightNode.GetNodeChildList().Count;

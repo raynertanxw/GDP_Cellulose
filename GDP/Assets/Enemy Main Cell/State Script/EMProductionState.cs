@@ -40,7 +40,7 @@ public class EMProductionState : IEMState
 			m_EMFSM.ChangeState (EMState.Maintain);
 
 		// Start checking transition only when there are more than 10 available enemy mini cells, transition is allowed and has nutrient
-		if (m_EMFSM.AvailableChildNum > 10 && EMTransition.Instance().CanTransit && controller.NutrientNum > 0) 
+		if (m_EMFSM.AvailableChildNum > 10000 && EMTransition.Instance().CanTransit && controller.NutrientNum > 0) 
 		{
 			// If there are more than 10  and less than 25 available enemy mini cells
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25) 

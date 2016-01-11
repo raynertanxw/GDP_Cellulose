@@ -4,36 +4,39 @@ using System.Collections.Generic;
 
 public class ECMineState : IECState {
 	
+	//Two booleans that state whether the landmines had reach the last point on the calculated path and whether it reach the point at which the landmines should spread out
 	private bool bReachTarget;
-	private float bSeperateRate;
-	private float bGatherRate;
-	private float fMaxAcceleration;
-	
-	private PositionType CurrentPositionType;
-	private GameObject Target;
-	private Vector2 TargetLandminePos;
-	private List<Point> PathToTarget;
-	
-	private static bool GatherTogether;
-	private static Point SpreadPoint;
 	private bool ReachSpreadPoint;
-	private static Point GeneralTargetPoint;
-	private static int GeneralTargetIndex;
 	
-	private float fSpeed;
-	private float fSeperateInterval;
-	private int ECMineNearby;
-	private Spread CurrentSpreadness;
-	
-	private GameObject m_LeftWall;
-	private GameObject m_RightWall;
-	
+	//Three booleans that state the different state of the landmine (Is exploding, Had exploded, Is expanding its size)
 	private bool bExploding;
 	private bool bExploded;
 	private bool bExpanding;
+	
+	//A float for the maximum amount of acceleration that an EC can take in a landmine states
+	private float fMaxAcceleration;
+	
+	//A float that dictate the speed at which the enemy child cell expand and shrink as it reaches the target
+	private float fExpansionSpeed;
+	
+	//A float that dicate how spread out the landmines will be from each other
+	private float fSeperateInterval;
+	
+	//An integer thatdictate how many landmines are nearby
+	private int ECMineNearby;
+	
+	private static bool GatherTogether;
+	private static int GeneralTargetIndex;
+	private static Point SpreadPoint;
+	private static Point GeneralTargetPoint;
+	
+	private Vector2 TargetLandminePos;
 	private Vector2 ExpansionLimit;
 	private Vector2 ShrinkLimit;
-	private float fExpansionSpeed;
+	private Spread CurrentSpreadness;
+	private GameObject Target;
+	private PositionType CurrentPositionType;
+	private List<Point> PathToTarget;
 	
 	private enum Spread{Empty,Tight, Wide};
 	
@@ -43,9 +46,7 @@ public class ECMineState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
-		m_LeftWall = GameObject.Find("Left Wall");
-		m_RightWall = GameObject.Find("Right Wall");
-		fSpeed = 1.5f;
+
 		fMaxAcceleration = 30f;
 		ExpansionLimit = new Vector2(1.7f,1.7f);
 		ShrinkLimit = new Vector2(0.8f,0.8f);
@@ -58,12 +59,10 @@ public class ECMineState : IECState {
 		GatherTogether = false;
 		bExploding = false;
 		bReachTarget = false;
-		bSeperateRate = 0f;
-		bGatherRate = 1f;
 		ECMineNearby = 0;
 		CurrentSpreadness = Spread.Empty;
 		
-		m_Main.GetComponent<Rigidbody2D>().drag = 2.6f;
+		m_Main.GetComponent<Rigidbody2D>().drag = 2.4f;
 	}
 	
 	public override void Execute()
@@ -119,8 +118,9 @@ public class ECMineState : IECState {
 		if(!GatherTogether)
 		{
 			//Acceleration += SteeringBehavior.GatherAllECSameState(m_Child,ECState.Landmine, 24f);
-			m_Child.GetComponent<Rigidbody2D>().drag = 3f;
-			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,5f);
+			//Debug.Log("gather");
+			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,15f);
+			Debug.Log(m_Child.transform.position + " " + m_Main.transform.position);
 		}
 		else if(GatherTogether && PathToTarget == null)
 		{
@@ -131,14 +131,13 @@ public class ECMineState : IECState {
 		}
 		
 		
-		else if(GatherTogether && !bExploding && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive))
+		/*if(GatherTogether && !bExploding && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive))
 		{
 			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
-			//Utility.CheckEmpty<Point>(GeneralTargetPoint);
-			
+				
 			if(!HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) && bReachTarget == false)
 			{
-				m_Child.GetComponent<Rigidbody2D>().drag = 5f;
+				m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 				Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Tight)) * 5.5f;
 			}
@@ -181,10 +180,11 @@ public class ECMineState : IECState {
 				GeneralTargetIndex++;
 				GeneralTargetPoint = PathToTarget[GeneralTargetIndex];
 			}
-		}
+		}*/
 		
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		
 		if(!bExploding)
 		{
 			m_ecFSM.RotateToHeading();
@@ -349,6 +349,7 @@ public class ECMineState : IECState {
 	//a function that return a boolean on whether the enemy child cell had collided with any player cell
 	private bool HasCollidedWithPlayerCells()
 	{
+		//Check a ciruclar area around the enemy child cell for any player cells, if there is none, return false. If there is, check whether is it a player child cell.
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, 0.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
 		if(m_SurroundingObjects.Length <= 0)
 		{
@@ -366,8 +367,10 @@ public class ECMineState : IECState {
 		return false;
 	}
 	
+	//A function that calculate the center position of all the landmines
 	private Vector2 GetCenterOfMines(List<GameObject> _Mines)
 	{
+		//Loop through all the landmines, adding all of their position and dividing them over the amount of landmine
 		Vector2 Center = new Vector2(0f,0f);
 		foreach(GameObject mine in _Mines)
 		{
@@ -378,6 +381,7 @@ public class ECMineState : IECState {
 		return Center;
 	}
 	
+	//A function that return a boolean on whether is it time to spread based on the distance from the center mass of the landmine and the player main's position
 	private bool IsTimetoSpread()
 	{
 		float EMtoPM = Vector2.Distance(m_Main.transform.position, m_ecFSM.m_PMain.transform.position);
@@ -390,6 +394,7 @@ public class ECMineState : IECState {
 		return false;
 	}
 	
+	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
 	private List<GameObject> TagLandmines(Spread _Spreadness)
 	{
 		List<GameObject> NeighbouringLandmine = new List<GameObject>();
@@ -421,54 +426,8 @@ public class ECMineState : IECState {
 		
 		return NeighbouringLandmine;
 	}
-	
-	private bool IsSpreadNearCompletion(GameObject[] Landmines)
-	{
-		for(int a = 0; a < Landmines.Length; a++)
-		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 2.75f);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
-			int NeighbourCount = 0;
-			
-			for(int b = 0; b < m_NeighbourChilds.Length; b++)
-			{
-				if(m_NeighbourChilds[b] != null && m_NeighbourChilds[b] != m_Child.GetComponent<BoxCollider2D>() && m_NeighbourChilds[b].tag == Constants.s_strEnemyChildTag && m_NeighbourChilds[b].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
-				{
-					NeighbourCount++;
-				}
-			}
-			
-			if(NeighbourCount >= 2)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-	
-	private void EnforceNonPenetrationConstraint(GameObject _Agent, GameObject[] Landmines)
-	{
-		//Debug.Log("Enforce");
-		for(int i = 0; i < Landmines.Length; i++)
-		{
-			if(Landmines[i] == _Agent)
-			{
-				continue;
-			}
-			
-			//distance
-			Vector2 difference = new Vector2(_Agent.transform.position.x - Landmines[i].transform.position.x,_Agent.transform.position.y - Landmines[i].transform.position.y);
-			float distance = difference.magnitude;
-			
-			float OverlapDist = (_Agent.GetComponent<SpriteRenderer>().bounds.size.x/2 + Landmines[i].GetComponent<SpriteRenderer>().bounds.size.x/2) - distance;
-			
-			if(OverlapDist >= 0f)
-			{
-				Vector2 targetPos = new Vector2(_Agent.transform.position.x + difference.x/distance * OverlapDist, _Agent.transform.position.y + difference.y/distance * OverlapDist);
-				m_Child.transform.position = targetPos;
-			}
-		}
-	}
-	
+
+	//A function that return the amount of landmine near the current enemy child cell
 	private int GetNearbyECMineAmount()
 	{
 		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/4);
@@ -485,6 +444,7 @@ public class ECMineState : IECState {
 		return ECMineCount;
 	}
 	
+	//A function that return a boolean as to whether the landmine is reaching the player main
 	private bool HasReachedExplosiveRange()
 	{
 		float Range = 4f;
@@ -495,6 +455,7 @@ public class ECMineState : IECState {
 		return false;
 	}
 	
+	//A function that return a boolean as to whether the landmine is reaching any player-related cells
 	private bool IsMineReachingPlayer()
 	{
 		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 3f);
@@ -508,6 +469,7 @@ public class ECMineState : IECState {
 		return false;
 	}
 	
+	//A function that activate the "PassThroughDeath" corountine on all landmines whereby they will continue to travel in their velocity for a short period of time before exploding and die
 	private void CallAllMinePassThroughDeath()
 	{
 		List<GameObject> Landmines = GetLandmines();
@@ -517,12 +479,13 @@ public class ECMineState : IECState {
 		}
 	}
 	
+	//A function that return a boolean as to whether the landmine is reaching a wall
 	private bool IsCellReachingWall()
 	{
 		float CellRadius = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2;
-		float WallWidth = m_LeftWall.GetComponent<SpriteRenderer>().bounds.size.x/2;
+		float WallX = 4.5f;
 		
-		if(m_Child.transform.position.x < m_LeftWall.transform.position.x + CellRadius + WallWidth || m_Child.transform.position.x > m_RightWall.transform.position.x - CellRadius - WallWidth)
+		if(m_Child.transform.position.x + CellRadius < WallX || m_Child.transform.position.x - CellRadius > -WallX)
 		{
 			return true;
 		}
@@ -530,26 +493,28 @@ public class ECMineState : IECState {
 		return false;
 	}
 	
+	//A function that return a velocity vector for the landmine to get away from the nearest wall
 	private Vector2 GetAwayFromWall()
 	{
-		float DistToLeftWall = Vector2.Distance(m_Child.transform.position,m_LeftWall.transform.position);
-		float DistToRightWall = Vector2.Distance(m_Child.transform.position,m_RightWall.transform.position);
+		float WallX = 4.5f;
+		float DistToLeftWall = m_Child.transform.position.x - (-WallX);
+		float DistToRightWall = m_Child.transform.position.x - WallX;
 		
-		GameObject ClosestWall = DistToLeftWall <= DistToRightWall ? m_LeftWall : m_RightWall;
+		float ClosestWallX = DistToLeftWall <= DistToRightWall ? -WallX : WallX;
 		
-		if(ClosestWall.transform.position.x > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
+		if(ClosestWallX > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
 		{
 			return new Vector2(0f, m_Child.GetComponent<Rigidbody2D>().velocity.y);
 		}
-		else if(ClosestWall.transform.position.x > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
+		else if(ClosestWallX > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
 		{
 			return m_Main.GetComponent<Rigidbody2D>().velocity;
 		}
-		else if(ClosestWall.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
+		else if(ClosestWallX < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
 		{
 			return new Vector2(0f, m_Child.GetComponent<Rigidbody2D>().velocity.y);
 		}
-		else if(ClosestWall.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
+		else if(ClosestWallX < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
 		{
 			return m_Main.GetComponent<Rigidbody2D>().velocity;
 		}
@@ -557,6 +522,7 @@ public class ECMineState : IECState {
 		return Vector2.zero;
 	}
 	
+	//A function that drive the landmine to grow and shrink when its going through the exploding process
 	private void ExplodingGrowShrink()
 	{
 		Vector2 CurrentScale = m_Child.transform.localScale;

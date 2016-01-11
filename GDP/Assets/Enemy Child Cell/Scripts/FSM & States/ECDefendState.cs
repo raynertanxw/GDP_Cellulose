@@ -4,27 +4,31 @@ using System.Collections.Generic;
 
 public class ECDefendState : IECState {
 	
-	//a boolean to track whether the position of the enemy child cell had reach the guiding position for 
-	//the defence formation
+	//A boolean to track whether the position of the enemy child cell had reach the guiding position for the defence formation
 	private bool bReachPos;
+	
+	//A static boolean that tracked whether the enemy child cells had gathered together
 	private static bool bGathered;
 	
+	//A boolean that tracked whether any adjustment is needed to the enemy child cell while moving
 	private bool bAdjustNeeded;
+	
+	//A boolean that state whether the enemy child cell is retreating back to the enemy main cell after the defend state is completed and transitioning to idle state
 	private bool bReturnToMain;
 	
-	//a float to store the movement speed of the enemy child towards the defending position
-	private float fMoveSpeed;
-	
-	//a vector2 to store the defending position that the enemy child cell need to move to
+	//A vector2 to store the defending position that the enemy child cell need to move to
 	private Vector2 m_TargetPos;
 	
+	//A float to store how the enemy child cell had been in the defensive formation when there is no attacking player cells nearby
 	private float fDefendTime;
-	private float fLeftLimit;
-	private float fRightLimit;
+
+	//A float to store the maximum amount of acceleration that can be enforced on the enemy child cell
 	private float fMaxAcceleration;
 	
-	private GameObject m_LeftWall;
-	private GameObject m_RightWall;
+	//A float that scale the values used in the defend state by the local state of the enemy main cell
+	private float fMainScale;
+	
+	//A formation variable to store whether what current formation that the defending enemy child cell will take
 	private static Formation CurrentFormation;
 	
 	//Constructor
@@ -33,13 +37,9 @@ public class ECDefendState : IECState {
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = _ecFSM.m_EMain;
-		m_LeftWall = GameObject.Find("Left Wall");
-		m_RightWall = GameObject.Find("Right Wall");
-		fMoveSpeed = 3f;
+		
 		fMaxAcceleration = 30f;
 		fDefendTime = 0f;
-		//fLeftLimit = Vector2.Distance(new Vector2(0f,0f),GameObject.Find("Left Wall").transform.position) - m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 - GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
-		//fRightLimit = Vector2.Distance(new Vector2(0f,0f),GameObject.Find("Right Wall").transform.position) - m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 - GameObject.Find("Right Wall").GetComponent<SpriteRenderer>().bounds.size.x/2;
 		CurrentFormation = Formation.Empty;
 	}
 	
@@ -48,21 +48,26 @@ public class ECDefendState : IECState {
 		bReachPos = false;
 		bAdjustNeeded = false;
 		bReturnToMain = false;
+		
 		fDefendTime = 0f;
+		fMainScale = m_Main.transform.localScale.x * 0.75f;
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 	}
 	
 	public override void Execute()
 	{
+		//If there is no formation for the enemy child cell to take, query the postionQuery to get which formation to get for the specific situation
 		if(CurrentFormation == Formation.Empty)
 		{
 			CurrentFormation = PositionQuery.Instance.GetDefensiveFormation();
-			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,GetDefendingCellsFSM());
+			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,GetDefendingCellsFSM(),fMainScale);
 		}
 		
+		//Based on the current formation, get a specific target position within that formation
 		m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(CurrentFormation, m_Child);
 		
+		//If all enemy child cells have gathered, start transition them to the idle state
 		if(HasAllCellsGathered())
 		{
 			bGathered = true;
@@ -73,77 +78,72 @@ public class ECDefendState : IECState {
 	{
 		Vector2 Acceleration = Vector2.zero;
 		
+		//If the enemy child cell had not reach the enemy main cell when all the enemy child cells had not gathered at the enemy main cell, seek them to the enemy main cell while rotating them to face the direction of travel
 		if(!HasCellReachTargetPos(m_Main.transform.position) && !HasAllCellsGathered() && !bGathered && !bReturnToMain)
 		{
 			m_ecFSM.RotateToHeading();
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,24f);
 		}
 		
-		if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && !bAdjustNeeded && !IsCellReachingWall() && !bReturnToMain)
+		//If the enemy child cell had not reach the targeted position in the formation, continue seek them to that position
+		if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && !bAdjustNeeded && !bReturnToMain)
 		{
 			m_Child.GetComponent<Rigidbody2D>().drag = 5f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,15f);
 		}
-		else if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && bAdjustNeeded && !IsCellReachingWall() && !bReturnToMain) 
+		else if(!HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && bAdjustNeeded && !bReturnToMain) 
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,24f);
-		}
-		else if(!bReachPos && IsCellReachingWall() && !bReturnToMain)
-		{
-			bAdjustNeeded = true;
-			Acceleration += GetAwayFromWall() * 24f;
 		}
 		else if(HasCellReachTargetPos(m_TargetPos) && bGathered && !bReachPos && !bReturnToMain)
 		{
 			bReachPos = true;
 		}
-		
-		
-		if(bReachPos && !IsCellReachingWall() && !bReturnToMain)
+
+		//If the enemy child cell had reach the targeted position in the formation, continue follow the enemy main cell and move around the given targeted positio n
+		if(bReachPos && !bReturnToMain)
 		{
-			//Debug.Log("vibrate point 1");
 			Acceleration += new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y) * 24f;
 			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);
 			
+			//If at any point of time, the child cell got too far away from the given position, see back to the target position in the formation
 			if(!HasCellReachTargetPos(m_TargetPos))
 			{
-				//Debug.Log("vibrate point 2");
 				Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,24f);
 			}
 		}
-		else if(bReachPos && IsCellReachingWall() && CurrentFormation == Formation.CircularSurround && !bReturnToMain)
-		{
-			//Debug.Log("vibrate point 3");
-			Acceleration += GetAwayFromWall() * 24f;
-		}
-		
-		
+
+		//If there are attackers to the enemy main cell, seek to the closest attacking player child cells
 		if(!IsThereNoAttackers() && IsPlayerChildPassingBy() && !bReturnToMain)
 		{
-			//Debug.Log("vibrate point 1");
 			Acceleration += SteeringBehavior.Seek(m_Child,GetClosestAttacker().transform.position,24f);
 		}
+		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
 		else if(IsThereNoAttackers() && !bReturnToMain)
 		{
 			fDefendTime += Time.deltaTime;
-			if(fDefendTime >= 2f)
+			if(fDefendTime >= 5f)
 			{
 				bReturnToMain = true;
 			}
 		}
 		
+		//If the enemy child cells is return back to the enemy main cell but has not reach the position, continue seek back to the main cell
 		if(bReturnToMain && !HasCellReachTargetPos(m_Main.transform.position))
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,15f);
 		}
+		//if the enemy child cell returned back to the enemy main cell, transition it back to the idle state
 		else if(bReturnToMain && HasCellReachTargetPos(m_Main.transform.position) && HasAllCellReachTargetPos(m_Main.transform.position))
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0.0f);
 		}
 		
+		//Clamp the acceleration velocity to a specific value and add that acceleration as a force to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
-		
+	
+		//if the enemy child cell had reached the targeted position in the formation, rotate the enemy child cell randomly. Else, rotate it based on the direction of force applied	
 		if(bReachPos)
 		{
 			m_ecFSM.RandomRotation(0.85f);
@@ -157,10 +157,14 @@ public class ECDefendState : IECState {
 	public override void Exit()
 	{
 		fDefendTime = 0f;
+		
+		//When exiting, if there is no more defending child cells, empty out the CurrentFormation variable
 		if(GetDefendingCells().Count <= 1)
 		{
 			CurrentFormation = Formation.Empty;
 		}
+		
+		//Reset the velocity and force applied to the enemy child cell
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		m_Child.GetComponent<Rigidbody2D>().drag = 0.0f;
 	}
@@ -175,6 +179,7 @@ public class ECDefendState : IECState {
 		return false;
 	}
 	
+	//A function that return a boolean on whether all the cells had reached the given position in the perimeter
 	private bool HasAllCellReachTargetPos(Vector2 _Pos)
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
@@ -188,6 +193,7 @@ public class ECDefendState : IECState {
 		return true;
 	}
 	
+	//A function that return a boolean on whether there is any player child cell that passed by this enemy child cell
 	private bool IsPlayerChildPassingBy()
 	{
 		Collider2D[] PasserBy = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
@@ -201,6 +207,7 @@ public class ECDefendState : IECState {
 		return false;
 	}
 	
+	//A function that return if there is no attacking player child cells 
 	private bool IsThereNoAttackers()
 	{
 		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
@@ -214,6 +221,7 @@ public class ECDefendState : IECState {
 		return true;
 	}
 	
+	//A function that return a GameObject variable on the closest attacking player child cell
 	private GameObject GetClosestAttacker()
 	{
 		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
@@ -232,6 +240,7 @@ public class ECDefendState : IECState {
 		return ClosestAttacker;
 	}
 	
+	//A function that return all the enemy child cells that are in defend state
 	private List<GameObject> GetDefendingCells()
 	{
 		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
@@ -246,6 +255,7 @@ public class ECDefendState : IECState {
 		return Defenders;
 	}
 	
+	//A function that return all the enemy child cells'FSM that are in defend state
 	private List<EnemyChildFSM> GetDefendingCellsFSM()
 	{
 		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
@@ -260,6 +270,7 @@ public class ECDefendState : IECState {
 		return Defenders;
 	}
 	
+	//A function that return a boolean on whether if all cells had gathered together in the enemy main cell
 	private bool HasAllCellsGathered()
 	{
 		List<GameObject> DefendingCells = GetDefendingCells();
@@ -271,46 +282,6 @@ public class ECDefendState : IECState {
 			}
 		}
 		return true;
-	}
-	
-	private bool IsCellReachingWall()
-	{
-		float CellRadius = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2;
-		float WallWidth = m_LeftWall.GetComponent<SpriteRenderer>().bounds.size.x/2;
-		
-		if(m_Child.transform.position.x < m_LeftWall.transform.position.x + CellRadius + WallWidth || m_Child.transform.position.x > m_RightWall.transform.position.x - CellRadius - WallWidth)
-		{
-			return true;
-		}
-		
-		return false;
-	}
-	
-	private Vector2 GetAwayFromWall()
-	{
-		float DistToLeftWall = Vector2.Distance(m_Child.transform.position,m_LeftWall.transform.position);
-		float DistToRightWall = Vector2.Distance(m_Child.transform.position,m_RightWall.transform.position);
-		
-		GameObject ClosestWall = DistToLeftWall <= DistToRightWall ? m_LeftWall : m_RightWall;
-		
-		if(ClosestWall.transform.position.x > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
-		{
-			return new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y);
-		}
-		else if(ClosestWall.transform.position.x > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
-		{
-			return m_Main.GetComponent<Rigidbody2D>().velocity;
-		}
-		else if(ClosestWall.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
-		{
-			return new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y);
-		}
-		else if(ClosestWall.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
-		{
-			return m_Main.GetComponent<Rigidbody2D>().velocity;
-		}
-		
-		return Vector2.zero;
 	}
 	
 	private Vector2 GetNoise()

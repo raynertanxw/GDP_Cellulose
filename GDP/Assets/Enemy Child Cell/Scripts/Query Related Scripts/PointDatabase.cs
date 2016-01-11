@@ -41,12 +41,11 @@ public class PointDatabase
 	
 	private bool IsPointWalkable(Point _Point)
 	{
-		float LeftWallX = GameObject.Find("Left Wall").transform.position.x;
-		float RightWallX = GameObject.Find("Right Wall").transform.position.x; 
+		float LeftWallX = (-Screen.width/2) + 0.5f;
+		float RightWallX = (Screen.width/2) - 0.5f;
 		float RadiusOfCell = GameObject.Find("Enemy_Child_Cell").GetComponent<SpriteRenderer>().bounds.size.x/2;
-		float WidthOfWall = GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x;
 		
-		if(_Point.Position.x + RadiusOfCell + WidthOfWall/2 > RightWallX || _Point.Position.x - RadiusOfCell - WidthOfWall/2 < LeftWallX)
+		if(_Point.Position.x + RadiusOfCell > RightWallX || _Point.Position.x - RadiusOfCell < LeftWallX)
 		{
 			return false;
 		}
