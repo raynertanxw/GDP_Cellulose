@@ -124,6 +124,17 @@ public class EnemyMainFSM : MonoBehaviour
 			instance = this;
 
 		m_position = gameObject.transform.position;
+
+		nAvailableChildNum = 0;
+		// Initialise num of health and aggressiveness
+		nHealth = 50;
+		nInitialAggressiveness = 5;
+		nCurrentAggressiveness = nInitialAggressiveness;
+		nAggressivenessSquadCap = 0;
+		nAggressivenessSquadChild = 0;
+		// Initialise status
+		bCanSpawn = true;
+		//ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 	}
 
 	void Start ()
@@ -184,16 +195,6 @@ public class EnemyMainFSM : MonoBehaviour
 				nAvailableChildNum++;
 		}
 		*/
-		nAvailableChildNum = 0;
-		// Initialise num of health and aggressiveness
-		nHealth = 30;
-		nInitialAggressiveness = 5;
-		nCurrentAggressiveness = nInitialAggressiveness;
-		nAggressivenessSquadCap = 0;
-		nAggressivenessSquadChild = 0;
-		// Initialise status
-		bCanSpawn = true;
-		//ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 	}
 
 	void Update()

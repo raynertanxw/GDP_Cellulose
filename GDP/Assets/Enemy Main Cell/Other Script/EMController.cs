@@ -72,10 +72,7 @@ public class EMController : MonoBehaviour
 	{
 		if (instance == null)
 			instance = this;
-	}
 
-	void Start()
-	{
 		// GetComponent
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		thisRB = GetComponent<Rigidbody2D> ();
