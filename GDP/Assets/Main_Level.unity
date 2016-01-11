@@ -9874,7 +9874,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fNutrientsChance: .5
   fNutrientsDelay: 1
-  nutrientGO: {fileID: 0}
+  fSpawnYLimit: 20
+  nutrientGO: {fileID: 179072, guid: 0e3f3fd41014b4da496973bbe6ac5c05, type: 2}
   array_WallSidesGO:
   - {fileID: 647463703}
   - {fileID: 1147798510}

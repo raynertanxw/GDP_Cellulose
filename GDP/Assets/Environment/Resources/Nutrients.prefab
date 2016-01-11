@@ -9,9 +9,9 @@ GameObject:
   m_Component:
   - 4: {fileID: 475006}
   - 212: {fileID: 21238890}
-  - 114: {fileID: 11442176}
   - 58: {fileID: 5893706}
   - 50: {fileID: 5034440}
+  - 114: {fileID: 11442176}
   m_Layer: 15
   m_Name: Nutrients
   m_TagString: Untagged
