@@ -120,7 +120,7 @@ public class ECMineState : IECState {
 			//Acceleration += SteeringBehavior.GatherAllECSameState(m_Child,ECState.Landmine, 24f);
 			//Debug.Log("gather");
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,15f);
-			Debug.Log(m_Child.transform.position + " " + m_Main.transform.position);
+			//Debug.Log(m_Child.transform.position + " " + m_Main.transform.position);
 		}
 		else if(GatherTogether && PathToTarget == null)
 		{
