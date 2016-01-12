@@ -46,7 +46,7 @@ public class ECChargeCState : IECState {
 		//if at any point of time during attacking, it fall out of bound, transition the enemy child cell to dead state
 		if(m_ecFSM.OutOfBound())
 		{
-			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
+			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
 	
 		//If the target of this cell is dead, find another target if there is one, else just pass through and die/return back to main cell
@@ -60,7 +60,7 @@ public class ECChargeCState : IECState {
 			}
 
 			bReachTarget = true;
-			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
+			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
 	}
 	

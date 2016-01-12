@@ -60,4 +60,10 @@ public static class Utility
 	{
 		Debug.Log(_Pos.ToString("F4"));
 	}
+	
+	public static void DrawCircleCross(Vector2 _Center, float _Radius, Color _Color)
+	{
+		Debug.DrawLine(new Vector2(_Center.x - _Radius, _Center.y),new Vector2(_Center.x + _Radius, _Center.y),_Color,Mathf.Infinity,true);
+		Debug.DrawLine(new Vector2(_Center.x, _Center.y + _Radius),new Vector2(_Center.x, _Center.y - _Radius),_Color,Mathf.Infinity,true);
+	}
 }

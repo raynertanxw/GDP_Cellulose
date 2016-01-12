@@ -82,7 +82,7 @@ public class ECTrickAttackState : IECState {
 		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported && bReachStart)
 		{
 			bReachTarget = true;
-			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath());
+			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
 	}
 	

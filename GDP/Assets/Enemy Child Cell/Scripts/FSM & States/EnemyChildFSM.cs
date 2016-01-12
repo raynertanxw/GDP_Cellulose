@@ -284,11 +284,12 @@ public class EnemyChildFSM : MonoBehaviour
 		StopCoroutine(_childCorountine);
 	}
 
-	public IEnumerator PassThroughDeath()
+	public IEnumerator PassThroughDeath(float _Time)
 	{
 		GetComponent<Rigidbody2D>().drag = 0f;
 		GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * 0.75f,GetComponent<Rigidbody2D>().velocity.y);
-		yield return new WaitForSeconds(1f);
+		
+		yield return new WaitForSeconds(_Time);
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,this.gameObject,MessageType.Dead,0);
 	}
 	
@@ -361,11 +362,37 @@ public class EnemyChildFSM : MonoBehaviour
 	public bool OutOfBound()
 	{
 		Vector2 ScreenBottom = new Vector2(0f, -Screen.height);
-		if(gameObject.transform.position.x < m_LeftWall.transform.position.x || gameObject.transform.position.x > m_RightWall.transform.position.x || gameObject.transform.position.y < ScreenBottom.y)
+		if(gameObject.transform.position.x < -4.5f || gameObject.transform.position.x > 4.5f || gameObject.transform.position.y <= ScreenBottom.y)
 		{
 			return true;
 		}
 
+		return false;
+	}
+
+	public bool HitBottomOfScreen()
+	{
+		BoxCollider2D[] Walls = GameObject.Find("Wall").GetComponents<BoxCollider2D>();
+		BoxCollider2D BotWall = null;
+		float LowestY = Mathf.Infinity;
+		
+		foreach(BoxCollider2D Wall in Walls)
+		{
+			Vector2 WallOrigin = Wall.transform.position;
+			WallOrigin += Wall.offset;
+			if(WallOrigin.y < LowestY)
+			{
+				BotWall = Wall;
+				LowestY = WallOrigin.y;
+			}
+		}
+		
+		Vector2 Bottom = new Vector2(BotWall.transform.position.x + BotWall.offset.x, BotWall.transform.position.y + BotWall.offset.y);
+		
+		if(transform.position.y <= Bottom.y + BotWall.bounds.size.y)
+		{
+			return true;
+		}
 		return false;
 	}
 }

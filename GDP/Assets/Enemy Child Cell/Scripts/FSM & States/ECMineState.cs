@@ -12,7 +12,7 @@ public class ECMineState : IECState {
 	private bool bExploding;
 	private bool bExploded;
 	private bool bExpanding;
-	
+
 	//A float for the maximum amount of acceleration that an EC can take in a landmine states
 	private float fMaxAcceleration;
 	
@@ -24,6 +24,9 @@ public class ECMineState : IECState {
 	
 	//An integer thatdictate how many landmines are nearby
 	private int ECMineNearby;
+	
+	private float fExplosiveRange;
+	private float fKillRange;
 	
 	private static bool GatherTogether;
 	private static int GeneralTargetIndex;
@@ -52,6 +55,9 @@ public class ECMineState : IECState {
 		ShrinkLimit = new Vector2(0.8f,0.8f);
 		fExpansionSpeed = 0.1f;
 		bExpanding = true;
+		
+		fExplosiveRange = 2.8f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
+		fKillRange = 0.65f * fExplosiveRange;
 	}
 	
 	public override void Enter()
@@ -109,9 +115,15 @@ public class ECMineState : IECState {
 		if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),PathToTarget[PathToTarget.Count - 1].Position))
 		{
 			bReachTarget = true;
-			CallAllMinePassThroughDeath();
+			m_ecFSM.StopChildCorountine(ExplodeCorountine());
+			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
-		
+
+		if(GatherTogether && m_ecFSM.HitBottomOfScreen())
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
+		}
+
 		if(bExploding)
 		{
 			ExplodingGrowShrink();
@@ -490,7 +502,7 @@ public class ECMineState : IECState {
 		List<GameObject> Landmines = GetLandmines();
 		foreach(GameObject Landmine in Landmines)
 		{
-			Landmine.GetComponent<EnemyChildFSM>().StartChildCorountine(Landmine.GetComponent<EnemyChildFSM>().PassThroughDeath());
+			Landmine.GetComponent<EnemyChildFSM>().StartChildCorountine(Landmine.GetComponent<EnemyChildFSM>().PassThroughDeath(1f));
 		}
 	}
 	
@@ -536,6 +548,17 @@ public class ECMineState : IECState {
 		
 		return Vector2.zero;
 	}
+
+
+	
+	private Vector2 GetBlastAwayForce(float _Distance)
+	{
+		Vector2 Direction = Random.insideUnitCircle.normalized;
+		float Force = _Distance /(fExplosiveRange - fKillRange) * 80f;
+		Vector2 BlastForce = Direction * Force;
+
+		return BlastForce;
+	}
 	
 	//A function that drive the landmine to grow and shrink when its going through the exploding process
 	private void ExplodingGrowShrink()
@@ -573,13 +596,24 @@ public class ECMineState : IECState {
 	//Go through all the surround cells, destroy any player child cells and damaing the player main cell if in range
 	private void ExplodeDestroy()
 	{
-		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,1.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
+		Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
+		Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
+		
+		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
 			//if the player child cell is within the exploding range, kill the player child
 			if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerChildTag)
 			{
-				m_SurroundingObjects[i].GetComponent<PlayerChildFSM>().DeferredChangeState(PCState.Dead);
+				float DistanceFromCenterOfBlast = Vector2.Distance(m_Child.transform.position,m_SurroundingObjects[i].transform.position);
+				if(DistanceFromCenterOfBlast > fKillRange)
+				{
+					m_SurroundingObjects[i].GetComponent<Rigidbody2D>().AddForce(GetBlastAwayForce(DistanceFromCenterOfBlast - fKillRange));
+				}
+				else
+				{
+					m_SurroundingObjects[i].GetComponent<PlayerChildFSM>().DeferredChangeState(PCState.Dead);
+				}
 			}
 			//if the player main cell is within the exploding range, damage the player main
 			else if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerTag)
@@ -599,8 +633,11 @@ public class ECMineState : IECState {
 		//play explode sound/animation whatever
 		ExplodeSetup();
 		
-		yield return new WaitForSeconds(1.5f);
+		yield return new WaitForSeconds(0.5f);
 		
-		ExplodeDestroy();
+		if(m_ecFSM.CurrentStateEnum == ECState.Landmine)
+		{
+			ExplodeDestroy();
+		}
 	}
 }

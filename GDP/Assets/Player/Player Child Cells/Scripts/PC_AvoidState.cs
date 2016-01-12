@@ -29,7 +29,7 @@ public class PC_AvoidState : IPCState
 	
 	public override void Exit()
 	{
-        Debug.Log("Exited Avoid State.");
+        
     }
 
     public override void FixedExecute()
