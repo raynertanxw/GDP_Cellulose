@@ -55,4 +55,12 @@ public class PlayerMain : MonoBehaviour
 			HurtPlayerMain();
 		}
 	}
+
+	#if UNITY_EDITOR
+	void OnDrawGizmos()
+	{
+		Gizmos.color = Color.green;
+		Gizmos.DrawWireSphere(transform.position, m_fDetectionRadius);
+	}
+	#endif
 }
