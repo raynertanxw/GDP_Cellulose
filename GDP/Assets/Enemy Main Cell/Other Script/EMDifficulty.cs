@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMDifficulty
+public class EMDifficulty : MonoBehaviour
 {
 	// Instance of the class
 	private static EMDifficulty instance;
@@ -64,13 +64,15 @@ public class EMDifficulty
 	void HealthDiffUpdate ()
 	{
 		// Max fHealthDiff = 1f + fMaxHealthInfluence
-		fHealthDiff = 1f + fMaxHealthInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)EnemyMainFSM.Instance ().Health));
+		if (EnemyMainFSM.Instance ().Health != 0)
+			fHealthDiff = 1f + fMaxHealthInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nPrecedingHealth));
 	}
 
 	void NutrientDiffUpdate ()
 	{
 		// Max fNutrientDiff = 1f + fMaxNutrientInfluence
-		fNutrientDiff = 1f + fMaxNutrientInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)EnemyMainFSM.Instance ().Health) * 2f) / Mathf.Sqrt (Mathf.Sqrt ((2f)));
+		if (EMController.Instance().NutrientNum != 0)
+			fNutrientDiff = 1f + fMaxNutrientInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nPrecedingNutrient) * 2f) / Mathf.Sqrt (Mathf.Sqrt ((2f)));
 	}
 
 	void LevelDiffUpdate ()
