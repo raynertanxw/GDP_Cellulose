@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PC_DefendState : IPCState
 {
-	private Vector3 m_currentVelocity;
 	private static float s_fPlayerChildDefendSpeed = 4.0f;
 	private static float s_fNearDetectionRange = 1.0f;
 
@@ -26,10 +26,6 @@ public class PC_DefendState : IPCState
 			if (FindNewTarget() == false)
 				m_pcFSM.ChangeState(PCState.Idle);
 		}
-		else // Target is still alive.
-		{
-			MoveTowardsTarget();
-		}
 
 
 
@@ -47,7 +43,17 @@ public class PC_DefendState : IPCState
 
     public override void FixedExecute()
     {
-        
+		// Get the cohesion, alignment, and separation components of the flocking.
+		Vector2 acceleration = Cohesion() * cohesionWeight;
+		acceleration += Alignment() * alignmentWeight;
+		acceleration += Separation() * separationWeight;
+		acceleration += Target() * targetPullWeight;
+		// Clamp the acceleration to a maximum value
+		acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
+		
+		// Add the force to the rigidbody and face the direction of movement
+		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+		FaceTowardsHeading();
     }
 
     #if UNITY_EDITOR
@@ -81,23 +87,6 @@ public class PC_DefendState : IPCState
 			return true;
 	}
 
-	private void MoveTowardsTarget()
-	{
-		if (IsTargetWithinDangerRange() == false)
-		{
-			m_pcFSM.m_currentEnemyCellTarget = null;
-			return;
-		}
-
-		// Calculate "force" vector.
-		Vector3 direction = m_pcFSM.m_currentEnemyCellTarget.transform.position - m_pcFSM.transform.position;
-		m_currentVelocity += direction.normalized * s_fPlayerChildDefendSpeed;
-		CapSpeed();
-		
-		// Apply velocity vector.
-		m_pcFSM.transform.position += m_currentVelocity * Time.deltaTime;
-	}
-
 	private bool IsTargetWithinDangerRange()
 	{
 		if (m_pcFSM.m_currentEnemyCellTarget == null)
@@ -120,16 +109,6 @@ public class PC_DefendState : IPCState
 		}
 	}
 
-	private void CapSpeed()
-	{
-		float sqrMag = m_currentVelocity.sqrMagnitude;
-		if (sqrMag > Mathf.Pow(s_fPlayerChildDefendSpeed, 2))
-		{
-			float scalar = Mathf.Pow(s_fPlayerChildDefendSpeed, 2) / sqrMag;
-			m_currentVelocity *= scalar;
-		}
-	}
-
 	private bool FindNewLocalTarget()
 	{
 		Collider2D enemyChild = Physics2D.OverlapCircle(m_pcFSM.transform.position, s_fNearDetectionRange, Constants.s_onlyEnemeyChildLayer);
@@ -147,7 +126,7 @@ public class PC_DefendState : IPCState
 
 	private bool FindNewTarget()
 	{
-		if (FindNewLocalTarget() == false)
+		if (FindNewLocalTarget() == false) // If can't find local target, find in danger zone.
 		{
 			Collider2D enemyChild = Physics2D.OverlapCircle(PlayerMain.s_Instance.transform.position, PlayerMain.s_Instance.m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
 			if (enemyChild != null)
@@ -166,5 +145,163 @@ public class PC_DefendState : IPCState
 		}
 	}
 
+	#endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	#region Flocking
+	// Flocking related variables
+	private static float s_fCohesionRadius = 2.0f;
+	private static float s_fseparationRadius = 0.5f;
+	private static float s_fMaxAcceleration = 10f;
+	// Weights
+	private static float s_fCohesionWeight = 30;
+	private static float s_fAlignmentWeight = 10;
+	private static float s_fSeparationWeight = 50;
+	private static float s_fTargetPullWeight = 500;
+	
+	
+	// Getters for the various values.
+	public static float cohesionRadius { get { return s_fCohesionRadius; } }
+	public static float separationRadius { get { return s_fseparationRadius; } }
+	public static float maxAcceleration { get { return s_fMaxAcceleration; } }
+	public static float cohesionWeight { get { return s_fCohesionWeight; } }
+	public static float alignmentWeight { get { return s_fAlignmentWeight; } }
+	public static float separationWeight { get { return s_fSeparationWeight; } }
+	public static float targetPullWeight { get { return s_fTargetPullWeight; } }
+	
+	// Flocking related Helper functions
+	void FaceTowardsHeading()
+	{
+		Vector2 heading = m_pcFSM.rigidbody2D.velocity.normalized;
+		float fRotation = -Mathf.Atan2(heading.x, heading.y) * Mathf.Rad2Deg;
+		m_pcFSM.rigidbody2D.MoveRotation(fRotation);
+	}
+	
+	public Vector2 Cohesion()
+	{
+		Vector2 sumVector = Vector2.zero;
+		int count = 0;
+		
+		List<PlayerChildFSM> nodeChildren = m_pcFSM.m_assignedNode.GetNodeChildList();
+		
+		// For each boid, check the distance from this boid, and if within a neighbourhood, add to the sumVector
+		for (int i = 0; i < nodeChildren.Count; i++)
+		{
+			// If it is itself skip itself.
+			if (nodeChildren[i] == m_pcFSM)
+			{
+				continue;
+			}
+			
+			float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, nodeChildren[i].rigidbody2D.position);
+			
+			if (fDist < cohesionRadius)
+			{
+				sumVector += nodeChildren[i].rigidbody2D.position;
+				count++;
+			}
+		}
+		
+		
+		// Average the sumVector
+		if (count > 0)
+		{
+			sumVector /= count;
+			return sumVector - m_pcFSM.rigidbody2D.position;
+		}
+		
+		return sumVector;
+	}
+	
+	public Vector2 Alignment()
+	{
+		Vector2 sumVector = Vector2.zero;
+		int count = 0;
+		
+		List<PlayerChildFSM> nodeChildren = m_pcFSM.m_assignedNode.GetNodeChildList();
+		
+		// For each boid, check the distance from this boid, and if within a neighbourhood, add to the sum_vector.
+		for (int i = 0; i < nodeChildren.Count; i++)
+		{
+			// If it is itself skip itself.
+			if (nodeChildren[i] == m_pcFSM)
+			{
+				continue;
+			}
+			
+			float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, nodeChildren[i].rigidbody2D.position);
+			
+			if (fDist < cohesionRadius)
+			{
+				sumVector += nodeChildren[i].rigidbody2D.velocity;
+				count++;
+			}
+		}
+		
+		// Average the sumVector and clamp magnitude
+		if (count > 0)
+		{
+			sumVector /= count;
+			sumVector = Vector2.ClampMagnitude(sumVector, 1);
+		}
+		
+		return sumVector;
+	}
+	
+	public Vector2 Separation()
+	{
+		Vector2 sumVector = Vector2.zero;
+		int count = 0;
+		
+		List<PlayerChildFSM> nodeChildren = m_pcFSM.m_assignedNode.GetNodeChildList();
+		
+		// For each boid, check the distance from this boid, and if within a neighbourhood, add to the sum_vector.
+		for (int i = 0; i < nodeChildren.Count; i++)
+		{
+			// If it is itself skip itself.
+			if (nodeChildren[i] == m_pcFSM)
+			{
+				continue;
+			}
+			
+			float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, nodeChildren[i].rigidbody2D.position);
+			
+			if (fDist < separationRadius)
+			{
+				sumVector += (m_pcFSM.rigidbody2D.position - nodeChildren[i].rigidbody2D.position).normalized / fDist;
+				count++;
+			}
+		}
+		
+		// Average the sumVector and clamp magnitude
+		if (count > 0)
+		{
+			sumVector /= count;
+		}
+		
+		return sumVector;
+	}
+	
+	public Vector2 Target()
+	{
+		Vector2 sumVector = -m_pcFSM.rigidbody2D.position;
+		sumVector.x += m_pcFSM.m_currentEnemyCellTarget.transform.position.x;
+		sumVector.y += m_pcFSM.m_currentEnemyCellTarget.transform.position.y;
+		
+		return sumVector;
+	}
 	#endregion
 }
