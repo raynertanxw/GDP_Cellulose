@@ -24,7 +24,7 @@ public class ECIdleState : IECState
 
 	//An enumeration for the type of idling the enemy child cell is having
 	private enum IdleStatus {Seperate, Cohesion};
-	
+
 	//Constructor
 	public ECIdleState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
@@ -48,6 +48,7 @@ public class ECIdleState : IECState
 		}
 		
 		//Obtain the specific seperate direction for the enemy child cell from the direction database
+		m_ecFSM.bHitWall = false;
 		SeperateDirection = DirectionDatabase.Instance.Extract();
 		fIdleScale = m_Main.transform.localScale.x * 0.75f;
 	}
@@ -66,6 +67,7 @@ public class ECIdleState : IECState
 			if(HasAllChildEnterMain())
 			{
 				ResetAllChildVelocity();
+				ResetAllHitWall();
 				CurrentIdleState = IdleStatus.Seperate;
 				fPreviousStatusTime = Time.time;
 			}
@@ -73,6 +75,7 @@ public class ECIdleState : IECState
 		//If the current idle status is seperating, all the child cells are being spread out fully and it has been 1.5s since the previous change of state or the time passed had been 1.75s, change the idle status to cohesion and record the time
 		else if(CurrentIdleState == IdleStatus.Seperate && HasCellsSpreadOutMax() && Time.time - fPreviousStatusTime > 1.5f || CurrentIdleState == IdleStatus.Seperate && Time.time - fPreviousStatusTime > 1.75f)
 		{
+			ResetAllHitWall();
 			CurrentIdleState = IdleStatus.Cohesion;
 			fPreviousStatusTime = Time.time;
 		}
@@ -83,18 +86,33 @@ public class ECIdleState : IECState
 		Vector2 Acceleration = Vector2.zero;
 		
 		//If the current idle status is cohesioning and the enemy child cell had not enter the enemy main cell, continue seek towards the enemy main cell
-		if(CurrentIdleState == IdleStatus.Cohesion && !HasChildEnterMain(m_Child))
+
+		if(m_ecFSM.IsHittingSideWalls() && m_ecFSM.bHitWall == false)
+		{
+			m_ecFSM.bHitWall = true;
+			m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		}
+		else if(CurrentIdleState == IdleStatus.Cohesion && !HasChildEnterMain(m_Child) && m_ecFSM.bHitWall == false)
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,20f);
 		}
 		//Else if the current idle status is seperating, add the specific directional force to travel, the velocity of the main cell to follow the main cell and the seperation force to seperate itself from the nearby enemy child cell
-		else if(CurrentIdleState == IdleStatus.Seperate)
+		else if(CurrentIdleState == IdleStatus.Seperate && !m_ecFSM.IsHittingSideWalls() && m_ecFSM.bHitWall == false)
 		{
 			Acceleration += SeperateDirection.normalized * fIdleScale;
 			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
 			//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
 		}
-		
+		else if(m_ecFSM.bHitWall == true && !HasChildEnterMain(m_Child))
+		{
+			m_Child.GetComponent<Rigidbody2D>().drag = 2.5f;
+			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,10f);
+		}
+		else if(m_ecFSM.bHitWall == true && HasChildEnterMain(m_Child))
+		{
+			m_Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
+		}
+
 		//Clamp the acceleration of the enemy child cell to a specific maximum of magnitude and add that acceleration as a force on to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxMagnitude);
 		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration);
@@ -179,6 +197,19 @@ public class ECIdleState : IECState
 			if(Child.CurrentStateEnum == ECState.Idle)
 			{
 				Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
+			}
+		}
+	}
+
+	private void ResetAllHitWall()
+	{
+		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
+		foreach(EnemyChildFSM Child in ECList)
+		{
+			if(Child.CurrentStateEnum == ECState.Idle)
+			{
+				Child.bHitWall = false;
+				Child.GetComponent<Rigidbody2D>().drag = 0f;
 			}
 		}
 	}

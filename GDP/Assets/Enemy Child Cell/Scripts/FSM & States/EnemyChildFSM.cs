@@ -28,6 +28,7 @@ public class EnemyChildFSM : MonoBehaviour
 	private float fRotationTarget;
 	private bool bRotateCW;
 	private bool bRotateACW;
+	public bool bHitWall;
 	
 	void Start()
 	{
@@ -37,6 +38,7 @@ public class EnemyChildFSM : MonoBehaviour
 		bIsMine = false;
 		bRotateCW = false;
 		bRotateACW = false;
+		bHitWall = false;
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
 		m_LeftWall = GameObject.Find("Left Wall");
@@ -292,7 +294,7 @@ public class EnemyChildFSM : MonoBehaviour
 		yield return new WaitForSeconds(_Time);
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,this.gameObject,MessageType.Dead,0);
 	}
-	
+
 	public void RotateToHeading()
 	{
 		Vector2 Heading = gameObject.GetComponent<Rigidbody2D>().velocity.normalized;
@@ -388,8 +390,16 @@ public class EnemyChildFSM : MonoBehaviour
 		}
 		
 		Vector2 Bottom = new Vector2(BotWall.transform.position.x + BotWall.offset.x, BotWall.transform.position.y + BotWall.offset.y);
-		
 		if(transform.position.y <= Bottom.y + BotWall.bounds.size.y)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	public bool IsHittingSideWalls()
+	{
+		if(transform.position.x <= -4.4f || transform.position.x >= 4.4f)
 		{
 			return true;
 		}
