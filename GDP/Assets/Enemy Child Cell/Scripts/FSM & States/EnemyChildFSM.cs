@@ -362,7 +362,7 @@ public class EnemyChildFSM : MonoBehaviour
 	public bool OutOfBound()
 	{
 		Vector2 ScreenBottom = new Vector2(0f, -Screen.height);
-		if(gameObject.transform.position.x < m_LeftWall.transform.position.x || gameObject.transform.position.x > m_RightWall.transform.position.x || gameObject.transform.position.y < ScreenBottom.y)
+		if(gameObject.transform.position.x < -4.5f || gameObject.transform.position.x > 4.5f || gameObject.transform.position.y < ScreenBottom.y)
 		{
 			return true;
 		}
