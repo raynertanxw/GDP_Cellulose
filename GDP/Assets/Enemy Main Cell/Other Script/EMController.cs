@@ -42,7 +42,7 @@ public class EMController : MonoBehaviour
 	[Tooltip("Number of enemy damage")]
 	[SerializeField] private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
 	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
-	public void CauseDamageOne () { nDamageNum++; }
+	public void CauseDamageOne () { nDamageNum++; m_EMFSM.Health--;}
 	private bool bPushed; 
 	public bool Pushed { get { return bPushed; } }
 	private bool bStunned;

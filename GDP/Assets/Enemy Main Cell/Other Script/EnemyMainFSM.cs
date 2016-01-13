@@ -71,7 +71,7 @@ public class EnemyMainFSM : MonoBehaviour
 	[Header("Health")]
 	[Tooltip("Health of the Enemy Main Cell")]
 	[SerializeField] private int nHealth;
-	public int Health { get { return nHealth; } }
+	public int Health { get { return nHealth; } set { nHealth = value; } }
 	#endregion
 	#region Aggressiveness
 	[Header("Aggressiveness")]

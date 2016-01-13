@@ -66,6 +66,9 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Remove destroyed from the list
 		AgentList.RemoveAll(item => item == null);
+		// Destroy the nutrient if enemy main cell does not exist
+		if (EnemyMainFSM.Instance () == null)
+			Destroy (this.gameObject);
 		// Update the current position of the agent
 		position = this.gameObject.transform.position;
 		// Update mass of the agent

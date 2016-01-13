@@ -39,6 +39,9 @@ public class EMNutrientMiniController : MonoBehaviour
 
 	void Update () 
 	{
+		// Destroy the nutrient if enemy main cell does not exist
+		if (EnemyMainFSM.Instance () == null)
+			Destroy (this.gameObject);
 		// Update the rotation of the mini nutrient
 		RotationUpdate ();
 		// Friction of initial movement
