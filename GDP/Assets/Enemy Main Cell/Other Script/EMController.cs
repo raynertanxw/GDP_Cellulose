@@ -77,7 +77,7 @@ public class EMController : MonoBehaviour
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		thisRB = GetComponent<Rigidbody2D> ();
 		// Size
-		nInitialNutrientNum = 50;
+		nInitialNutrientNum = 100;
 		nCurrentNutrientNum = nInitialNutrientNum;
 		initialScale = gameObject.transform.localScale;
 		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(m_EMFSM.Health)));
