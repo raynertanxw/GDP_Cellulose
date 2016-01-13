@@ -1,0 +1,149 @@
+fileFormatVersion: 2
+guid: e300c7832a8c6ed49874e5e7605bde4a
+timeCreated: 1452662120
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: Player_UI_ShieldOn
+    21300002: Player_UI_SpawnCpt
+    21300004: GUIs_2
+    21300006: Player_UI_Node
+    21300008: GUIs_4
+    21300010: Player_UI_Scattershot
+    21300012: Player_UI_DirectShot
+    21300014: Player_UI_SwarmTarget
+    21300016: Player_UI_ShieldOff
+    21300018: Player_UI_SpawnChild
+    21300020: GUIs_10
+    21300022: GUIs_11
+    21300024: GUIs_12
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: Player_UI_ShieldOn
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 273
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Player_UI_SpawnCpt
+      rect:
+        serializedVersion: 2
+        x: 767
+        y: 273
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Player_UI_Node
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 127
+        width: 139
+        height: 139
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Player_UI_Scattershot
+      rect:
+        serializedVersion: 2
+        x: 196
+        y: 134
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Player_UI_DirectShot
+      rect:
+        serializedVersion: 2
+        x: 340
+        y: 131
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Player_UI_SwarmTarget
+      rect:
+        serializedVersion: 2
+        x: 487
+        y: 132
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Player_UI_ShieldOff
+      rect:
+        serializedVersion: 2
+        x: 629
+        y: 131
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Player_UI_SpawnChild
+      rect:
+        serializedVersion: 2
+        x: 767
+        y: 131
+        width: 130
+        height: 130
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
