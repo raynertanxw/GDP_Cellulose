@@ -10,6 +10,10 @@ public class EMNutrientMiniController : MonoBehaviour
 
 	Rigidbody2D thisRB;
 	float fSpeed;
+	// Absorb behaviour
+	bool bIsAbsorbed;
+	float fAbsorbSpeed;
+	float fAbsorbTime;
 
 	EMNutrientPathfindingManager pathfindingManager;
 	EnemyNutrientNode currentNode;
@@ -24,6 +28,9 @@ public class EMNutrientMiniController : MonoBehaviour
 		currentNode = null;
 		nextNode = null;
 		fSpeed = Random.Range (.4f, .8f);
+		bIsAbsorbed = false;
+		fAbsorbSpeed = Random.Range (1f, 2f);
+		fAbsorbTime = 1f;
 		// Not using A* by default
 		bCanFindPath = false;
 		// Call the PauseAStar function for initial movement
@@ -39,23 +46,25 @@ public class EMNutrientMiniController : MonoBehaviour
 		{
 			thisRB.velocity *= .99f;
 		}
-		// A* pathfinding
-		if (bCanFindPath) 
+		// Absorb behaviour
+		if (bIsAbsorbed)
+			Absorb ();
+		else 
 		{
-			// Set the target to the next node
-			if (pathfindingManager.pathArray != null)
-			{
-				if (pathfindingManager.pathArray.Count > 1)
-				{
-					nextNode = (EnemyNutrientNode)pathfindingManager.pathArray[1];
-					currentNode = nextNode;
-				}
+			// A* pathfinding
+			if (bCanFindPath) {
+				// Set the target to the next node
+				if (pathfindingManager.pathArray != null) {
+					if (pathfindingManager.pathArray.Count > 1) {
+						nextNode = (EnemyNutrientNode)pathfindingManager.pathArray [1];
+						currentNode = nextNode;
+					}
+				} else 
+					nextNode = null;
+				// Move to the target node
+				if (currentNode != null)
+					thisRB.velocity = (currentNode.position - (Vector2)this.gameObject.transform.position) * fSpeed;
 			}
-			else 
-				nextNode = null;
-			// Move to the target node
-			if (currentNode != null)
-				thisRB.velocity = (currentNode.position - (Vector2)this.gameObject.transform.position) * fSpeed;
 		}
 	}
 
@@ -87,9 +96,22 @@ public class EMNutrientMiniController : MonoBehaviour
 		}
 	}
 
+	void Absorb ()
+	{
+		Vector2 vectorToTarget = EnemyMainFSM.Instance().Position - (Vector2)transform.position;
+		transform.position = Vector2.MoveTowards(transform.position, EnemyMainFSM.Instance().Position, (vectorToTarget.magnitude * fAbsorbTime + fAbsorbSpeed) * Time.deltaTime);
+		transform.localScale = Vector3.one * 
+							  (Vector2.Distance ((Vector2)transform.position, EnemyMainFSM.Instance().Position)) / EMController.Instance ().Radius *
+							   Random.Range (.5f, 1f);
+		if (Vector2.Distance ((Vector2)transform.position, EnemyMainFSM.Instance().Position) < .1f || transform.localScale.x < .1f) 
+		{
+			EMController.Instance().AddNutrient ();
+			Destroy (this.gameObject);
+		}
+	}
+
 	void OnTriggerEnter2D (Collider2D collision)
 	{
-		EMController.Instance().AddNutrient ();
-		Destroy (this.gameObject);
+		bIsAbsorbed = true;
 	}
 }

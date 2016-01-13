@@ -13,14 +13,20 @@ public class EMDifficulty : MonoBehaviour
 
 	[SerializeField]
 	private float fHealthDiff;					// Difficulty factor affected by the current health of the enemy main cell
+	[SerializeField]
+	private float fHealthWeight;
 	private float fMaxHealthInfluence;
 	private int nPrecedingHealth;
 	[SerializeField]
 	private float fNutrientDiff;				// Difficulty factor affected by the current num of nutrient of the enemy main cell
+	[SerializeField]
+	private float fNutrientWeight;
 	private float fMaxNutrientInfluence;
 	private int nPrecedingNutrient;
 	[SerializeField]
 	private float fLevelDiff;					// Difficulty factor affected by the current level
+	[SerializeField]
+	private float fLevelWeight;
 	[SerializeField]
 	private float fCurrentDiff;
 	public float CurrentDiff { get { return fCurrentDiff; } }
@@ -61,6 +67,11 @@ public class EMDifficulty : MonoBehaviour
 		#endregion
 	}
 
+	void CurrentDiffUpdate ()
+	{
+		fCurrentDiff = fHealthDiff * fHealthWeight + fNutrientDiff * fNutrientWeight + fLevelDiff * fLevelWeight / 3f;
+	}
+
 	void HealthDiffUpdate ()
 	{
 		// Max fHealthDiff = 1f + fMaxHealthInfluence
@@ -78,10 +89,5 @@ public class EMDifficulty : MonoBehaviour
 	void LevelDiffUpdate ()
 	{
 
-	}
-
-	void CurrentDiffUpdate ()
-	{
-
-	}
+	}	
 }
