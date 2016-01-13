@@ -198,8 +198,8 @@ public class ECChargeCState : IECState {
 	{
 		//Three different GameObject references to store the three potential source that produce a threat to the enemy main cell
 		GameObject m_Squad = GameObject.Find("Squad_Captain_Cell");
-		GameObject m_LeftNode = GameObject.Find("Node_Left");
-		GameObject m_RightNode = GameObject.Find("Node_Right");
+		Node_Manager m_LeftNode = Node_Manager.GetNode(0);
+		Node_Manager m_RightNode = Node_Manager.GetNode(1);
 		
 		//Calculate the scores for the three threat source on how threatening it is to the enemy main cell
 		int nSquadScore = 0;
@@ -225,21 +225,21 @@ public class ECChargeCState : IECState {
 		}
 		else if(nHighestThreat == nLeftScore)
 		{
-			return m_LeftNode;
+			return m_LeftNode.gameObject;
 		}
 		else if(nHighestThreat == nRightScore)
 		{
-			return m_RightNode;
+			return m_RightNode.gameObject;
 		}
 		
 		return null;
 	}
 	
 	//A function to evaluate the node based on the enemy main cell and player condition to return a score
-	private int EvaluateNode (GameObject _Node)
+	private int EvaluateNode (Node_Manager _Node)
 	{
 		//if the node contains no cell, it serve no threat to the enemy main cell
-		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
+		if(_Node.GetNodeChildList().Count == 0)
 		{
 			return 0;
 		}
@@ -247,7 +247,7 @@ public class ECChargeCState : IECState {
 		int nthreatLevel = 0;
 		
 		//increase score based on amount of cells in that node
-		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
+		nthreatLevel += _Node.GetNodeChildList().Count;
 		
 		return nthreatLevel;
 	}

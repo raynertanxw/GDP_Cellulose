@@ -18,8 +18,8 @@ public class ECAttackState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 
 		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
-		m_LeftNode = GameObject.Find("Node_Left").GetComponent<Node_Manager>();
-		m_RightNode = GameObject.Find("Node_Right").GetComponent<Node_Manager>();
+		m_LeftNode = Node_Manager.GetNode(0);
+		m_RightNode = Node_Manager.GetNode(1);
 	}
 	
 	public override void Enter()
