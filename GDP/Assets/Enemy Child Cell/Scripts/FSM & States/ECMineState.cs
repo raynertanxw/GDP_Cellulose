@@ -124,7 +124,7 @@ public class ECMineState : IECState {
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 
-		if(bExploding)
+		if(GatherTogether)
 		{
 			ExplodingGrowShrink();
 		}
@@ -469,7 +469,7 @@ public class ECMineState : IECState {
 			return false;
 		}
 	
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 3f);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.82f);
 		
 		if(_PlayerCell.name.Contains("Node"))
 		{
@@ -590,7 +590,9 @@ public class ECMineState : IECState {
 	//during explosions
 	private void ExplodeSetup()
 	{
-
+		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		bExploding = false;
+		m_Child.transform.localScale = new Vector3(1f,1f,1f);
 	}
 	
 	//Go through all the surround cells, destroy any player child cells and damaing the player main cell if in range
@@ -598,7 +600,7 @@ public class ECMineState : IECState {
 	{
 		Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
 		Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
-		
+
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
@@ -633,7 +635,11 @@ public class ECMineState : IECState {
 		//play explode sound/animation whatever
 		ExplodeSetup();
 		
-		yield return new WaitForSeconds(0.5f);
+		while(m_Child.transform.localScale.x < 7f)
+		{
+			m_Child.transform.localScale += new Vector3(0.75f,0.75f,0.75f);
+			yield return new WaitForSeconds(0.0005f);//0.0005
+		}
 		
 		if(m_ecFSM.CurrentStateEnum == ECState.Landmine)
 		{

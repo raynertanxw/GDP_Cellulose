@@ -25,7 +25,7 @@ public class Point
 			strHIndex = keys[1];
 		}
 		
-		//Utility.DrawCross(Position,Color.green,0.1f);
+		Utility.DrawCross(Position,Color.green,0.1f);
 	}
 	
 	public string Index
@@ -70,3 +70,4 @@ public class Point
 		return null;
 	}*/
 }
+//
