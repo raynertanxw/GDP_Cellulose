@@ -29,7 +29,8 @@ public class EMAggressiveAttackState : IEMState
 		// Reset transition availability
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
-		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness), Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 2f);
+		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 1.5f/ EMDifficulty.Instance().CurrentDiff, 
+		                                 Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 3f / EMDifficulty.Instance().CurrentDiff);
 		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 
@@ -81,7 +82,9 @@ public class EMAggressiveAttackState : IEMState
 			
 			// Pause commanding enemy mini cells to Attack state
 			// Pause duration depends only on the number of enemy mini cells
-			m_EMFSM.StartPauseAddAttack (1.5f - nEnemyChildFactor/10f);
+			float fPauseTime = 1.5f - nEnemyChildFactor / 10f / EMDifficulty.Instance().CurrentDiff;
+			if (fPauseTime > 0f)
+				m_EMFSM.StartPauseAddAttack (fPauseTime);
 		}
 		#endregion
 

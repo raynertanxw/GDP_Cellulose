@@ -299,11 +299,11 @@ public class EnemyMainFSM : MonoBehaviour
 
 	public void ScoreLimit ()
 	{
-		Mathf.Clamp (LearningDictionary [EMState.Production], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.Maintain], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.Defend], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.AggressiveAttack], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.CautiousAttack], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.Landmine], -100f, 100f);
+		LearningDictionary [EMState.Production] = Mathf.Clamp (LearningDictionary [EMState.Production], -100f, 100f);
+		LearningDictionary [EMState.Maintain] = Mathf.Clamp (LearningDictionary [EMState.Maintain], -100f, 100f);
+		LearningDictionary [EMState.Defend] = Mathf.Clamp (LearningDictionary [EMState.Defend], -100f, 100f);
+		LearningDictionary [EMState.AggressiveAttack] = Mathf.Clamp (LearningDictionary [EMState.AggressiveAttack], -100f, 100f);
+		LearningDictionary [EMState.CautiousAttack] = Mathf.Clamp (LearningDictionary [EMState.CautiousAttack], -100f, 100f);
+		LearningDictionary [EMState.Landmine] = Mathf.Clamp (LearningDictionary [EMState.Landmine], -100f, 100f);
 	}
 }
