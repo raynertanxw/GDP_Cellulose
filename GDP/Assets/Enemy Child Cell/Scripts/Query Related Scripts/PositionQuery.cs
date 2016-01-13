@@ -39,8 +39,8 @@ public class PositionQuery
 	private bool IsAllThreatEmpty ()
 	{
 		List<GameObject> Threats = new List<GameObject>();
-		Threats.Add(GameObject.Find("Node_Left"));
-		Threats.Add(GameObject.Find("Node_Right"));
+		Threats.Add(Node_Manager.GetNode(0).gameObject);
+        Threats.Add(Node_Manager.GetNode(1).gameObject);
 		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
 		
 		bool bResult = false;
