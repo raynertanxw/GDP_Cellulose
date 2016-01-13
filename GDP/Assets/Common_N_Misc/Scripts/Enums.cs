@@ -11,6 +11,9 @@ public enum EMState {Production, Maintain, Defend, AggressiveAttack, CautiousAtt
 
 public enum ECState {Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend, Avoid, Landmine, Dead};
 
+
+
+
 public enum MessageType {Empty, Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend, Avoid, Landmine, Dead};
 
 public enum PositionType {Aggressive, Neutral, Defensive};
@@ -23,4 +26,6 @@ public enum RangeValue  {Min, Max, None};
 
 public enum Directness  {Low, Mid, High};
 
-public enum Formation{Empty, Crescent, ReverseCrescent, CircularSurround, AreaBlock};
+public enum Formation {Empty, Crescent, ReverseCrescent, CircularSurround, AreaBlock};
+
+public enum PlayerAttackMode {BurstShot, SwarmTarget, ScatterShot};
