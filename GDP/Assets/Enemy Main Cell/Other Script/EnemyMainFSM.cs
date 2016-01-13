@@ -250,8 +250,8 @@ public class EnemyMainFSM : MonoBehaviour
 			// Randomize the interval time between spawns of child cells in terms of num of available child cells and current difficulty
 			yield return new WaitForSeconds (
 				UnityEngine.Random.Range (
-					Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)nAvailableChildNum))) * 2f, 
-					Mathf.Sqrt(Mathf.Sqrt ((float)nAvailableChildNum)) * 2f)
+					Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)nAvailableChildNum))) * 2f / EMDifficulty.Instance().CurrentDiff, 
+					Mathf.Sqrt(Mathf.Sqrt ((float)nAvailableChildNum)) * 2f / EMDifficulty.Instance().CurrentDiff)
 			);
 
 			bCanSpawn = true;
@@ -299,11 +299,11 @@ public class EnemyMainFSM : MonoBehaviour
 
 	public void ScoreLimit ()
 	{
-		Mathf.Clamp (LearningDictionary [EMState.Production], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.Maintain], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.Defend], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.AggressiveAttack], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.CautiousAttack], -100f, 100f);
-		Mathf.Clamp (LearningDictionary [EMState.Landmine], -100f, 100f);
+		LearningDictionary [EMState.Production] = Mathf.Clamp (LearningDictionary [EMState.Production], -100f, 100f);
+		LearningDictionary [EMState.Maintain] = Mathf.Clamp (LearningDictionary [EMState.Maintain], -100f, 100f);
+		LearningDictionary [EMState.Defend] = Mathf.Clamp (LearningDictionary [EMState.Defend], -100f, 100f);
+		LearningDictionary [EMState.AggressiveAttack] = Mathf.Clamp (LearningDictionary [EMState.AggressiveAttack], -100f, 100f);
+		LearningDictionary [EMState.CautiousAttack] = Mathf.Clamp (LearningDictionary [EMState.CautiousAttack], -100f, 100f);
+		LearningDictionary [EMState.Landmine] = Mathf.Clamp (LearningDictionary [EMState.Landmine], -100f, 100f);
 	}
 }

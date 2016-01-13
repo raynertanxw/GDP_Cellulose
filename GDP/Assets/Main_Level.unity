@@ -3265,6 +3265,7 @@ GameObject:
   - 114: {fileID: 397147975}
   - 114: {fileID: 397147974}
   - 114: {fileID: 397147981}
+  - 114: {fileID: 397147982}
   m_Layer: 12
   m_Name: Enemy_Cell
   m_TagString: Enemy
@@ -3424,6 +3425,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 088acba6de06eba418a9f5315011802a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &397147982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 397147972}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 183e9b055b56a504e821614ea10553ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fHealthDiff: 0
+  fNutrientDiff: 0
+  fLevelDiff: 0
+  fCurrentDiff: 0
 --- !u!1001 &401706930
 Prefab:
   m_ObjectHideFlags: 0
