@@ -7,12 +7,17 @@ public class DirectionDatabase
 	private static DirectionDatabase s_Instance;
 	
 	private Dictionary<int,Vector2> m_Database;
+	
 	private Dictionary<int,bool> m_Usage;
+	
+	private int MaximumECCells;
 	
 	public DirectionDatabase()
 	{
 		m_Database = new Dictionary<int, Vector2>();
 		m_Usage = new Dictionary<int, bool>();
+		MaximumECCells = ECPoolManager.ECPool.Count;
+		
 		Initilize();
 	}
 	
@@ -40,26 +45,33 @@ public class DirectionDatabase
 	
 	private void Initilize()
 	{
-		for(int i = 0; i < 50; i++)
+		for(int i = 0; i < MaximumECCells; i++)
 		{
 			m_Usage.Add(i + 1, false);
 		}
 		
-		float AngleInterval = 360f/50f;
-		float CurrentAngle = 0f;
-		Vector2 FirstDirection = new Vector2(Random.Range(-1f,1f),Random.Range(-1f,1f));
-		Vector2 TargetDirection = Vector2.zero;
-		m_Database.Add(1,FirstDirection);
+		int CellPerCircle = 15;
+		float AngleInterval = 360f/CellPerCircle;
+		float CurrentAngle = Random.Range(0f,360f);
+		float AngleTraveled = 0f;
 		
-		for(int i = 2; i <= 50; i++)
+		Vector2 FirstDirection = GetDirectionFromAngle(CurrentAngle);
+		Vector2 TargetDirection = Vector2.zero;
+		
+		m_Database.Add(1,FirstDirection);
+		for(int i = 2; i <= MaximumECCells; i++)
 		{
 			CurrentAngle += AngleInterval;
-			Vector2 PreviousDirection = m_Database[i - 1];
-			TargetDirection = Quaternion.Euler(0f,0f,CurrentAngle) * PreviousDirection;
+			if(CurrentAngle > 360f)
+			{
+				CurrentAngle -= 360f;
+			}
+			
+			AngleTraveled += AngleInterval;
+			
+			TargetDirection = GetDirectionFromAngle(CurrentAngle);
 			m_Database.Add(i,TargetDirection);
 		}
-		
-		//PrintDatabase();
 	}
 	
 	public Vector2 Extract()
@@ -102,5 +114,11 @@ public class DirectionDatabase
 		{
 			Debug.Log(Key + ": " + m_Database[Key].ToString("F2"));
 		}
+	}
+	
+	private Vector2 GetDirectionFromAngle(float _Angle)
+	{
+		_Angle *= Mathf.Deg2Rad;
+		return new Vector2(Mathf.Cos(_Angle),Mathf.Sin(_Angle));
 	}
 }

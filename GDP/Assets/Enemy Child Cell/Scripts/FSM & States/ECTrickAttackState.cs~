@@ -34,6 +34,7 @@ public class ECTrickAttackState : IECState {
 	
 	//A boolean that state whether the enemy child cell had teleported during the trick attack state
 	private bool bTeleported;
+	private bool bTeleporting;
 	
 	//A boolean that state whether the enemy child cell had reached the last point of the calculated path
 	private bool bReachTarget;
@@ -49,8 +50,8 @@ public class ECTrickAttackState : IECState {
 		fChargeSpeed = 1f;
 		fMaxAcceleration = 20f;
 		
-		m_Nodes[0] = GameObject.Find("Node_Left");
-		m_Nodes[1] = GameObject.Find("Node_Right");
+		m_Nodes[0] = GameObject.Find("UI_Player_LeftNode");
+		m_Nodes[1] = GameObject.Find("UI_Player_RightNode");
 		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 	}
 	
@@ -72,6 +73,7 @@ public class ECTrickAttackState : IECState {
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
 		bTeleported = false;
+		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
 	}
@@ -94,8 +96,18 @@ public class ECTrickAttackState : IECState {
 		//move towards the player main cell
 		Vector2 Acceleration = Vector2.zero;
 
+		if(bTeleporting && !HasCellReachTargetPos(m_StartTelePos))
+		{
+			Acceleration += SteeringBehavior.Seek(m_Child,m_StartTelePos, 45f);
+		}
+		else if(bTeleporting && HasCellReachTargetPos(m_StartTelePos))
+		{
+			bTeleported = true;
+			bTeleporting = false;
+			m_ecFSM.StartChildCorountine(Teleport());
+		}
 		//If the cell has not reached the current target position, continue seek towards that target position and remain seperate from rest of the enemy child cells
-		if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
+		else if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
@@ -106,10 +118,9 @@ public class ECTrickAttackState : IECState {
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
 		//If the cell had reached the teleporting position and it hasn't teleported, start teleporting the cell to the calculated position
-		else if((HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) || HasCellReachTargetPos(m_StartTelePos))  && bTeleported == false)
+		else if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleporting == false && bTeleported == false)
 		{
-			bTeleported = true;
-			m_ecFSM.StartChildCorountine(Teleport());
+			bTeleporting = true;
 		}
 		
 		//Clamp the acceleration of the enemy child cell to a maximum value and then add that acceleration force to the enemy child cell
@@ -207,10 +218,10 @@ public class ECTrickAttackState : IECState {
 		float fInitialY = Random.Range(fYLimit/2,fYLimit);
 		
 		//find a side of the Wall to teleport from
-		GameObject m_InitialWall = GetWall();
+		Vector2 m_InitialWall = GetWallPos();
 		
 		//calculate the appropriate position to start teleporting 
-		Vector2 m_StartPos = new Vector2(m_InitialWall.transform.position.x, fInitialY);
+		Vector2 m_StartPos = new Vector2(m_InitialWall.x, fInitialY);
 		
 		//End Tele Position//
 		//Use the corresponding Y from start tele or decrease it for the end tele position
@@ -218,22 +229,26 @@ public class ECTrickAttackState : IECState {
 		float fNextY = fInitialY + Noise;
 		
 		//Use the opposide side wall from the previous one
-		GameObject m_NextWall = null;
-		if(m_InitialWall == GameObject.Find("Left Wall"))
+		Vector2 m_NextWall = Vector2.zero;
+		if(m_InitialWall.x <= -4.7f)
 		{
-			m_NextWall = GameObject.Find("Right Wall");
+			m_NextWall = new Vector2(4.7f,m_Child.transform.position.y);
 		}
-		else
+		else if(m_InitialWall.x >= 4.7f)
 		{
-			m_NextWall = GameObject.Find("Left Wall");
+			m_NextWall =new Vector2(-4.7f,m_Child.transform.position.y);
 		}
 		
 		//Generate the appropriate position to appear from the teleport
-		Vector2 m_EndPos = new Vector2(m_NextWall.transform.position.x, fNextY);
+		Vector2 m_EndPos = new Vector2(m_NextWall.x, fNextY);
 		
 		Positions.Add(m_StartPos);
 		Positions.Add(m_EndPos);
 		Positions.Add(m_AttackTarget.transform.position);
+
+		//Utility.DrawCross(Positions[0],Color.black,0.5f);
+		//Utility.DrawCross(Positions[1],Color.white,0.5f);
+		//Utility.DrawCross(Positions[2],Color.blue,0.5f);
 		
 		return Positions;
 	}
@@ -251,22 +266,22 @@ public class ECTrickAttackState : IECState {
 		return m_RWall;
 	}
 	
-	private GameObject GetWall()
+	private Vector2 GetWallPos()
 	{
-		GameObject m_LeftWall = GameObject.Find("Left Wall");
-		GameObject m_RightWall = GameObject.Find("Right Wall");
+		Vector2 LeftSide = new Vector2(-4.7f,m_Child.transform.position.y);
+		Vector2 RightSide = new Vector2(4.7f,m_Child.transform.position.y);
 		int random = Random.Range(0,2);
 		if(random == 0)
 		{
-			return m_LeftWall;
+			return LeftSide;
 		}
-		return m_RightWall;
+		return RightSide;
 	}
 
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		if (Vector2.Distance(m_Child.transform.position, _Pos) <= m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2 + GameObject.Find("Left Wall").GetComponent<SpriteRenderer>().bounds.size.x/2)
+		if (Vector2.Distance(m_Child.transform.position	, _Pos) <= 0.4f)
 		{
 			return true;
 		}

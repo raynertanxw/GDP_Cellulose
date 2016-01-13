@@ -39,8 +39,8 @@ public class PositionQuery
 	private bool IsAllThreatEmpty ()
 	{
 		List<GameObject> Threats = new List<GameObject>();
-		Threats.Add(GameObject.Find("Node_Left"));
-		Threats.Add(GameObject.Find("Node_Right"));
+		Threats.Add(Node_Manager.GetNode(0).gameObject);
+        Threats.Add(Node_Manager.GetNode(1).gameObject);
 		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
 		
 		bool bResult = false;
@@ -62,8 +62,8 @@ public class PositionQuery
 	private GameObject GetMostThreateningThreat()
 	{
 		List<GameObject> Threats = new List<GameObject>();
-		Threats.Add(GameObject.Find("Node_Left"));
-		Threats.Add(GameObject.Find("Node_Right"));
+		Threats.Add(GameObject.Find("UI_Player_LeftNode"));
+		Threats.Add(GameObject.Find("UI_Player_RightNode"));
 		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
 		int nIndexForMostThreating = 0;
 		int nHighestScore = 0;
@@ -89,8 +89,8 @@ public class PositionQuery
 	private GameObject GetMostWeakNode ()
 	{
 		List<GameObject> Threats = new List<GameObject>();
-		Threats.Add(GameObject.Find("Node_Left"));
-		Threats.Add(GameObject.Find("Node_Right"));
+		Threats.Add(GameObject.Find("UI_Player_LeftNode"));
+		Threats.Add(GameObject.Find("UI_Player_RightNode"));
 		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
 		int nIndexForMostWeak = 0;
 		int nLowestScore = 999;

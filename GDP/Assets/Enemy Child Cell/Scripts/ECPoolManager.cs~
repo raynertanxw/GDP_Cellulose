@@ -5,7 +5,9 @@ using System.Collections.Generic;
 public class ECPoolManager : MonoBehaviour {
 
 	private static Queue<GameObject> s_ECPool;
+	
 	public GameObject EnemyChildCell;
+	
 	private int SpawnCount;
 
 	// Use this for initialization
@@ -26,6 +28,11 @@ public class ECPoolManager : MonoBehaviour {
 		}
 		
 		SpawnCount = 0;
+	}
+	
+	public static Queue<GameObject> ECPool
+	{
+		get{ return s_ECPool;}
 	}
 	
 	//A function to add a Enemy Child Cell to the pool

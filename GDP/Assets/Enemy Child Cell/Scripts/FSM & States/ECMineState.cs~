@@ -12,7 +12,7 @@ public class ECMineState : IECState {
 	private bool bExploding;
 	private bool bExploded;
 	private bool bExpanding;
-	
+
 	//A float for the maximum amount of acceleration that an EC can take in a landmine states
 	private float fMaxAcceleration;
 	
@@ -56,8 +56,8 @@ public class ECMineState : IECState {
 		fExpansionSpeed = 0.1f;
 		bExpanding = true;
 		
-		fExplosiveRange = 2.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
-		fKillRange = 0.45f * fExplosiveRange;
+		fExplosiveRange = 2.8f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
+		fKillRange = 0.65f * fExplosiveRange;
 	}
 	
 	public override void Enter()
@@ -92,6 +92,7 @@ public class ECMineState : IECState {
 				
 				fSeperateInterval = CalculateSpreadRate(GetCenterOfMines(GetLandmines()),Target);
 				GatherTogether = true;
+				Utility.DrawPath(PathToTarget,Color.red,0.1f);
 			}
 		}
 		else if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),SpreadPoint.Position))
@@ -115,12 +116,17 @@ public class ECMineState : IECState {
 		if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),PathToTarget[PathToTarget.Count - 1].Position))
 		{
 			bReachTarget = true;
+			m_ecFSM.StopChildCorountine(ExplodeCorountine());
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
-		
-		if(bExploding)
+
+		if(GatherTogether && m_ecFSM.HitBottomOfScreen())
 		{
-			m_ecFSM.StopChildCorountine(ExplodeCorountine());
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
+		}
+
+		if(GatherTogether)
+		{
 			ExplodingGrowShrink();
 		}
 	}
@@ -146,7 +152,7 @@ public class ECMineState : IECState {
 		if(GatherTogether && !bExploding && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive) && bReachTarget == false)
 		{
 			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
-				
+		
 			if(!HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) )
 			{
 				m_Child.GetComponent<Rigidbody2D>().drag = 3f;
@@ -235,18 +241,15 @@ public class ECMineState : IECState {
 	
 	private Spread DetermineSpreadness()
 	{
-		List<GameObject> NodeList = new List<GameObject>();
-		NodeList.Add(GameObject.Find("Node_Left"));
-		NodeList.Add(GameObject.Find("Node_Right"));
-		
-		for(int i = 0; i < NodeList.Count; i++)
+		if(Target.name.Contains("Captain"))
 		{
-			if(NodeList[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 3)
-			{
-				return Spread.Wide;
-			}
+			return Spread.Tight;
 		}
 		
+		if(Target.GetComponent<Node_Manager>() != null && Target.GetComponent<Node_Manager>().GetNodeChildList().Count > 6)
+		{
+			return Spread.Wide;
+		}
 		return Spread.Tight;
 	}
 	
@@ -464,7 +467,7 @@ public class ECMineState : IECState {
 			return false;
 		}
 	
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 3f);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.82f);
 		
 		if(_PlayerCell.name.Contains("Node"))
 		{
@@ -543,6 +546,8 @@ public class ECMineState : IECState {
 		
 		return Vector2.zero;
 	}
+
+
 	
 	private Vector2 GetBlastAwayForce(float _Distance)
 	{
@@ -583,15 +588,17 @@ public class ECMineState : IECState {
 	//during explosions
 	private void ExplodeSetup()
 	{
-
+		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		bExploding = false;
+		m_Child.transform.localScale = new Vector3(1f,1f,1f);
 	}
 	
 	//Go through all the surround cells, destroy any player child cells and damaing the player main cell if in range
 	private void ExplodeDestroy()
 	{
-		//Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
-		//Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
-		
+		Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
+		Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
+
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
@@ -613,6 +620,19 @@ public class ECMineState : IECState {
 			{
 				m_SurroundingObjects[i].GetComponent<PlayerMain>().HurtPlayerMain();
 			}
+			else if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].name.Contains("Squad_Child"))
+			{
+				float DistanceFromCenterOfBlast = Vector2.Distance(m_Child.transform.position,m_SurroundingObjects[i].transform.position);
+				if(DistanceFromCenterOfBlast > fKillRange)
+				{
+					m_SurroundingObjects[i].GetComponent<Rigidbody2D>().AddForce(GetBlastAwayForce(DistanceFromCenterOfBlast - fKillRange));
+				}
+				else
+				{
+					m_SurroundingObjects[i].GetComponent<SquadChildFSM>().KillSquadChild();
+				}
+			}
+			
 		}
 		
 		//After all the damaging and killing is done, transition the enemy child to a dead state
@@ -626,7 +646,11 @@ public class ECMineState : IECState {
 		//play explode sound/animation whatever
 		ExplodeSetup();
 		
-		yield return new WaitForSeconds(1.5f);
+		while(m_Child.transform.localScale.x < 7f)
+		{
+			m_Child.transform.localScale += new Vector3(0.75f,0.75f,0.75f);
+			yield return new WaitForSeconds(0.0005f);//0.0005
+		}
 		
 		if(m_ecFSM.CurrentStateEnum == ECState.Landmine)
 		{

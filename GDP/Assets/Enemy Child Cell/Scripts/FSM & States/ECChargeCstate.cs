@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -173,6 +173,11 @@ public class ECChargeCState : IECState {
 		else if(TargetSource.name.Contains("Squad"))
 		{
 			List<SquadChildFSM> m_PotentialTargets = SquadChildFSM.GetAliveChildList();
+			if(m_PotentialTargets.Count <= 0)
+			{
+				return null;
+			}
+			
 			SquadChildFSM ClosestSquadChild = m_PotentialTargets[0];
 			float ClosestDistance = Mathf.Infinity;
 			
@@ -198,8 +203,8 @@ public class ECChargeCState : IECState {
 	{
 		//Three different GameObject references to store the three potential source that produce a threat to the enemy main cell
 		GameObject m_Squad = GameObject.Find("Squad_Captain_Cell");
-		Node_Manager m_LeftNode = Node_Manager.GetNode(0);
-		Node_Manager m_RightNode = Node_Manager.GetNode(1);
+		GameObject m_LeftNode = GameObject.Find("UI_Player_LeftNode");
+		GameObject m_RightNode = GameObject.Find("UI_Player_RightNode");
 		
 		//Calculate the scores for the three threat source on how threatening it is to the enemy main cell
 		int nSquadScore = 0;
@@ -225,21 +230,21 @@ public class ECChargeCState : IECState {
 		}
 		else if(nHighestThreat == nLeftScore)
 		{
-			return m_LeftNode.gameObject;
+			return m_LeftNode;
 		}
 		else if(nHighestThreat == nRightScore)
 		{
-			return m_RightNode.gameObject;
+			return m_RightNode;
 		}
 		
 		return null;
 	}
 	
 	//A function to evaluate the node based on the enemy main cell and player condition to return a score
-	private int EvaluateNode (Node_Manager _Node)
+	private int EvaluateNode (GameObject _Node)
 	{
 		//if the node contains no cell, it serve no threat to the enemy main cell
-		if(_Node.GetNodeChildList().Count == 0)
+		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
 		{
 			return 0;
 		}
@@ -247,7 +252,7 @@ public class ECChargeCState : IECState {
 		int nthreatLevel = 0;
 		
 		//increase score based on amount of cells in that node
-		nthreatLevel += _Node.GetNodeChildList().Count;
+		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
 		
 		return nthreatLevel;
 	}

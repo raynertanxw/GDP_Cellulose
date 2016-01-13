@@ -92,6 +92,7 @@ public class ECMineState : IECState {
 				
 				fSeperateInterval = CalculateSpreadRate(GetCenterOfMines(GetLandmines()),Target);
 				GatherTogether = true;
+				Utility.DrawPath(PathToTarget,Color.red,0.1f);
 			}
 		}
 		else if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),SpreadPoint.Position))
@@ -151,7 +152,7 @@ public class ECMineState : IECState {
 		if(GatherTogether && !bExploding && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive) && bReachTarget == false)
 		{
 			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
-				
+		
 			if(!HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) )
 			{
 				m_Child.GetComponent<Rigidbody2D>().drag = 3f;
@@ -240,18 +241,15 @@ public class ECMineState : IECState {
 	
 	private Spread DetermineSpreadness()
 	{
-		List<GameObject> NodeList = new List<GameObject>();
-		NodeList.Add(GameObject.Find("Node_Left"));
-		NodeList.Add(GameObject.Find("Node_Right"));
-		
-		for(int i = 0; i < NodeList.Count; i++)
+		if(Target.name.Contains("Captain"))
 		{
-			if(NodeList[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 3)
-			{
-				return Spread.Wide;
-			}
+			return Spread.Tight;
 		}
 		
+		if(Target.GetComponent<Node_Manager>() != null && Target.GetComponent<Node_Manager>().GetNodeChildList().Count > 6)
+		{
+			return Spread.Wide;
+		}
 		return Spread.Tight;
 	}
 	
@@ -622,6 +620,19 @@ public class ECMineState : IECState {
 			{
 				m_SurroundingObjects[i].GetComponent<PlayerMain>().HurtPlayerMain();
 			}
+			else if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].name.Contains("Squad_Child"))
+			{
+				float DistanceFromCenterOfBlast = Vector2.Distance(m_Child.transform.position,m_SurroundingObjects[i].transform.position);
+				if(DistanceFromCenterOfBlast > fKillRange)
+				{
+					m_SurroundingObjects[i].GetComponent<Rigidbody2D>().AddForce(GetBlastAwayForce(DistanceFromCenterOfBlast - fKillRange));
+				}
+				else
+				{
+					m_SurroundingObjects[i].GetComponent<SquadChildFSM>().KillSquadChild();
+				}
+			}
+			
 		}
 		
 		//After all the damaging and killing is done, transition the enemy child to a dead state

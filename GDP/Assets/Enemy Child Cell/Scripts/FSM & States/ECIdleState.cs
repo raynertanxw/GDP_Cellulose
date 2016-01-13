@@ -101,7 +101,7 @@ public class ECIdleState : IECState
 		{
 			Acceleration += SeperateDirection.normalized * fIdleScale;
 			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
-			//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
 		}
 		else if(m_ecFSM.bHitWall == true && !HasChildEnterMain(m_Child))
 		{

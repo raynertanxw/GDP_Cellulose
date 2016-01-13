@@ -50,8 +50,8 @@ public class ECTrickAttackState : IECState {
 		fChargeSpeed = 1f;
 		fMaxAcceleration = 20f;
 		
-		m_Nodes[0] = GameObject.Find("Node_Left");
-		m_Nodes[1] = GameObject.Find("Node_Right");
+		m_Nodes[0] = GameObject.Find("UI_Player_LeftNode");
+		m_Nodes[1] = GameObject.Find("UI_Player_RightNode");
 		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 	}
 	
@@ -73,7 +73,7 @@ public class ECTrickAttackState : IECState {
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
 		bTeleported = false;
-		Utility.DrawPath(PathToTarget,Color.red,0.1f);
+		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
 	}
@@ -246,9 +246,9 @@ public class ECTrickAttackState : IECState {
 		Positions.Add(m_EndPos);
 		Positions.Add(m_AttackTarget.transform.position);
 
-		Utility.DrawCross(Positions[0],Color.black,0.5f);
-		Utility.DrawCross(Positions[1],Color.white,0.5f);
-		Utility.DrawCross(Positions[2],Color.blue,0.5f);
+		//Utility.DrawCross(Positions[0],Color.black,0.5f);
+		//Utility.DrawCross(Positions[1],Color.white,0.5f);
+		//Utility.DrawCross(Positions[2],Color.blue,0.5f);
 		
 		return Positions;
 	}
