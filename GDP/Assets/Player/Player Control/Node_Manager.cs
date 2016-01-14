@@ -73,6 +73,7 @@ public class Node_Manager : MonoBehaviour
 	
 	#region Getter and Setters
 	public List<PlayerChildFSM> GetNodeChildList() { return m_playerChildInNode; }
+	public int activeChildCount { get { return m_playerChildInNode.Count; } }
 	public void AddChildToNodeList(PlayerChildFSM child)
 	{
 		m_playerChildInNode.Add(child);

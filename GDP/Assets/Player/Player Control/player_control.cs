@@ -121,24 +121,82 @@ public class player_control : MonoBehaviour
 
 	public void ActionSpawnCaptain()
 	{
+		// Squad Cpt can only spawn one instance.
 		if (PlayerSquadFSM.Instance.bIsAlive == true) return;
-		
-		List<PlayerChildFSM> childList = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
-		
+
 		// Child count criteria met.
-		if (childList.Count >= m_nSqaudCaptainChildCost)
+		if (totalActiveChild() >= m_nSqaudCaptainChildCost)
 		{
-			// Move them to the center and remove the requred number of child cells.
-			for (int i = 0; i < m_nSqaudCaptainChildCost; i++)
+			int childrenLeftToConsume = m_nSqaudCaptainChildCost;
+
+			// Left node more than right.
+			if (Node_Manager.GetNode(0).activeChildCount > Node_Manager.GetNode(1).activeChildCount)
 			{
-				// Move to center.
+				List<PlayerChildFSM> childList = Node_Manager.GetNode(1).GetNodeChildList();
+
+				// Use up cells in smaller node, OR till half of spawn cost.
+				for (int i = 0; i < childList.Count; i++)
+				{
+					// Move to center.
+
+					// Converge to center.
+
+					// Kill them.
+					childList[i].KillPlayerChildCell();
+					childrenLeftToConsume--;
+
+					if (i == childrenLeftToConsume/2)
+						break;
+				}
+
+				childList = Node_Manager.GetNode(0).GetNodeChildList();
+
+				// Consume the remaining needed children.
+				for (int i = 0; i < childrenLeftToConsume; i++)
+				{
+					// Move to center.
+					
+					// Converge to center.
+					
+					// Kill them.
+					childList[i].KillPlayerChildCell();
+					// DO NOT reduce childreLefToConsume, for loop will terminate prematurely.
+				}
+			}
+
+			// Right node more than left or equal numbers.
+			else
+			{
+				List<PlayerChildFSM> childList = Node_Manager.GetNode(0).GetNodeChildList();
 				
+				// Use up cells in smaller node, OR till half of spawn cost.
+				for (int i = 0; i < childList.Count; i++)
+				{
+					// Move to center.
+					
+					// Converge to center.
+					
+					// Kill them.
+					childList[i].KillPlayerChildCell();
+					childrenLeftToConsume--;
+					
+					if (i == childrenLeftToConsume/2)
+						break;
+				}
 				
-				// Converge to center.
+				childList = Node_Manager.GetNode(1).GetNodeChildList();
 				
-				
-				// Kill them.
-				childList[i].KillPlayerChildCell();
+				// Consume the remaining needed children.
+				for (int i = 0; i < childrenLeftToConsume; i++)
+				{
+					// Move to center.
+					
+					// Converge to center.
+					
+					// Kill them.
+					childList[i].KillPlayerChildCell();
+					// DO NOT reduce childreLefToConsume, for loop will terminate prematurely.
+				}
 			}
 			
 			// Spawn in the Squad Captain.
@@ -154,6 +212,22 @@ public class player_control : MonoBehaviour
 	#endregion
 
 
+
+
+
+
+
+
+	#region Helper Functions
+	private int totalActiveChild()
+	{
+		int numChild = 0;
+		numChild += Node_Manager.GetNode(0).activeChildCount;
+		numChild += Node_Manager.GetNode(1).activeChildCount;
+
+		return numChild;
+	}
+	#endregion
 
 
 
