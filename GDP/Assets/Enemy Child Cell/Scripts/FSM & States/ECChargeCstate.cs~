@@ -16,6 +16,8 @@ public class ECChargeCState : IECState {
 
 	private bool bReturnToIdle;
 	
+	private enum Style {Aggressive,Defensive};
+	
 	//Constructor
 	public ECChargeCState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
@@ -318,5 +320,63 @@ public class ECChargeCState : IECState {
 		}
 		
 		return Neighbours;
+	}
+	
+	private Style GetChargeChildStyle()
+	{
+		float PlayerHP = m_ecFSM.m_PMain.GetComponent<PlayerMain>().Health;
+		float EnemyHP = m_Main.GetComponent<EnemyMainFSM>().Health;
+		
+		float EnemyChildAmt = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
+		float PlayerChildAmt = GameObject.Find("UI_Player_LeftNode").GetComponent<Node_Manager>().GetNodeChildList().Count + GameObject.Find("UI_Player_LeftNode").GetComponent<Node_Manager>().GetNodeChildList().Count;
+		float SquadChildAmt = GameObject.Find("Squad_Captain_Cell").GetComponent<PlayerSquadFSM>().AliveChildCount();
+		
+		int Score = 0;
+		
+		//Score will be added and reduced for every if condition passed
+		if(EnemyHP >= PlayerHP)
+		{
+			Score += 1;
+	
+			//Enemy HP is 1.5 time of Player HP
+			if(EnemyHP > 1.5f * PlayerHP)
+			{
+				Score += 2;
+			}
+			
+			//Enemy child count >= player child count 
+			if(EnemyChildAmt > PlayerChildAmt)
+			{
+				Score += 1;
+				if(EnemyChildAmt > 1.5f * PlayerChildAmt)
+				{
+					Score += 2;
+				}
+			}
+			
+			//Enemy Child count < player child count
+			Score -= 1;
+			
+			//A squad exist
+			Score -= 1;
+			
+			//A squad have a large amount of squad child
+			Score -= 2;
+		}
+		else if(EnemyHP < PlayerHP)
+		{
+			//Player HP is 1.5 time of Enemy HP
+			
+			//Enemy child count >= player child count 
+			
+			//Enemy Child count < player child count
+			
+			//A squad exist
+			
+			//A squad have a large amount of squad child
+			
+		}
+		
+		return Style.Defensive;
 	}
 }
