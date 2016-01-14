@@ -6,8 +6,6 @@ using System.Collections.Generic;
 public class player_control : MonoBehaviour
 {
 	public static int s_nResources;
-	private int m_nSpawnCost = 5;
-	private int m_nSqaudCaptainChildCost = 10;
 	private Transform m_SquadCaptainNode;
 	
 	private int m_nActiveNode = 1;
@@ -16,7 +14,7 @@ public class player_control : MonoBehaviour
 	
 	void Awake()
 	{
-		s_nResources = 1000;
+		s_nResources = Settings.s_nPlayerInitialResourceCount;
 
 		m_SquadCaptainNode = GameObject.Find("Node_Captain").transform;
 		leftNodeCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
@@ -83,13 +81,13 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _selectedNode)
 	{
-		if (s_nResources > m_nSpawnCost)
+		if (s_nResources > Settings.s_nPlayerChildSpawnCost && totalActiveChild() < Settings.s_nPlayerMaxChildCount)
 		{
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
 			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(Node_Manager.GetNode(_selectedNode).transform.position + (Vector3)Random.insideUnitCircle*0.5f);
 			currentChild.m_assignedNode = Node_Manager.GetNode(_selectedNode);
             currentChild.m_assignedNode.AddChildToNodeList(currentChild);
-			s_nResources -= m_nSpawnCost;
+			s_nResources -= Settings.s_nPlayerChildSpawnCost;
 		}
 		else
 		{
@@ -125,9 +123,9 @@ public class player_control : MonoBehaviour
 		if (PlayerSquadFSM.Instance.bIsAlive == true) return;
 
 		// Child count criteria met.
-		if (totalActiveChild() >= m_nSqaudCaptainChildCost)
+		if (totalActiveChild() >= Settings.s_nPlayerSqaudCaptainChildCost)
 		{
-			int childrenLeftToConsume = m_nSqaudCaptainChildCost;
+			int childrenLeftToConsume = Settings.s_nPlayerSqaudCaptainChildCost;
 
 			// Left node more than right.
 			if (Node_Manager.GetNode(0).activeChildCount > Node_Manager.GetNode(1).activeChildCount)
