@@ -151,7 +151,8 @@ public class EMLeraningAgent : MonoBehaviour
 		if (state == EMState.Landmine)
 		{
 			fOverallScore += Mathf.Sqrt ((float)currentEnemyChild);
-			fOverallScore += Random.Range (Mathf.Sqrt ((float)currentPlayerChild), Mathf.Sqrt ((float)currentPlayerChild) * m_EMFSM.InitialAggressiveness / 1.5f);
+			fOverallScore += Random.Range (Mathf.Sqrt ((float)currentPlayerChild) * m_EMFSM.InitialAggressiveness / 5f, 
+			                               Mathf.Sqrt ((float)currentPlayerChild) * m_EMFSM.InitialAggressiveness / 2.5f);
 		}
 		// Main state
 		if (fOverallScore < 0f && state == EMState.Maintain)
