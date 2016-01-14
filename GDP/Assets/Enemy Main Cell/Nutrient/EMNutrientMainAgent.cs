@@ -72,9 +72,9 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Remove destroyed from the list
 		AgentList.RemoveAll(item => item == null);
-		// Destroy the nutrient if enemy main cell does not exist
-		if (EnemyMainFSM.Instance () == null)
-			Destroy (this.gameObject);
+		// Deactivate the nutrient if enemy main cell does not exist
+		if (EnemyMainFSM.Instance ().isActiveAndEnabled == false)
+			ActivateOrDeactivate (false);
 		// Deactivate the nutrient if it is empty
 		if (nSize == 0)
 			ActivateOrDeactivate (false);

@@ -154,6 +154,8 @@ public class EMController : MonoBehaviour
 			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Update Aggresiveness
 		UpdateAggressiveness ();
+		// Which whether the player wins
+		LoseCheck ();
 	}
 
 	#region Damage behavior
@@ -362,11 +364,14 @@ public class EMController : MonoBehaviour
 	}
 	#endregion
     
-	// Checking whether the enemy main cell goes out of the screen in which the player loses
+	// Checking whether the enemy main cell goes out of the screen or runs out of health 
+	// Deactivate enemy main cell gameObject if the player wins
 	void LoseCheck ()
 	{
 		if (transform.position.y - fRadius / 2f > EMHelper.topLimit)
-			Destroy (this.gameObject);
+			this.gameObject.SetActive (false);
+		else if (m_EMFSM.Health <= 0)
+			this.gameObject.SetActive (false);
 	}
 
     // Recevice nutrient from incoming enemy mini nutrient and destroy the mini nutrient
