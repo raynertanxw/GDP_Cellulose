@@ -40,6 +40,11 @@ public class EMNutrientMainAgent : MonoBehaviour
 		behaviours.Remove(behaviour);
 	}
 
+	public void ActivateOrDeactivate (bool state)
+	{
+		this.gameObject.SetActive (state);
+	}
+
 	void Awake()
 	{
 		// Initialiation
@@ -52,12 +57,13 @@ public class EMNutrientMainAgent : MonoBehaviour
 		bSucked = false;
 		bCanSpawn = true;
 		position = this.gameObject.transform.position;
+
+		// Add the agent to the agent list
+		AgentList.Add(this);
 	}
 
 	void Start()
 	{
-		// Add the agent to the agent list
-		AgentList.Add(this);
 		// Initialize the position 
 		InitialPosition ();
 	}
