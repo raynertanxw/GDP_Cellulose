@@ -91,8 +91,8 @@ public class FormationDatabase
 		{
 			Vector2 CurrentFormationPos = new Vector2(0f,-2.5f * _MainScale);//Although it is positive 1.4f here, it should be negative. It's left positive as it will be minus away from the main pos
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.75f * _MainScale;
-			float YInterval = 0.5f * _MainScale;
+			float XInterval = 0.55f * _MainScale;
+			float YInterval = 0.4f * _MainScale;
 			float NextLineInterval = -0.8f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
@@ -141,12 +141,14 @@ public class FormationDatabase
 					LeftCount++;
 
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
-
-					CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x - LeftCount * XInterval,FPositionDatabase[CurrentCenterIndex].y + LeftCount * YInterval);
-					StoredFormationPos = CurrentFormationPos;
-					FPositionDatabase[FIndex] = StoredFormationPos;
-					FAvaliabilityDatabase[FIndex] = false;
 					
+					if(FPositionDatabase.ContainsKey(CurrentCenterIndex))
+					{
+						CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x - LeftCount * XInterval,FPositionDatabase[CurrentCenterIndex].y + LeftCount * YInterval);
+						StoredFormationPos = CurrentFormationPos;
+						FPositionDatabase[FIndex] = StoredFormationPos;
+						FAvaliabilityDatabase[FIndex] = false;
+					}
 					continue;
 				}
 			}
@@ -155,8 +157,8 @@ public class FormationDatabase
 		{
 			Vector2 CurrentFormationPos = new Vector2(0f,-1.6f * _MainScale);
 			Vector2 StoredFormationPos = new Vector2(0f,0f);
-			float XInterval = 0.75f * _MainScale;// and -0.65 for left side
-			float YInterval = -0.5f * _MainScale;
+			float XInterval = 0.55f * _MainScale;// and -0.65 for left side
+			float YInterval = -0.4f * _MainScale;
 			float NextLineInterval = -0.6f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
@@ -437,9 +439,33 @@ public class FormationDatabase
 		else
 		{
 			//Add the new defender into the index database with a new index
-			FIndexDatabase.Add(_NewDefender.name,FIndexDatabase.Count + 1);
-			FPositionDatabase.Add(FIndexDatabase[_NewDefender.name],new Vector2(0f,0f));
-			FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
+			if(FIndexDatabase.ContainsKey(_NewDefender.name))
+			{
+				FIndexDatabase[_NewDefender.name] = FIndexDatabase.Count + 1;
+			}
+			else
+			{
+				FIndexDatabase.Add(_NewDefender.name,FIndexDatabase.Count + 1);
+			}
+			
+			if(FPositionDatabase.ContainsKey(FIndexDatabase[_NewDefender.name]))
+			{
+				FPositionDatabase[FIndexDatabase[_NewDefender.name]] = Vector2.zero;
+			}
+			else
+			{
+				FPositionDatabase.Add(FIndexDatabase[_NewDefender.name],Vector2.zero);
+			}
+
+			if(FAvaliabilityDatabase.ContainsKey(FIndexDatabase[_NewDefender.name]))
+			{
+				FAvaliabilityDatabase[FIndexDatabase[_NewDefender.name]] = false;
+			}
+			else
+			{
+				FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
+			}
+			
 			
 			//Update the database to recalculate the position for all indexes
 			UpdateDatabaseFormation(CurrentFormation,fCurrentMainScale);
