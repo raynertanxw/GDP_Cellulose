@@ -20,6 +20,8 @@ public class EMController : MonoBehaviour
 	// Speed
 	private float fSpeed;
 	public float Speed{ get { return fSpeed; } }
+	private float fHoriSpeed;
+	public float HoriSpeed { get { return fHoriSpeed; } }
 	// Speed factor that changes speed
 	private float fSpeedFactor;
 	public float SpeedFactor { get { return fSpeedFactor; } }
@@ -34,7 +36,6 @@ public class EMController : MonoBehaviour
 	private bool bMovingLeft;
 	public bool MovingLeft { get { return bMovingLeft; } }
 	private bool bCanChangeHori;
-	float fHoriSpeed;
 	#endregion
 
 	#region Status
@@ -58,13 +59,9 @@ public class EMController : MonoBehaviour
 	public int NutrientNum { get { return nCurrentNutrientNum; } }
 	public void ReduceNutrient () { nCurrentNutrientNum--; }
 	public void AddNutrient () { nCurrentNutrientNum++; }
-	private Vector2 initialScale;
-	private Vector2 currentScale;
-	public Vector2 CurrentScale { get { return currentScale; } }
 	#endregion
 
 	private Rigidbody2D thisRB;
-	public Rigidbody2D Rigibody { get { return thisRB; } }
 	private float fRadius;
 	public float Radius { get { return fRadius; } }
 
@@ -79,9 +76,6 @@ public class EMController : MonoBehaviour
 		// Size
 		nInitialNutrientNum = 100;
 		nCurrentNutrientNum = nInitialNutrientNum;
-		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(m_EMFSM.Health)));
-		transform.localScale = (Vector3)currentScale;
 		// Speed
 		fSpeed = .05f;
 		fSpeedFactor = 1f;
@@ -143,12 +137,6 @@ public class EMController : MonoBehaviour
 		}
         // Check the direction of horizontal movement is correct
         HorizontalCheck();
-		// Check size
-		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(m_EMFSM.Health))))
-		{
-			currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(m_EMFSM.Health)));
-			transform.localScale = (Vector3)currentScale;
-		}
 		// Update Radius
 		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
 			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
@@ -253,6 +241,7 @@ public class EMController : MonoBehaviour
 			
 			// Change speed based on the current aggressiveness of the enemy main cell
 			float fSpeed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
+			fHoriSpeed = fSpeed;
 			
 			// Frequency of checking for changing of direction in terms of the current aggressiveness of the enemy main cell
 			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
@@ -271,6 +260,7 @@ public class EMController : MonoBehaviour
 			
 			// Change speed based on the number of child cells of the enemy main cell
 			float fSpeed = Random.Range (.1f, .5f / Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum));
+			fHoriSpeed = fSpeed;
 			
 			// Frequency of checking for changing of direction in terms of the number of child cells of the enemy main cell
 			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 1f)) * 1.5f, 
@@ -289,6 +279,7 @@ public class EMController : MonoBehaviour
 			
 			// Change speed based on the current aggressiveness of the enemy main cell
 			float fSpeed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
+			fHoriSpeed = fSpeed;
 			
 			// Frequency of checking for changing of direction in terms of the current aggressiveness of the enemy main cell
 			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
