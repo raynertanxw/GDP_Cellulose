@@ -8,5 +8,9 @@ public class Settings : MonoBehaviour
 	public const int s_nPlayerMaxChildCount = 100;
 	public const int s_nPlayerChildSpawnCost = 5;
 	public const int s_nPlayerSqaudCaptainChildCost = 10;
+
+	public const int s_nPlayerActionBurstShotChildCost = 5;
+	public const int s_nPlayerActionSwarmTargetChildCost = 10;
+	public const int s_nPlayerActionScatterShotChildCost = 20;
 	#endregion
 }
