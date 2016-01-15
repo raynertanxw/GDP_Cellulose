@@ -52,7 +52,7 @@ public class ECTrickAttackState : IECState {
 
 		m_Nodes[0] = Node_Manager.GetNode(Node.LeftNode).gameObject;
 		m_Nodes[1] = Node_Manager.GetNode(Node.RightNode).gameObject;
-		m_SquadCaptain = PlayerSquadFSM.s_m_Instance.gameObject;
+		m_SquadCaptain = PlayerSquadFSM.Instance.gameObject;
 	}
 
 	//initialize the array and various variables for the trick attack
