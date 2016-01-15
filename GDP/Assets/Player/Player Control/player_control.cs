@@ -12,19 +12,22 @@ public class player_control : MonoBehaviour
 
 	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp;
 	private RectTransform[] btnRectTransform;
+	private Vector3 mainCellPos;
 	private Vector3[] btnPos;
 	private const float s_UIFadeOutDelay = 1.5f;
 	private const float s_UIFadeOutSpeed = 0.8f;
-	private const float s_UIPopInSpeed = 2.0f;
+	private const float s_UIPopInSpeed = 3.5f;
+	private const float s_UIPopOutSpeed = 5.0f;
 	
 	void Awake()
 	{
 		s_nResources = Settings.s_nPlayerInitialResourceCount;
 
 		m_SquadCaptainNode = GameObject.Find("Node_Captain").transform;
-		leftNodeCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
-		rightNodeCanavsGrp = transform.GetChild(4).GetComponent<CanvasGroup>();
-		spawnCtrlCanvasGrp = transform.GetChild(2).GetComponent<CanvasGroup>();
+		spawnCtrlCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
+		leftNodeCanvasGrp = transform.GetChild(4).GetComponent<CanvasGroup>();
+		rightNodeCanavsGrp = transform.GetChild(5).GetComponent<CanvasGroup>();
+		mainCellPos = transform.GetChild(6).GetComponent<RectTransform>().localPosition;
 		btnRectTransform = new RectTransform[3];
 		btnRectTransform[0] = spawnCtrlCanvasGrp.transform.GetChild(0).GetComponent<RectTransform>();
 		btnRectTransform[1] = spawnCtrlCanvasGrp.transform.GetChild(1).GetComponent<RectTransform>();
@@ -34,12 +37,15 @@ public class player_control : MonoBehaviour
 			btnPos[i] = btnRectTransform[i].localPosition;
 
 		// Hide both left and right node.
+		leftNodeCanvasGrp.alpha = 0f;
+		rightNodeCanavsGrp.alpha = 0f;
+		spawnCtrlCanvasGrp.alpha = 0f;
 		SetLeftNodeControlVisibility(false);
 		SetRightNodeControlVisibility(false);
 		SetSpawnCtrlVisibility(false);
 	}
 
-	#region Bringing up control sets
+	#region Bringing up and hiding control sets
 	public void ChangeActiveNode(Node nNewNode)
 	{
 		m_nActiveNode = nNewNode;
@@ -69,9 +75,8 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
-			leftNodeCanvasGrp.alpha = 0f;
-			leftNodeCanvasGrp.interactable = false;
-			leftNodeCanvasGrp.blocksRaycasts = false;
+			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+			StartCoroutine(QuickFadeOutCanvasGroup(leftNodeCanvasGrp));
 		}
 	}
 
@@ -85,9 +90,8 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
-			rightNodeCanavsGrp.alpha = 0f;
-			rightNodeCanavsGrp.interactable = false;
-			rightNodeCanavsGrp.blocksRaycasts = false;
+			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+			StartCoroutine(QuickFadeOutCanvasGroup(rightNodeCanavsGrp));
 		}
 	}
 
@@ -105,20 +109,21 @@ public class player_control : MonoBehaviour
 			// Only pop in if spawn control has completely faded.
 			if (spawnCtrlCanvasGrp.alpha == 0f)
 				StartCoroutine(Constants.s_strAnimateInSpawnCtrl);
-			else
-			{
-				spawnCtrlCanvasGrp.interactable = true;
-				spawnCtrlCanvasGrp.blocksRaycasts = true;
-			}
 
 			RestartSpawnCtrlFadeOut();
 		}
 		else
 		{
-			spawnCtrlCanvasGrp.alpha = 0f;
-			spawnCtrlCanvasGrp.interactable = false;
-			spawnCtrlCanvasGrp.blocksRaycasts = false;
+			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+			StartCoroutine(QuickFadeOutCanvasGroup(spawnCtrlCanvasGrp));
 		}
+	}
+
+	public void DeselectAllCtrls()
+	{
+		SetSpawnCtrlVisibility(false);
+		SetLeftNodeControlVisibility(false);
+		SetRightNodeControlVisibility(false);
 	}
 	#endregion
 
@@ -132,6 +137,18 @@ public class player_control : MonoBehaviour
 			cgrp.alpha -= s_UIFadeOutSpeed * Time.deltaTime;
 			yield return null;
 		}
+		cgrp.interactable = false;
+		cgrp.blocksRaycasts = false;
+	}
+
+	private IEnumerator QuickFadeOutCanvasGroup(CanvasGroup cgrp)
+	{
+		while (cgrp.alpha > 0)
+		{
+			cgrp.alpha -= s_UIPopOutSpeed * Time.deltaTime;
+			yield return null;
+		}
+
 		cgrp.interactable = false;
 		cgrp.blocksRaycasts = false;
 	}
@@ -163,15 +180,26 @@ public class player_control : MonoBehaviour
 	private IEnumerator AnimateInSpawnCtrl()
 	{
 		float t = 0f;
-		Vector3 mainCellPos = new Vector3(0f, -800f, 0f);
 		while (t < 1.0f)
 		{
 			for (int i = 0; i < btnRectTransform.Length; i++)
+			{
 				btnRectTransform[i].localPosition = Vector3.Lerp(mainCellPos, btnPos[i], t);
+				btnRectTransform[i].localScale = Vector3.Lerp(Vector3.zero, Vector3.one, t);
+			}
+			spawnCtrlCanvasGrp.alpha = t;
 			t += s_UIPopInSpeed * Time.deltaTime;
 
 			yield return null;
 		}
+
+		// Ensure it's snapped to final position.
+		for (int i = 0; i < btnRectTransform.Length; i++)
+		{
+			btnRectTransform[i].localPosition = btnPos[i];
+			btnRectTransform[i].localScale = Vector3.one;
+		}
+		spawnCtrlCanvasGrp.alpha = 1f;
 
 		spawnCtrlCanvasGrp.interactable = true;
 		spawnCtrlCanvasGrp.blocksRaycasts = true;

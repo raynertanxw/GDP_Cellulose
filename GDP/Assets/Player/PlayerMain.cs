@@ -4,8 +4,6 @@ using System.Collections;
 [RequireComponent (typeof (Collider2D))]
 public class PlayerMain : MonoBehaviour
 {
-	private player_control playerCtrl;
-
 	[SerializeField]
 	private int m_nHealth = 100;
 	public int Health { get { return m_nHealth; } }
@@ -19,7 +17,6 @@ public class PlayerMain : MonoBehaviour
 		if (PlayerMain.s_Instance == null)
 		{
 			PlayerMain.s_Instance = this;
-			playerCtrl = GameObject.Find("UI_Player_Controls").GetComponent<player_control>();
 		}
 		else
 		{
@@ -35,11 +32,6 @@ public class PlayerMain : MonoBehaviour
 	// Update is called once per frame
 	void Update () {
 
-	}
-
-	void OnMouseDown()
-	{
-		playerCtrl.PresentSpawnCtrl();
 	}
 
 	public int GetEnemyCountSurroundingPlayer()
