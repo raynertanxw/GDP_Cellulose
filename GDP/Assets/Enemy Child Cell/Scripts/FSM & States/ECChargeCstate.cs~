@@ -26,7 +26,7 @@ public class ECChargeCState : IECState {
 		m_Child = _childCell;
 
 		fMaxAcceleration = 10f;
-		TargetEndPos = new Vector2(0f,0f);
+		TargetEndPos = Vector2.zero;
 	}
 
 
@@ -113,7 +113,7 @@ public class ECChargeCState : IECState {
 	{
 		//Stop the child cell from moving after it charges finish
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-		m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0.0f, 0.0f);
+		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 	}
 
 	//a function that check whether the target is still avaliable to be attacked and return a boolean to
@@ -122,12 +122,10 @@ public class ECChargeCState : IECState {
 	{
 		//Loop through all the enemy child cells and check whether another child cell had targeted the same
 		//target. Then, return a boolean to represent the result
-		//Debug.Log("original target: " + _Target);
+		
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		foreach(EnemyChildFSM EC in ECList)
 		{
-			//Utility.CheckEmpty<GameObject>(EC.Target);
-			//if(EC.Target != null){ Debug.Log("Compare: " + _Target.name + " " + EC.Target.name);}
 			if(EC.name != m_Child.name && EC.CurrentStateEnum == ECState.ChargeChild && EC.Target != null && EC.Target.name == _Target.name)
 			{
 				return false;
@@ -261,11 +259,7 @@ public class ECChargeCState : IECState {
 
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f)
-		{
-			return true;
-		}
-		return false;
+		return (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f) ? true : false;
 	}
 
 	//A function that return a boolean on whether all the cells had reached the given position in the perimeter
@@ -285,11 +279,7 @@ public class ECChargeCState : IECState {
 	//A function that return a boolean to show the target gameobject is dead
 	private bool IsTargetDead(GameObject _Target)
 	{
-		if(_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead)
-		{
-			return true;
-		}
-		return false;
+		return (_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead) ? true : false;
 	}
 
 	//A function that return the first player child cell from a list of player child cells
@@ -309,11 +299,11 @@ public class ECChargeCState : IECState {
 	private List<GameObject> TagNeighbours()
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2, Constants.s_onlyEnemeyChildLayer);
 
 		for(int i = 0; i < Neighbouring.Length; i++)
 		{
-			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeChild)
+			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeChild)
 			{
 				Neighbours.Add(Neighbouring[i].gameObject);
 			}

@@ -69,11 +69,7 @@ public class ECPoolManager : MonoBehaviour {
 	//A function to check if the pool is empty
 	private bool IsPoolEmpty()
 	{
-		if(s_ECPool.Count > 0)
-		{
-			return false;
-		}
-		return true;
+		return (s_ECPool.Count > 0) ? false : true;
 	}
 	
 	//a function to extend the size of the pool by adding another enemy child cell in the case of an empty pool

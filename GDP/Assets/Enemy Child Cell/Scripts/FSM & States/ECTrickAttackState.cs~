@@ -16,7 +16,6 @@ public class ECTrickAttackState : IECState {
 	private bool bReachStart;
 
 	//float to store the speed of movement for the enemy child cell in trick attacking
-	private float fChargeSpeed;
 	private float fMaxAcceleration;
 
 	//an array of gameobject to store the player nodes
@@ -47,12 +46,11 @@ public class ECTrickAttackState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 
 		m_Nodes = new GameObject[3];
-		fChargeSpeed = 1f;
 		fMaxAcceleration = 20f;
 
 		m_Nodes[0] = Node_Manager.GetNode(Node.LeftNode).gameObject;
 		m_Nodes[1] = Node_Manager.GetNode(Node.RightNode).gameObject;
-		m_SquadCaptain = PlayerSquadFSM.s_m_Instance.gameObject;
+		m_SquadCaptain = PlayerSquadFSM.Instance.gameObject;
 	}
 
 	//initialize the array and various variables for the trick attack
@@ -73,7 +71,6 @@ public class ECTrickAttackState : IECState {
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
 		bTeleported = false;
-		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 
 		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
 	}
@@ -246,25 +243,8 @@ public class ECTrickAttackState : IECState {
 		Positions.Add(m_StartPos);
 		Positions.Add(m_EndPos);
 		Positions.Add(m_AttackTarget.transform.position);
-
-		//Utility.DrawCross(Positions[0],Color.black,0.5f);
-		//Utility.DrawCross(Positions[1],Color.white,0.5f);
-		//Utility.DrawCross(Positions[2],Color.blue,0.5f);
-
+		
 		return Positions;
-	}
-
-	//a function that return the wall that is closest to the given position in the perimeter
-	private GameObject GetClosestWall (Vector2 _Pos)
-	{
-		GameObject m_LWall = GameObject.Find("Left Wall");
-		GameObject m_RWall = GameObject.Find("Right Wall");
-
-		if(Vector2.Distance(_Pos, m_LWall.transform.position) < Vector2.Distance(_Pos, m_RWall.transform.position))
-		{
-			return m_LWall;
-		}
-		return m_RWall;
 	}
 
 	private Vector2 GetWallPos()

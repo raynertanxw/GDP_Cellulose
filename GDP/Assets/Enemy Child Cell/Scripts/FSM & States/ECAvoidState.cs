@@ -90,7 +90,7 @@ public class ECAvoidState : IECState {
 
     public override void Exit()
     {
-		m_Child.GetComponent<Rigidbody2D>().drag = 0.0f;
+		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
     }
 
 	private void UpdateAttackerList()
@@ -98,10 +98,10 @@ public class ECAvoidState : IECState {
 		//Clear the attacker list and check the enemy child cell for any nearby attacking player cells based on the detect range provided
 		AttackersNearby.Clear();
 
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fDetectRange);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fDetectRange,Constants.s_onlyPlayerChildLayer);
 		for(int i = 0; i < NearbyObjects.Length; i++)
 		{
-			if(NearbyObjects[i].tag == Constants.s_strPlayerChildTag && (NearbyObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || NearbyObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain))
+			if(NearbyObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || NearbyObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
 				AttackersNearby.Add(NearbyObjects[i].gameObject);
 			}

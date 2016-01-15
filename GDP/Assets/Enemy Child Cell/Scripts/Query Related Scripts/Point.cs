@@ -60,14 +60,5 @@ public class Point
 		get{ return EdgeList;}
 		set{ EdgeList = value;}
 	}
-	
-	/*public Point GetSurroundingPoint (Edge _edge)
-	{
-		if(EdgeList[_edge] != null)
-		{
-			return EdgeList[_edge];
-		}
-		return null;
-	}*/
+
 }
-//

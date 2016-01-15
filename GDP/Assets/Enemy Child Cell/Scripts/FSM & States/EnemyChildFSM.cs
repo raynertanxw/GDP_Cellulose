@@ -4,23 +4,19 @@ using System.Collections.Generic;
 
 public class EnemyChildFSM : MonoBehaviour
 {
-	//2 variables to store the speed of the enemy child cell and whether the child cell is in landmine state
-	public float fSpeed;
-	private bool bIsMine;
-
 	//3 gameobjects variables to store the player main cell, enemy main cell and the target for this child
 	//cell to charge towards
 	public GameObject m_PMain;
 	public GameObject m_EMain;
 	public GameObject m_ChargeTarget;
-	private GameObject m_LeftWall;
-	private GameObject m_RightWall;
 
 	//3 variables to store the current state, the enumeration of the current state and the current command for
 	//the child cell
 	private IECState m_CurrentState;
 	private ECState m_CurrentEnum;
 	private MessageType m_CurrentCommand;
+	
+	public bool bHitWall;
 
 	//declare a dictoary to store various IECstate with the key being ECState
 	private Dictionary<ECState,IECState> m_StatesDictionary;
@@ -28,21 +24,15 @@ public class EnemyChildFSM : MonoBehaviour
 	private float fRotationTarget;
 	private bool bRotateCW;
 	private bool bRotateACW;
-	public bool bHitWall;
 
 	void Start()
 	{
 		//Initialize the variables and data structure
-		fSpeed = 0.01f;
 		fRotationTarget = Random.Range(0f,360f);
-		bIsMine = false;
 		bRotateCW = false;
 		bRotateACW = false;
-		bHitWall = false;
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
-		m_LeftWall = GameObject.Find("Left Wall");
-		m_RightWall = GameObject.Find("Right Wall");
 		m_ChargeTarget = null;
 		m_StatesDictionary = new Dictionary<ECState,IECState>();
 
@@ -62,8 +52,6 @@ public class EnemyChildFSM : MonoBehaviour
 		m_CurrentEnum = ECState.Dead;
 		m_CurrentCommand = MessageType.Empty;
 		CurrentState.Enter();
-
-		//Physics2D.IgnoreCollision(GetComponent<BoxCollider2D>(),
 	}
 
 	void Update()
@@ -182,37 +170,22 @@ public class EnemyChildFSM : MonoBehaviour
 		ChangeState(ECState.Dead);
 	}
 
-	//a function to return the amount of enemy child cell with the same state with this current state
-	public int AmountOfSameCellState()
-	{
-		GameObject[] childCells = GameObject.FindGameObjectsWithTag("EnemyChild");
-		int count = 0;
-		for (int i = 0; i < childCells.Length; i++)
-		{
-			if (m_CurrentState == childCells[i].GetComponent<EnemyChildFSM>().CurrentState)
-			{
-				count++;
-			}
-		}
-		return count;
-	}
-
 	private bool IsMainBeingAttacked()
 	{
-		Collider2D[] IncomingToMain = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x);
+		Collider2D[] IncomingToMain = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
 		foreach(Collider2D comingObject in IncomingToMain)
 		{
-			if(comingObject.tag == Constants.s_strPlayerChildTag && (comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain))
+			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
 				return true;
 			}
 		}
 
-		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x);
+		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
 
 		foreach(Collider2D comingObject in IncomingToChild)
 		{
-			if(comingObject.tag == Constants.s_strPlayerChildTag && comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
 				return true;
 			}
