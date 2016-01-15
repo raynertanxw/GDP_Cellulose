@@ -6,9 +6,13 @@ using System.Collections.Generic;
 public class Node_Manager : MonoBehaviour
 {
 	private static Node_Manager nodeLeft, nodeRight;
-	private Image defendAvoidButtonImage;
-	
+
+	private Image m_defendAvoidButtonImage;
 	private player_control m_playerCtrl;
+	private RectTransform m_rectTransform;
+	private Vector3 m_rotationVec;
+	private float m_fNodeRotationSpeed = 100.0f;
+
 	public int m_nNodeIndex;
 	public bool m_bIsDefending = true;
 	public Sprite defendSprite, avoidSprite;
@@ -18,21 +22,38 @@ public class Node_Manager : MonoBehaviour
 	void Awake()
 	{
 		m_playerCtrl = transform.parent.GetComponent<player_control>();
+		m_rectTransform = GetComponent<RectTransform>();
+		m_rotationVec = Vector3.zero;
 		m_playerChildInNode = new List<PlayerChildFSM>();
 		
 		switch (m_nNodeIndex)
 		{
 		case 0:
 			Node_Manager.nodeLeft = this;
-			defendAvoidButtonImage = GameObject.Find("UI_Player_LeftNode_DefendAvoid").GetComponent<Image>();
+			m_defendAvoidButtonImage = GameObject.Find("UI_Player_LeftNode_DefendAvoid").GetComponent<Image>();
 			break;
 		case 1:
 			Node_Manager.nodeRight = this;
-			defendAvoidButtonImage = GameObject.Find("UI_Player_RightNode_DefendAvoid").GetComponent<Image>();
+			m_defendAvoidButtonImage = GameObject.Find("UI_Player_RightNode_DefendAvoid").GetComponent<Image>();
 			break;
 		default:
 			Debug.Log("Error: No such node index");
 			break;
+		}
+	}
+
+	void Update()
+	{
+		// Rotate the node.
+		if (m_nNodeIndex == 0)
+		{
+			m_rotationVec.z += -m_fNodeRotationSpeed * Time.deltaTime;
+			m_rectTransform.localRotation = Quaternion.Euler(m_rotationVec);
+		}
+		else
+		{
+			m_rotationVec.z += m_fNodeRotationSpeed * Time.deltaTime;
+			m_rectTransform.localRotation = Quaternion.Euler(m_rotationVec);
 		}
 	}
 	
@@ -54,7 +75,7 @@ public class Node_Manager : MonoBehaviour
 			}
 
 			m_bIsDefending = false;
-			defendAvoidButtonImage.sprite = avoidSprite;
+			m_defendAvoidButtonImage.sprite = avoidSprite;
 		}
 		// Change to defend.
 		else
@@ -67,7 +88,7 @@ public class Node_Manager : MonoBehaviour
 			}
 			
 			m_bIsDefending = true;
-			defendAvoidButtonImage.sprite = defendSprite;
+			m_defendAvoidButtonImage.sprite = defendSprite;
 		}
 	}
 	
