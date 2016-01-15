@@ -186,15 +186,15 @@ public class PlayerChildFSM : MonoBehaviour
     public float fGizmoCohesionRadius = 0f;
     public float fGizmoSeparationRadius = 0f;
 
-    //void OnDrawGizmos()
-    //{
-    //    m_currentState.ExecuteOnDrawGizmos();
-
-    //    Gizmos.color = Color.green;
-    //    Gizmos.DrawWireSphere(transform.position, fGizmoCohesionRadius);
-    //    Gizmos.color = Color.red;
-    //    Gizmos.DrawWireSphere(transform.position, fGizmoSeparationRadius);
-    //}
+//    void OnDrawGizmos()
+//    {
+//        m_currentState.ExecuteOnDrawGizmos();
+//
+//        Gizmos.color = Color.green;
+//        Gizmos.DrawWireSphere(transform.position, fGizmoCohesionRadius);
+//        Gizmos.color = Color.red;
+//        Gizmos.DrawWireSphere(transform.position, fGizmoSeparationRadius);
+//    }
     #endif
 }
 

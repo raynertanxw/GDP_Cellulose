@@ -8,7 +8,7 @@ public class player_control : MonoBehaviour
 	public static int s_nResources;
 	private Transform m_SquadCaptainNode;
 	
-	private int m_nActiveNode = 1;
+	private Node m_nActiveNode = Node.RightNode;
 
 	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp;
 	
@@ -26,17 +26,17 @@ public class player_control : MonoBehaviour
 	}
 
 	#region Changing the Active Node
-	public void ChangeActiveNode(int nNewNode)
+	public void ChangeActiveNode(Node nNewNode)
 	{
 		m_nActiveNode = nNewNode;
 
 		switch (nNewNode)
 		{
-		case 0: // Left Node Active Now
+		case Node.LeftNode:
 			SetLeftNodeControlVisibility(true);
 			SetRightNodeControlVisibility(false);
 			break;
-		case 1: // Right Node Active Now
+		case Node.RightNode:
 			SetRightNodeControlVisibility(true);
 			SetLeftNodeControlVisibility(false);
 			break;
@@ -50,6 +50,7 @@ public class player_control : MonoBehaviour
 			leftNodeCanvasGrp.alpha = 1f;
 			leftNodeCanvasGrp.interactable = true;
 			leftNodeCanvasGrp.blocksRaycasts = true;
+			RestartFadeOut(Node.LeftNode);
 		}
 		else
 		{
@@ -66,6 +67,7 @@ public class player_control : MonoBehaviour
 			rightNodeCanavsGrp.alpha = 1f;
 			rightNodeCanavsGrp.interactable = true;
 			rightNodeCanavsGrp.blocksRaycasts = true;
+			RestartFadeOut(Node.RightNode);
 		}
 		else
 		{
@@ -74,15 +76,44 @@ public class player_control : MonoBehaviour
 			rightNodeCanavsGrp.blocksRaycasts = false;
 		}
 	}
+
+	private IEnumerator FadeOutCanvasGroup(CanvasGroup cgrp)
+	{
+		yield return new WaitForSeconds(1.0f);
+		while (cgrp.alpha > 0)
+		{
+			cgrp.alpha -= 0.25f * Time.deltaTime;
+			yield return null;
+		}
+		cgrp.interactable = false;
+		cgrp.blocksRaycasts = false;
+	}
+
+	private void RestartFadeOut(Node _selectedNode)
+	{
+		switch (_selectedNode)
+		{
+		case Node.LeftNode:
+			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+			StartCoroutine(Constants.s_strFadeOutCanvasGroup, leftNodeCanvasGrp);
+			break;
+		case Node.RightNode:
+			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+			StartCoroutine(Constants.s_strFadeOutCanvasGroup, rightNodeCanavsGrp);
+			break;
+		}
+	}
 	#endregion
 
 
 	
 	#region Actions for UI Buttons to call
-	public void ActionSpawn(int _selectedNode)
+	public void ActionSpawn(int _nodeIndex)
 	{
 		if (s_nResources > Settings.s_nPlayerChildSpawnCost && totalActiveChild() < Settings.s_nPlayerMaxChildCount)
 		{
+			Node _selectedNode = (Node) _nodeIndex;
+
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
 			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(PlayerMain.s_Instance.transform.position + (Vector3)Random.insideUnitCircle*0.25f);
 			currentChild.m_assignedNode = Node_Manager.GetNode(_selectedNode);
@@ -98,23 +129,27 @@ public class player_control : MonoBehaviour
 
 	public void ActionDefendAvoid(int _nodeIndex)
 	{
-		Node_Manager.GetNode(_nodeIndex).ToggleDefenseAvoid();
+		Node _selectedNode = (Node) _nodeIndex;
+		Node_Manager.GetNode(_selectedNode).ToggleDefenseAvoid();
 	}
 
 	public void ActionBurstShot(int _nodeIndex)
 	{
+		Node _selectedNode = (Node) _nodeIndex;
 		Debug.Log(_nodeIndex + " Node called BurstShot");
 		ActionChargeMain(); // TEMP
 	}
 
 	public void ActionSwarmTarget(int _nodeIndex)
 	{
+		Node _selectedNode = (Node) _nodeIndex;
 		Debug.Log(_nodeIndex + " Node called SwarmTarget");
 		ActionChargeChild(); // TEMP
 	}
 
 	public void ActionScatterShot(int _nodeIndex)
 	{
+		Node _selectedNode = (Node) _nodeIndex;
 		Debug.Log(_nodeIndex + " Node called ScatterShot");
 	}
 
@@ -129,9 +164,9 @@ public class player_control : MonoBehaviour
 			int childrenLeftToConsume = Settings.s_nPlayerSqaudCaptainChildCost;
 
 			// Left node more than right.
-			if (Node_Manager.GetNode(0).activeChildCount > Node_Manager.GetNode(1).activeChildCount)
+			if (Node_Manager.GetNode(Node.LeftNode).activeChildCount > Node_Manager.GetNode(Node.RightNode).activeChildCount)
 			{
-				List<PlayerChildFSM> childList = Node_Manager.GetNode(1).GetNodeChildList();
+				List<PlayerChildFSM> childList = Node_Manager.GetNode(Node.RightNode).GetNodeChildList();
 
 				// Use up cells in smaller node, OR till half of spawn cost.
 				for (int i = 0; i < childList.Count; i++)
@@ -148,7 +183,7 @@ public class player_control : MonoBehaviour
 						break;
 				}
 
-				childList = Node_Manager.GetNode(0).GetNodeChildList();
+				childList = Node_Manager.GetNode(Node.LeftNode).GetNodeChildList();
 
 				// Consume the remaining needed children.
 				for (int i = 0; i < childrenLeftToConsume; i++)
@@ -166,7 +201,7 @@ public class player_control : MonoBehaviour
 			// Right node more than left or equal numbers.
 			else
 			{
-				List<PlayerChildFSM> childList = Node_Manager.GetNode(0).GetNodeChildList();
+				List<PlayerChildFSM> childList = Node_Manager.GetNode(Node.LeftNode).GetNodeChildList();
 				
 				// Use up cells in smaller node, OR till half of spawn cost.
 				for (int i = 0; i < childList.Count; i++)
@@ -183,7 +218,7 @@ public class player_control : MonoBehaviour
 						break;
 				}
 				
-				childList = Node_Manager.GetNode(1).GetNodeChildList();
+				childList = Node_Manager.GetNode(Node.RightNode).GetNodeChildList();
 				
 				// Consume the remaining needed children.
 				for (int i = 0; i < childrenLeftToConsume; i++)
@@ -221,8 +256,8 @@ public class player_control : MonoBehaviour
 	private int totalActiveChild()
 	{
 		int numChild = 0;
-		numChild += Node_Manager.GetNode(0).activeChildCount;
-		numChild += Node_Manager.GetNode(1).activeChildCount;
+		numChild += Node_Manager.GetNode(Node.LeftNode).activeChildCount;
+		numChild += Node_Manager.GetNode(Node.RightNode).activeChildCount;
 
 		return numChild;
 	}

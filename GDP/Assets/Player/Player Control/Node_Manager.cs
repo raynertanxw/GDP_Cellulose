@@ -13,7 +13,7 @@ public class Node_Manager : MonoBehaviour
 	private Vector3 m_rotationVec;
 	private float m_fNodeRotationSpeed = 100.0f;
 
-	public int m_nNodeIndex;
+	public Node m_nNodeEnum;
 	public bool m_bIsDefending = true;
 	public Sprite defendSprite, avoidSprite;
 	
@@ -26,13 +26,13 @@ public class Node_Manager : MonoBehaviour
 		m_rotationVec = Vector3.zero;
 		m_playerChildInNode = new List<PlayerChildFSM>();
 		
-		switch (m_nNodeIndex)
+		switch (m_nNodeEnum)
 		{
-		case 0:
+		case Node.LeftNode:
 			Node_Manager.nodeLeft = this;
 			m_defendAvoidButtonImage = GameObject.Find("UI_Player_LeftNode_DefendAvoid").GetComponent<Image>();
 			break;
-		case 1:
+		case Node.RightNode:
 			Node_Manager.nodeRight = this;
 			m_defendAvoidButtonImage = GameObject.Find("UI_Player_RightNode_DefendAvoid").GetComponent<Image>();
 			break;
@@ -45,7 +45,7 @@ public class Node_Manager : MonoBehaviour
 	void Update()
 	{
 		// Rotate the node.
-		if (m_nNodeIndex == 0)
+		if (m_nNodeEnum == 0)
 		{
 			m_rotationVec.z += -m_fNodeRotationSpeed * Time.deltaTime;
 			m_rectTransform.localRotation = Quaternion.Euler(m_rotationVec);
@@ -59,7 +59,7 @@ public class Node_Manager : MonoBehaviour
 	
 	public void SelectNode()
 	{
-		m_playerCtrl.ChangeActiveNode(m_nNodeIndex);
+		m_playerCtrl.ChangeActiveNode(m_nNodeEnum);
 	}
 
 	public void ToggleDefenseAvoid()
@@ -103,19 +103,21 @@ public class Node_Manager : MonoBehaviour
 	{
 		m_playerChildInNode.Remove(child);
 	}
-	
-	public static Node_Manager GetNode(int n_nodeIndex)
+
+	public static Node_Manager GetNode(Node _selectedNode)
 	{
-		switch (n_nodeIndex)
+		switch (_selectedNode)
 		{
-		case 0:
+		case Node.LeftNode:
 			return Node_Manager.nodeLeft;
-		case 1:
+			break;
+		case Node.RightNode:
 			return Node_Manager.nodeRight;
+			break;
 		default:
 			Debug.Log("Error: No such node index");
             return null;
-        }
+		}
 	}
 	#endregion
 
