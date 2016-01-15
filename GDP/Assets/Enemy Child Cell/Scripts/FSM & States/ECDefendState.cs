@@ -302,18 +302,14 @@ public class ECDefendState : IECState {
 		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
 		List<EnemyChildFSM> Defenders = new List<EnemyChildFSM>();
 		
-		Debug.Log("defend list start:");
-		
 		foreach(GameObject Child in EnemyChild)
 		{
 			if(Child.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend)
 			{
-				Debug.Log(Child.name);
 				Defenders.Add(Child.GetComponent<EnemyChildFSM>());
 			}
 		}
 		
-		Debug.Log("defend list end");
 		return Defenders;
 	}
 
