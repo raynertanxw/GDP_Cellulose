@@ -265,6 +265,24 @@ public class EMController : MonoBehaviour
 			yield return new WaitForSeconds (fTime);
 			bCanChangeHori = true;
 		} 
+		else if (m_EMFSM.CurrentStateIndex == EMState.Defend) 
+		{
+			bCanChangeHori = false;
+			
+			// Change speed based on the number of child cells of the enemy main cell
+			float fSpeed = Random.Range (.1f, .5f / Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum));
+			
+			// Frequency of checking for changing of direction in terms of the number of child cells of the enemy main cell
+			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 1f)) * 1.5f, 
+			                            Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 2f) * 1.5f);
+			
+			int bDirection = Random.Range (0, 2);
+			if (bDirection == 0) 
+				bMovingLeft = !bMovingLeft;
+			
+			yield return new WaitForSeconds (fTime);
+			bCanChangeHori = true;
+		} 
 		else if (m_EMFSM.CurrentStateIndex == EMState.CautiousAttack) 
 		{
 			bCanChangeHori = false;
