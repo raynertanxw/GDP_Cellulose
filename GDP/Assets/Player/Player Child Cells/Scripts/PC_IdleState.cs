@@ -45,8 +45,7 @@ public class PC_IdleState : IPCState
     public override void FixedExecute()
     {
         // Get the cohesion, alignment, and separation components of the flocking.
-        Vector2 acceleration = Cohesion() * cohesionWeight;
-        acceleration += Separation() * separationWeight;
+        Vector2 acceleration = Separation() * separationWeight;
         acceleration += OriginPull() * originPullWeight;
         // Clamp the acceleration to a maximum value
         acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
@@ -148,15 +147,9 @@ public class PC_IdleState : IPCState
 			if (nearbyChildren[i].gameObject == m_pcFSM.gameObject)
 				continue;
 
-			float fSqrDist = 	Mathf.Pow(m_pcFSM.rigidbody2D.position.x - nearbyChildren[i].transform.position.x, 2) +
-								Mathf.Pow(m_pcFSM.rigidbody2D.position.y - nearbyChildren[i].transform.position.y, 2);
-			
-			if (fSqrDist < sqrCohesionRadius)
-			{
-				sumVector.x += nearbyChildren[i].transform.position.x;
-				sumVector.y += nearbyChildren[i].transform.position.y;
-				count++;
-			}
+			sumVector.x += nearbyChildren[i].transform.position.x;
+			sumVector.y += nearbyChildren[i].transform.position.y;
+			count++;
 		}
 
         // Average the sumVector
@@ -184,15 +177,12 @@ public class PC_IdleState : IPCState
 
 			float fSqrDist = 	Mathf.Pow(m_pcFSM.rigidbody2D.position.x - nearbyChildren[i].transform.position.x, 2) +
 								Mathf.Pow(m_pcFSM.rigidbody2D.position.y - nearbyChildren[i].transform.position.y, 2);
-			
-			if (fSqrDist < sqrSeparationRadius)
-			{
-				Vector2 tmpDistVec = m_pcFSM.rigidbody2D.position;
-				tmpDistVec.x -= nearbyChildren[i].transform.position.x;
-				tmpDistVec.y -= nearbyChildren[i].transform.position.y;
-				sumVector += tmpDistVec.normalized / fSqrDist;
-				count++;
-			}
+
+			Vector2 tmpDistVec = m_pcFSM.rigidbody2D.position;
+			tmpDistVec.x -= nearbyChildren[i].transform.position.x;
+			tmpDistVec.y -= nearbyChildren[i].transform.position.y;
+			sumVector += tmpDistVec.normalized / fSqrDist;
+			count++;
 		}
 
         // Average the sumVector and clamp magnitude

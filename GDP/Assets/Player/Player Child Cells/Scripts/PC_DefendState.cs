@@ -164,18 +164,20 @@ public class PC_DefendState : IPCState
 	#region Flocking
 	// Flocking related variables
 	private static float s_fCohesionRadius = 2.0f;
-	private static float s_fseparationRadius = 0.5f;
-	private static float s_fMaxAcceleration = 10f;
+	private static float s_fSqrCohesionRadius = Mathf.Pow(s_fCohesionRadius, 2);
+	private static float s_fSeparationRadius = 0.5f;
+	private static float s_fSqrSeperationRadius = Mathf.Pow(s_fSeparationRadius, 2);
+	private static float s_fMaxAcceleration = 200f;
 	// Weights
 	private static float s_fCohesionWeight = 30;
 	private static float s_fAlignmentWeight = 10;
 	private static float s_fSeparationWeight = 50;
-	private static float s_fTargetPullWeight = 500;
+	private static float s_fTargetPullWeight = 5000;
 	
 	
 	// Getters for the various values.
-	public static float cohesionRadius { get { return s_fCohesionRadius; } }
-	public static float separationRadius { get { return s_fseparationRadius; } }
+	public static float sqrCohesionRadius { get { return s_fSqrCohesionRadius; } }
+	public static float sqrSeparationRadius { get { return s_fSqrSeperationRadius; } }
 	public static float maxAcceleration { get { return s_fMaxAcceleration; } }
 	public static float cohesionWeight { get { return s_fCohesionWeight; } }
 	public static float alignmentWeight { get { return s_fAlignmentWeight; } }
@@ -193,62 +195,46 @@ public class PC_DefendState : IPCState
 	public Vector2 Cohesion()
 	{
 		Vector2 sumVector = Vector2.zero;
-		int count = 0;
-		
-		List<PlayerChildFSM> nodeChildren = m_pcFSM.m_assignedNode.GetNodeChildList();
-		
-		// For each boid, check the distance from this boid, and if within a neighbourhood, add to the sumVector
-		for (int i = 0; i < nodeChildren.Count; i++)
+        int count = 0;
+
+		Collider2D[] nearbyChildren = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, s_fCohesionRadius, Constants.s_onlyPlayerChildLayer);
+
+		for (int i = 0; i < nearbyChildren.Length; i++)
 		{
-			// If it is itself skip itself.
-			if (nodeChildren[i] == m_pcFSM)
-			{
+			// Skip itself.
+			if (nearbyChildren[i].gameObject == m_pcFSM.gameObject)
 				continue;
-			}
-			
-			float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, nodeChildren[i].rigidbody2D.position);
-			
-			if (fDist < cohesionRadius)
-			{
-				sumVector += nodeChildren[i].rigidbody2D.position;
-				count++;
-			}
+
+			sumVector.x += nearbyChildren[i].transform.position.x;
+			sumVector.y += nearbyChildren[i].transform.position.y;
+			count++;
 		}
-		
-		
-		// Average the sumVector
-		if (count > 0)
-		{
-			sumVector /= count;
-			return sumVector - m_pcFSM.rigidbody2D.position;
-		}
-		
-		return sumVector;
+
+        // Average the sumVector
+        if (count > 0)
+        {
+            sumVector /= count;
+            return sumVector - m_pcFSM.rigidbody2D.position;
+        }
+
+        return sumVector;
 	}
 	
 	public Vector2 Alignment()
 	{
 		Vector2 sumVector = Vector2.zero;
 		int count = 0;
-		
-		List<PlayerChildFSM> nodeChildren = m_pcFSM.m_assignedNode.GetNodeChildList();
-		
-		// For each boid, check the distance from this boid, and if within a neighbourhood, add to the sum_vector.
-		for (int i = 0; i < nodeChildren.Count; i++)
+
+		Collider2D[] nearbyChildren = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, s_fCohesionRadius, Constants.s_onlyPlayerChildLayer);
+
+		for (int i = 0; i < nearbyChildren.Length; i++)
 		{
-			// If it is itself skip itself.
-			if (nodeChildren[i] == m_pcFSM)
-			{
+			// Skip itself
+			if (nearbyChildren[i].gameObject == m_pcFSM.gameObject)
 				continue;
-			}
-			
-			float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, nodeChildren[i].rigidbody2D.position);
-			
-			if (fDist < cohesionRadius)
-			{
-				sumVector += nodeChildren[i].rigidbody2D.velocity;
-				count++;
-			}
+
+			sumVector += nearbyChildren[i].attachedRigidbody.velocity;
+			count++;
 		}
 		
 		// Average the sumVector and clamp magnitude
@@ -266,24 +252,22 @@ public class PC_DefendState : IPCState
 		Vector2 sumVector = Vector2.zero;
 		int count = 0;
 		
-		List<PlayerChildFSM> nodeChildren = m_pcFSM.m_assignedNode.GetNodeChildList();
+		Collider2D[] nearbyChildren = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, s_fSeparationRadius, Constants.s_onlyPlayerChildLayer);
 		
-		// For each boid, check the distance from this boid, and if within a neighbourhood, add to the sum_vector.
-		for (int i = 0; i < nodeChildren.Count; i++)
+		for (int i = 0; i < nearbyChildren.Length; i++)
 		{
-			// If it is itself skip itself.
-			if (nodeChildren[i] == m_pcFSM)
-			{
+			// Skip itself
+			if (nearbyChildren[i].gameObject == m_pcFSM.gameObject)
 				continue;
-			}
 			
-			float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, nodeChildren[i].rigidbody2D.position);
+			float fSqrDist = 	Mathf.Pow(m_pcFSM.rigidbody2D.position.x - nearbyChildren[i].transform.position.x, 2) +
+				Mathf.Pow(m_pcFSM.rigidbody2D.position.y - nearbyChildren[i].transform.position.y, 2);
 			
-			if (fDist < separationRadius)
-			{
-				sumVector += (m_pcFSM.rigidbody2D.position - nodeChildren[i].rigidbody2D.position).normalized / fDist;
-				count++;
-			}
+			Vector2 tmpDistVec = m_pcFSM.rigidbody2D.position;
+			tmpDistVec.x -= nearbyChildren[i].transform.position.x;
+			tmpDistVec.y -= nearbyChildren[i].transform.position.y;
+			sumVector += tmpDistVec.normalized / fSqrDist;
+			count++;
 		}
 		
 		// Average the sumVector and clamp magnitude
