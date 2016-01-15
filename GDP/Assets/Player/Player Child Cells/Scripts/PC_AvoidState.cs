@@ -117,7 +117,6 @@ public class PC_AvoidState : IPCState
 	// Getters for the various values.
 	public static float sqrCohesionRadius { get { return s_fSqrCohesionRadius; } }
 	public static float sqrSeparationRadius { get { return s_fSqrSeperationRadius; } }
-    public static float avoidRadius { get { return s_fAvoidRadius; } }
 	public static float sqrAvoidRadius { get { return s_fSqrAvoidRadius; } }
 	public static float maxAcceleration { get { return s_fMaxAcceleration; } }
 	public static float cohesionWeight { get { return s_fCohesionWeight; } }
@@ -227,7 +226,7 @@ public class PC_AvoidState : IPCState
         Vector2 sumVector = Vector2.zero;
         int count = 0;
 
-        Collider2D[] enemyCells = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, avoidRadius, Constants.s_onlyEnemeyChildLayer);
+        Collider2D[] enemyCells = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, s_fAvoidRadius, Constants.s_onlyEnemeyChildLayer);
 
         Vector2 tmp_enemyPos = Vector2.zero;
         for (int i = 0; i < enemyCells.Length; i++)
