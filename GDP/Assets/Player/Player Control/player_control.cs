@@ -10,7 +10,12 @@ public class player_control : MonoBehaviour
 	
 	private Node m_nActiveNode = Node.RightNode;
 
-	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp;
+	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp;
+	private RectTransform[] btnRectTransform;
+	private Vector3[] btnPos;
+	private const float s_UIFadeOutDelay = 1.5f;
+	private const float s_UIFadeOutSpeed = 0.8f;
+	private const float s_UIPopInSpeed = 2.0f;
 	
 	void Awake()
 	{
@@ -19,13 +24,22 @@ public class player_control : MonoBehaviour
 		m_SquadCaptainNode = GameObject.Find("Node_Captain").transform;
 		leftNodeCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
 		rightNodeCanavsGrp = transform.GetChild(4).GetComponent<CanvasGroup>();
+		spawnCtrlCanvasGrp = transform.GetChild(2).GetComponent<CanvasGroup>();
+		btnRectTransform = new RectTransform[3];
+		btnRectTransform[0] = spawnCtrlCanvasGrp.transform.GetChild(0).GetComponent<RectTransform>();
+		btnRectTransform[1] = spawnCtrlCanvasGrp.transform.GetChild(1).GetComponent<RectTransform>();
+		btnRectTransform[2] = spawnCtrlCanvasGrp.transform.GetChild(2).GetComponent<RectTransform>();
+		btnPos = new Vector3[3];
+		for (int i = 0; i < btnRectTransform.Length; i++)
+			btnPos[i] = btnRectTransform[i].localPosition;
 
 		// Hide both left and right node.
 		SetLeftNodeControlVisibility(false);
 		SetRightNodeControlVisibility(false);
+		SetSpawnCtrlVisibility(false);
 	}
 
-	#region Changing the Active Node
+	#region Bringing up control sets
 	public void ChangeActiveNode(Node nNewNode)
 	{
 		m_nActiveNode = nNewNode;
@@ -35,10 +49,12 @@ public class player_control : MonoBehaviour
 		case Node.LeftNode:
 			SetLeftNodeControlVisibility(true);
 			SetRightNodeControlVisibility(false);
+			SetSpawnCtrlVisibility(false);
 			break;
 		case Node.RightNode:
 			SetRightNodeControlVisibility(true);
 			SetLeftNodeControlVisibility(false);
+			SetSpawnCtrlVisibility(false);
 			break;
 		}
 	}
@@ -75,12 +91,45 @@ public class player_control : MonoBehaviour
 		}
 	}
 
+	public void PresentSpawnCtrl()
+	{
+		SetSpawnCtrlVisibility(true);
+		SetRightNodeControlVisibility(false);
+		SetLeftNodeControlVisibility(false);
+	}
+
+	private void SetSpawnCtrlVisibility(bool _visible)
+	{
+		if (_visible)
+		{
+			// Only pop in if spawn control has completely faded.
+			if (spawnCtrlCanvasGrp.alpha == 0f)
+				StartCoroutine(Constants.s_strAnimateInSpawnCtrl);
+			else
+			{
+				spawnCtrlCanvasGrp.interactable = true;
+				spawnCtrlCanvasGrp.blocksRaycasts = true;
+			}
+
+			RestartSpawnCtrlFadeOut();
+		}
+		else
+		{
+			spawnCtrlCanvasGrp.alpha = 0f;
+			spawnCtrlCanvasGrp.interactable = false;
+			spawnCtrlCanvasGrp.blocksRaycasts = false;
+		}
+	}
+	#endregion
+
+
+	#region Animation Helper functions
 	private IEnumerator FadeOutCanvasGroup(CanvasGroup cgrp)
 	{
-		yield return new WaitForSeconds(1.5f);
+		yield return new WaitForSeconds(s_UIFadeOutDelay);
 		while (cgrp.alpha > 0)
 		{
-			cgrp.alpha -= 0.8f * Time.deltaTime;
+			cgrp.alpha -= s_UIFadeOutSpeed * Time.deltaTime;
 			yield return null;
 		}
 		cgrp.interactable = false;
@@ -103,7 +152,32 @@ public class player_control : MonoBehaviour
 			break;
 		}
 	}
+
+	private void RestartSpawnCtrlFadeOut()
+	{
+		StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+		spawnCtrlCanvasGrp.alpha = 1f;
+		StartCoroutine(Constants.s_strFadeOutCanvasGroup, spawnCtrlCanvasGrp);
+	}
+
+	private IEnumerator AnimateInSpawnCtrl()
+	{
+		float t = 0f;
+		Vector3 mainCellPos = new Vector3(0f, -800f, 0f);
+		while (t < 1.0f)
+		{
+			for (int i = 0; i < btnRectTransform.Length; i++)
+				btnRectTransform[i].localPosition = Vector3.Lerp(mainCellPos, btnPos[i], t);
+			t += s_UIPopInSpeed * Time.deltaTime;
+
+			yield return null;
+		}
+
+		spawnCtrlCanvasGrp.interactable = true;
+		spawnCtrlCanvasGrp.blocksRaycasts = true;
+	}
 	#endregion
+
 
 
 	
@@ -125,6 +199,8 @@ public class player_control : MonoBehaviour
 		{
 			Debug.Log("Not enough resources");
 		}
+
+		RestartSpawnCtrlFadeOut();
 	}
 
 	public void ActionDefendAvoid(int _nodeIndex)
@@ -250,6 +326,8 @@ public class player_control : MonoBehaviour
 		{
 			Debug.Log("Not enough child at node to convert");
 		}
+
+		RestartSpawnCtrlFadeOut();
 	}
 	#endregion
 
