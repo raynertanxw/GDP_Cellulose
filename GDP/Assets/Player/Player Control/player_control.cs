@@ -47,7 +47,6 @@ public class player_control : MonoBehaviour
 	{
 		if (_visible)
 		{
-			leftNodeCanvasGrp.alpha = 1f;
 			leftNodeCanvasGrp.interactable = true;
 			leftNodeCanvasGrp.blocksRaycasts = true;
 			RestartFadeOut(Node.LeftNode);
@@ -64,7 +63,6 @@ public class player_control : MonoBehaviour
 	{
 		if (_visible)
 		{
-			rightNodeCanavsGrp.alpha = 1f;
 			rightNodeCanavsGrp.interactable = true;
 			rightNodeCanavsGrp.blocksRaycasts = true;
 			RestartFadeOut(Node.RightNode);
@@ -79,10 +77,10 @@ public class player_control : MonoBehaviour
 
 	private IEnumerator FadeOutCanvasGroup(CanvasGroup cgrp)
 	{
-		yield return new WaitForSeconds(1.0f);
+		yield return new WaitForSeconds(1.5f);
 		while (cgrp.alpha > 0)
 		{
-			cgrp.alpha -= 0.25f * Time.deltaTime;
+			cgrp.alpha -= 0.8f * Time.deltaTime;
 			yield return null;
 		}
 		cgrp.interactable = false;
@@ -95,10 +93,12 @@ public class player_control : MonoBehaviour
 		{
 		case Node.LeftNode:
 			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+			leftNodeCanvasGrp.alpha = 1.0f;
 			StartCoroutine(Constants.s_strFadeOutCanvasGroup, leftNodeCanvasGrp);
 			break;
 		case Node.RightNode:
 			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
+			rightNodeCanavsGrp.alpha = 1.0f;
 			StartCoroutine(Constants.s_strFadeOutCanvasGroup, rightNodeCanavsGrp);
 			break;
 		}
@@ -131,6 +131,8 @@ public class player_control : MonoBehaviour
 	{
 		Node _selectedNode = (Node) _nodeIndex;
 		Node_Manager.GetNode(_selectedNode).ToggleDefenseAvoid();
+
+		RestartFadeOut(_selectedNode);
 	}
 
 	public void ActionBurstShot(int _nodeIndex)
@@ -138,6 +140,8 @@ public class player_control : MonoBehaviour
 		Node _selectedNode = (Node) _nodeIndex;
 		Debug.Log(_nodeIndex + " Node called BurstShot");
 		ActionChargeMain(); // TEMP
+
+		RestartFadeOut(_selectedNode);
 	}
 
 	public void ActionSwarmTarget(int _nodeIndex)
@@ -145,12 +149,16 @@ public class player_control : MonoBehaviour
 		Node _selectedNode = (Node) _nodeIndex;
 		Debug.Log(_nodeIndex + " Node called SwarmTarget");
 		ActionChargeChild(); // TEMP
+
+		RestartFadeOut(_selectedNode);
 	}
 
 	public void ActionScatterShot(int _nodeIndex)
 	{
 		Node _selectedNode = (Node) _nodeIndex;
 		Debug.Log(_nodeIndex + " Node called ScatterShot");
+
+		RestartFadeOut(_selectedNode);
 	}
 
 	public void ActionSpawnCaptain()
