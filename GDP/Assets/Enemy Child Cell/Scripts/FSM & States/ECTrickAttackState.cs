@@ -50,9 +50,9 @@ public class ECTrickAttackState : IECState {
 		fChargeSpeed = 1f;
 		fMaxAcceleration = 20f;
 
-		m_Nodes[0] = GameObject.Find("UI_Player_LeftNode");
-		m_Nodes[1] = GameObject.Find("UI_Player_RightNode");
-		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
+		m_Nodes[0] = Node_Manager.GetNode(Node.LeftNode).gameObject;
+		m_Nodes[1] = Node_Manager.GetNode(Node.RightNode).gameObject;
+		m_SquadCaptain = PlayerSquadFSM.s_m_Instance.gameObject;
 	}
 
 	//initialize the array and various variables for the trick attack

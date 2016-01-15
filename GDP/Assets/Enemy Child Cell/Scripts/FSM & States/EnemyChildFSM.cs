@@ -175,7 +175,6 @@ public class EnemyChildFSM : MonoBehaviour
 	//a function for player cells to kill this child cell by changing it to the dead state
 	public void KillChildCell()
 	{
-		Debug.Log("Kill");
 		ChangeState(ECState.Dead);
 	}
 
@@ -196,16 +195,16 @@ public class EnemyChildFSM : MonoBehaviour
 
 	private bool IsMainBeingAttacked()
 	{
-		Collider2D[] IncomingToMain = Physics2D.OverlapCircleAll(m_EMain.transform.position, 2 * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x);
+		Collider2D[] IncomingToMain = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x);
 		foreach(Collider2D comingObject in IncomingToMain)
 		{
-			if(comingObject.tag == Constants.s_strPlayerChildTag)
+			if(comingObject.tag == Constants.s_strPlayerChildTag && (comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain))
 			{
 				return true;
 			}
 		}
 
-		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 12 * GetComponent<SpriteRenderer>().bounds.size.x);
+		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x);
 
 		foreach(Collider2D comingObject in IncomingToChild)
 		{

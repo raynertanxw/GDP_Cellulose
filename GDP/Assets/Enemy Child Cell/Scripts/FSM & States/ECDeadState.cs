@@ -25,13 +25,11 @@ public class ECDeadState : IECState {
 		bDisable = true;
 		DisableCell();
 		m_Child.transform.localScale = new Vector3(1f,1f,1f);
-		if(m_Child.name == "Enemy_Child_Cell (62)"){Debug.Log("Enter Dead");}
-		if(m_Child.name == "Enemy_Child_Cell (62)"){Debug.Log(m_Child.transform.localScale);}
 	}
 
 	public override void Execute()
 	{
-		if(m_Child.name == "Enemy_Child_Cell (62)"){Debug.Log(m_Child.transform.localScale);}
+
 	}
 
 	public override void Exit()

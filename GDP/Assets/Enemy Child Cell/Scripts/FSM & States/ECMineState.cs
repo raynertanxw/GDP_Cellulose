@@ -57,8 +57,8 @@ public class ECMineState : IECState {
 		fExpansionSpeed = 0.1f;
 		bExpanding = true;
 
-		fExplosiveRange = 2.8f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
-		fKillRange = 0.65f * fExplosiveRange;
+		fExplosiveRange = 3.2f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
+		fKillRange = 0.5f * fExplosiveRange;
 	}
 
 	public override void Enter()
@@ -94,7 +94,7 @@ public class ECMineState : IECState {
 
 				fSeperateInterval = CalculateSpreadRate(GetCenterOfMines(GetLandmines()),Target);
 				GatherTogether = true;
-				Utility.DrawPath(PathToTarget,Color.red,0.1f);
+				//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 			}
 		}
 		else if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),SpreadPoint.Position))

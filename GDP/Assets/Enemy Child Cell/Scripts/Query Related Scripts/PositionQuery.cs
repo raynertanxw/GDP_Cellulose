@@ -321,7 +321,7 @@ public class PositionQuery
 				return Formation.AreaBlock;
 			}
 		}*/
-		return Formation.AreaBlock;
+		return Formation.ReverseCrescent;
 	}
 		
 	/*
