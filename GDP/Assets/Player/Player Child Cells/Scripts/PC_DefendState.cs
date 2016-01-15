@@ -19,7 +19,7 @@ public class PC_DefendState : IPCState
 			if (FindNewTarget() == false)
 				m_pcFSM.ChangeState(PCState.Idle);
 		}
-		else if (IsTargetAlive() == false)
+		else if (IsTargetAlive() == false || IsTargetWithinDangerRange() == false)
 		{
 			// Find targets if any, otherwise switch back to idle.
 			if (FindNewTarget() == false)
