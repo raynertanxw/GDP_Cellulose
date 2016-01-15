@@ -128,7 +128,7 @@ public class ECDefendState : IECState {
 		}
 
 		//If there are attackers to the enemy main cell, seek to the closest attacking player child cells
-		if(!IsThereNoAttackers() && IsPlayerChildPassingBy() && !bReturnToMain && !bKillClosestAttacker)
+		if(!IsThereNoAttackers() && IsPlayerChildPassingBy() && !bKillClosestAttacker)
 		{
 			bKillClosestAttacker = true;
 			m_Child.GetComponent<Rigidbody2D>().drag = 2.3f;
@@ -141,7 +141,7 @@ public class ECDefendState : IECState {
 			}
 			//Debug.Log(m_Child.name + "'s target: " + m_ecFSM.m_ChargeTarget);
 		}
-		else if(bKillClosestAttacker && !bReturnToMain)
+		else if(bKillClosestAttacker)
 		{
 			if(m_ecFSM.m_ChargeTarget.GetComponent<PlayerChildFSM>().GetCurrentState() != PCState.ChargeMain && m_ecFSM.m_ChargeTarget.GetComponent<PlayerChildFSM>().GetCurrentState() != PCState.ChargeChild)
 			{
