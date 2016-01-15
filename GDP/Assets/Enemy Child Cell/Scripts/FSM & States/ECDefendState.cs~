@@ -48,7 +48,7 @@ public class ECDefendState : IECState {
 		m_Main = _ecFSM.m_EMain;
 
 		fMaxAcceleration = 40f;
-		fAutoDefendRange = 9f;//4f;//5.5f;
+		fAutoDefendRange = 12f;//9f;//4f;//5.5f;
 		fDefendTime = 0f;
 		bReturnToMain = false;
 		CurrentFormation = Formation.Empty;

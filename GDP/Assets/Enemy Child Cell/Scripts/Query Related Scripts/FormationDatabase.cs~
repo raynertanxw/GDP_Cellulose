@@ -129,11 +129,13 @@ public class FormationDatabase
 
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
 					
-					CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x + RightCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + RightCount * YInterval);
-					StoredFormationPos = CurrentFormationPos;
-					FPositionDatabase[FIndex] = StoredFormationPos;
-					FAvaliabilityDatabase[FIndex] = false;
-					
+					if(FPositionDatabase.ContainsKey(CurrentCenterIndex))
+					{
+						CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x + RightCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + RightCount * YInterval);
+						StoredFormationPos = CurrentFormationPos;
+						FPositionDatabase[FIndex] = StoredFormationPos;
+						FAvaliabilityDatabase[FIndex] = false;
+					}
 					continue;
 				}
 				else if(FIndex % 2 == 0)//if the formation index is even (All cells in the left wing of the formation has even fIndex)
@@ -192,11 +194,14 @@ public class FormationDatabase
 					RightCount++;
 
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
-
-					CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x + RightCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + RightCount * YInterval);
-					StoredFormationPos = CurrentFormationPos;
-					FPositionDatabase[FIndex] = StoredFormationPos;
-					FAvaliabilityDatabase[FIndex] = false;
+					
+					if(FPositionDatabase.ContainsKey(CurrentCenterIndex))
+					{
+						CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x + RightCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + RightCount * YInterval);
+						StoredFormationPos = CurrentFormationPos;
+						FPositionDatabase[FIndex] = StoredFormationPos;
+						FAvaliabilityDatabase[FIndex] = false;
+					}
 					continue;
 				}
 				else if(FIndex % 2 == 0)
@@ -204,11 +209,14 @@ public class FormationDatabase
 					LeftCount++;
 
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
-
-					CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x - LeftCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + LeftCount * YInterval);
-					StoredFormationPos = CurrentFormationPos;
-					FPositionDatabase[FIndex] = StoredFormationPos;
-					FAvaliabilityDatabase[FIndex] = false;
+					
+					if(FPositionDatabase.ContainsKey(CurrentCenterIndex))
+					{
+						CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x - LeftCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + LeftCount * YInterval);
+						StoredFormationPos = CurrentFormationPos;
+						FPositionDatabase[FIndex] = StoredFormationPos;
+						FAvaliabilityDatabase[FIndex] = false;
+					}
 					continue;
 				}
 			}
