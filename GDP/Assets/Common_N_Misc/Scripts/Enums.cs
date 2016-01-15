@@ -29,3 +29,5 @@ public enum Directness  {Low, Mid, High};
 public enum Formation {Empty, Crescent, ReverseCrescent, CircularSurround, AreaBlock};
 
 public enum PlayerAttackMode {BurstShot, SwarmTarget, ScatterShot};
+
+public enum Node {LeftNode, RightNode};

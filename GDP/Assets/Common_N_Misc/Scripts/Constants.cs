@@ -18,4 +18,8 @@ public class Constants : MonoBehaviour
 	public const string s_strEnemyMainNutrient = "EnemyMainNutrient";
 	public const string s_strEnemyMiniNutrient = "EnemyMiniNutrient";
 	#endregion
+
+	#region Coroutines
+	public const string s_strFadeOutCanvasGroup = "FadeOutCanvasGroup";
+	#endregion
 }
