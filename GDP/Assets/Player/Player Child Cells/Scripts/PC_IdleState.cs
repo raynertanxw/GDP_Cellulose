@@ -115,7 +115,7 @@ public class PC_IdleState : IPCState
     // Weights
     private static float s_fCohesionWeight = 300;
     private static float s_fSeparationWeight = 1000;
-    private static float s_fOriginPullWeight = 500;
+    private static float s_fOriginPullWeight = 1500;
 
 
     // Getters for the various values.
