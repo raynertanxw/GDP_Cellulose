@@ -242,8 +242,30 @@ public class player_control : MonoBehaviour
 	public void ActionBurstShot(int _nodeIndex)
 	{
 		Node _selectedNode = (Node) _nodeIndex;
-		Debug.Log(_nodeIndex + " Node called BurstShot");
-		ActionChargeMain(); // TEMP
+		Node_Manager selectedNode = Node_Manager.GetNode(_selectedNode);
+
+		if (selectedNode.activeChildCount < Settings.s_nPlayerActionBurstShotChildCost)
+		{
+			Debug.Log("Not enough child cells for Burst Shot in this node");
+		}
+		else
+		{
+			List<PlayerChildFSM> nodeChildCells = selectedNode.GetNodeChildList();
+			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionBurstShotChildCost];
+			for (int i = 0; i < formationCells.Length; i++)
+			{
+				formationCells[i] = nodeChildCells[i];
+				formationCells[i].m_formationCells = formationCells; // arrays are reference types in Unity.
+			}
+
+			for (int i = 0; i < formationCells.Length; i++)
+			{
+				// TEMP FORCED PLACEMENT OF LEADER.
+				formationCells[0].rigidbody2D.MovePosition(selectedNode.transform.position + new Vector3(0f, 3f, 0f));
+				formationCells[i].RemoveChildFromNode();
+				formationCells[i].DeferredChangeState(PCState.ChargeMain);
+			}
+		}
 
 		RestartFadeOut(_selectedNode);
 	}

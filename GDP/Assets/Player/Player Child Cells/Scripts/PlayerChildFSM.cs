@@ -54,6 +54,7 @@ public class PlayerChildFSM : MonoBehaviour
 	[SerializeField]
 	public bool m_bIsDefending = true;
 	public bool m_bHasAwaitingDeferredStateChange = false;
+	public PlayerChildFSM[] m_formationCells;
 	private PCState m_deferredState;
 	public EnemyChildFSM m_currentEnemyCellTarget;
 	public Node_Manager m_assignedNode;
@@ -111,6 +112,16 @@ public class PlayerChildFSM : MonoBehaviour
 	public void KillPlayerChildCell()
 	{
 		DeferredChangeState(PCState.Dead);
+	}
+
+	public void RemoveChildFromNode()
+	{
+		// Remove from NodeList if any assignedNode.
+		if (this.m_assignedNode != null)
+		{
+			this.m_assignedNode.RemoveChildFromNodeList(this);
+			this.m_assignedNode = null;
+		}
 	}
 
 	void Awake()
