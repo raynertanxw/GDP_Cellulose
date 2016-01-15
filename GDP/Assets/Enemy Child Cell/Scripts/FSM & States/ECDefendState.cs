@@ -14,13 +14,13 @@ public class ECDefendState : IECState {
 	private bool bAdjustNeeded;
 
 	//A boolean that state whether the enemy child cell is retreating back to the enemy main cell after the defend state is completed and transitioning to idle state
-	private bool bReturnToMain;
+	private static bool bReturnToMain;
 
 	//A vector2 to store the defending position that the enemy child cell need to move to
 	private Vector2 m_TargetPos;
 
 	//A float to store how the enemy child cell had been in the defensive formation when there is no attacking player cells nearby
-	private float fDefendTime;
+	private static float fDefendTime;
 
 	//A float to store the maximum amount of acceleration that can be enforced on the enemy child cell
 	private float fMaxAcceleration;
@@ -35,6 +35,11 @@ public class ECDefendState : IECState {
 
 	private float fAutoDefendRange;
 
+	public static bool ReturningToMain
+	{
+		get { return bReturnToMain; }
+	}
+
 	//Constructor
 	public ECDefendState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
@@ -45,6 +50,7 @@ public class ECDefendState : IECState {
 		fMaxAcceleration = 40f;
 		fAutoDefendRange = 9f;//4f;//5.5f;
 		fDefendTime = 0f;
+		bReturnToMain = false;
 		CurrentFormation = Formation.Empty;
 	}
 
@@ -52,10 +58,10 @@ public class ECDefendState : IECState {
 	{
 		bReachPos = false;
 		bAdjustNeeded = false;
-		bReturnToMain = false;
+		
 		bKillClosestAttacker = false;
 
-		fDefendTime = 0f;
+		//fDefendTime = 0f;
 		fMainScale = m_Main.transform.localScale.x * 0.75f;
 
 		m_Child.GetComponent<Rigidbody2D>().drag = 3f;
@@ -67,7 +73,8 @@ public class ECDefendState : IECState {
 		if(CurrentFormation == Formation.Empty)
 		{
 			CurrentFormation = PositionQuery.Instance.GetDefensiveFormation();
-			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,m_Main.GetComponent<EnemyMainFSM>().ECList,fMainScale);
+			FormationDatabase.Instance.RefreshDatabases(m_Main.GetComponent<EnemyMainFSM>().ECList);
+			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,fMainScale);
 		}
 
 		//Based on the current formation, get a specific target position within that formation
@@ -145,10 +152,11 @@ public class ECDefendState : IECState {
 			Acceleration += SteeringBehavior.Seek(m_Child,m_ecFSM.m_ChargeTarget.transform.position,26f);
 		}
 		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
-		else if(IsThereNoAttackers() && !bReturnToMain && !bKillClosestAttacker)
+		else if(IsThereNoAttackers() && bGathered && bReachPos && !bReturnToMain && !bKillClosestAttacker)
 		{
+			//Debug.Log(fDefendTime);
 			fDefendTime += Time.deltaTime;
-			if(fDefendTime >= 5f)
+			if(fDefendTime >= 10f)
 			{
 				bReturnToMain = true;
 			}
@@ -188,6 +196,10 @@ public class ECDefendState : IECState {
 		if(GetDefendingCells().Count <= 1)
 		{
 			CurrentFormation = Formation.Empty;
+			fDefendTime = 0f;
+			bReturnToMain = false;
+			bGathered = false;
+			//Debug.Log("meow");
 		}
 
 		//Reset the velocity and force applied to the enemy child cell
@@ -195,6 +207,7 @@ public class ECDefendState : IECState {
 		m_Child.GetComponent<Rigidbody2D>().drag = 0.0f;
 
 		m_ecFSM.m_ChargeTarget = null;
+		FormationDatabase.Instance.ReturnFormationPos(m_Child);
 	}
 
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
@@ -332,4 +345,16 @@ public class ECDefendState : IECState {
 		Vector2 Noise = Random.insideUnitCircle * 10f;
 		return Noise;
 	}
+	
+	/*private void SetToAverageDefendTime()
+	{
+		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
+		int DefenderCount = 0;
+		float TargetTime = 0f;
+		
+		foreach(EnemyChildFSM EC in ECList)
+		{
+			TargetTime += 
+		}
+	}*/
 }

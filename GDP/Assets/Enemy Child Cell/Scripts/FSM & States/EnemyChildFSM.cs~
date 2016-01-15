@@ -79,6 +79,10 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			AutoDefend();
 		}
+		else if(m_CurrentEnum == ECState.Idle && IsThereDefenders() && !ECDefendState.ReturningToMain)
+		{
+			ReinforceDefence();
+		}
 	}
 
 	void FixedUpdate()
@@ -245,6 +249,28 @@ public class EnemyChildFSM : MonoBehaviour
 			return false;
 		}
 		return true;
+	}
+	
+	private bool IsThereDefenders()
+	{
+		List<EnemyChildFSM> ECList = m_EMain.GetComponent<EnemyMainFSM>().ECList;
+		foreach(EnemyChildFSM EC in ECList)
+		{
+			if(EC.CurrentStateEnum == ECState.Defend)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private void ReinforceDefence()
+	{
+		//Change this cell to defend state
+		MessageDispatcher.Instance.DispatchMessage(gameObject,gameObject,MessageType.Defend,0);
+		
+		//Add it into the formation as an reinforcement
+		FormationDatabase.Instance.AddNewDefenderToCurrentFormation(gameObject);
 	}
 
 	private void AutoDefend()
