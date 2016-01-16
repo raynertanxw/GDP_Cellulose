@@ -211,7 +211,7 @@ public class ECDefendState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		return (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f) ? true : false;
+		return (Utility.Distance(m_Child.transform.position, _Pos) <= 0.05f) ? true : false;
 	}
 
 	//A function that return a boolean on whether all the cells had reached the given position in the perimeter
@@ -254,14 +254,20 @@ public class ECDefendState : IECState {
 	{
 		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
 		GameObject ClosestAttacker = null;
-		float distance = Mathf.Infinity;
-
+		float Distance = Mathf.Infinity;
+		
+		float ECtoPCDistance = 0f;
+		PCState PCCurrentState = PCState.Idle;
+		
 		foreach(GameObject child in PlayerChilds)
 		{
-			if((child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain) && Vector2.Distance(child.transform.position,m_Child.transform.position) < distance)
+			ECtoPCDistance = Utility.Distance(child.transform.position,m_Child.transform.position);
+			PCCurrentState = child.GetComponent<PlayerChildFSM>().GetCurrentState();
+			
+			if((PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain) && ECtoPCDistance < Distance)
 			{
 				ClosestAttacker = child;
-				distance = Vector2.Distance(child.transform.position,m_Child.transform.position);
+				Distance = ECtoPCDistance;
 			}
 		}
 

@@ -97,51 +97,53 @@ public class PointDatabase
 		}
 		
 		List<string> Keys = new List<string>(m_Database.Keys);
-		float CostBetweenPoints = Vector2.Distance(m_Database["0-0"].Position,m_Database["0-1"].Position);
+		float CostBetweenPoints = Utility.Distance(m_Database["0-0"].Position,m_Database["0-1"].Position);
 		foreach(string key in Keys)
 		{
 			if(m_Database[key] != null)
 			{
+				Point PointUsed = null;
+				
 				if(GetPointNextToGivenPoint("Up",m_Database[key]) != null && !m_Database[key].Index.Contains("0-"));
 				{
-					Point PointUp = GetPointNextToGivenPoint("Up",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUp,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Up",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Down",m_Database[key]) != null && !m_Database[key].Index.Contains("13-"))
 				{
-					Point PointDown = GetPointNextToGivenPoint("Down",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointDown,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Down",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null)
 				{
-					Point PointLeft = GetPointNextToGivenPoint("Left",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointLeft,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Left",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null)
 				{
-					Point PointRight = GetPointNextToGivenPoint("Right",m_Database[key]);
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointRight,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Right",m_Database[key]);
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 				
 				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null && GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Left",m_Database[key]))) != null && !m_Database[key].Index.Contains("0-"))
 				{
-					Point PointTopLeft = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Left",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopLeft,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Left",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null && GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key]))) != null && !m_Database[key].Index.Contains("0-") && m_Database[key].LIndex != GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key]))).LIndex)
 				{
-					Point PointTopRight = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointTopRight,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Up",(GetPointNextToGivenPoint("Right",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Left",m_Database[key]) != null && GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Left",m_Database[key]))) != null && !m_Database[key].Index.Contains("13-") && !m_Database[key].Index.Contains("-0"))
 				{
-					Point PointBotLeft = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Left",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotLeft,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Left",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 				if(GetPointNextToGivenPoint("Right",m_Database[key]) != null && GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Right",m_Database[key]))) != null && !m_Database[key].Index.Contains("13-") && !m_Database[key].Index.Contains("-8"))
 				{
-					Point PointBotRight = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Right",m_Database[key])));
-					m_Database[key].Edges.Add(new Edge(m_Database[key],PointBotRight,CostBetweenPoints));
+					PointUsed = GetPointNextToGivenPoint("Down",(GetPointNextToGivenPoint("Right",m_Database[key])));
+					m_Database[key].Edges.Add(new Edge(m_Database[key],PointUsed,CostBetweenPoints));
 				}
 			}
 		}
@@ -168,10 +170,10 @@ public class PointDatabase
 		
 		foreach(string key in keys)
 		{
-			if(Vector2.Distance(_Pos, m_Database[key].Position) < ClosestDistance && (_UnwalkableAllowed == true||m_Database[key].Walkable == true))
+			if(Utility.Distance(_Pos, m_Database[key].Position) < ClosestDistance && (_UnwalkableAllowed == true||m_Database[key].Walkable == true))
 			{
 				ClosestPoint = m_Database[key];
-				ClosestDistance = Vector2.Distance(_Pos, m_Database[key].Position);
+				ClosestDistance = Utility.Distance(_Pos, m_Database[key].Position);
 			}
 		}
 		
@@ -236,17 +238,17 @@ public class PointDatabase
 	{
 		//Get the current closest point to the agent
 		Point InitialPoint = GetClosestPointToPosition(_Current,false);
-		float Difference = Vector2.Distance(InitialPoint.Position,_Target);
+		float Difference = Utility.Distance(InitialPoint.Position,_Target);
 		
 		//Check if there is any nearby point that is more ideal (more direct towards the target)
 		Point TargetPoint = InitialPoint;
 		
 		for(int i = 0; i < InitialPoint.Edges.Count; i++)
 		{
-			if(Vector2.Distance(InitialPoint.Edges[i].End.Position,_Target) < Difference)
+			if(Utility.Distance(InitialPoint.Edges[i].End.Position,_Target) < Difference)
 			{
 				TargetPoint = InitialPoint.Edges[i].End;
-				Difference = Vector2.Distance(InitialPoint.Edges[i].End.Position,_Target);
+				Difference = Utility.Distance(InitialPoint.Edges[i].End.Position,_Target);
 			}
 		} 
 		

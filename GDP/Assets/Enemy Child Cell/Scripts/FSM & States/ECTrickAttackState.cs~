@@ -262,7 +262,7 @@ public class ECTrickAttackState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		if (Vector2.Distance(m_Child.transform.position	, _Pos) <= 0.4f)
+		if (Utility.Distance(m_Child.transform.position	, _Pos) <= 0.4f)
 		{
 			return true;
 		}

@@ -276,8 +276,8 @@ public class ECMineState : IECState {
 	private float CalculateSpreadRate(Vector2 _Center, GameObject _Target)
 	{
 		//From screen center to player main: SpreadRate = 0.1f
-		float ScreenCenterToTarget = Vector2.Distance(Vector2.zero, _Target.transform.position);
-		float CenterOfMassToTarget = Vector2.Distance(_Center,_Target.transform.position);
+		float ScreenCenterToTarget = Utility.Distance(Vector2.zero, _Target.transform.position);
+		float CenterOfMassToTarget = Utility.Distance(_Center,_Target.transform.position);
 		return (CenterOfMassToTarget/ScreenCenterToTarget) * 0.2f;
 	}
 
@@ -316,12 +316,12 @@ public class ECMineState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTarget (Vector2 _TargetPos)
 	{
-		return Vector2.Distance(m_Child.transform.position,_TargetPos) <= 0.4f ? true : false;
+		return Utility.Distance(m_Child.transform.position,_TargetPos) <= 0.4f ? true : false;
 	}
 
 	private bool HasCenterReachTarget(Vector2 _Center, Vector2 _TargetPos)
 	{
-		return Vector2.Distance(_Center,_TargetPos) <= 0.4f ? true : false;
+		return Utility.Distance(_Center,_TargetPos) <= 0.4f ? true : false;
 	}
 
 	private bool HasAllCellsReachTarget (Vector2 _TargetPos)
@@ -395,11 +395,11 @@ public class ECMineState : IECState {
 	//A function that return a boolean on whether is it time to spread based on the distance from the center mass of the landmine and the player main's position
 	private bool IsTimetoSpread()
 	{
-		float EMtoPM = Vector2.Distance(m_Main.transform.position, m_ecFSM.m_PMain.transform.position);
+		float EMtoPM = Utility.Distance(m_Main.transform.position, m_ecFSM.m_PMain.transform.position);
 		float TargetDistance = 0.95f * EMtoPM;
 		Vector2 CenterOfMass = GetCenterOfMines(GetLandmines());
 		
-		return Vector2.Distance(CenterOfMass,m_ecFSM.m_PMain.transform.position) < TargetDistance ? true : false;
+		return Utility.Distance(CenterOfMass,m_ecFSM.m_PMain.transform.position) < TargetDistance ? true : false;
 	}
 
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
@@ -583,12 +583,15 @@ public class ECMineState : IECState {
 	private void ExplodeDestroy()
 	{
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
+		float DistanceFromCenterOfBlast = 0f;
+		
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
 			//if the player child cell is within the exploding range, kill the player child
 			if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].gameObject.tag == Constants.s_strPlayerChildTag)
 			{
-				float DistanceFromCenterOfBlast = Vector2.Distance(m_Child.transform.position,m_SurroundingObjects[i].transform.position);
+				DistanceFromCenterOfBlast = Utility.Distance(m_Child.transform.position,m_SurroundingObjects[i].transform.position);
+				
 				if(DistanceFromCenterOfBlast > fKillRange)
 				{
 					m_SurroundingObjects[i].GetComponent<Rigidbody2D>().AddForce(GetBlastAwayForce(DistanceFromCenterOfBlast - fKillRange));
@@ -605,7 +608,7 @@ public class ECMineState : IECState {
 			}
 			else if(m_SurroundingObjects[i] != null && m_SurroundingObjects[i].name.Contains("Squad_Child"))
 			{
-				float DistanceFromCenterOfBlast = Vector2.Distance(m_Child.transform.position,m_SurroundingObjects[i].transform.position);
+				DistanceFromCenterOfBlast = Utility.Distance(m_Child.transform.position,m_SurroundingObjects[i].transform.position);
 				if(DistanceFromCenterOfBlast > fKillRange)
 				{
 					m_SurroundingObjects[i].GetComponent<Rigidbody2D>().AddForce(GetBlastAwayForce(DistanceFromCenterOfBlast - fKillRange));
@@ -629,9 +632,11 @@ public class ECMineState : IECState {
 		//play explode sound/animation whatever
 		ExplodeSetup();
 
+		Vector3 ExpandScale = new Vector3(0.75f,0.75f,0.75f);
+
 		while(m_Child.transform.localScale.x < 7f)
 		{
-			m_Child.transform.localScale += new Vector3(0.75f,0.75f,0.75f);
+			m_Child.transform.localScale += ExpandScale;
 			yield return new WaitForSeconds(0.0005f);//0.0005
 		}
 

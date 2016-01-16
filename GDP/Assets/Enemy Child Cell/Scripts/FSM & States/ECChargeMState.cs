@@ -136,7 +136,7 @@ public class ECChargeMState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		return (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.4f) ? true : false;
+		return (Utility.Distance(m_Child.transform.position, _Pos) <= 0.4f) ? true : false;
 	}
 	
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
@@ -178,7 +178,7 @@ public class ECChargeMState : IECState {
 
 	private bool HasCenterReachTarget(Vector2 _Center, Vector2 _TargetPos)
 	{
-		return (Vector2.Distance(_Center, _TargetPos) <= 0.4f) ? true : false;
+		return (Utility.Distance(_Center, _TargetPos) <= 0.4f) ? true : false;
 	}
 
 	private int GetNearbyECChargeAmount()

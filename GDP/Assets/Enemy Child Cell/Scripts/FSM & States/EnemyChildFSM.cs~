@@ -72,7 +72,7 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			AutoDefend();
 		}
-		else if(m_CurrentEnum == ECState.Idle && IsThereDefenders() && !ECDefendState.ReturningToMain)
+		else if(m_CurrentEnum == ECState.Idle && !ECDefendState.ReturningToMain && IsThereDefenders())
 		{
 			ReinforceDefence();
 		}
@@ -177,10 +177,13 @@ public class EnemyChildFSM : MonoBehaviour
 
 	private bool IsMainBeingAttacked()
 	{
-		Collider2D[] IncomingToMain = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
-		if(IncomingToMain.Length <= 0){return false;}
+		Collider2D[] IncomingObjects;
 		
-		foreach(Collider2D comingObject in IncomingToMain)
+		//Incoming objects to main
+		IncomingObjects = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
+		if(IncomingObjects.Length <= 0){return false;}
+		
+		foreach(Collider2D comingObject in IncomingObjects)
 		{
 			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
@@ -188,10 +191,11 @@ public class EnemyChildFSM : MonoBehaviour
 			}
 		}
 		
-		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
-		if(IncomingToChild.Length <= 0){return false;}
+		//Incoming objects to child
+		IncomingObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
+		if(IncomingObjects.Length <= 0){return false;}
 		
-		foreach(Collider2D comingObject in IncomingToChild)
+		foreach(Collider2D comingObject in IncomingObjects)
 		{
 			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{

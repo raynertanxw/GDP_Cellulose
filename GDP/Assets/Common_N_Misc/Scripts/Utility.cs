@@ -66,4 +66,9 @@ public static class Utility
 		Debug.DrawLine(new Vector2(_Center.x - _Radius, _Center.y),new Vector2(_Center.x + _Radius, _Center.y),_Color,Mathf.Infinity,true);
 		Debug.DrawLine(new Vector2(_Center.x, _Center.y + _Radius),new Vector2(_Center.x, _Center.y - _Radius),_Color,Mathf.Infinity,true);
 	}
+	
+	public static float Distance(Vector2 _First, Vector2 _Second)
+	{
+		return (_First - _Second).sqrMagnitude;
+	}
 }

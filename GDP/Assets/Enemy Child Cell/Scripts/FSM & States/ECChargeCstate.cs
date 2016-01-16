@@ -157,12 +157,17 @@ public class ECChargeCState : IECState {
 			float fDistanceBetween = Mathf.Infinity;
 			int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
 			GameObject m_TargetCell = null;
+			float ChildToPotentialTarget = 0f;
+			PCState TargetCurrentState = PCState.Idle;
 
 			for (int i = 0; i < m_PotentialTargets.Count; i++)
 			{
-				if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && (Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position)) < fDistanceBetween && m_PotentialTargets[i].GetCurrentState() != PCState.Dead && m_PotentialTargets[i].GetCurrentState() != PCState.Avoid)
+				ChildToPotentialTarget = Utility.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position);
+				TargetCurrentState = m_PotentialTargets[i].GetCurrentState();
+				
+				if (CheckIfTargetIsAvailable(m_PotentialTargets[i].gameObject) && ChildToPotentialTarget < fDistanceBetween && TargetCurrentState != PCState.Dead && TargetCurrentState != PCState.Avoid)
 				{
-					fDistanceBetween = Vector2.Distance(m_Child.transform.position, m_PotentialTargets[i].transform.position);
+					fDistanceBetween = ChildToPotentialTarget;
 					m_TargetCell = m_PotentialTargets[i].gameObject;
 					break;
 				}
@@ -179,14 +184,16 @@ public class ECChargeCState : IECState {
 			}
 
 			SquadChildFSM ClosestSquadChild = m_PotentialTargets[0];
+			float ChildToSquadChild = 0f;
 			float ClosestDistance = Mathf.Infinity;
 
 			foreach(SquadChildFSM SquadChild in m_PotentialTargets)
 			{
-				if(Vector2.Distance(m_Child.transform.position,SquadChild.transform.position) < ClosestDistance)
+				ChildToSquadChild = Utility.Distance(m_Child.transform.position,SquadChild.transform.position);
+				if(ChildToSquadChild < ClosestDistance)
 				{
 					ClosestSquadChild = SquadChild;
-					ClosestDistance = Vector2.Distance(m_Child.transform.position,SquadChild.transform.position);
+					ClosestDistance = ChildToSquadChild;
 				}
 			}
 
@@ -259,7 +266,7 @@ public class ECChargeCState : IECState {
 
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		return (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f) ? true : false;
+		return (Utility.Distance(m_Child.transform.position,_Pos) <= 0.05f) ? true : false;
 	}
 
 	//A function that return a boolean on whether all the cells had reached the given position in the perimeter

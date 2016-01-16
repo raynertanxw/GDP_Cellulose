@@ -120,10 +120,11 @@ public class ECAvoidState : IECState {
 		GameObject ClosestAttacker = AttackersNearby[0];
 		foreach(GameObject Attacker in AttackersNearby)
 		{
-			if(Vector2.Distance(m_Child.transform.position,Attacker.transform.position) < ClosestDistance)
+			float ChildtoAttacker = Utility.Distance(m_Child.transform.position, Attacker.transform.position);
+			if(ChildtoAttacker < ClosestDistance)
 			{
 				ClosestAttacker = Attacker;
-				ClosestDistance = Vector2.Distance(m_Child.transform.position,Attacker.transform.position);
+				ClosestDistance = ChildtoAttacker;
 			}
 		}
 		return ClosestAttacker;

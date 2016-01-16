@@ -35,7 +35,7 @@ public class PathQuery
 	
 	private float CalculateDistanceBetweenPoints(Point _P1, Point _P2)
 	{
-		return Mathf.Abs(Vector2.Distance(_P1.Position,_P2.Position));
+		return Mathf.Abs(Utility.Distance(_P1.Position,_P2.Position));
 	}
 	
 	private void InitializeDictionaries()
@@ -126,12 +126,12 @@ public class PathQuery
 	private bool IsTwoPointsFreeToMove(Point _P1, Point _P2)
 	{
 		Vector2 direction = new Vector2(_P2.Position.x - _P1.Position.x, _P2.Position.y - _P1.Position.y);
-		float distance = Vector2.Distance(_P1.Position,_P2.Position);
+		float distance = Utility.Distance(_P1.Position,_P2.Position);
 		
-		RaycastHit2D[] cast = Physics2D.RaycastAll(_P1.Position,direction,distance);
+		RaycastHit2D[] cast = Physics2D.RaycastAll(_P1.Position,direction,distance,Constants.s_onlyWallLayer);
 		foreach(RaycastHit2D hit in cast)
 		{
-			if(hit.collider != null && hit.collider.tag == "Wall")
+			if(hit.collider != null)
 			{
 				return false;
 			}

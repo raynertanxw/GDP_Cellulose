@@ -104,7 +104,7 @@ public class ECIdleState : IECState
 		{
 			Acceleration += SeperateDirection.normalized * fIdleScale;
 			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
-			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
+			//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
 		}
 		else if(m_ecFSM.bHitWall == true && !HasChildEnterMain(m_Child))
 		{
@@ -171,13 +171,13 @@ public class ECIdleState : IECState
 	//A function that return a boolean on whether that specific child cell had entered the enemy main cell
 	private bool HasChildEnterMain(GameObject _Child)
 	{
-		return (Vector2.Distance(_Child.transform.position,m_Main.transform.position) <= m_Main.GetComponent<SpriteRenderer>().bounds.size.x/9.5f) ? true : false;
+		return (Utility.Distance(_Child.transform.position,m_Main.transform.position) <= m_Main.GetComponent<SpriteRenderer>().bounds.size.x/8f) ? true : false;
 	}
 	
 	//A function that return a boolean on whether all enemy child cell had entered the enemy main cell
 	private bool HasAllChildEnterMain()
 	{
-		Collider2D[] ECCollisions = Physics2D.OverlapCircleAll(m_Main.transform.position,m_Main.GetComponent<SpriteRenderer>().bounds.size.x/9.5f,Constants.s_onlyEnemeyChildLayer);
+		Collider2D[] ECCollisions = Physics2D.OverlapCircleAll(m_Main.transform.position,m_Main.GetComponent<SpriteRenderer>().bounds.size.x/7f,Constants.s_onlyEnemeyChildLayer);
 		if(ECCollisions.Length <= 0){return false;}
 		int IdleWithin = 0;
 		foreach(Collider2D EC in ECCollisions)
