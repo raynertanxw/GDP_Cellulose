@@ -24,6 +24,8 @@ public class ECIdleState : IECState
 	
 	private static int IdleCount;
 
+	private SpriteRenderer EMSpriteRender;
+
 	//An enumeration for the type of idling the enemy child cell is having
 	private enum IdleStatus {Seperate, Cohesion};
 
@@ -37,6 +39,7 @@ public class ECIdleState : IECState
 		fMaxMagnitude = 7.5f;
 		
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/10;
+		EMSpriteRender = m_Main.GetComponent<SpriteRenderer>();
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		IdleCount = 0;
 	}
@@ -153,12 +156,12 @@ public class ECIdleState : IECState
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		
-		foreach(EnemyChildFSM Child in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			Collider2D[] Collisions = Physics2D.OverlapCircleAll(Child.transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);
-			foreach(Collider2D Hit in Collisions)
+			Collider2D[] Collisions = Physics2D.OverlapCircleAll(ECList[i].transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);
+			for(int t = 0; t < Collisions.Length; t++)
 			{
-				if(Hit.gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+				if(Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 				{
 					return false;
 				}
@@ -171,34 +174,35 @@ public class ECIdleState : IECState
 	//A function that return a boolean on whether that specific child cell had entered the enemy main cell
 	private bool HasChildEnterMain(GameObject _Child)
 	{
-		return (Utility.Distance(_Child.transform.position,m_Main.transform.position) <= m_Main.GetComponent<SpriteRenderer>().bounds.size.x/8f) ? true : false;
+		return (Utility.Distance(_Child.transform.position,m_Main.transform.position) <= EMSpriteRender.bounds.size.x/8f) ? true : false;
 	}
 	
 	//A function that return a boolean on whether all enemy child cell had entered the enemy main cell
 	private bool HasAllChildEnterMain()
 	{
-		Collider2D[] ECCollisions = Physics2D.OverlapCircleAll(m_Main.transform.position,m_Main.GetComponent<SpriteRenderer>().bounds.size.x/7f,Constants.s_onlyEnemeyChildLayer);
+		/*Collider2D[] ECCollisions = Physics2D.OverlapCircleAll(m_Main.transform.position,EMSpriteRender.bounds.size.x/7f,Constants.s_onlyEnemeyChildLayer);
 		if(ECCollisions.Length <= 0){return false;}
 		int IdleWithin = 0;
-		foreach(Collider2D EC in ECCollisions)
+		
+		for(int i = 0; i < ECCollisions.Length; i++)
 		{
-			if(EC.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+			if(ECCollisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 			{
 				IdleWithin++;
 			}
 		}
 		
-		return (IdleWithin == IdleCount) ? true : false;
+		return (IdleWithin == IdleCount) ? true : false;*/
 		
-		/*List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM Child in ECList)
+		EnemyChildFSM[] ECArray = m_Main.GetComponent<EnemyMainFSM>().ECList.ToArray();
+		for(int i = 0; i < ECArray.Length; i++)
 		{
-			if(Child.CurrentStateEnum == ECState.Idle && !HasChildEnterMain(Child.gameObject))
+			if(ECArray[i].CurrentStateEnum == ECState.Idle && !HasChildEnterMain(ECArray[i].gameObject))
 			{
 				return false;
 			}
 		}
-		return true;*/
+		return true;
 	}
 	
 	//A function that reset all enemy child cell velocity to the main cell velocity
@@ -207,11 +211,11 @@ public class ECIdleState : IECState
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		Vector2 MainVelo = m_Main.GetComponent<Rigidbody2D>().velocity;
 		
-		foreach(EnemyChildFSM Child in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(Child.CurrentStateEnum == ECState.Idle)
+			if(ECList[i].CurrentStateEnum == ECState.Idle)
 			{
-				Child.GetComponent<Rigidbody2D>().velocity = MainVelo;
+				ECList[i].GetComponent<Rigidbody2D>().velocity = MainVelo;
 			}
 		}
 	}
@@ -219,12 +223,12 @@ public class ECIdleState : IECState
 	private void ResetAllHitWall()
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM Child in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(Child.CurrentStateEnum == ECState.Idle)
+			if(ECList[i].CurrentStateEnum == ECState.Idle)
 			{
-				Child.bHitWall = false;
-				Child.GetComponent<Rigidbody2D>().drag = 0f;
+				ECList[i].bHitWall = false;
+				ECList[i].GetComponent<Rigidbody2D>().drag = 0f;
 			}
 		}
 	}

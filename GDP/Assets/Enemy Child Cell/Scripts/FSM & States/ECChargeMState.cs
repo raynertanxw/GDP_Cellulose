@@ -163,12 +163,12 @@ public class ECChargeMState : IECState {
 		Vector2 Center = Vector2.zero;
 		int AttackerCount = 0;
 
-		foreach(EnemyChildFSM EC in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(EC.CurrentStateEnum == ECState.ChargeMain)
+			if(ECList[i].CurrentStateEnum == ECState.ChargeMain)
 			{
-				Center.x += EC.transform.position.x;
-				Center.y += EC.transform.position.y;
+				Center.x += ECList[i].transform.position.x;
+				Center.y += ECList[i].transform.position.y;
 				AttackerCount++;
 			}
 		}
@@ -202,11 +202,11 @@ public class ECChargeMState : IECState {
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		List<GameObject> ECChargers = new List<GameObject>();
 		
-		foreach(EnemyChildFSM EC in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(EC.CurrentStateEnum == ECState.ChargeMain)
+			if(ECList[i].CurrentStateEnum == ECState.ChargeMain)
 			{
-				ECChargers.Add(EC.gameObject);
+				ECChargers.Add(ECList[i].gameObject);
 			}
 		}
 		return ECChargers;

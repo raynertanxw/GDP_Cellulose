@@ -50,9 +50,9 @@ public class FormationDatabase
 
 		int FormationIndex = 0;
 
-		foreach(EnemyChildFSM Child in _EnemyChild)
+		for(int i = 0; i < _EnemyChild.Count; i++)
 		{
-			FIndexDatabase.Add(Child.gameObject.name,FormationIndex);
+			FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);
 			FPositionDatabase.Add(FormationIndex,Vector2.zero);
 			FAvaliabilityDatabase.Add(FormationIndex,true);
 			FormationIndex++;

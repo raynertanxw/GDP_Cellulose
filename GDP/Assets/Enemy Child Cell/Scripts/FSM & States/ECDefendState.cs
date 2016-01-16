@@ -15,6 +15,8 @@ public class ECDefendState : IECState {
 
 	//A boolean that state whether the enemy child cell is retreating back to the enemy main cell after the defend state is completed and transitioning to idle state
 	private static bool bReturnToMain;
+	
+	public static bool bThereIsDefenders;
 
 	//A vector2 to store the defending position that the enemy child cell need to move to
 	private Vector2 m_TargetPos;
@@ -60,6 +62,7 @@ public class ECDefendState : IECState {
 		bAdjustNeeded = false;
 		
 		bKillClosestAttacker = false;
+		bThereIsDefenders = true;
 
 		//fDefendTime = 0f;
 		fMainScale = m_Main.transform.localScale.x * 0.75f;
@@ -198,6 +201,7 @@ public class ECDefendState : IECState {
 			fDefendTime = 0f;
 			bReturnToMain = false;
 			bGathered = false;
+			bThereIsDefenders = false;
 		}
 
 		//Reset the velocity and force applied to the enemy child cell
@@ -218,9 +222,9 @@ public class ECDefendState : IECState {
 	private bool HasAllCellReachTargetPos(Vector2 _Pos)
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM Child in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(Child.CurrentStateEnum == ECState.Idle && !HasCellReachTargetPos(_Pos))
+			if(ECList[i].CurrentStateEnum == ECState.Idle && !HasCellReachTargetPos(_Pos))
 			{
 				return false;
 			}
@@ -239,9 +243,10 @@ public class ECDefendState : IECState {
 	private bool IsThereNoAttackers()
 	{
 		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
-		foreach(GameObject child in PlayerChilds)
+		for(int i = 0; i < PlayerChilds.Length; i++)
 		{
-			if(child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			PCState CurrentState = PlayerChilds[i].GetComponent<PlayerChildFSM>().GetCurrentState();
+			if(CurrentState == PCState.ChargeChild || CurrentState == PCState.ChargeMain)
 			{
 				return false;
 			}
@@ -259,14 +264,14 @@ public class ECDefendState : IECState {
 		float ECtoPCDistance = 0f;
 		PCState PCCurrentState = PCState.Idle;
 		
-		foreach(GameObject child in PlayerChilds)
+		for(int i = 0; i < PlayerChilds.Length; i++)
 		{
-			ECtoPCDistance = Utility.Distance(child.transform.position,m_Child.transform.position);
-			PCCurrentState = child.GetComponent<PlayerChildFSM>().GetCurrentState();
+			ECtoPCDistance = Utility.Distance(PlayerChilds[i].transform.position,m_Child.transform.position);
+			PCCurrentState = PlayerChilds[i].GetComponent<PlayerChildFSM>().GetCurrentState();
 			
 			if((PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain) && ECtoPCDistance < Distance)
 			{
-				ClosestAttacker = child;
+				ClosestAttacker = PlayerChilds[i];
 				Distance = ECtoPCDistance;
 			}
 		}
@@ -280,11 +285,11 @@ public class ECDefendState : IECState {
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		List<GameObject> Defenders = new List<GameObject>();
 		
-		foreach(EnemyChildFSM Child in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(Child.CurrentStateEnum == ECState.Defend)
+			if(ECList[i].CurrentStateEnum == ECState.Defend)
 			{
-				Defenders.Add(Child.gameObject);
+				Defenders.Add(ECList[i].gameObject);
 			}
 		}
 		return Defenders;
@@ -294,7 +299,7 @@ public class ECDefendState : IECState {
 	private bool HasAllCellsGathered()
 	{
 		List<GameObject> DefendingCells = GetDefendingCells();
-		foreach(GameObject DefendingCell in DefendingCells)
+		for(int i = 0; i < DefendingCells.Count; i++)
 		{
 			if(!HasCellReachTargetPos(m_Main.transform.position))
 			{

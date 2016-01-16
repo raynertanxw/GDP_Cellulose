@@ -234,11 +234,11 @@ public class ECMineState : IECState {
 	{
 		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
 		List<GameObject> Landmines = new List<GameObject>();
-		foreach(GameObject Child in EnemyChild)
+		for(int i = 0; i < Landmines.Count; i++)
 		{
-			if(Child.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
+			if(Landmines[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
 			{
-				Landmines.Add(Child);
+				Landmines.Add(Landmines[i]);
 			}
 		}
 		return Landmines;
@@ -327,7 +327,7 @@ public class ECMineState : IECState {
 	private bool HasAllCellsReachTarget (Vector2 _TargetPos)
 	{
 		List<GameObject> mines = GetLandmines();
-		foreach(GameObject mine in mines)
+		for(int i = 0; i < mines.Count; i++)
 		{
 			if(!HasCellReachTarget(_TargetPos))
 			{
@@ -384,10 +384,10 @@ public class ECMineState : IECState {
 	{
 		//Loop through all the landmines, adding all of their position and dividing them over the amount of landmine
 		Vector2 Center = Vector2.zero;
-		foreach(GameObject mine in _Mines)
+		for(int i = 0; i < _Mines.Count; i++)
 		{
-			Center.x += mine.transform.position.x;
-			Center.y += mine.transform.position.y;
+			Center.x += _Mines[i].transform.position.x;
+			Center.y += _Mines[i].transform.position.y;
 		}
 		return Center/_Mines.Count;
 	}
@@ -460,13 +460,13 @@ public class ECMineState : IECState {
 			return false;
 		}
 
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.82f);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.82f,Constants.s_onlyPlayerChildLayer);
 
 		if(_PlayerCell.name.Contains("Node"))
 		{
-			foreach(Collider2D Hit in NearbyObjects)
+			for(int i = 0; i < NearbyObjects.Length; i++)
 			{
-				if(Hit.gameObject.tag == Constants.s_strPlayerChildTag && Hit.GetComponent<PlayerChildFSM>().GetCurrentState() != PCState.Dead)
+				if(NearbyObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() != PCState.Dead)
 				{
 					return true;
 				}
@@ -475,9 +475,9 @@ public class ECMineState : IECState {
 		}
 		else if(_PlayerCell.name == "Player_Cell")
 		{
-			foreach(Collider2D Hit in NearbyObjects)
+			for(int i = 0; i < NearbyObjects.Length; i++)
 			{
-				if(Hit.gameObject.tag == Constants.s_strPlayerTag)
+				if(NearbyObjects[i] != null)
 				{
 					return true;
 				}
@@ -491,9 +491,10 @@ public class ECMineState : IECState {
 	private void CallAllMinePassThroughDeath()
 	{
 		List<GameObject> Landmines = GetLandmines();
-		foreach(GameObject Landmine in Landmines)
+		for(int i = 0; i < Landmines.Count; i++)
 		{
-			Landmine.GetComponent<EnemyChildFSM>().StartChildCorountine(Landmine.GetComponent<EnemyChildFSM>().PassThroughDeath(1f));
+			EnemyChildFSM LandmineFSM = Landmines[i].GetComponent<EnemyChildFSM>();
+			LandmineFSM.StartChildCorountine(LandmineFSM.PassThroughDeath(1f));
 		}
 	}
 

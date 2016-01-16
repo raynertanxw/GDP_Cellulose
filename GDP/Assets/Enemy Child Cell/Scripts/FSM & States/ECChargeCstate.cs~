@@ -124,9 +124,9 @@ public class ECChargeCState : IECState {
 		//target. Then, return a boolean to represent the result
 		
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM EC in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(EC.name != m_Child.name && EC.CurrentStateEnum == ECState.ChargeChild && EC.Target != null && EC.Target.name == _Target.name)
+			if(ECList[i].name != m_Child.name && ECList[i].CurrentStateEnum == ECState.ChargeChild && ECList[i].Target != null && ECList[i].Target.name == _Target.name)
 			{
 				return false;
 			}
@@ -187,12 +187,12 @@ public class ECChargeCState : IECState {
 			float ChildToSquadChild = 0f;
 			float ClosestDistance = Mathf.Infinity;
 
-			foreach(SquadChildFSM SquadChild in m_PotentialTargets)
+			for(int i = 0; i < m_PotentialTargets.Count; i++)
 			{
-				ChildToSquadChild = Utility.Distance(m_Child.transform.position,SquadChild.transform.position);
+				ChildToSquadChild = Utility.Distance(m_Child.transform.position,m_PotentialTargets[i].transform.position);
 				if(ChildToSquadChild < ClosestDistance)
 				{
-					ClosestSquadChild = SquadChild;
+					ClosestSquadChild = m_PotentialTargets[i];
 					ClosestDistance = ChildToSquadChild;
 				}
 			}
@@ -273,9 +273,9 @@ public class ECChargeCState : IECState {
 	private bool HasAllCellReachTargetPos(Vector2 _Pos)
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM Child in ECList)
+		for(int i = 0; i < ECList.Count; i++)
 		{
-			if(Child.CurrentStateEnum == ECState.Idle && !HasCellReachTargetPos(_Pos))
+			if(ECList[i].CurrentStateEnum == ECState.Idle && !HasCellReachTargetPos(_Pos))
 			{
 				return false;
 			}

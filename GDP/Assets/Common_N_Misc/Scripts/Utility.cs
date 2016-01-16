@@ -50,9 +50,9 @@ public static class Utility
 	
 	public static void DrawPath(List<Point> _Path, Color _Color, float _CrossSize)
 	{
-		foreach(Point point in _Path)
+		for(int i = 0; i < _Path.Count; i++)
 		{
-			DrawCross(point.Position,_Color,_CrossSize);
+			DrawCross(_Path[i].Position,_Color,_CrossSize);
 		}
 	}
 	

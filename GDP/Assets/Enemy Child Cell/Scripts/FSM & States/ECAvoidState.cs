@@ -116,17 +116,21 @@ public class ECAvoidState : IECState {
 			return null;
 		}
 
+		Vector2 ChildPos = m_Child.transform.position;
 		float ClosestDistance = Mathf.Infinity;
+		float ChildtoAttacker = 0f;
 		GameObject ClosestAttacker = AttackersNearby[0];
-		foreach(GameObject Attacker in AttackersNearby)
+		
+		for(int i = 0; i < AttackersNearby.Count; i++)
 		{
-			float ChildtoAttacker = Utility.Distance(m_Child.transform.position, Attacker.transform.position);
+			ChildtoAttacker = Utility.Distance(ChildPos, AttackersNearby[i].transform.position);
 			if(ChildtoAttacker < ClosestDistance)
 			{
-				ClosestAttacker = Attacker;
+				ClosestAttacker = AttackersNearby[i];
 				ClosestDistance = ChildtoAttacker;
 			}
 		}
+
 		return ClosestAttacker;
 	}
 }

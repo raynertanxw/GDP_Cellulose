@@ -50,11 +50,11 @@ public static class SteeringBehavior
 		Vector2 GOPos = Vector2.zero;
 		float Distance = 0f;
 		
-		foreach(GameObject GO in _SameGOType)
+		for(int i = 0; i < _SameGOType.Count; i++)
 		{
-			if(GO != _Agent)
+			if(_SameGOType[i] != _Agent)
 			{
-			    GOPos = GO.transform.position;
+				GOPos = _SameGOType[i].transform.position;
 				Difference = GOPos - AgentPos;
 				Distance = Difference.magnitude;
 				

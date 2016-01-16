@@ -11,6 +11,7 @@ public class EnemyChildFSM : MonoBehaviour
 	private Node_Manager NodeLeft;
 	private Node_Manager NodeRight;
 	public GameObject m_ChargeTarget;
+	private EnemyMainFSM EMFSM;
 
 	//3 variables to store the current state, the enumeration of the current state and the current command for
 	//the child cell
@@ -35,6 +36,7 @@ public class EnemyChildFSM : MonoBehaviour
 		bRotateACW = false;
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
+		EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
 		NodeLeft = Node_Manager.GetNode(Node.LeftNode);
 		NodeRight = Node_Manager.GetNode(Node.RightNode);
 		
@@ -64,15 +66,15 @@ public class EnemyChildFSM : MonoBehaviour
 		m_CurrentState.Execute();
 		UpdateState();
 
-		if((m_CurrentEnum == ECState.Idle || m_CurrentEnum == ECState.Defend) && IsMainBeingAttacked() && ShouldEMTank())
+		if((m_CurrentEnum == ECState.Idle || m_CurrentEnum == ECState.Defend) && ShouldEMTank() && IsMainBeingAttacked())
 		{
 			AutoAvoid();
 		}
-		else if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsThereEnoughDefence() && !IsEMTanking())
+		else if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsEMTanking() && !IsThereEnoughDefence())
 		{
 			AutoDefend();
 		}
-		else if(m_CurrentEnum == ECState.Idle && !ECDefendState.ReturningToMain && IsThereDefenders())
+		else if(m_CurrentEnum == ECState.Idle && !ECDefendState.ReturningToMain && ECDefendState.bThereIsDefenders)
 		{
 			ReinforceDefence();
 		}
@@ -178,14 +180,16 @@ public class EnemyChildFSM : MonoBehaviour
 	private bool IsMainBeingAttacked()
 	{
 		Collider2D[] IncomingObjects;
+		PCState PCCurrentState = PCState.Dead;
 		
 		//Incoming objects to main
 		IncomingObjects = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
 		if(IncomingObjects.Length <= 0){return false;}
 		
-		foreach(Collider2D comingObject in IncomingObjects)
+		for(int i = 0; i < IncomingObjects.Length; i++)
 		{
-			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			PCCurrentState = IncomingObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState();
+			if(PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain)
 			{
 				return true;
 			}
@@ -195,9 +199,9 @@ public class EnemyChildFSM : MonoBehaviour
 		IncomingObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
 		if(IncomingObjects.Length <= 0){return false;}
 		
-		foreach(Collider2D comingObject in IncomingObjects)
+		for(int i = 0; i < IncomingObjects.Length; i++)
 		{
-			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			if(IncomingObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
 			{
 				return true;
 			}
@@ -210,23 +214,23 @@ public class EnemyChildFSM : MonoBehaviour
 	{
 		List<PlayerChildFSM> Attackers = NodeLeft.GetNodeChildList();
 		Attackers.AddRange(NodeRight.GetNodeChildList());
-		
-		List<EnemyChildFSM> Defenders = m_EMain.GetComponent<EnemyMainFSM>().ECList;
-		
+		List<EnemyChildFSM> Defenders = EMFSM.ECList;
+		PCState PCCurrentState = PCState.Idle;
 		int AttackerAmount = 0;
 		int DefenderAmount = 0;
 
-		foreach(PlayerChildFSM Attacker in Attackers)
+		for(int i = 0; i < Attackers.Count; i++)
 		{
-			if(Attacker.GetCurrentState() == PCState.ChargeChild || Attacker.GetCurrentState() == PCState.ChargeMain)
+			PCCurrentState = Attackers[i].GetCurrentState();
+			if(PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain)
 			{
 				AttackerAmount++;
 			}
 		}
 
-		foreach(EnemyChildFSM Defender in Defenders)
+		for(int i = 0; i < Defenders.Count; i++)
 		{
-			if(Defender.CurrentStateEnum == ECState.Defend)
+			if(Defenders[i].CurrentStateEnum == ECState.Defend)
 			{
 				DefenderAmount++;
 			}
@@ -237,15 +241,24 @@ public class EnemyChildFSM : MonoBehaviour
 	
 	private bool IsThereDefenders()
 	{
-		List<EnemyChildFSM> ECList = m_EMain.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM EC in ECList)
+		List<EnemyChildFSM> ECList = EMFSM.ECList;
+		for(int i = 0; i < ECList.Count; i++)
+		{
+			if(ECList[i].CurrentStateEnum == ECState.Defend)
+			{
+				return true;
+			}
+		}
+		return false;
+		
+		/*foreach(EnemyChildFSM EC in EMFSM.ECList)
 		{
 			if(EC.CurrentStateEnum == ECState.Defend)
 			{
 				return true;
 			}
 		}
-		return false;
+		return false;*/
 	}
 
 	private void ReinforceDefence()
@@ -259,28 +272,30 @@ public class EnemyChildFSM : MonoBehaviour
 
 	private void AutoDefend()
 	{
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 3 * GetComponent<SpriteRenderer>().bounds.size.x/2);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 3 * GetComponent<SpriteRenderer>().bounds.size.x/2, Constants.s_onlyEnemeyChildLayer);
 
 		//Dispatch a message to all nearby enemy child cells that are idling to defend the main cell
-		foreach(Collider2D nearby in NearbyObjects)
+		for(int i = 0; i < NearbyObjects.Length; i++)
 		{
-			if(nearby.tag == Constants.s_strEnemyChildTag && nearby.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+			if(NearbyObjects[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 			{
-				MessageDispatcher.Instance.DispatchMessage(gameObject,nearby.gameObject,MessageType.Defend,0);
+				MessageDispatcher.Instance.DispatchMessage(gameObject,NearbyObjects[i].gameObject,MessageType.Defend,0);
 			}
 		}
 	}
 
 	private void AutoAvoid()
 	{
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 3 * GetComponent<SpriteRenderer>().bounds.size.x/2);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 3 * GetComponent<SpriteRenderer>().bounds.size.x/2, Constants.s_onlyEnemeyChildLayer);
+		ECState ECCurrentState = ECState.Idle;
 
 		//Dispatch a message to all nearby enemy child cells that are idling to defend the main cell
-		foreach(Collider2D nearby in NearbyObjects)
+		for(int i = 0; i < NearbyObjects.Length; i++)
 		{
-			if(nearby.tag == Constants.s_strEnemyChildTag && (nearby.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle || nearby.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend))
+			ECCurrentState = NearbyObjects[i].GetComponent<EnemyChildFSM>().CurrentStateEnum;
+			if(ECCurrentState == ECState.Idle || ECCurrentState == ECState.Defend)
 			{
-				MessageDispatcher.Instance.DispatchMessage(gameObject,nearby.gameObject,MessageType.Avoid,0);
+				MessageDispatcher.Instance.DispatchMessage(gameObject,NearbyObjects[i].gameObject,MessageType.Avoid,0);
 			}
 		}
 	}
@@ -349,7 +364,6 @@ public class EnemyChildFSM : MonoBehaviour
 
 	private bool ShouldEMTank()
 	{
-		EnemyMainFSM EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
 		PlayerMain PM = m_PMain.GetComponent<PlayerMain>();
 		if(EMFSM.Health > PM.Health && EMFSM.ECList.Count > GameObject.FindGameObjectsWithTag("PlayerChild").Length && PM.Health < 35)
 		{
@@ -360,10 +374,10 @@ public class EnemyChildFSM : MonoBehaviour
 
 	private bool IsEMTanking()
 	{
-		List<EnemyChildFSM> Children = m_EMain.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM Child in Children)
+		List<EnemyChildFSM> Children = EMFSM.ECList;
+		for(int i = 0; i < Children.Count; i++)
 		{
-			if(Child.CurrentStateEnum == ECState.Avoid)
+			if(Children[i].CurrentStateEnum == ECState.Avoid)
 			{
 				return true;
 			}
@@ -388,13 +402,13 @@ public class EnemyChildFSM : MonoBehaviour
 		BoxCollider2D BotWall = null;
 		float LowestY = Mathf.Infinity;
 
-		foreach(BoxCollider2D Wall in Walls)
+		for(int i = 0; i < Walls.Length; i++)
 		{
-			Vector2 WallOrigin = Wall.transform.position;
-			WallOrigin += Wall.offset;
+			Vector2 WallOrigin = Walls[i].transform.position;
+			WallOrigin += Walls[i].offset;
 			if(WallOrigin.y < LowestY)
 			{
-				BotWall = Wall;
+				BotWall = Walls[i];
 				LowestY = WallOrigin.y;
 			}
 		}
