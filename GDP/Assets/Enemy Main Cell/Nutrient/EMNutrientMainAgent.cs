@@ -118,7 +118,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		}
 
 		// Instantiate mini nutrient
-		if (bCanSpawn && MapManager.instance.IsInBounds ((Vector2)(position * 1.5f))) 
+		if (bCanSpawn && MapManager.instance.IsInBounds ((Vector2)(position * 1.5f)) && gameObject.activeSelf) 
 		{
 			StartCoroutine (PauseSpawn ());
 		}
