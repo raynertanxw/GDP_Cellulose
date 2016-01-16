@@ -21,6 +21,8 @@ public class ECIdleState : IECState
 	
 	//A vector2 that store the specific direction at which this enemy child will move during the seperate portion of idling
 	private Vector2 SeperateDirection;
+	
+	private static int IdleCount;
 
 	//An enumeration for the type of idling the enemy child cell is having
 	private enum IdleStatus {Seperate, Cohesion};
@@ -36,6 +38,7 @@ public class ECIdleState : IECState
 		
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/10;
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
+		IdleCount = 0;
 	}
 
 	public override void Enter()
@@ -51,6 +54,7 @@ public class ECIdleState : IECState
 		m_ecFSM.bHitWall = false;
 		SeperateDirection = DirectionDatabase.Instance.Extract();
 		fIdleScale = m_Main.transform.localScale.x * 0.75f;
+		IdleCount++;
 	}
 	
 	public override void Execute()
@@ -62,14 +66,13 @@ public class ECIdleState : IECState
 			if(HasChildEnterMain(m_Child))
 			{
 				m_Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
-			}
-			
-			if(HasAllChildEnterMain())
-			{
-				ResetAllChildVelocity();
-				ResetAllHitWall();
-				CurrentIdleState = IdleStatus.Seperate;
-				fPreviousStatusTime = Time.time;
+				if(HasAllChildEnterMain())
+				{
+					ResetAllChildVelocity();
+					ResetAllHitWall();
+					CurrentIdleState = IdleStatus.Seperate;
+					fPreviousStatusTime = Time.time;
+				}
 			}
 		}
 		//If the current idle status is seperating, all the child cells are being spread out fully and it has been 1.5s since the previous change of state or the time passed had been 1.75s, change the idle status to cohesion and record the time
@@ -125,6 +128,7 @@ public class ECIdleState : IECState
 	{
 		//Return that specific seperation direction back to the direction database so it can be used for another child cell
 		DirectionDatabase.Instance.Return(SeperateDirection);
+		IdleCount--;
 	}
 	
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
@@ -173,7 +177,20 @@ public class ECIdleState : IECState
 	//A function that return a boolean on whether all enemy child cell had entered the enemy main cell
 	private bool HasAllChildEnterMain()
 	{
-		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
+		Collider2D[] ECCollisions = Physics2D.OverlapCircleAll(m_Main.transform.position,m_Main.GetComponent<SpriteRenderer>().bounds.size.x/9.5f,Constants.s_onlyEnemeyChildLayer);
+		if(ECCollisions.Length <= 0){return false;}
+		int IdleWithin = 0;
+		foreach(Collider2D EC in ECCollisions)
+		{
+			if(EC.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+			{
+				IdleWithin++;
+			}
+		}
+		
+		return (IdleWithin == IdleCount) ? true : false;
+		
+		/*List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		foreach(EnemyChildFSM Child in ECList)
 		{
 			if(Child.CurrentStateEnum == ECState.Idle && !HasChildEnterMain(Child.gameObject))
@@ -181,7 +198,7 @@ public class ECIdleState : IECState
 				return false;
 			}
 		}
-		return true;
+		return true;*/
 	}
 	
 	//A function that reset all enemy child cell velocity to the main cell velocity

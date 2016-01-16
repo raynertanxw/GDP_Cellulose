@@ -8,6 +8,8 @@ public class EnemyChildFSM : MonoBehaviour
 	//cell to charge towards
 	public GameObject m_PMain;
 	public GameObject m_EMain;
+	private Node_Manager NodeLeft;
+	private Node_Manager NodeRight;
 	public GameObject m_ChargeTarget;
 
 	//3 variables to store the current state, the enumeration of the current state and the current command for
@@ -33,6 +35,9 @@ public class EnemyChildFSM : MonoBehaviour
 		bRotateACW = false;
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
+		NodeLeft = Node_Manager.GetNode(Node.LeftNode);
+		NodeRight = Node_Manager.GetNode(Node.RightNode);
+		
 		m_ChargeTarget = null;
 		m_StatesDictionary = new Dictionary<ECState,IECState>();
 
@@ -173,6 +178,8 @@ public class EnemyChildFSM : MonoBehaviour
 	private bool IsMainBeingAttacked()
 	{
 		Collider2D[] IncomingToMain = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
+		if(IncomingToMain.Length <= 0){return false;}
+		
 		foreach(Collider2D comingObject in IncomingToMain)
 		{
 			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
@@ -180,9 +187,10 @@ public class EnemyChildFSM : MonoBehaviour
 				return true;
 			}
 		}
-
+		
 		Collider2D[] IncomingToChild = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
-
+		if(IncomingToChild.Length <= 0){return false;}
+		
 		foreach(Collider2D comingObject in IncomingToChild)
 		{
 			if(comingObject.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
@@ -190,38 +198,37 @@ public class EnemyChildFSM : MonoBehaviour
 				return true;
 			}
 		}
-
+		
 		return false;
 	}
 
 	private bool IsThereEnoughDefence()
 	{
-		GameObject[] Attackers = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
-		List<EnemyChildFSM> Child = m_EMain.GetComponent<EnemyMainFSM>().ECList;
-		int attackerAmount = 0;
-		int defenderAmount = 0;
+		List<PlayerChildFSM> Attackers = NodeLeft.GetNodeChildList();
+		Attackers.AddRange(NodeRight.GetNodeChildList());
+		
+		List<EnemyChildFSM> Defenders = m_EMain.GetComponent<EnemyMainFSM>().ECList;
+		
+		int AttackerAmount = 0;
+		int DefenderAmount = 0;
 
-		foreach(GameObject attacker in Attackers)
+		foreach(PlayerChildFSM Attacker in Attackers)
 		{
-			if(attacker.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || attacker.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
+			if(Attacker.GetCurrentState() == PCState.ChargeChild || Attacker.GetCurrentState() == PCState.ChargeMain)
 			{
-				attackerAmount++;
+				AttackerAmount++;
 			}
 		}
 
-		foreach(EnemyChildFSM defender in Child)
+		foreach(EnemyChildFSM Defender in Defenders)
 		{
-			if(defender.CurrentStateEnum == ECState.Defend)
+			if(Defender.CurrentStateEnum == ECState.Defend)
 			{
-				defenderAmount++;
+				DefenderAmount++;
 			}
 		}
 
-		if(attackerAmount > defenderAmount)
-		{
-			return false;
-		}
-		return true;
+		return (DefenderAmount > AttackerAmount) ? true : false;
 	}
 	
 	private bool IsThereDefenders()
