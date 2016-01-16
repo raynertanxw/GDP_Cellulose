@@ -382,14 +382,4 @@ public class EMController : MonoBehaviour
 		else if (m_EMFSM.Health <= 0)
 			this.gameObject.SetActive (false);
 	}
-
-    // Recevice nutrient from incoming enemy mini nutrient and destroy the mini nutrient
-	void OnCollisionEnter2D (Collision2D collision)
-	{
-		if (collision.gameObject.tag == "EnemyNutrient")
-		{
-			nCurrentNutrientNum++;
-			Destroy (collision.gameObject);
-		}
-	}
 }
