@@ -8,7 +8,8 @@ public class PC_IdleState : IPCState
 
 	public override void Enter()
 	{
-		m_nodeOrigin = m_pcFSM.m_assignedNode.transform.position;
+        if (m_pcFSM.m_assignedNode != null)
+		    m_nodeOrigin = m_pcFSM.m_assignedNode.transform.position;
 
         // Give a random velocity.
         m_pcFSM.rigidbody2D.velocity = (Random.insideUnitCircle * 0.25f);

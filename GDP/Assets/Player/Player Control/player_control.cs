@@ -256,6 +256,7 @@ public class player_control : MonoBehaviour
 			{
 				formationCells[i] = nodeChildCells[i];
 				formationCells[i].m_formationCells = formationCells; // arrays are reference types in Unity.
+                formationCells[i].attackMode = PlayerAttackMode.BurstShot;
 			}
 
 			for (int i = 0; i < formationCells.Length; i++)
@@ -273,8 +274,29 @@ public class player_control : MonoBehaviour
 	public void ActionSwarmTarget(int _nodeIndex)
 	{
 		Node _selectedNode = (Node) _nodeIndex;
-		Debug.Log(_nodeIndex + " Node called SwarmTarget");
-		ActionChargeChild(); // TEMP
+        Node_Manager selectedNode = Node_Manager.GetNode(_selectedNode);
+
+        if (selectedNode.activeChildCount < Settings.s_nPlayerActionSwarmTargetChildCost)
+        {
+            Debug.Log("Not enough child cells for Swarm Target in this node");
+        }
+        else
+        {
+            List<PlayerChildFSM> nodeChildCells = selectedNode.GetNodeChildList();
+            PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionSwarmTargetChildCost];
+            for (int i = 0; i < formationCells.Length; i++)
+            {
+                formationCells[i] = nodeChildCells[i];
+                formationCells[i].m_formationCells = formationCells; // arrays are reference types in Unity.
+                formationCells[i].attackMode = PlayerAttackMode.SwarmTarget;
+            }
+
+            for (int i = 0; i < formationCells.Length; i++)
+            {
+                formationCells[i].RemoveChildFromNode();
+                formationCells[i].DeferredChangeState(PCState.ChargeChild);
+            }
+        }
 
 		RestartFadeOut(_selectedNode);
 	}

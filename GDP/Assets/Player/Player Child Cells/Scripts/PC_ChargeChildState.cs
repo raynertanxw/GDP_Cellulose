@@ -3,49 +3,24 @@ using System.Collections;
 
 public class PC_ChargeChildState : IPCState
 {
-	private Vector3 m_currentVelocity;
-	private static float s_fPlayerChildChargeSpeed = 5.0f;
-	private static float s_fDetectionRange = 2.0f;
+    public bool m_bIsLeader = false;
+    public bool m_bIsLeaderAlive = false;
+    public int m_nLeaderIndex = -1;
 
-	public override void Enter()
+    private Transform m_targetPos;
+
+    public override void Enter()
 	{
+        if (m_pcFSM.m_formationCells[0] == m_pcFSM)
+            m_bIsLeader = true;
 
-
-		m_currentVelocity = Vector3.zero;
-	}
+        m_bIsLeaderAlive = true;
+        m_nLeaderIndex = 0;
+        m_targetPos = m_pcFSM.transform; // In case leader doesn't process first.
+    }
 	
 	public override void Execute()
 	{
-		if (AreThereTargets() == true)
-		{
-			if (m_pcFSM.m_currentEnemyCellTarget == null)
-			{
-				// Switch targets.
-				if (FindNearTarget() == false)
-					FindFarTarget();
-			}
-			else if (IsTargetAlive() == false)
-			{
-				// Switch targets.
-				if (FindNearTarget() == false)
-					FindFarTarget();
-			}
-			else // Target is still alive.
-			{
-				MoveTowardsTarget();
-
-				// Check for nearer target.
-				FindNearTarget();
-			}
-		}
-		else
-		{
-			// Transition to ChargeMainState
-			m_pcFSM.ChangeState(PCState.ChargeMain);
-		}
-
-
-
 		// Check for deferred state change.
 		if (m_pcFSM.m_bHasAwaitingDeferredStateChange == true)
 		{
@@ -55,15 +30,86 @@ public class PC_ChargeChildState : IPCState
 	
 	public override void Exit()
 	{
-
-
-		// Clean up
-		m_pcFSM.m_currentEnemyCellTarget = null;
+        m_bIsLeader = false;
+        m_bIsLeaderAlive = false;
+        m_targetPos = null;
+        m_pcFSM.m_currentEnemyCellTarget = null;
 	}
 
     public override void FixedExecute()
     {
+        switch (m_pcFSM.attackMode)
+        {
+            case PlayerAttackMode.SwarmTarget:
+                if (m_bIsLeader)
+                {
+                    if (AreThereTargets() == true)
+                    {
+                        if (m_pcFSM.m_currentEnemyCellTarget == null)
+                        {
+                            // Switch targets.
+                            if (FindNearTarget() == false)
+                                FindFarTarget();
+                        }
+                        else if (IsTargetAlive() == false)
+                        {
+                            // Switch targets.
+                            if (FindNearTarget() == false)
+                                FindFarTarget();
+                        }
 
+                        m_targetPos = m_pcFSM.m_currentEnemyCellTarget.transform;
+                    }
+                    else
+                    {
+                        // Set the target to the player main.
+                        m_pcFSM.m_currentEnemyCellTarget = null;
+                        m_targetPos = EnemyMainFSM.Instance().transform;
+                    }
+                }
+                else
+                {
+                    if (m_bIsLeaderAlive == false)
+                    {
+                        // Assign new leader
+                        for (int i = 0; i < m_pcFSM.m_formationCells.Length; i++)
+                        {
+                            // The first alive cell in formation.
+                            if (m_pcFSM.m_formationCells[i].GetCurrentState() != PCState.Dead)
+                            {
+                                if (m_pcFSM.m_formationCells[i].gameObject == m_pcFSM.gameObject)
+                                    m_bIsLeader = true;
+
+                                m_bIsLeaderAlive = true;
+                                m_nLeaderIndex = i;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (m_pcFSM.m_formationCells[m_nLeaderIndex].GetCurrentState() == PCState.Dead)
+                            m_bIsLeaderAlive = false;
+                    }
+
+                    if (AreThereTargets() == true)
+                    {
+                        if (m_pcFSM.m_formationCells[m_nLeaderIndex].m_currentEnemyCellTarget != null)
+                            m_targetPos = m_pcFSM.m_formationCells[m_nLeaderIndex].m_currentEnemyCellTarget.transform;
+                    }
+                    else
+                    {
+                        // Set the target to the player main.
+                        m_pcFSM.m_currentEnemyCellTarget = null;
+                        m_targetPos = EnemyMainFSM.Instance().transform;
+                    }
+                }
+
+                SwarmTargetFixedExecute();
+                break;
+            case PlayerAttackMode.ScatterShot:
+                ScatterShotFixedExecute();
+                break;
+        }
     }
 
     #if UNITY_EDITOR
@@ -78,36 +124,103 @@ public class PC_ChargeChildState : IPCState
 	{
 		m_pcFSM = pcFSM;
 	}
-	
-	
-	
-	
-	
 
 
 
 
 
 
-	
-	#region Helper functions
-	private bool IsTargetAlive()
+
+
+
+    #region Movement and Physics
+    private static float s_fAvoidRadius = 2.0f;
+    private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
+    private static float s_fMaxAcceleration = 2000f;
+    // Weights
+    private static float s_fTargetPullWeight = 50;
+    private static float s_fAvoidanceWeight = 2000;
+
+    // Getters for the various values.
+    public static float sqrAvoidRadius { get { return s_fSqrAvoidRadius; } }
+    public static float maxAcceleration { get { return s_fMaxAcceleration; } }
+    public static float targetPullWeight { get { return s_fTargetPullWeight; } }
+    public static float avoidanceWeight { get { return s_fAvoidanceWeight; } }
+
+    private void SwarmTargetFixedExecute()
+    {
+        // Get the components of the flocking.
+        Vector2 acceleration = TargetPull() * targetPullWeight;
+        acceleration += Avoidance() * avoidanceWeight;
+        // Clamp the acceleration to a maximum value
+        acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
+
+        m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+
+        FaceTowardsHeading();
+    }
+
+    private void ScatterShotFixedExecute()
+    {
+        FaceTowardsHeading();
+    }
+
+    // Flocking related Helper functions
+    private void FaceTowardsHeading()
+    {
+        Vector2 heading = m_pcFSM.rigidbody2D.velocity.normalized;
+        float fRotation = -Mathf.Atan2(heading.x, heading.y) * Mathf.Rad2Deg;
+        m_pcFSM.rigidbody2D.MoveRotation(fRotation);
+    }
+
+    // Calculate the sumVector for avoiding all the enemy child cells.
+    private Vector2 Avoidance()
+    {
+        Vector2 sumVector = Vector2.zero;
+
+        Collider2D enemyMain = Physics2D.OverlapCircle(m_pcFSM.transform.position, s_fAvoidRadius, Constants.s_onlyEnemyMainLayer);
+
+        if (enemyMain != null)
+        {
+            sumVector = m_pcFSM.rigidbody2D.position;
+            sumVector -= enemyMain.attachedRigidbody.position;
+
+            float fDist = Vector2.Distance(Vector2.zero, sumVector);
+            sumVector = sumVector.normalized / fDist;
+
+            return sumVector;
+        }
+        else
+        {
+            return sumVector;
+        }
+    }
+
+    private Vector2 TargetPull()
+    {
+        Vector2 sumVector = -m_pcFSM.rigidbody2D.position;
+        sumVector.x += m_targetPos.position.x;
+        sumVector.y += m_targetPos.position.y;
+
+        return sumVector;
+    }
+    #endregion
+
+
+
+
+
+
+
+    #region Helper functions
+    private static float s_fDetectionRange = 2.0f;
+
+    private bool IsTargetAlive()
 	{
 		if (m_pcFSM.m_currentEnemyCellTarget.CurrentStateEnum == ECState.Dead)
 			return false;
 		else
 			return true;
-	}
-	
-	private void MoveTowardsTarget()
-	{
-		// Calculate "force" vector.
-		Vector3 direction = m_pcFSM.m_currentEnemyCellTarget.transform.position - m_pcFSM.transform.position;
-		m_currentVelocity += direction.normalized * s_fPlayerChildChargeSpeed;
-		CapSpeed();
-	
-		// Apply velocity vector.
-		m_pcFSM.transform.position += m_currentVelocity * Time.deltaTime;
 	}
 
 	private bool FindNearTarget()
@@ -144,23 +257,9 @@ public class PC_ChargeChildState : IPCState
 	private bool AreThereTargets()
 	{
 		if (EnemyMainFSM.Instance().ECList.Count > 0)
-		{
 			return true;
-		}
 		else
-		{
 			return false;
-		}
-	}
-
-	private void CapSpeed()
-	{
-		float sqrMag = m_currentVelocity.sqrMagnitude;
-		if (sqrMag > Mathf.Pow(s_fPlayerChildChargeSpeed, 2))
-		{
-			float scalar = Mathf.Pow(s_fPlayerChildChargeSpeed, 2) / sqrMag;
-			m_currentVelocity *= scalar;
-		}
 	}
 	#endregion
 }

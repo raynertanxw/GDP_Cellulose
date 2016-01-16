@@ -55,6 +55,7 @@ public class PlayerChildFSM : MonoBehaviour
 	public bool m_bIsDefending = true;
 	public bool m_bHasAwaitingDeferredStateChange = false;
 	public PlayerChildFSM[] m_formationCells;
+    public PlayerAttackMode attackMode;
 	private PCState m_deferredState;
 	public EnemyChildFSM m_currentEnemyCellTarget;
 	public Node_Manager m_assignedNode;
