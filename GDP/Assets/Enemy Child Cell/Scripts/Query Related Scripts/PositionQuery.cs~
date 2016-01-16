@@ -6,21 +6,16 @@ public class PositionQuery
 {
 	//Declare an instance of PositionQuery for Singleton purpose
 	private static PositionQuery s_Instance;
-	
-	//Declare an instance of database to refer back to the singleton instance of the database
-	private PointDatabase m_PDatabase;
-	
-	private GameObject EnemyMain;
 	private GameObject PlayerMain;
-	private static int CurrentNodeTarget;
+	private GameObject EnemyMain;
+	private GameObject SquadCaptain;
 	
 	//Constructor for PositionQuery
 	public PositionQuery()
 	{
-		m_PDatabase = PointDatabase.Instance;
 		PlayerMain = GameObject.Find("Player_Cell");
-		EnemyMain = GameObject.Find("Enemey_Cell");
-		CurrentNodeTarget = 0;
+		EnemyMain = GameObject.Find("Enemy_Cell");
+		SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 	}
 	
 	//Singleton and Getter function for Position Query
@@ -42,8 +37,7 @@ public class PositionQuery
 		Threats.Add(Node_Manager.GetNode(Node.LeftNode).gameObject);
         Threats.Add(Node_Manager.GetNode(Node.RightNode).gameObject);
 		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
-		
-		bool bResult = false;
+
 		for(int i = 0; i < Threats.Count; i++)
 		{
 			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
@@ -65,6 +59,7 @@ public class PositionQuery
 		Threats.Add(Node_Manager.GetNode(Node.LeftNode).gameObject);
 		Threats.Add(Node_Manager.GetNode(Node.RightNode).gameObject);
 		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
+		
 		int nIndexForMostThreating = 0;
 		int nHighestScore = 0;
 		
@@ -137,8 +132,8 @@ public class PositionQuery
 	
 	private List<Vector2> GetPointRangeBetweenPlayerEnemy()
 	{
-		Point PlayerClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Player_Cell").transform.position,false);
-		Point EnemyClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(GameObject.Find("Enemy_Cell").transform.position,false);
+		Point PlayerClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
+		Point EnemyClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(EnemyMain.transform.position,false);
 		
 		float PosDifferenceX = EnemyClosestPoint.Position.x - PlayerClosestPoint.Position.x;
 		float PosDifferenceY = EnemyClosestPoint.Position.y - PlayerClosestPoint.Position.y;
@@ -216,7 +211,6 @@ public class PositionQuery
 			}
 			else
 			{
-				GameObject SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 				if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 				{
 					return SquadCaptain;
@@ -229,7 +223,6 @@ public class PositionQuery
 		}
 		else if(PType == PositionType.Defensive)
 		{
-			//Debug.Log("Defensive");
 			if(IsAllThreatEmpty())
 			{
 				return PlayerMain;
@@ -249,7 +242,7 @@ public class PositionQuery
 	
 	public Vector2 GetLandminePos(RangeValue Range, PositionType PType, GameObject Agent)
 	{
-		Vector2 targetPos = new Vector2(0f,0f);
+		Vector2 targetPos = Vector2.zero;
 		
 		if(PType == PositionType.Aggressive)
 		{
@@ -260,7 +253,6 @@ public class PositionQuery
 			}
 			else
 			{
-				GameObject SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 				Point CurrentPoint = null;
 				if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 				{
@@ -275,7 +267,6 @@ public class PositionQuery
 		}
 		else if(PType == PositionType.Defensive)
 		{
-			//Debug.Log("Defensive");
 			if(IsAllThreatEmpty())
 			{
 				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);

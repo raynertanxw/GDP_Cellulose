@@ -7,10 +7,7 @@ public class PathQuery
 	private static PathQuery s_Instance;
 
 	private PointDatabase m_Database;
-	
-	private GameObject PlayerMain;
-	private GameObject EnemyMain;
-	
+
 	private Dictionary<string,Edge> SearchFrontier;
 	private Dictionary<string,Edge> ShortestPath;
 	private Dictionary<string,float> fCost;
@@ -22,8 +19,6 @@ public class PathQuery
 	public PathQuery()
 	{
 		m_Database = PointDatabase.Instance;
-		PlayerMain = GameObject.Find("Player_Cell");
-		EnemyMain = GameObject.Find("Enemy_Cell");
 	}
 	
 	public static PathQuery Instance
@@ -59,7 +54,6 @@ public class PathQuery
 	{
 		SourceIndex = PointDatabase.Instance.GetIdealPoint(_Source,_Target).Index;
 		TargetIndex = PointDatabase.Instance.GetClosestPointToPosition(_Target,_AllowUnwalkable).Index;
-		//Debug.Log("Source Index: " + SourceIndex + " Target Index: " + TargetIndex);
 		
 		List<Point> PointList = PointDatabase.Instance.ReturnDatabaseAsList();
 		SearchFrontier = new Dictionary<string,Edge>();//store all points that are being searched
@@ -75,8 +69,6 @@ public class PathQuery
 		{
 			string nextClosestPoint = priorityQueue.Dequeue();
 
-			//Utility.DrawCross(m_Database.Database[nextClosestPoint].Position,Color.black,0.1f);
-
 			ShortestPath[nextClosestPoint] = SearchFrontier[nextClosestPoint];
 			
 			if(nextClosestPoint == TargetIndex)
@@ -90,8 +82,6 @@ public class PathQuery
 				float HCost = CalculateDistanceBetweenPoints(edge.End,m_Database.Database[TargetIndex]);
 				//cumulative cost from the start node to the current node
 				float GCost = gCost[nextClosestPoint] + edge.Cost;
-				//Debug.Log("Edge start: " + edge.Start.Index + " Edge end: " + edge.End.Index + " fCost: " + (GCost + HCost));
-				
 				
 				if(_AllowUnwalkable == false)
 				{
@@ -176,55 +166,27 @@ public class PathQuery
 		{
 			currentKey = ShortestPath[currentKey].Start.Index;
 			Path.Insert(0,m_Database.Database[currentKey]);
-			//Utility.DrawCross(m_Database.Database[currentKey].Position,Color.green,0.1f);
 		}
-		
-		//Debug.Log("Before smoothing");
-		//DebugAllPathPoints(Path);
-		
+
 		int PossibleSmoothing = Mathf.CeilToInt(Path.Count/2);
-		//Debug.Log("Possible smoothing: " + PossibleSmoothing);
 		int smoothingAmount = PossibleSmoothing;
-			
+		int CalculateAmount = 0;
+	
 		//smooth 25%, 50%, 75% accordingly
 		if(_directness == Directness.Low)
 		{
-			int calculatedAmount = PossibleSmoothing/2;
-			if(calculatedAmount > 0 && calculatedAmount < 1)
-			{
-				smoothingAmount = 1;
-			}
-			else
-			{
-				smoothingAmount = Mathf.CeilToInt(PossibleSmoothing);
-			}
+			CalculateAmount = PossibleSmoothing/2;
 		}
 		else if(_directness == Directness.Mid)
 		{
-			int calculatedAmount = PossibleSmoothing/4 * 3;
-			if(calculatedAmount > 0 && calculatedAmount < 1)
-			{
-				smoothingAmount = 1;
-			}
-			else
-			{
-				smoothingAmount = Mathf.CeilToInt(PossibleSmoothing);
-			}
+			CalculateAmount = PossibleSmoothing/4 * 3;
 		}
 		else if(_directness == Directness.High)
 		{
-			int calculatedAmount = PossibleSmoothing;
-			if(calculatedAmount > 0 && calculatedAmount < 1)
-			{
-				smoothingAmount = 1;
-			}
-			else
-			{
-				smoothingAmount = Mathf.CeilToInt(PossibleSmoothing);
-			}
+			CalculateAmount = PossibleSmoothing;
 		}
 		
-		//Debug.Log("Actual smoothing: " + smoothingAmount);
+		smoothingAmount = (CalculateAmount > 0 && CalculateAmount < 1) ? 1 : Mathf.CeilToInt(PossibleSmoothing);
 		
 		int smoothDone = 0;
 		
@@ -232,7 +194,6 @@ public class PathQuery
 		{
 			if(i + 2 < Path.Count && IsTwoPointsFreeToMove(Path[i],Path[i + 2]))
 			{
-				//Debug.Log("Remove point: " + Path[i + 1].Index);
 				Path.Remove(Path[i + 1]);
 				smoothDone++;
 				if(smoothDone >= smoothingAmount)
@@ -258,52 +219,12 @@ public class PathQuery
 		return _Path;
 	}
 	
-	public List<Point> InduceNoiseToPath(List<Point> _Path)
-	{
-		float fRandomXNeg = Random.Range(-0.15f, 0f);
-		float fRandomXPos = Random.Range(0f, 0.15f);
-		float fRandomYNeg = Random.Range(-0.1f, 0f);
-		float fRandomYPos = Random.Range(0f, 0.1f);
-		
-		float fNoiseToX = Random.Range(fRandomXNeg,fRandomXPos);
-		float fNoiseToY = Random.Range(fRandomYNeg,fRandomYPos);
-		
-		for(int i = 0; i < _Path.Count; i++)
-		{
-			_Path[i].Position += new Vector2(fNoiseToX,fNoiseToY);
-		}
-		
-		return _Path;
-	}
-	
 	private void DebugAllPathPoints(List<Point> _Path)
 	{
 		foreach(Point point in _Path)
 		{
 			Debug.Log("Point: " + point.Index);
 		}
-	}
-	
-	public bool IsThereVerticalSequence(List<Point> _Path)
-	{
-		int SequenceCount = 0;
-		Point ReferencePoint = _Path[_Path.Count - 1];
-		for(int i = _Path.Count - 1; i >= 0; i--)
-		{
-			if(i != _Path.Count - 1 && _Path[i].Position.x == ReferencePoint.Position.x)
-			{
-				SequenceCount++;
-			}
-			else if(i != _Path.Count - 1 && _Path[i].Position.x != ReferencePoint.Position.x)
-			{
-				break;
-			}
-		}
-		if(SequenceCount > 0)
-		{
-			return true;
-		}
-		return false;
 	}
 	
 	private bool IsPointInPath(Point _Point, List<Point> _Path)
@@ -316,45 +237,6 @@ public class PathQuery
 			}
 		}
 		return false;
-	}
-	
-	private bool IsSuitableStartPoint(Point _Start, Point _Reference)
-	{
-		if(_Start.Position.x == _Reference.Position.x && _Start.Position.y >= _Reference.Position.y)
-		{
-			return true;
-		}
-		return false;
-		
-		/*for(int i = 0; i < _Start.Edges.Count; i++)
-		{
-			if(_Start.Edges[i].End.Position.y < _Reference.Position.y && (_Start.Edges[i].End.Position.x > _Reference.Position.x || _Start.Edges[i].End.Position.x < _Reference.Position.x))
-			{
-				for(int a = 0; a < _Path.Count; a++)
-				{
-					if(_Path[a] == _Start.Edges[i].End)
-					{
-						return false;
-					}
-				}
-			}
-		}
-		return true;*/
-		//if(_Start.Position.x == _Reference.Position.x)
-		//{
-			/*for(int a = 0; a < _Start.Edges.Count; a++)
-			{
-				for(int b = 0; b < _Path.Count; b++)
-				{
-				    if(_Start.Edges[a].End.Position.y <  _Start.Position.y && _Start.Edges[a].End.Position.x != _Start.Position.x && _Path[b] == _Start.Edges[a].End)
-					{
-						return false;
-					}
-				}
-			}
-			return true;*/
-		//}
-		//return false;
 	}
 	
 	public Point ReturnVertSequenceStartPoint(List<Point> _Path)
@@ -372,22 +254,6 @@ public class PathQuery
 				break;
 			}
 		}
-		return StartPoint;
-	
-		/*Point ReferencePoint = _Path[_Path.Count - 1];
-		Point StartPoint = _Path[_Path.Count - 1];
-		for(int i = _Path.Count - 1; i >= 0; i--)
-		{
-			if(i != _Path.Count - 1 && IsSuitableStartPoint(_Path[i],ReferencePoint))//StartPoint.Position.x == ReferencePoint.Position.x && (StartPoint.Position.y == ReferencePoint.Position.y || StartPoint.Position.y > ReferencePoint.Position.y))//IsSuitableStartPoint(_Path[i],ReferencePoint,_Path))
-			{
-				StartPoint = _Path[i];
-			}
-			else if(i != _Path.Count - 1 && !IsSuitableStartPoint(_Path[i],ReferencePoint))//!IsSuitableStartPoint(_Path[i],ReferencePoint,_Path))
-			{
-				break;
-			}
-		}*/
-		
 		return StartPoint;
 	}
 }

@@ -131,11 +131,11 @@ public class ECIdleState : IECState
 	private List<GameObject> TagNeighbours()
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position,fSpreadRange);//Change this value to how spread out the spreading is
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);//Change this value to how spread out the spreading is
 		
 		for(int i = 0; i < Neighbouring.Length; i++)
 		{
-			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 			{
 				Neighbours.Add(Neighbouring[i].gameObject);
 			}
@@ -154,7 +154,7 @@ public class ECIdleState : IECState
 			Collider2D[] Collisions = Physics2D.OverlapCircleAll(Child.transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);
 			foreach(Collider2D Hit in Collisions)
 			{
-				if(Hit.gameObject.tag == Constants.s_strEnemyChildTag && Hit.gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+				if(Hit.gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 				{
 					return false;
 				}
@@ -167,11 +167,7 @@ public class ECIdleState : IECState
 	//A function that return a boolean on whether that specific child cell had entered the enemy main cell
 	private bool HasChildEnterMain(GameObject _Child)
 	{
-		if(Vector2.Distance(_Child.transform.position,m_Main.transform.position) <= m_Main.GetComponent<SpriteRenderer>().bounds.size.x/9.5f)
-		{
-			return true;
-		}
-		return false;
+		return (Vector2.Distance(_Child.transform.position,m_Main.transform.position) <= m_Main.GetComponent<SpriteRenderer>().bounds.size.x/9.5f) ? true : false;
 	}
 	
 	//A function that return a boolean on whether all enemy child cell had entered the enemy main cell
@@ -192,11 +188,13 @@ public class ECIdleState : IECState
 	private void ResetAllChildVelocity()
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
+		Vector2 MainVelo = m_Main.GetComponent<Rigidbody2D>().velocity;
+		
 		foreach(EnemyChildFSM Child in ECList)
 		{
 			if(Child.CurrentStateEnum == ECState.Idle)
 			{
-				Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
+				Child.GetComponent<Rigidbody2D>().velocity = MainVelo;
 			}
 		}
 	}

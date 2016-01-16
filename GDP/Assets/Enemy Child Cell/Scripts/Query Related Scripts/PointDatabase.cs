@@ -11,6 +11,9 @@ public class PointDatabase
 	private Dictionary<string,Point> m_Database;
 	
 	private Vector2 m_InitialPlayerPos;
+	
+	private GameObject PlayerMain;
+	
 	public float PointIntervalX;
 	public float PointIntervalY;
 	
@@ -18,7 +21,8 @@ public class PointDatabase
 	public PointDatabase()
 	{
 		m_Database = new Dictionary<string, Point>();
-		m_InitialPlayerPos = GameObject.Find("Player_Cell").transform.position;
+		PlayerMain = GameObject.Find("Player_Cell");
+		m_InitialPlayerPos = PlayerMain.transform.position;
 	}
 	
 	//Singleton and Get function
@@ -43,14 +47,9 @@ public class PointDatabase
 	{
 		float LeftWallX = (-Screen.width/2) + 0.5f;
 		float RightWallX = (Screen.width/2) - 0.5f;
-		float RadiusOfCell = GameObject.Find("Enemy_Child_Cell").GetComponent<SpriteRenderer>().bounds.size.x/2;
+		float RadiusOfCell = PlayerMain.GetComponent<SpriteRenderer>().bounds.size.x/2;
 		
-		if(_Point.Position.x + RadiusOfCell > RightWallX || _Point.Position.x - RadiusOfCell < LeftWallX)
-		{
-			return false;
-		}
-		
-		return true;
+		return (_Point.Position.x + RadiusOfCell > RightWallX || _Point.Position.x - RadiusOfCell < LeftWallX) ? false : true;
 	}
 	
 	public void InitializeDatabase()
@@ -151,7 +150,7 @@ public class PointDatabase
 	public void RefreshDatabase()
 	{
 		//CREATE LIST OF STRINGS TO STORE THE KEY OF THE DICTIONARY
-		float fDifferenceY = GameObject.Find("Player_Cell").transform.position.y - m_InitialPlayerPos.y;
+		float fDifferenceY = PlayerMain.transform.position.y - m_InitialPlayerPos.y;
 		List<string> keys = new List<string>(m_Database.Keys);
 		
 		foreach(string key in keys)
@@ -161,39 +160,10 @@ public class PointDatabase
 		}
 	}
 
-	public List<Point> GetPointsBetweenAxis(string _XorY, float _Min, float _Max)
-	{
-		List<Point> PointsWithinRange = new List<Point>();
-		List<string> keys = new List<string>(m_Database.Keys);
-		
-		if(_XorY == "X" || _XorY == "x")
-		{
-			foreach(string key in keys)
-			{
-				if(m_Database[key].Position.x >= _Min && m_Database[key].Position.x <= _Max)
-				{
-					PointsWithinRange.Add(m_Database[key]);
-				}
-			}
-		}
-		else if(_XorY == "Y" || _XorY == "y")
-		{
-			foreach(string key in keys)
-			{
-				if(m_Database[key].Position.y >= _Min && m_Database[key].Position.y <= _Max)
-				{
-					PointsWithinRange.Add(m_Database[key]);
-				}
-			}
-		}
-		
-		return PointsWithinRange;
-	}
-
 	public Point GetClosestPointToPosition(Vector2 _Pos, bool _UnwalkableAllowed)
 	{
 		List<string> keys = new List<string>(m_Database.Keys);
-		Point ClosestPoint = new Point("",new Vector2(0f,0f),false);
+		Point ClosestPoint = new Point("",Vector2.zero,false);
 		float ClosestDistance = Mathf.Infinity;
 		
 		foreach(string key in keys)

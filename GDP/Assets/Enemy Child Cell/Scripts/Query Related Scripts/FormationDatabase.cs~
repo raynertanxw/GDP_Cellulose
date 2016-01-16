@@ -18,17 +18,9 @@ public class FormationDatabase
 
 	public FormationDatabase()
 	{
-		Debug.Log("initialize database");
 		InitializeDatabases();
-
-		List<GameObject> ECList = new List<GameObject>(GameObject.FindGameObjectsWithTag("EnemyChild"));
-		List<EnemyChildFSM> ECFSMList = new List<EnemyChildFSM>();
-		foreach(GameObject EC in ECList)
-		{
-			ECFSMList.Add(EC.GetComponent<EnemyChildFSM>());
-		}
-
-		RefreshDatabases(ECFSMList);
+		List<EnemyChildFSM> ECList = GameObject.Find("Enemy_Cell").GetComponent<EnemyMainFSM>().ECList;
+		RefreshDatabases(ECList);
 	}
 
 	//Singleton and Get function
@@ -46,7 +38,6 @@ public class FormationDatabase
 
     private void InitializeDatabases()
     {
-		Debug.Log("Initialize");
 		FIndexDatabase = new Dictionary<string, int>();
 		FPositionDatabase = new Dictionary<int, Vector2>();
 		FAvaliabilityDatabase = new Dictionary<int, bool>();
@@ -62,17 +53,14 @@ public class FormationDatabase
 		foreach(EnemyChildFSM Child in _EnemyChild)
 		{
 			FIndexDatabase.Add(Child.gameObject.name,FormationIndex);
-			FPositionDatabase.Add(FormationIndex,new Vector2(0f,0f));
+			FPositionDatabase.Add(FormationIndex,Vector2.zero);
 			FAvaliabilityDatabase.Add(FormationIndex,true);
 			FormationIndex++;
 		}
-
-		//PrintIndexDatabase();
     }
 
     public void ClearDatabases()
     {
-		//Debug.Log("Clear");
 		FIndexDatabase.Clear();
 		FPositionDatabase.Clear();
 		FAvaliabilityDatabase.Clear();
@@ -83,14 +71,12 @@ public class FormationDatabase
 		CurrentFormation = _FormationType;
 		fCurrentMainScale = _MainScale;
 
-		//Debug.Log(_EnemyChild.Count);
-
 		Vector2 EMPos = GameObject.Find("Enemy_Cell").transform.position;
 
 		if(_FormationType == Formation.Crescent)
 		{
 			Vector2 CurrentFormationPos = new Vector2(0f,-2.5f * _MainScale);//Although it is positive 1.4f here, it should be negative. It's left positive as it will be minus away from the main pos
-			Vector2 StoredFormationPos = new Vector2(0f,0f);
+			Vector2 StoredFormationPos = Vector2.zero;
 			float XInterval = 0.55f * _MainScale;
 			float YInterval = 0.4f * _MainScale;
 			float NextLineInterval = -0.8f * _MainScale;
@@ -103,9 +89,8 @@ public class FormationDatabase
 				//if the current formation cell is the start of a new formation row
 				if(FIndex % 9 == 0)//if the formation index is to the factor of 9 (9 Cells are required to make one row in the formation
 				{
-					RightCount = 0;
-					LeftCount = 0;
-
+					RightCount = LeftCount = 0;
+					
 					if(FIndex == 0)
 					{
 						StoredFormationPos = CurrentFormationPos;
@@ -158,7 +143,7 @@ public class FormationDatabase
 		else if(_FormationType == Formation.ReverseCrescent)
 		{
 			Vector2 CurrentFormationPos = new Vector2(0f,-1.6f * _MainScale);
-			Vector2 StoredFormationPos = new Vector2(0f,0f);
+			Vector2 StoredFormationPos = Vector2.zero;
 			float XInterval = 0.55f * _MainScale;// and -0.65 for left side
 			float YInterval = -0.4f * _MainScale;
 			float NextLineInterval = -0.6f * _MainScale;
@@ -170,8 +155,7 @@ public class FormationDatabase
 			{
 				if(FIndex % 9 == 0)
 				{
-					RightCount = 0;
-					LeftCount = 0;
+					RightCount = LeftCount = 0;
 
 					if(FIndex == 0)
 					{
@@ -224,7 +208,7 @@ public class FormationDatabase
 		else if(_FormationType == Formation.CircularSurround)
 		{
 			Vector2 CurrentFormationPos = new Vector2(0f,-1.6f * _MainScale);
-			Vector2 StoredFormationPos = new Vector2(0f,0f);
+			Vector2 StoredFormationPos = Vector2.zero;
 			float XInterval = 1f * _MainScale;
 			float YInterval = 0.85f * _MainScale;
 			float NextLineInterval = -0.55f * _MainScale;
@@ -238,9 +222,7 @@ public class FormationDatabase
 				//front central cell
 				if(CircularCount == 0)
 				{
-					RightCount = 0;
-					LeftCount = 0;
-					CircularCount = 0;
+					RightCount = LeftCount = CircularCount = 0;
 
 					if(FIndex == 0)
 					{
@@ -334,7 +316,7 @@ public class FormationDatabase
 			int ECAmount = FIndexDatabase.Count;
 			int SetAmount = (int) Mathf.Floor(ECAmount/9);
 			Vector2 CurrentFormationPos = new Vector2(0f, -2f * _MainScale);
-			Vector2 StoredFormationPos = new Vector2(0f,0f);
+			Vector2 StoredFormationPos = Vector2.zero;
 			float XInterval = 0.65f * _MainScale;
 			float XBlockGap = 0.45f * _MainScale;
 			float YInterval = 0.5f * _MainScale;
@@ -346,9 +328,8 @@ public class FormationDatabase
 			{
 				if(FIndex % 9 == 0)
 				{
-					RightCount = 0;
-					LeftCount = 0;
-
+					RightCount = LeftCount = 0;
+					
 					if(FIndex == 0)
 					{
 						StoredFormationPos = CurrentFormationPos;
@@ -474,7 +455,6 @@ public class FormationDatabase
 				FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
 			}
 			
-			
 			//Update the database to recalculate the position for all indexes
 			UpdateDatabaseFormation(CurrentFormation,fCurrentMainScale);
 		}
@@ -540,12 +520,12 @@ public class FormationDatabase
 
     private int GetCrescentCenterIndex(int _CurrentIndex)
     {
-			int Current = _CurrentIndex;
-			while(Current % 9 != 0)
-			{
-				Current--;
-			}
-			return Current;
+		int Current = _CurrentIndex;
+		while(Current % 9 != 0)
+		{
+			Current--;
+		}
+		return Current;
     }
 
     private int[] GetCircularCenterIndexes(int _CurrentIndex)
@@ -580,11 +560,6 @@ public class FormationDatabase
 			Current--;
 		}
 		return Current;
-    }
-
-    public bool IsAllCellInPosition()
-    {
-		return true;
     }
 
     private void PrintIndexDatabase()

@@ -61,7 +61,7 @@ public class ECAttackState : IECState {
 	private bool IsThereThreatToMain()
 	{
 		int PlayerTotalCells = GetSquadCellCount() + m_LeftNode.GetNodeChildList().Count + m_RightNode.GetNodeChildList().Count;
-		int OwnTotalCells = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag).Length; //m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
+		int OwnTotalCells = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag).Length;
 		
 		if(PlayerTotalCells > OwnTotalCells)
 		{

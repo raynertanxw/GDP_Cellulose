@@ -139,7 +139,6 @@ public class ECDefendState : IECState {
 				bKillClosestAttacker = false;
 				return;
 			}
-			//Debug.Log(m_Child.name + "'s target: " + m_ecFSM.m_ChargeTarget);
 		}
 		else if(bKillClosestAttacker)
 		{
@@ -199,7 +198,6 @@ public class ECDefendState : IECState {
 			fDefendTime = 0f;
 			bReturnToMain = false;
 			bGathered = false;
-			//Debug.Log("meow");
 		}
 
 		//Reset the velocity and force applied to the enemy child cell
@@ -213,11 +211,7 @@ public class ECDefendState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f)
-		{
-			return true;
-		}
-		return false;
+		return (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.05f) ? true : false;
 	}
 
 	//A function that return a boolean on whether all the cells had reached the given position in the perimeter
@@ -237,15 +231,8 @@ public class ECDefendState : IECState {
 	//A function that return a boolean on whether there is any player child cell that passed by this enemy child cell
 	private bool IsPlayerChildPassingBy()
 	{
-		Collider2D[] PasserBy = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * fAutoDefendRange);
-		foreach(Collider2D obj in PasserBy)
-		{
-			if(obj != null && obj.tag == Constants.s_strPlayerChildTag)
-			{
-				return true;
-			}
-		}
-		return false;
+		Collider2D[] PasserBy = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * fAutoDefendRange,Constants.s_onlyPlayerChildLayer);
+		return (PasserBy.Length > 0) ? true : false;
 	}
 
 	//A function that return if there is no attacking player child cells
@@ -271,7 +258,7 @@ public class ECDefendState : IECState {
 
 		foreach(GameObject child in PlayerChilds)
 		{
-			if((child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain) && Vector2.Distance(child.transform.position,m_Child.transform.position) < distance)// && !IsAttackTargetBeingTargeted(child))
+			if((child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || child.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain) && Vector2.Distance(child.transform.position,m_Child.transform.position) < distance)
 			{
 				ClosestAttacker = child;
 				distance = Vector2.Distance(child.transform.position,m_Child.transform.position);
@@ -281,48 +268,19 @@ public class ECDefendState : IECState {
 		return ClosestAttacker;
 	}
 
-	private bool IsAttackTargetBeingTargeted(GameObject _Target)
-	{
-		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		foreach(EnemyChildFSM EC in ECList)
-		{
-			if(EC.m_ChargeTarget != null && EC.m_ChargeTarget.name == _Target.name)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-
 	//A function that return all the enemy child cells that are in defend state
 	private List<GameObject> GetDefendingCells()
 	{
-		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
+		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		List<GameObject> Defenders = new List<GameObject>();
-		foreach(GameObject Child in EnemyChild)
+		
+		foreach(EnemyChildFSM Child in ECList)
 		{
-			if(Child.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend)
+			if(Child.CurrentStateEnum == ECState.Defend)
 			{
-				Defenders.Add(Child);
+				Defenders.Add(Child.gameObject);
 			}
 		}
-		return Defenders;
-	}
-
-	//A function that return all the enemy child cells'FSM that are in defend state
-	private List<EnemyChildFSM> GetDefendingCellsFSM()
-	{
-		GameObject[] EnemyChild = GameObject.FindGameObjectsWithTag(Constants.s_strEnemyChildTag);
-		List<EnemyChildFSM> Defenders = new List<EnemyChildFSM>();
-		
-		foreach(GameObject Child in EnemyChild)
-		{
-			if(Child.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Defend)
-			{
-				Defenders.Add(Child.GetComponent<EnemyChildFSM>());
-			}
-		}
-		
 		return Defenders;
 	}
 
@@ -339,22 +297,4 @@ public class ECDefendState : IECState {
 		}
 		return true;
 	}
-
-	private Vector2 GetNoise()
-	{
-		Vector2 Noise = Random.insideUnitCircle * 10f;
-		return Noise;
-	}
-	
-	/*private void SetToAverageDefendTime()
-	{
-		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		int DefenderCount = 0;
-		float TargetTime = 0f;
-		
-		foreach(EnemyChildFSM EC in ECList)
-		{
-			TargetTime += 
-		}
-	}*/
 }

@@ -276,9 +276,9 @@ public class ECMineState : IECState {
 	private float CalculateSpreadRate(Vector2 _Center, GameObject _Target)
 	{
 		//From screen center to player main: SpreadRate = 0.1f
-		float ScreenCenterToTarget = Vector2.Distance(new Vector2(0f,0f), _Target.transform.position);
+		float ScreenCenterToTarget = Vector2.Distance(Vector2.zero, _Target.transform.position);
 		float CenterOfMassToTarget = Vector2.Distance(_Center,_Target.transform.position);
-		return (CenterOfMassToTarget/ScreenCenterToTarget) * 0.20f;
+		return (CenterOfMassToTarget/ScreenCenterToTarget) * 0.2f;
 	}
 
 	private RangeValue DetermineRangeValue()
@@ -316,20 +316,12 @@ public class ECMineState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTarget (Vector2 _TargetPos)
 	{
-		if (Vector2.Distance(m_Child.transform.position, _TargetPos) <= 0.25f)
-		{
-			return true;
-		}
-		return false;
+		return Vector2.Distance(m_Child.transform.position,_TargetPos) <= 0.4f ? true : false;
 	}
 
 	private bool HasCenterReachTarget(Vector2 _Center, Vector2 _TargetPos)
 	{
-		if (Vector2.Distance(_Center, _TargetPos) <= 0.4f)
-		{
-			return true;
-		}
-		return false;
+		return Vector2.Distance(_Center,_TargetPos) <= 0.4f ? true : false;
 	}
 
 	private bool HasAllCellsReachTarget (Vector2 _TargetPos)
@@ -348,7 +340,7 @@ public class ECMineState : IECState {
 	//a function that return a boolean on whether the enemy child cell is collding with any player cell
 	private bool IsCollidingWithPlayerCell()
 	{
-		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, 1.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
+		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, 1.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
 
 		if(m_SurroundingObjects.Length <= 0)
 		{
@@ -357,7 +349,7 @@ public class ECMineState : IECState {
 
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
-			if(m_SurroundingObjects[i] != null && (m_SurroundingObjects[i].tag == Constants.s_strPlayerChildTag || m_SurroundingObjects[i].tag == Constants.s_strPlayerTag))
+			if(m_SurroundingObjects[i] != null)
 			{
 				return true;
 			}
@@ -391,14 +383,13 @@ public class ECMineState : IECState {
 	private Vector2 GetCenterOfMines(List<GameObject> _Mines)
 	{
 		//Loop through all the landmines, adding all of their position and dividing them over the amount of landmine
-		Vector2 Center = new Vector2(0f,0f);
+		Vector2 Center = Vector2.zero;
 		foreach(GameObject mine in _Mines)
 		{
 			Center.x += mine.transform.position.x;
 			Center.y += mine.transform.position.y;
 		}
-		Center /= _Mines.Count;
-		return Center;
+		return Center/_Mines.Count;
 	}
 
 	//A function that return a boolean on whether is it time to spread based on the distance from the center mass of the landmine and the player main's position
@@ -407,11 +398,8 @@ public class ECMineState : IECState {
 		float EMtoPM = Vector2.Distance(m_Main.transform.position, m_ecFSM.m_PMain.transform.position);
 		float TargetDistance = 0.95f * EMtoPM;
 		Vector2 CenterOfMass = GetCenterOfMines(GetLandmines());
-		if(Vector2.Distance(CenterOfMass,m_ecFSM.m_PMain.transform.position) < TargetDistance)
-		{
-			return true;
-		}
-		return false;
+		
+		return Vector2.Distance(CenterOfMass,m_ecFSM.m_PMain.transform.position) < TargetDistance ? true : false;
 	}
 
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
@@ -421,11 +409,11 @@ public class ECMineState : IECState {
 
 		if(_Spreadness == Spread.Tight)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
-				if(m_NeighbourChilds[i] != null && m_NeighbourChilds[i] != m_Child.GetComponent<BoxCollider2D>() && m_NeighbourChilds[i].tag == Constants.s_strEnemyChildTag && m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
+				if(m_NeighbourChilds[i] != null && m_NeighbourChilds[i].gameObject != m_Child && m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
 				{
 					NeighbouringLandmine.Add(m_NeighbourChilds[i].gameObject);
 				}
@@ -433,11 +421,11 @@ public class ECMineState : IECState {
 		}
 		else if(_Spreadness == Spread.Wide)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 2.75f);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 2.75f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
-				if(m_NeighbourChilds[i] != null && m_NeighbourChilds[i] != m_Child.GetComponent<BoxCollider2D>() && m_NeighbourChilds[i].tag == Constants.s_strEnemyChildTag && m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
+				if(m_NeighbourChilds[i] != null && m_NeighbourChilds[i].gameObject != m_Child && m_NeighbourChilds[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
 				{
 					NeighbouringLandmine.Add(m_NeighbourChilds[i].gameObject);
 				}
@@ -450,12 +438,12 @@ public class ECMineState : IECState {
 	//A function that return the amount of landmine near the current enemy child cell
 	private int GetNearbyECMineAmount()
 	{
-		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/4);
+		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/4,Constants.s_onlyEnemeyChildLayer);
 		int ECMineCount = 0;
 
 		for(int i = 0; i < Collisions.Length; i++)
 		{
-			if(Collisions[i].tag == Constants.s_strEnemyChildTag && Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
+			if(Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Landmine)
 			{
 				ECMineCount++;
 			}
@@ -515,12 +503,7 @@ public class ECMineState : IECState {
 		float CellRadius = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2;
 		float WallX = 4.5f;
 
-		if(m_Child.transform.position.x + CellRadius < -WallX || m_Child.transform.position.x - CellRadius > WallX)
-		{
-			return true;
-		}
-
-		return false;
+		return (m_Child.transform.position.x + CellRadius < -WallX || m_Child.transform.position.x - CellRadius > WallX) ? true : false;
 	}
 
 	//A function that return a velocity vector for the landmine to get away from the nearest wall
@@ -529,24 +512,24 @@ public class ECMineState : IECState {
 		float WallX = 4.5f;
 		float DistToLeftWall = m_Child.transform.position.x - (-WallX);
 		float DistToRightWall = m_Child.transform.position.x - WallX;
-
 		float ClosestWallX = DistToLeftWall <= DistToRightWall ? -WallX : WallX;
+		Vector2 MainVelo = m_Main.GetComponent<Rigidbody2D>().velocity;
 
-		if(ClosestWallX > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
+		if(ClosestWallX > 0 && MainVelo.x > 0)
 		{
-			return new Vector2(0f, m_Child.GetComponent<Rigidbody2D>().velocity.y);
+			return new Vector2(0f, MainVelo.y);
 		}
-		else if(ClosestWallX > 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
+		else if(ClosestWallX > 0 && MainVelo.x < 0)
 		{
-			return m_Main.GetComponent<Rigidbody2D>().velocity;
+			return MainVelo;
 		}
-		else if(ClosestWallX < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x < 0)
+		else if(ClosestWallX < 0 && MainVelo.x < 0)
 		{
-			return new Vector2(0f, m_Child.GetComponent<Rigidbody2D>().velocity.y);
+			return new Vector2(0f, MainVelo.y);
 		}
-		else if(ClosestWallX < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0)
+		else if(ClosestWallX < 0 && MainVelo.x > 0)
 		{
-			return m_Main.GetComponent<Rigidbody2D>().velocity;
+			return MainVelo;
 		}
 
 		return Vector2.zero;
@@ -558,9 +541,7 @@ public class ECMineState : IECState {
 	{
 		Vector2 Direction = Random.insideUnitCircle.normalized;
 		float Force = _Distance /(fExplosiveRange - fKillRange) * 80f;
-		Vector2 BlastForce = Direction * Force;
-
-		return BlastForce;
+		return Direction * Force;
 	}
 
 	//A function that drive the landmine to grow and shrink when its going through the exploding process
@@ -568,11 +549,11 @@ public class ECMineState : IECState {
 	{
 		Vector2 CurrentScale = m_Child.transform.localScale;
 
-		if(m_Child.transform.localScale.x >= ExpansionLimit.x && m_Child.transform.localScale.y >= ExpansionLimit.y)
+		if(CurrentScale.x >= ExpansionLimit.x && CurrentScale.y >= ExpansionLimit.y)
 		{
 			bExpanding = false;
 		}
-		else if(m_Child.transform.localScale.x <= ShrinkLimit.x && m_Child.transform.localScale.y <= ShrinkLimit.y)
+		else if(CurrentScale.x <= ShrinkLimit.x && CurrentScale.y <= ShrinkLimit.y)
 		{
 			bExpanding = true;
 		}
@@ -595,15 +576,12 @@ public class ECMineState : IECState {
 	{
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		bExploding = false;
-		m_Child.transform.localScale = new Vector3(1f,1f,1f);
+		m_Child.transform.localScale = Vector3.one;
 	}
 
 	//Go through all the surround cells, destroy any player child cells and damaing the player main cell if in range
 	private void ExplodeDestroy()
 	{
-		//Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
-		//Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
-
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{

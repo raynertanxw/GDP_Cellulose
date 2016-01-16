@@ -44,7 +44,7 @@ public class ECChargeMState : IECState {
 	public override void Enter()
 	{
 		//Reset the velocity of enemy child cell
-		m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
+		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 		bReachPosition = false;
 	}
@@ -123,7 +123,7 @@ public class ECChargeMState : IECState {
 	{
 		//Reset the velocity and the force acting on the enemy child cell
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-		m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,0f);
+		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
 		if(GetEnemyChargingCells().Count <= 1)
 		{
@@ -136,11 +136,7 @@ public class ECChargeMState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
-		if (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.4f)
-		{
-			return true;
-		}
-		return false;
+		return (Vector2.Distance(m_Child.transform.position, _Pos) <= 0.4f) ? true : false;
 	}
 	
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
@@ -148,11 +144,11 @@ public class ECChargeMState : IECState {
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
 		
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2);
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2,Constants.s_onlyEnemeyChildLayer);
 		
 		for(int i = 0; i < Neighbouring.Length; i++)
 		{
-			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.tag == Constants.s_strEnemyChildTag && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeMain)
+			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeMain)
 			{
 				Neighbours.Add(Neighbouring[i].gameObject);
 			}
@@ -164,7 +160,7 @@ public class ECChargeMState : IECState {
 	private Vector2 GetCenterOfAttackers()
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		Vector2 Center = new Vector2(0f,0f);
+		Vector2 Center = Vector2.zero;
 		int AttackerCount = 0;
 
 		foreach(EnemyChildFSM EC in ECList)
@@ -182,21 +178,17 @@ public class ECChargeMState : IECState {
 
 	private bool HasCenterReachTarget(Vector2 _Center, Vector2 _TargetPos)
 	{
-		if (Vector2.Distance(_Center, _TargetPos) <= 0.4f)
-		{
-			return true;
-		}
-		return false;
+		return (Vector2.Distance(_Center, _TargetPos) <= 0.4f) ? true : false;
 	}
 
 	private int GetNearbyECChargeAmount()
 	{
-		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/4);
+		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/4,Constants.s_onlyEnemeyChildLayer);
 		int ECChargeCount = 0;
 		
 		for(int i = 0; i < Collisions.Length; i++)
 		{
-			if(Collisions[i].tag == Constants.s_strEnemyChildTag && Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeMain)
+			if(Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeMain)
 			{
 				ECChargeCount++;
 			}
@@ -209,6 +201,7 @@ public class ECChargeMState : IECState {
 	{
 		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
 		List<GameObject> ECChargers = new List<GameObject>();
+		
 		foreach(EnemyChildFSM EC in ECList)
 		{
 			if(EC.CurrentStateEnum == ECState.ChargeMain)

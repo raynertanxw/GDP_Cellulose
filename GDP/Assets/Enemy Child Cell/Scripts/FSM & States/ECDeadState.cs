@@ -3,28 +3,19 @@ using System.Collections;
 
 public class ECDeadState : IECState {
 
-	//A vector2 to store the position for respawning the dead enemy child cell
-	private Vector2 m_RespawnPos;
-
-	//A boolean to track whether the enemy child cell is dead or not
-	private bool bDisable;
-
 	//Contructor
 	public ECDeadState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
 		m_Child = _childCell;
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
-
-		m_RespawnPos = new Vector2(0f,0f);
 	}
 
 	public override void Enter()
 	{
 		//Disable the enemy child cell once it enter the dead state
-		bDisable = true;
 		DisableCell();
-		m_Child.transform.localScale = new Vector3(1f,1f,1f);
+		m_Child.transform.localScale = Vector3.one;
 	}
 
 	public override void Execute()
