@@ -60,8 +60,9 @@ public class EMLeraningAgent : MonoBehaviour
 		float fOverallScore = 0f;
 		// Reward for increment of the number of enemy child cells, vice versa
 		// The less aggressive the enemy is, the more it wants to increase the number of its child cells
-		fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (6f, 2f) / m_EMFSM.InitialAggressiveness) * .75f,
-		                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (6f, 2f) / m_EMFSM.InitialAggressiveness) * 1.25f);
+		fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (3f, 2f) / m_EMFSM.InitialAggressiveness) * 1.25f,
+		                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (3f, 2f) / m_EMFSM.InitialAggressiveness) * .75f);
+		Debug.Log (fOverallScore);
 		// Penalty for increment of the number of player squad child cells, vice versa
 		// (float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness
 		fOverallScore -= Random.Range (((float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness) * .5f,
@@ -137,15 +138,6 @@ public class EMLeraningAgent : MonoBehaviour
 			else 
 				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f, 
 				                               (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 4f);
-
-			// Change the aggressiveness of the enemy accroding to the current score
-			if (fOverallScore > 0f)
-			{
-				EnemyMainFSM.Instance().CurrentAggressiveness = 1f;
-				Debug.Log ("Aggressiveness increases by 1");
-			}
-			else if (fOverallScore < 0f)
-				EnemyMainFSM.Instance().CurrentAggressiveness -= 1f;
 		}
 		// Landmine state
 		if (state == EMState.Landmine)
@@ -202,6 +194,11 @@ public class EMLeraningAgent : MonoBehaviour
 		} 
 		else 
 			return score;
+	}
+
+	public float OriginalScore (EMState state)
+	{
+		return EnemyMainFSM.Instance().LearningDictionary[state];
 	}
 
 	public float RealScore (EMState state)
