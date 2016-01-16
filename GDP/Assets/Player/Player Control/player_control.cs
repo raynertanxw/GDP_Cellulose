@@ -304,7 +304,29 @@ public class player_control : MonoBehaviour
 	public void ActionScatterShot(int _nodeIndex)
 	{
 		Node _selectedNode = (Node) _nodeIndex;
-		Debug.Log(_nodeIndex + " Node called ScatterShot");
+		Node_Manager selectedNode = Node_Manager.GetNode(_selectedNode);
+
+		if (selectedNode.activeChildCount < Settings.s_nPlayerActionScatterShotChildCost)
+		{
+			Debug.Log("Not enough child cells for ScatterShot in this node");
+		}
+		else
+		{
+			List<PlayerChildFSM> nodeChildCells = selectedNode.GetNodeChildList();
+			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionScatterShotChildCost];
+			for (int i = 0; i < formationCells.Length; i++)
+			{
+				formationCells[i] = nodeChildCells[i];
+				formationCells[i].m_formationCells = formationCells; // arrays are reference types in Unity.
+				formationCells[i].attackMode = PlayerAttackMode.ScatterShot;
+			}
+
+			for (int i = 0; i < formationCells.Length; i++)
+			{
+				formationCells[i].RemoveChildFromNode();
+				formationCells[i].DeferredChangeState(PCState.ChargeChild);
+			}
+		}
 
 		RestartFadeOut(_selectedNode);
 	}
@@ -420,42 +442,4 @@ public class player_control : MonoBehaviour
 		return numChild;
 	}
 	#endregion
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	// Old Actions.
-	public void ActionChargeMain()
-	{
-		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
-		for (int i = 0; i < listOfChildCells.Count; i++)
-		{
-			listOfChildCells[i].DeferredChangeState(PCState.ChargeMain);
-		}
-	}
-
-	public void ActionChargeChild()
-	{
-		List<PlayerChildFSM> listOfChildCells = Node_Manager.GetNode(m_nActiveNode).GetNodeChildList();
-		for (int i = 0; i < listOfChildCells.Count; i++)
-		{
-			listOfChildCells[i].DeferredChangeState(PCState.ChargeChild);
-		}
-	}
-
 }

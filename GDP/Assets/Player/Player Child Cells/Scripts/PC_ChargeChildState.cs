@@ -17,6 +17,9 @@ public class PC_ChargeChildState : IPCState
         m_bIsLeaderAlive = true;
         m_nLeaderIndex = 0;
         m_targetPos = m_pcFSM.transform; // In case leader doesn't process first.
+
+		if (m_pcFSM.attackMode == PlayerAttackMode.ScatterShot)
+			m_targetPos = EnemyMainFSM.Instance().transform;
     }
 	
 	public override void Execute()
@@ -115,7 +118,8 @@ public class PC_ChargeChildState : IPCState
     #if UNITY_EDITOR
     public override void ExecuteOnDrawGizmos()
     {
-        
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawWireSphere(m_pcFSM.transform.position, s_fSeparationRadius);
     }
     #endif
 
@@ -136,16 +140,21 @@ public class PC_ChargeChildState : IPCState
     #region Movement and Physics
     private static float s_fAvoidRadius = 2.0f;
     private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
+	private static float s_fSeparationRadius = 0.5f;
+	private static float s_fSqrSeparationRadius = Mathf.Pow(s_fSeparationRadius, 2);
     private static float s_fMaxAcceleration = 2000f;
     // Weights
     private static float s_fTargetPullWeight = 50;
     private static float s_fAvoidanceWeight = 2000;
+	private static float s_fSeparationWeight = 2000;
 
     // Getters for the various values.
     public static float sqrAvoidRadius { get { return s_fSqrAvoidRadius; } }
+	public static float sqrSeparationRadius { get { return s_fSqrSeparationRadius; } }
     public static float maxAcceleration { get { return s_fMaxAcceleration; } }
     public static float targetPullWeight { get { return s_fTargetPullWeight; } }
     public static float avoidanceWeight { get { return s_fAvoidanceWeight; } }
+	public static float separationWeight { get { return s_fSeparationWeight; } }
 
     private void SwarmTargetFixedExecute()
     {
@@ -162,6 +171,14 @@ public class PC_ChargeChildState : IPCState
 
     private void ScatterShotFixedExecute()
     {
+		// Get the componenets for the flocking.
+		Vector2 acceleration = TargetPull() * targetPullWeight;
+		acceleration += Avoidance() * avoidanceWeight;
+		acceleration += Separation() * separationWeight;
+		// Clamp the acceleration to a maximum value
+		acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
+		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+
         FaceTowardsHeading();
     }
 
@@ -204,6 +221,36 @@ public class PC_ChargeChildState : IPCState
 
         return sumVector;
     }
+
+	private Vector2 Separation()
+	{
+		Vector2 sumVector = Vector2.zero;
+		int count = 0;
+		
+		for (int i = 0; i < m_pcFSM.m_formationCells.Length; i++)
+		{
+			// Skip itself
+			if (m_pcFSM.m_formationCells[i].gameObject == m_pcFSM.gameObject)
+				continue;
+			
+			float fSqrDist = 	Mathf.Pow(m_pcFSM.rigidbody2D.position.x - m_pcFSM.m_formationCells[i].rigidbody2D.position.x, 2) +
+								Mathf.Pow(m_pcFSM.rigidbody2D.position.y - m_pcFSM.m_formationCells[i].rigidbody2D.position.y, 2);
+			if (fSqrDist < sqrSeparationRadius)
+			{
+				Vector2 tmpDistVec = m_pcFSM.rigidbody2D.position - m_pcFSM.m_formationCells[i].rigidbody2D.position;
+				sumVector += tmpDistVec.normalized / fSqrDist;
+				count++;
+			}
+		}
+		
+		// Average the sumVector and clamp magnitude
+		if (count > 0)
+		{
+			sumVector /= count;
+		}
+		
+		return sumVector;
+	}
     #endregion
 
 
