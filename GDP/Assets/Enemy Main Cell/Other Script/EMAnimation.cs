@@ -5,7 +5,26 @@ using System.Collections;
 [RequireComponent (typeof (Rigidbody2D))]
 public class EMAnimation : MonoBehaviour 
 {
+	// Instance of the class
+	private static EMAnimation instance;
+	// Singleton
+	public static EMAnimation Instance()
+	{
+		return instance;
+	}
+
 	private Rigidbody2D thisRB;
+
+	[SerializeField]
+	private bool bIsExpanding;
+	public bool IsExpanding { get { return bIsExpanding; } set { bIsExpanding = value; } }
+	[SerializeField]
+	private bool bIsShrinking;
+	[SerializeField]
+	private float fExpandScale = 1.25f;
+	[SerializeField]
+	private float fExpandRate = .05f;
+	private float fTargetSize;
 
 	[SerializeField]
 	private float fAngularVelocity;
@@ -27,6 +46,8 @@ public class EMAnimation : MonoBehaviour
 
 	void Start () 
 	{
+		if (instance == null)
+			instance = this;
 		// GetComponent
 		thisRB = GetComponent<Rigidbody2D> ();
 		// Initialization of velocity
@@ -40,6 +61,10 @@ public class EMAnimation : MonoBehaviour
 		initialScale = gameObject.transform.localScale;
 		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
 		transform.localScale = (Vector3)currentScale;
+
+		bIsExpanding = false;
+		bIsShrinking = false;
+		fTargetSize = 0f;
 	}
 
 	void Update () 
@@ -50,19 +75,22 @@ public class EMAnimation : MonoBehaviour
 	void FixedUpdate ()
 	{
 		RotationUpdate ();
+		ExpandAnimation ();
 	}
 
 	// Update the size of enemy main cell according to current health
-	void SizeUpdate ()
+	private void SizeUpdate ()
 	{
-		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health))))
+		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health))) && 
+		    !bIsExpanding &&
+		    !bIsShrinking)
 		{
 			currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
 			transform.localScale = (Vector3)currentScale;
 		}
 	}
 	// Update angular velocity of the enemy main cell
-	void RotationUpdate ()
+	private void RotationUpdate ()
 	{
 		// Angular velocity declines as time goes by
 		if (fAngularVelocity >= 0f) {
@@ -87,5 +115,39 @@ public class EMAnimation : MonoBehaviour
 		}
 
 		thisRB.angularVelocity = fAngularVelocity;
+	}
+	// 
+	public void ExpandAnimation ()
+	{
+		if (!bIsExpanding && !bIsShrinking)
+			fTargetSize = currentScale.x * fExpandScale;
+		if (bIsExpanding) 
+		{
+			if (currentScale.x <= fTargetSize)
+			{
+				currentScale.x += fExpandRate * Mathf.Sqrt (fTargetSize - currentScale.x);
+				currentScale.y += fExpandRate * Mathf.Sqrt (fTargetSize - currentScale.y);
+			}
+			else 
+			{
+				bIsExpanding = false;
+				bIsShrinking = true;
+			}
+		} 
+		else if (!bIsExpanding && 
+		         bIsShrinking &&
+			currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
+		{
+			currentScale.x -= fExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
+			currentScale.y -= fExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
+		}
+		else if (!bIsExpanding && 
+		         bIsShrinking &&
+		         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
+		{
+			bIsShrinking = false;
+		}
+
+		transform.localScale = (Vector3)currentScale;
 	}
 }

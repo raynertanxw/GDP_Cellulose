@@ -60,25 +60,33 @@ public class EMLeraningAgent : MonoBehaviour
 		float fOverallScore = 0f;
 		// Reward for increment of the number of enemy child cells, vice versa
 		// The less aggressive the enemy is, the more it wants to increase the number of its child cells
-		fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (6f, 2f) / m_EMFSM.InitialAggressiveness) * .75f,
-		                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (6f, 2f) / m_EMFSM.InitialAggressiveness) * 1.25f);
+		fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (3f, 2f) / m_EMFSM.CurrentAggressiveness) * 1.25f,
+		                               ((float)(currentEnemyChild - pastEnemyChild) * Mathf.Pow (3f, 2f) / m_EMFSM.CurrentAggressiveness) * .75f);
+		// Reward for player child cells killed, vice versa
+		if (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness * .5f) < 
+		    ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness * 1f))
+			fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * .5f, 
+			                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * 1f);
+		else 
+			fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * 1f, 
+			                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * .5f);
 		// Penalty for increment of the number of player squad child cells, vice versa
 		// (float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness
-		fOverallScore -= Random.Range (((float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness) * .5f,
-		                               ((float)(currentSquadChild - pastSquadChild) * m_EMFSM.InitialAggressiveness) * 1f);
+		fOverallScore -= Random.Range (((float)(currentSquadChild - pastSquadChild) * m_EMFSM.CurrentAggressiveness) * .5f,
+		                               ((float)(currentSquadChild - pastSquadChild) * m_EMFSM.CurrentAggressiveness) * 1f);
 		// Reward for killing the player squad captain based on enemy initial aggressiveness
 		if (squadCaptainWasAlive && !squadCaptainIsAlive) {
-			fOverallScore += Random.Range (m_EMFSM.InitialAggressiveness, m_EMFSM.InitialAggressiveness * 2f);
+			fOverallScore += Random.Range (m_EMFSM.CurrentAggressiveness, m_EMFSM.CurrentAggressiveness * 2f);
 		}
 		// Penalty for loss of health of the enemy main cell
 		if (pastEnemyHealth > m_EMFSM.Health) {
-			if (((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness)) < 
+			if (((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.CurrentAggressiveness)) < 
 			    (pastEnemyHealth - m_EMFSM.Health))
-				fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness), 
+				fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.CurrentAggressiveness), 
 			                               (pastEnemyHealth - m_EMFSM.Health));
 			else 
 				fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health), 
-				                               (pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.InitialAggressiveness));
+				                               (pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.CurrentAggressiveness));
 		}
 
 		#endregion
@@ -86,25 +94,25 @@ public class EMLeraningAgent : MonoBehaviour
 		// Production state
 		if (state == EMState.Production)
 		{
-			fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) / m_EMFSM.InitialAggressiveness) * 15f,
-			                               ((float)(currentEnemyChild - pastEnemyChild) / m_EMFSM.InitialAggressiveness) * 30f);
+			fOverallScore += Random.Range (((float)(currentEnemyChild - pastEnemyChild) / m_EMFSM.CurrentAggressiveness) * 15f,
+			                               ((float)(currentEnemyChild - pastEnemyChild) / m_EMFSM.CurrentAggressiveness) * 30f);
 		}
 		// Defned state
 		if (state == EMState.Defend && Mathf.Abs(pastEnemyChild - currentEnemyChild) != 0)
 		{
-			fOverallScore += (Mathf.Sqrt(10f) / m_EMFSM.InitialAggressiveness) / (Mathf.Abs(pastEnemyChild - currentEnemyChild));
+			fOverallScore += (Mathf.Sqrt(10f) / m_EMFSM.CurrentAggressiveness) / (Mathf.Abs(pastEnemyChild - currentEnemyChild));
 		}
 		// AggressiveAttack, CautiousAttack and Landmine state
 		if (state == EMState.AggressiveAttack || state == EMState.CautiousAttack || state == EMState.Landmine)
 		{
 			// Reward for player child cells killed, vice versa
-			if (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness * 3f) < 
-			    ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness * 5f))
-				fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * 3f, 
-				                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * 5f);
+			if (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness * .25f) < 
+			    ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness * .5f))
+				fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * .25f, 
+				                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * .5f);
 			else 
-				fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * 5f, 
-				                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * 3f);
+				fOverallScore += Random.Range (((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * .5f, 
+				                               ((float)(pastPlayerChild - currentPlayerChild) * m_EMFSM.CurrentAggressiveness) * .25f);
 			// Reward for squad child cells killed, vice versa
 			if (((float)(pastSquadChild - currentSquadChild) * m_EMFSM.CurrentAggressiveness * 1.5f) < 
 			    ((float)(pastSquadChild - currentSquadChild) * m_EMFSM.CurrentAggressiveness * 3f))
@@ -137,15 +145,6 @@ public class EMLeraningAgent : MonoBehaviour
 			else 
 				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f, 
 				                               (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 4f);
-
-			// Change the aggressiveness of the enemy accroding to the current score
-			if (fOverallScore > 0f)
-			{
-				EnemyMainFSM.Instance().CurrentAggressiveness = 1f;
-				Debug.Log ("Aggressiveness increases by 1");
-			}
-			else if (fOverallScore < 0f)
-				EnemyMainFSM.Instance().CurrentAggressiveness -= 1f;
 		}
 		// Landmine state
 		if (state == EMState.Landmine)
@@ -202,6 +201,11 @@ public class EMLeraningAgent : MonoBehaviour
 		} 
 		else 
 			return score;
+	}
+
+	public float OriginalScore (EMState state)
+	{
+		return EnemyMainFSM.Instance().LearningDictionary[state];
 	}
 
 	public float RealScore (EMState state)

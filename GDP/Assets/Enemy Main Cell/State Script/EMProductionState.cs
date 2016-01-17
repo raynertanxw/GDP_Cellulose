@@ -171,9 +171,11 @@ public class EMProductionState : IEMState
 				}
 			}
 
-			// Check transition every 0.2 second to save computing power
+			// Check transition every 0.2 to 0.4 second to save computing power
+			// With the value given by learning element increases, the transition check will be less frequent
+			// Thus transition probability will decline
 			if (EMTransition.Instance().CanTransit)
-				m_EMFSM.StartPauseTransition (.2f);
+				m_EMFSM.StartPauseTransition (.2f * (1f + EnemyMainFSM.Instance().LearningDictionary[EMState.Production] / 100f));
 		}
 	}
 

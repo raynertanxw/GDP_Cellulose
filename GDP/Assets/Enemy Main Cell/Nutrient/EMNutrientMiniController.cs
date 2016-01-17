@@ -109,6 +109,8 @@ public class EMNutrientMiniController : MonoBehaviour
 		if (Vector2.Distance ((Vector2)transform.position, EnemyMainFSM.Instance().Position) < .1f || transform.localScale.x < .1f) 
 		{
 			EMController.Instance().AddNutrient ();
+			if (!EMAnimation.Instance().IsExpanding)
+				EMAnimation.Instance().IsExpanding = true;
 			Destroy (this.gameObject);
 		}
 	}
