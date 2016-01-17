@@ -51,16 +51,20 @@ public class EMHelper : MonoBehaviour
 	
 	void Update () 
 	{
-        // Update camera border
-		CameraLimit ();
-        // Make sure the enemy main cell do not go outside the screen
-		PositionLimit ();
-        // Update width of enemy main cell
-        widthUpdate();
 		// Remove destroyed items in enemy child list
 		EnemyMainFSM.Instance().ECList.RemoveAll(item => item.CurrentStateEnum == ECState.Dead);
 		//Recalculate available enemy child cells
 		m_EMFSM.AvailableChildNum = m_EMFSM.ECList.Count;
+	}
+
+	void FixedUpdate ()
+	{
+		// Update camera border
+		CameraLimit ();
+		// Make sure the enemy main cell do not go outside the screen
+		PositionLimit ();
+		// Update width of enemy main cell
+		widthUpdate();
 		// Update enemy main position
 		position = transform.position;
 	}

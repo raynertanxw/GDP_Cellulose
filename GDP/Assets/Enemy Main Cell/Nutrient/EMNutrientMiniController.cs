@@ -42,13 +42,6 @@ public class EMNutrientMiniController : MonoBehaviour
 		// Destroy the nutrient if enemy main cell does not exist
 		if (EnemyMainFSM.Instance ().isActiveAndEnabled == false)
 			Destroy (this.gameObject);
-		// Update the rotation of the mini nutrient
-		RotationUpdate ();
-		// Friction of initial movement
-		if (!bCanFindPath) 
-		{
-			thisRB.velocity *= .99f;
-		}
 		// Absorb behaviour
 		if (bIsAbsorbed)
 			Absorb ();
@@ -68,6 +61,17 @@ public class EMNutrientMiniController : MonoBehaviour
 				if (currentNode != null)
 					thisRB.velocity = (currentNode.position - (Vector2)this.gameObject.transform.position) * fSpeed;
 			}
+		}
+	}
+
+	void FixedUpdate ()
+	{
+		// Update the rotation of the mini nutrient
+		RotationUpdate ();
+		// Friction of initial movement
+		if (!bCanFindPath) 
+		{
+			thisRB.velocity *= .99f;
 		}
 	}
 
@@ -97,11 +101,6 @@ public class EMNutrientMiniController : MonoBehaviour
 			float angle = Mathf.Atan2(thisRB.velocity.y, thisRB.velocity.x) * Mathf.Rad2Deg;
 			transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
 		}
-	}
-
-	void AbsorbDetection ()
-	{
-
 	}
 
 	void Absorb ()

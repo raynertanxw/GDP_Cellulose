@@ -78,14 +78,6 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Deactivate the nutrient if it is empty
 		if (nSize == 0)
 			ActivateOrDeactivate (false);
-		// Update the current position of the agent
-		position = this.gameObject.transform.position;
-		// Update mass of the agent
-		if (fMass != nSize * 2f)
-			fMass = nSize * 2f;
-		// Update localScale of the agent
-		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
-		    transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
 		// Different behavior depends on whether the agent is sucked
 		if (bSucked)
 			Sucking ();
@@ -123,6 +115,19 @@ public class EMNutrientMainAgent : MonoBehaviour
 			StartCoroutine (PauseSpawn ());
 		}
 	}
+
+	void FixedUpdate ()
+	{
+		// Update the current position of the agent
+		position = this.gameObject.transform.position;
+		// Update mass of the agent
+		if (fMass != nSize * 2f)
+			fMass = nSize * 2f;
+		// Update localScale of the agent
+		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
+			transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
+	}
+
 	// Sucking behavior
 	void Sucking ()
 	{
