@@ -81,7 +81,7 @@ public class EMAnimation : MonoBehaviour
 		RotationUpdate ();
 		// Angular velocity declines faster as time goes by
 		FasterRotationDecline ();
-		// Angular velocity declines faster as time goes by
+		// Enemy main cell expands in size when receives nutrient
 		ExpandAnimation ();
 	}
 
