@@ -27,6 +27,8 @@ public class EMAnimation : MonoBehaviour
 	private float fTargetSize;
 
 	[SerializeField]
+	bool bCanRotate;
+	[SerializeField]
 	private float fAngularVelocity;
 	public float AngularVelocity { get { return fAngularVelocity; } set { fAngularVelocity = value; } }
 	[SerializeField]
@@ -50,6 +52,11 @@ public class EMAnimation : MonoBehaviour
 			instance = this;
 		// GetComponent
 		thisRB = GetComponent<Rigidbody2D> ();
+		// Initialization of status
+		bCanRotate = true;
+		bIsExpanding = false;
+		bIsShrinking = false;
+		fTargetSize = 0f;
 		// Initialization of velocity
 		fAngularVelocity = fAngularIniFactor * Random.Range (.75f, 1.25f);
 		thisRB.angularVelocity = fAngularVelocity;
@@ -61,10 +68,6 @@ public class EMAnimation : MonoBehaviour
 		initialScale = gameObject.transform.localScale;
 		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
 		transform.localScale = (Vector3)currentScale;
-
-		bIsExpanding = false;
-		bIsShrinking = false;
-		fTargetSize = 0f;
 	}
 
 	void Update () 
@@ -74,7 +77,11 @@ public class EMAnimation : MonoBehaviour
 
 	void FixedUpdate ()
 	{
+		// Update angular velocity of the enemy main cell when rotation is allowed
 		RotationUpdate ();
+		// Angular velocity declines faster as time goes by
+		FasterRotationDecline ();
+		// Enemy main cell expands in size when receives nutrient
 		ExpandAnimation ();
 	}
 
@@ -89,20 +96,20 @@ public class EMAnimation : MonoBehaviour
 			transform.localScale = (Vector3)currentScale;
 		}
 	}
-	// Update angular velocity of the enemy main cell
+	// Update angular velocity of the enemy main cell when rotation is allowed
 	private void RotationUpdate ()
 	{
 		// Angular velocity declines as time goes by
-		if (fAngularVelocity >= 0f) {
+		if (fAngularVelocity >= 0f && bCanRotate) {
 			if (fAngularVelocity >= fMinAngularVelocity)
 				fAngularVelocity -= fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity));
-		} else if (fAngularVelocity < 0f) {
+		} else if (fAngularVelocity < 0f && bCanRotate) {
 			if (fAngularVelocity <= -fMinAngularVelocity)
 				fAngularVelocity += fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity));
 		}
 
 		// Make sure the angular velocity is not less than the minimum value
-		if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity) 
+		if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity && bCanRotate) 
 		{
 			if (!bIsRotatingLeft) {
 				fAngularVelocity = -fAngularIniFactor * Random.Range (.75f, 1.25f);
@@ -116,8 +123,32 @@ public class EMAnimation : MonoBehaviour
 
 		thisRB.angularVelocity = fAngularVelocity;
 	}
-	// 
-	public void ExpandAnimation ()
+	// Angular velocity declines faster as time goes by
+	private void FasterRotationDecline ()
+	{
+		if (!bCanRotate) 
+		{
+			if (fAngularVelocity >= 0f) {
+				if (fAngularVelocity >= fMinAngularVelocity)
+					fAngularVelocity -= fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity) * 5f);
+			} else if (fAngularVelocity < 0f) {
+				if (fAngularVelocity <= -fMinAngularVelocity)
+					fAngularVelocity += fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity) * 5f);
+			}
+			// If the angular velocity is too small, set it to zero
+			if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity / 2f) 
+				fAngularVelocity = 0f;
+		}
+	}
+	// Pause rotation for seconds
+	public IEnumerator RotationPause (float time)
+	{
+		bCanRotate = false;
+		yield return new WaitForSeconds (time);
+		bCanRotate = true;
+	}
+	// Enemy main cell expands in size when receives nutrient
+	private void ExpandAnimation ()
 	{
 		if (!bIsExpanding && !bIsShrinking)
 			fTargetSize = currentScale.x * fExpandScale;

@@ -2,6 +2,7 @@
 using System.Collections;
 
 [RequireComponent (typeof (EnemyMainFSM))]
+[RequireComponent (typeof (EMDifficulty))]
 [RequireComponent (typeof (Rigidbody2D))]
 [RequireComponent (typeof (CircleCollider2D))]
 public class EMController : MonoBehaviour 
@@ -41,7 +42,8 @@ public class EMController : MonoBehaviour
 	#region Status
 	[Header("Number of damage")]
 	[Tooltip("Number of enemy damage")]
-	[SerializeField] private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
+	[SerializeField] 
+	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
 	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
 	public void CauseDamageOne () { nDamageNum++; m_EMFSM.Health--;}
 	private bool bPushed; 
@@ -49,13 +51,16 @@ public class EMController : MonoBehaviour
 	private bool bStunned;
 	public bool Stunned { get { return bStunned; } }
 	private bool bCanStun;
+	[SerializeField]
+	private float fStunTime;
 	#endregion
 
 	#region Size
 	private int nInitialNutrientNum;
 	[Header("Number of nutrient")]
 	[Tooltip("Number of enemy nutrient")]
-	[SerializeField] private int nCurrentNutrientNum;
+	[SerializeField] 
+	private int nCurrentNutrientNum;
 	public int NutrientNum { get { return nCurrentNutrientNum; } }
 	public void ReduceNutrient () { nCurrentNutrientNum--; }
 	public void AddNutrient () { nCurrentNutrientNum++; }
@@ -99,6 +104,7 @@ public class EMController : MonoBehaviour
 		bPushed = false;
 		bStunned = false;
 		bCanStun = true;
+		fStunTime = 3f;
 	}
 
 	void Update()
@@ -171,12 +177,14 @@ public class EMController : MonoBehaviour
         // When already stunned cannot call this function
 		bStunned = true;
 		bCanStun = false;
-        // Wait(being stunned) for 2 seconds
-		yield return new WaitForSeconds (2f);
+		// Pause rotation animation
+		StartCoroutine (EMAnimation.Instance ().RotationPause (fStunTime / EMDifficulty.Instance().CurrentDiff));
+        // Wait(being stunned) for seconds
+		yield return new WaitForSeconds (fStunTime / EMDifficulty.Instance().CurrentDiff);
         // Set back the stunned status
 		bStunned = false;
-        // Cannot be stunned within 3 seconds
-		yield return new WaitForSeconds (3f);
+        // Cannot be stunned within seconds
+		yield return new WaitForSeconds (fStunTime * EMDifficulty.Instance().CurrentDiff * 1.5f);
 		bCanStun = true;
 	}
 	#endregion
