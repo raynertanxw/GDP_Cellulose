@@ -73,6 +73,7 @@ public class ECTrickAttackState : IECState {
 		bTeleported = false;
 
 		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
+		ECTracker.s_Instance.TrickAttackCells.Add(m_ecFSM);
 	}
 
 	public override void Execute()
@@ -133,6 +134,7 @@ public class ECTrickAttackState : IECState {
 		//Reset the force acting on the enemy child cell
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		ECTracker.s_Instance.TrickAttackCells.Remove(m_ecFSM);
 	}
 
 	//a function that return a boolean that state whether all the player nodes is empty
@@ -227,7 +229,7 @@ public class ECTrickAttackState : IECState {
 
 		//Randomize the next wall at which the cells will come out from
 		Vector2 m_NextWall = Vector2.zero;
-		int i = Random.Range(0,1);
+		int i = Random.Range(0,2);
 		if(i == 0)
 		{
 			m_NextWall = new Vector2(4.7f,m_Child.transform.position.y);

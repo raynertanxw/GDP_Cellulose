@@ -38,6 +38,7 @@ public class ECAvoidState : IECState {
 	{
 		fAvoidTimer = 0f;
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
+		ECTracker.s_Instance.AvoidCells.Add(m_ecFSM);
 	}
 	
     public override void Execute()
@@ -91,6 +92,7 @@ public class ECAvoidState : IECState {
     public override void Exit()
     {
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
+		ECTracker.s_Instance.AvoidCells.Remove(m_ecFSM);
     }
 
 	private void UpdateAttackerList()

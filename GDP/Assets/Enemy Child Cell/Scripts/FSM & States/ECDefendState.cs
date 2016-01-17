@@ -68,6 +68,7 @@ public class ECDefendState : IECState {
 		fMainScale = m_Main.transform.localScale.x * 0.75f;
 
 		m_Child.GetComponent<Rigidbody2D>().drag = 3f;
+		ECTracker.s_Instance.DefendCells.Add(m_ecFSM);
 	}
 
 	public override void Execute()
@@ -210,6 +211,7 @@ public class ECDefendState : IECState {
 
 		m_ecFSM.m_ChargeTarget = null;
 		FormationDatabase.Instance.ReturnFormationPos(m_Child);
+		ECTracker.s_Instance.DefendCells.Remove(m_ecFSM);
 	}
 
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter

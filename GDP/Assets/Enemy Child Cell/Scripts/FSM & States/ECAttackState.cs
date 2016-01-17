@@ -38,7 +38,7 @@ public class ECAttackState : IECState {
 	
 	public override void Exit()
 	{
-		
+	
 	}
 	
 	private void DecideAttackType()

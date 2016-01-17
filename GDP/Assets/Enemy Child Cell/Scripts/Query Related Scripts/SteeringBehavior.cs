@@ -67,7 +67,7 @@ public static class SteeringBehavior
 
 		Vector2 SeperationNormal = Steering.normalized;
 		float SeperationMagnitude =  Steering.magnitude;
-		float MinimumMagnitude = 0.6f;
+		float MinimumMagnitude = 0.8f;
 		Steering = Mathf.Clamp(SeperationMagnitude,MinimumMagnitude,SeperationMagnitude) * SeperationNormal;
 
 		return Steering;

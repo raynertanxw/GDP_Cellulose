@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class ECPoolManager : MonoBehaviour {
 
 	private static Queue<GameObject> s_ECPool;
+	private ECTracker s_ECTracker;
 	
 	public GameObject EnemyChildCell;
 	
@@ -16,7 +17,10 @@ public class ECPoolManager : MonoBehaviour {
 		if(s_ECPool == null)
 		{
 			s_ECPool = new Queue<GameObject>();
+			
 		}
+	
+		s_ECTracker = ECTracker.Instance;
 	
 		//Store all enemy child cells into the pool
 		foreach(Transform child in transform)

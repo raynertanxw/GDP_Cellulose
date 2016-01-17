@@ -46,6 +46,8 @@ public class ECChargeCState : IECState {
 		{
 			m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 		}
+		
+		ECTracker.s_Instance.ChargeChildCells.Add(m_ecFSM);
 	}
 
 	public override void Execute()
@@ -114,6 +116,7 @@ public class ECChargeCState : IECState {
 		//Stop the child cell from moving after it charges finish
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		ECTracker.s_Instance.ChargeChildCells.Remove(m_ecFSM);
 	}
 
 	//a function that check whether the target is still avaliable to be attacked and return a boolean to

@@ -47,6 +47,7 @@ public class ECChargeMState : IECState {
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
 		bReachPosition = false;
+		ECTracker.s_Instance.ChargeMainCells.Add(m_ecFSM);
 	}
 	
 	public override void Execute()
@@ -131,6 +132,8 @@ public class ECChargeMState : IECState {
 			bReachPosition = false;
 			PathToTarget = null;
 		}
+		
+		ECTracker.s_Instance.ChargeMainCells.Remove(m_ecFSM);
 	}
 	
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter

@@ -413,8 +413,8 @@ public class EnemyChildFSM : MonoBehaviour
 			}
 		}
 
-		Vector2 Bottom = new Vector2(BotWall.transform.position.x + BotWall.offset.x, BotWall.transform.position.y + BotWall.offset.y);
-		if(transform.position.y <= Bottom.y + BotWall.bounds.size.y)
+		Vector2 Bottom = new Vector2(0f, BotWall.transform.position.y + BotWall.offset.y + BotWall.bounds.size.y/2);
+		if(transform.position.y <= Bottom.y + 0.4f)
 		{
 			return true;
 		}

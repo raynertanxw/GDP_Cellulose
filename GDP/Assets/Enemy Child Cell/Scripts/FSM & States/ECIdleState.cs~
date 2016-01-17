@@ -74,8 +74,9 @@ public class ECIdleState : IECState
 		//Obtain the specific seperate direction for the enemy child cell from the direction database
 		m_ecFSM.bHitWall = false;
 		SeperateDirection = DirectionDatabase.Instance.Extract();
-		fIdleScale = m_Main.transform.localScale.x * 0.75f;
+		fIdleScale = m_Main.transform.localScale.x * 0.85f;
 		IdleCount++;
+		ECTracker.s_Instance.IdleCells.Add(m_ecFSM);
 	}
 	
 	public override void Execute()
@@ -126,7 +127,7 @@ public class ECIdleState : IECState
 			{
 				Acceleration += SeperateDirection.normalized * fIdleScale;
 				Acceleration += MainRB.velocity;
-				//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
+				Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
 			}
 		}
 		else
@@ -181,6 +182,7 @@ public class ECIdleState : IECState
 		//Return that specific seperation direction back to the direction database so it can be used for another child cell
 		DirectionDatabase.Instance.Return(SeperateDirection);
 		IdleCount--;
+		ECTracker.s_Instance.IdleCells.Remove(m_ecFSM);
 	}
 	
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
@@ -203,7 +205,7 @@ public class ECIdleState : IECState
 	//A function that return a boolean on whether the cells had spread out to its maximum potential
 	private bool HasCellsSpreadOutMax()
 	{
-		List<EnemyChildFSM> ECList = EMFSM.ECList;
+		List<EnemyChildFSM> ECList = ECTracker.s_Instance.IdleCells;
 		Vector2 ReferencePos = Vector2.zero;
 		
 		for(int i = 0; i < ECList.Count; i++)
@@ -211,7 +213,7 @@ public class ECIdleState : IECState
 			ReferencePos = ECList[i].transform.position;
 			for(int t = 0; t < ECList.Count; t++)
 			{
-				if(i != t && Utility.Distance(ReferencePos,ECList[t].transform.position) <= fSpreadRange && ECList[t].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+				if(i != t && Utility.Distance(ReferencePos,ECList[t].transform.position) <= fSpreadRange)
 				{
 					return false;
 				}
