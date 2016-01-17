@@ -176,7 +176,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 1f)), Mathf.Sqrt (Mathf.Pow (nSize, 3f))));
 		// Double check if the main nutrient is in the map and not too close to the enemy main cell
 		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.1f)) && 
-			Vector2.Distance (EMHelper.Instance().Position, transform.position) > fInitialRadius * nSize + EMController.Instance ().Radius)
+			Vector2.Distance (EMHelper.Instance().Position, transform.position) > fInitialRadius * nSize + EMHelper.Instance ().Radius)
 		{
 			Instantiate (miniNutrient, position, Quaternion.identity);
 			nSize--;
