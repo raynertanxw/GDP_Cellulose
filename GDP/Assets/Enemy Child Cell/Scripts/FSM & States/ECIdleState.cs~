@@ -161,7 +161,7 @@ public class ECIdleState : IECState
 			Collider2D[] Collisions = Physics2D.OverlapCircleAll(ECList[i].transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);
 			for(int t = 0; t < Collisions.Length; t++)
 			{
-				if(Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+				if(Collisions[t].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 				{
 					return false;
 				}
