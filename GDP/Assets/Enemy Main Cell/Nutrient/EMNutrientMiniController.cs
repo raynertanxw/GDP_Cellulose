@@ -42,13 +42,6 @@ public class EMNutrientMiniController : MonoBehaviour
 		// Destroy the nutrient if enemy main cell does not exist
 		if (EnemyMainFSM.Instance ().isActiveAndEnabled == false)
 			Destroy (this.gameObject);
-		// Update the rotation of the mini nutrient
-		RotationUpdate ();
-		// Friction of initial movement
-		if (!bCanFindPath) 
-		{
-			thisRB.velocity *= .99f;
-		}
 		// Absorb behaviour
 		if (bIsAbsorbed)
 			Absorb ();
@@ -71,6 +64,17 @@ public class EMNutrientMiniController : MonoBehaviour
 		}
 	}
 
+	void FixedUpdate ()
+	{
+		// Update the rotation of the mini nutrient
+		RotationUpdate ();
+		// Friction of initial movement
+		if (!bCanFindPath) 
+		{
+			thisRB.velocity *= .99f;
+		}
+	}
+
  	IEnumerator PauseAStar ()
 	{
 		// Make sure the A* pathfinding is not called until the initial movement comes to the end
@@ -86,7 +90,7 @@ public class EMNutrientMiniController : MonoBehaviour
 
 	void InitialMovement ()
 	{
-		thisRB.AddForce ((EnemyMainFSM.Instance().Position - (Vector2)this.gameObject.transform.position) * Random.Range (5f, 10f));
+		thisRB.AddForce ((EMHelper.Instance().Position - (Vector2)this.gameObject.transform.position) * Random.Range (5f, 10f));
 	}
 
 	void RotationUpdate ()
@@ -101,12 +105,12 @@ public class EMNutrientMiniController : MonoBehaviour
 
 	void Absorb ()
 	{
-		Vector2 vectorToTarget = EnemyMainFSM.Instance().Position - (Vector2)transform.position;
-		transform.position = Vector2.MoveTowards(transform.position, EnemyMainFSM.Instance().Position, (vectorToTarget.magnitude * fAbsorbTime + fAbsorbSpeed) * Time.deltaTime);
+		Vector2 vectorToTarget = EMHelper.Instance().Position - (Vector2)transform.position;
+		transform.position = Vector2.MoveTowards(transform.position, EMHelper.Instance().Position, (vectorToTarget.magnitude * fAbsorbTime + fAbsorbSpeed) * Time.deltaTime);
 		transform.localScale = Vector3.one * 
-							  (Vector2.Distance ((Vector2)transform.position, EnemyMainFSM.Instance().Position)) / EMController.Instance ().Radius *
+			(Vector2.Distance ((Vector2)transform.position, EMHelper.Instance().Position)) / EMController.Instance ().Radius *
 							   Random.Range (.5f, 1f);
-		if (Vector2.Distance ((Vector2)transform.position, EnemyMainFSM.Instance().Position) < .1f || transform.localScale.x < .1f) 
+		if (Vector2.Distance ((Vector2)transform.position, EMHelper.Instance().Position) < .1f || transform.localScale.x < .1f) 
 		{
 			EMController.Instance().AddNutrient ();
 			if (!EMAnimation.Instance().IsExpanding)

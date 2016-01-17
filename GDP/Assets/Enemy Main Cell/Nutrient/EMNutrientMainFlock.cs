@@ -41,7 +41,7 @@ public class EMNutrientMainFlock : MonoBehaviour
 	void Update ()
 	{
 		// Update enemy main cell's position
-		targetPosition = EnemyMainFSM.Instance ().Position;
+		targetPosition = EMHelper.Instance ().Position;
 		// Update seek weight
 		if (fSeekWeight != .25f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum))))
 			fSeekWeight = .25f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)));
