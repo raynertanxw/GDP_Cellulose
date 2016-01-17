@@ -62,8 +62,6 @@ public class EMController : MonoBehaviour
 	#endregion
 
 	private Rigidbody2D thisRB;
-	private float fRadius;
-	public float Radius { get { return fRadius; } }
 
 	void Awake ()
 	{
@@ -95,8 +93,6 @@ public class EMController : MonoBehaviour
 		// Velocity
 		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
-		// Radius
-		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Damage
 		nDamageNum = 0;
 		// State
@@ -145,9 +141,6 @@ public class EMController : MonoBehaviour
 		}
 		// Check the direction of horizontal movement is correct
 		HorizontalCheck();
-		// Update Radius
-		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
-			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 	}
 
 	#region Damage behavior
@@ -381,7 +374,7 @@ public class EMController : MonoBehaviour
 	// Deactivate enemy main cell gameObject if the player wins
 	void LoseCheck ()
 	{
-		if (transform.position.y - fRadius / 2f > EMHelper.topLimit)
+		if (transform.position.y - EMHelper.Instance().Radius / 2f > EMHelper.topLimit)
 			this.gameObject.SetActive (false);
 		else if (m_EMFSM.Health <= 0)
 			this.gameObject.SetActive (false);
