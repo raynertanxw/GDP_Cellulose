@@ -13,10 +13,7 @@ public class EnemyMainFSM : MonoBehaviour
 	{
 		return instance;
 	}
-
-	// Current position of the enemy main cell
-	private Vector2 m_position;
-	public Vector2 Position { get { return m_position; } set { m_position = value; } }
+	
 	[SerializeField]
 	private GameObject enemyMainObject;
 	[SerializeField]
@@ -122,8 +119,6 @@ public class EnemyMainFSM : MonoBehaviour
 	{
 		if (instance == null)
 			instance = this;
-
-		m_position = gameObject.transform.position;
 
 		nAvailableChildNum = 0;
 		// Initialise num of health and aggressiveness

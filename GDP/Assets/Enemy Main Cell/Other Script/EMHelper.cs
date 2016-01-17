@@ -6,6 +6,14 @@ using System.Collections;
 [RequireComponent (typeof (CircleCollider2D))]
 public class EMHelper : MonoBehaviour 
 {
+	// Instance of the class
+	private static EMHelper instance;
+	// Singleton
+	public static EMHelper Instance()
+	{
+		return instance;
+	}
+
 	EnemyMainFSM m_EMFSM;
 
 	public static float leftLimit;
@@ -13,6 +21,9 @@ public class EMHelper : MonoBehaviour
 	public static float topLimit;
 	public static float bottomLimit;
 
+	// Properties of the enemy main cell
+	private Vector2 position;
+	public Vector2 Position { get { return position; } set { position = value; } }
 	private float width;
 
 	private bool bCanAddDefend;
@@ -24,9 +35,13 @@ public class EMHelper : MonoBehaviour
 
 	void Start () 
 	{
-		m_EMFSM = GetComponent<EnemyMainFSM> ();
+		if (instance == null)
+			instance = this;
 
+		// GetComponent
+		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		width = GetComponent<CircleCollider2D> ().bounds.size.x;
+		position = transform.position;
 
 		// Able to command child cells to any state by default
 		bCanAddDefend = true;
@@ -47,7 +62,7 @@ public class EMHelper : MonoBehaviour
 		//Recalculate available enemy child cells
 		m_EMFSM.AvailableChildNum = m_EMFSM.ECList.Count;
 		// Update enemy main position
-		m_EMFSM.Position = this.gameObject.transform.position;
+		position = transform.position;
 	}
 
 	#region Functions for pausing commanding child cells
