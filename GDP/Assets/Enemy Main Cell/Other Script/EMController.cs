@@ -131,19 +131,23 @@ public class EMController : MonoBehaviour
                     ResetVelocity();
             }
         }
-        // Change the horizontal direction if allowed
-        if (bCanChangeHori && !bPushed && !bStunned) {
-			StartCoroutine (MovingHorizontally ());
-		}
-        // Check the direction of horizontal movement is correct
-        HorizontalCheck();
-		// Update Radius
-		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
-			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Update Aggresiveness
 		UpdateAggressiveness ();
 		// Which whether the player wins
 		LoseCheck ();
+	}
+
+	void FixedUpdate ()
+	{
+		// Change the horizontal direction if allowed
+		if (bCanChangeHori && !bPushed && !bStunned) {
+			StartCoroutine (MovingHorizontally ());
+		}
+		// Check the direction of horizontal movement is correct
+		HorizontalCheck();
+		// Update Radius
+		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
+			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 	}
 
 	#region Damage behavior
