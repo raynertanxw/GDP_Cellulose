@@ -24,6 +24,8 @@ public class EMHelper : MonoBehaviour
 	// Properties of the enemy main cell
 	private Vector2 position;
 	public Vector2 Position { get { return position; } set { position = value; } }
+	private float fRadius;
+	public float Radius { get { return fRadius; } }
 	private float width;
 
 	private bool bCanAddDefend;
@@ -41,6 +43,7 @@ public class EMHelper : MonoBehaviour
 		// GetComponent
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		width = GetComponent<CircleCollider2D> ().bounds.size.x;
+		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		position = transform.position;
 
 		// Able to command child cells to any state by default
@@ -59,6 +62,9 @@ public class EMHelper : MonoBehaviour
 
 	void FixedUpdate ()
 	{
+		// Update Radius
+		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
+			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Update camera border
 		CameraLimit ();
 		// Make sure the enemy main cell do not go outside the screen
