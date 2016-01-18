@@ -212,7 +212,7 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)
 	{
-		if (s_nResources > Settings.s_nPlayerChildSpawnCost && totalActiveChild() < Settings.s_nPlayerMaxChildCount)
+		if (s_nResources > Settings.s_nPlayerChildSpawnCost && PlayerChildFSM.GetActiveChildCount() < Settings.s_nPlayerMaxChildCount)
 		{
 			Node _selectedNode = (Node) _nodeIndex;
 
@@ -225,7 +225,7 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
-			Debug.Log("Not enough resources");
+			Debug.Log("Not enough resources " + s_nResources + "\nOr not enough child in pool");
 		}
 
 		RestartSpawnCtrlFadeOut();
@@ -337,7 +337,7 @@ public class player_control : MonoBehaviour
 		if (PlayerSquadFSM.Instance.bIsAlive == true) return;
 
 		// Child count criteria met.
-		if (totalActiveChild() >= Settings.s_nPlayerSqaudCaptainChildCost)
+		if (totalActiveChildInNode() >= Settings.s_nPlayerSqaudCaptainChildCost)
 		{
 			int childrenLeftToConsume = Settings.s_nPlayerSqaudCaptainChildCost;
 
@@ -433,7 +433,7 @@ public class player_control : MonoBehaviour
 
 
 	#region Helper Functions
-	private int totalActiveChild()
+	private int totalActiveChildInNode()
 	{
 		int numChild = 0;
 		numChild += Node_Manager.GetNode(Node.LeftNode).activeChildCount;
