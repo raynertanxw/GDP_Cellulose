@@ -274,7 +274,7 @@ public class EMController : MonoBehaviour
 			bCanChangeHori = false;
 			
 			// Change speed based on the number of child cells of the enemy main cell
-			float fSpeed = Random.Range (.1f, .5f / Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum));
+			float fSpeed = Random.Range (.1f, .5f / Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum) + 1f);
 			fHoriSpeed = fSpeed;
 			
 			// Frequency of checking for changing of direction in terms of the number of child cells of the enemy main cell
@@ -317,7 +317,7 @@ public class EMController : MonoBehaviour
 			if (fTime <= 1.5f)
 				fTime = Random.Range (1f, 1.5f);
 			// Horizontal speed in terms of num of nutrient
-			float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nCurrentNutrientNum));
+			float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nCurrentNutrientNum) + 1f);
 		
 			if (bDirection == 0) 
 				bMovingLeft = !bMovingLeft;
