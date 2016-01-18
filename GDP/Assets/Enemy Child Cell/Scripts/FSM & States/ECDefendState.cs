@@ -25,17 +25,17 @@ public class ECDefendState : IECState {
 	private static float fDefendTime;
 
 	//A float to store the maximum amount of acceleration that can be enforced on the enemy child cell
-	private float fMaxAcceleration;
+	private static float fMaxAcceleration;
 
 	//A float that scale the values used in the defend state by the local state of the enemy main cell
-	private float fMainScale;
+	private static float fMainScale;
 
 	//A formation variable to store whether what current formation that the defending enemy child cell will take
 	private static Formation CurrentFormation;
 
 	private bool bKillClosestAttacker;
 
-	private float fAutoDefendRange;
+	private static float fAutoDefendRange;
 
 	public static bool ReturningToMain
 	{

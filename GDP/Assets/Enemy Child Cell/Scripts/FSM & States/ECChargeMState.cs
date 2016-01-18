@@ -5,10 +5,10 @@ using System.Collections.Generic;
 public class ECChargeMState : IECState {
 
 	//A float to dictate the maximum acceleration that the Enemy Child can undertake
-	private float fMaxAcceleration;
+	private static float fMaxAcceleration;
 	
 	//A GameObject reference that store the player main cell
-	private GameObject m_PlayerMain;
+	private static GameObject m_PlayerMain;
 	
 	//A list of Points that is used to store a sequence of points which are then used as a path for the enemy child cell to travel to the player main cell
 	private static List<Point> PathToTarget;

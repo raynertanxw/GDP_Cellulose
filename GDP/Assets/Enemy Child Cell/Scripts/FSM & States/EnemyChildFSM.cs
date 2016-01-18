@@ -8,10 +8,10 @@ public class EnemyChildFSM : MonoBehaviour
 	//cell to charge towards
 	public GameObject m_PMain;
 	public GameObject m_EMain;
-	private Node_Manager NodeLeft;
-	private Node_Manager NodeRight;
+	private static Node_Manager NodeLeft;
+	private static Node_Manager NodeRight;
 	public GameObject m_ChargeTarget;
-	private EnemyMainFSM EMFSM;
+	private static EnemyMainFSM EMFSM;
 
 	//3 variables to store the current state, the enumeration of the current state and the current command for
 	//the child cell

@@ -4,11 +4,11 @@ using System.Collections;
 public class ECAttackState : IECState {
 
 	//A GameObject reference to Squad Captain cell
-	private GameObject m_SquadCaptain;
+	private static GameObject m_SquadCaptain;
 	
 	//Two GameObject references to player's left and right node
-	private Node_Manager m_LeftNode;
-	private Node_Manager m_RightNode;
+	private static Node_Manager m_LeftNode;
+	private static Node_Manager m_RightNode;
 	
 	//Constructor
 	public ECAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)

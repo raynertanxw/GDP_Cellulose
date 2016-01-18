@@ -16,11 +16,11 @@ public class ECTrickAttackState : IECState {
 	private bool bReachStart;
 
 	//float to store the speed of movement for the enemy child cell in trick attacking
-	private float fMaxAcceleration;
+	private static float fMaxAcceleration;
 
 	//an array of gameobject to store the player nodes
 	private GameObject[] m_Nodes;
-	private GameObject m_SquadCaptain;
+	private static GameObject m_SquadCaptain;
 
 	//A list of Point to store the A* path calculated for the enemy child cell to reach the target position
 	private List<Point> PathToTarget;

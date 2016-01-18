@@ -5,10 +5,10 @@ using System.Collections.Generic;
 public class ECAvoidState : IECState {
 
 	//A float to limit the amount of acceleration the child cell can take when avoiding
-	private float fMaxAcceleration;
+	private static float fMaxAcceleration;
 	
 	//A float to dictate how far the enemy child cell can dected any player-related cells that are attacking
-	private float fDetectRange;
+	private static float fDetectRange;
 	
 	//Two floats to dictate how long the enemy child cell had waited to avoid any player cells and once over the limit, return the cell back to idle state
 	private float fAvoidTimer;

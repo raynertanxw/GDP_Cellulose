@@ -9,12 +9,12 @@ public class ECIdleState : IECState
 	
 	//A static float that store the time at which the previous idle status is changed
 	private static float fPreviousStatusTime;
-	
+
 	//A float that store how far the enemy child cell need to be spreaded out
-	private float fSpreadRange;
+	private static float fSpreadRange;
 	
 	//A float that dictate the strength of the idle directional vector and it is affected by the scale of the enemy main cell
-	private float fIdleScale;
+	private static float fIdleScale;
 	
 	//A static IdleStatus variable to store what the current idle status all the idle enemy child cell will have
 	private static IdleStatus CurrentIdleState;
@@ -24,14 +24,14 @@ public class ECIdleState : IECState
 	
 	private static int IdleCount;
 
-	private SpriteRenderer EMSpriteRender;
+	private static SpriteRenderer EMSpriteRender;
 	private Bounds EMBounds;
 	private Transform ECTransform;
-	private Transform EMTransform;
-	private EnemyMainFSM EMFSM;
+	private static Transform EMTransform;
+	private static EnemyMainFSM EMFSM;
 	private Collider2D[] Collisions;
 	private Rigidbody2D ChildRB;
-	private Rigidbody2D MainRB;
+	private static Rigidbody2D MainRB;
 
 	//An enumeration for the type of idling the enemy child cell is having
 	private enum IdleStatus {Seperate, Cohesion};
@@ -142,32 +142,6 @@ public class ECIdleState : IECState
 				ChildRB.velocity = MainRB.velocity;
 			}
 		}
-
-		/*if(m_ecFSM.IsHittingSideWalls() && m_ecFSM.bHitWall == false)
-		{
-			m_ecFSM.bHitWall = true;
-			m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-		}
-		else if(CurrentIdleState == IdleStatus.Cohesion && !HasChildEnterMain(m_Child) && m_ecFSM.bHitWall == false)
-		{
-			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,20f);
-		}
-		//Else if the current idle status is seperating, add the specific directional force to travel, the velocity of the main cell to follow the main cell and the seperation force to seperate itself from the nearby enemy child cell
-		else if(CurrentIdleState == IdleStatus.Seperate && !m_ecFSM.IsHittingSideWalls() && m_ecFSM.bHitWall == false)
-		{
-			Acceleration += SeperateDirection.normalized * fIdleScale;
-			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
-			//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
-		}
-		else if(m_ecFSM.bHitWall == true && !HasChildEnterMain(m_Child))
-		{
-			m_Child.GetComponent<Rigidbody2D>().drag = 2.5f;
-			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,10f);
-		}
-		else if(m_ecFSM.bHitWall == true && HasChildEnterMain(m_Child))
-		{
-			m_Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
-		}*/
 
 		//Clamp the acceleration of the enemy child cell to a specific maximum of magnitude and add that acceleration as a force on to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxMagnitude);

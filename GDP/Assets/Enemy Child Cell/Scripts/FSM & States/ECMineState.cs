@@ -15,10 +15,10 @@ public class ECMineState : IECState {
 	private bool bExplodeCorountineStart;
 
 	//A float for the maximum amount of acceleration that an EC can take in a landmine states
-	private float fMaxAcceleration;
+	private static float fMaxAcceleration;
 
 	//A float that dictate the speed at which the enemy child cell expand and shrink as it reaches the target
-	private float fExpansionSpeed;
+	private static float fExpansionSpeed;
 
 	//A float that dicate how spread out the landmines will be from each other
 	private float fSeperateInterval;
@@ -26,8 +26,8 @@ public class ECMineState : IECState {
 	//An integer thatdictate how many landmines are nearby
 	private int ECMineNearby;
 
-	private float fExplosiveRange;
-	private float fKillRange;
+	private static float fExplosiveRange;
+	private static float fKillRange;
 
 	private static bool GatherTogether;
 	private static int GeneralTargetIndex;
@@ -35,8 +35,8 @@ public class ECMineState : IECState {
 	private static Point GeneralTargetPoint;
 
 	private Vector2 TargetLandminePos;
-	private Vector2 ExpansionLimit;
-	private Vector2 ShrinkLimit;
+	private static Vector2 ExpansionLimit;
+	private static Vector2 ShrinkLimit;
 	private Spread CurrentSpreadness;
 	private static GameObject Target;
 	private static PositionType CurrentPositionType;
@@ -220,6 +220,7 @@ public class ECMineState : IECState {
 	public override void Exit()
 	{
 		bExplodeCorountineStart = false;
+		m_Child.transform.localScale = Vector3.one;
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
 
