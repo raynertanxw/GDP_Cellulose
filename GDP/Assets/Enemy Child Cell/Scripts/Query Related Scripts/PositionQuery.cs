@@ -40,7 +40,7 @@ public class PositionQuery
 
 		for(int i = 0; i < Threats.Count; i++)
 		{
-			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().activeChildCount > 0)
 			{
 				return false;
 			}
@@ -111,7 +111,7 @@ public class PositionQuery
 	private int EvaluateNode (GameObject _Node)
 	{
 		//if the node contains no cell, it serve no threat to the enemy main cell
-		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
+		if(_Node.GetComponent<Node_Manager>().activeChildCount == 0)
 		{
 			return 0;
 		}
@@ -119,7 +119,7 @@ public class PositionQuery
 		int nthreatLevel = 0;
 		
 		//increase score based on amount of cells in that node
-		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
+		nthreatLevel += _Node.GetComponent<Node_Manager>().activeChildCount;
 		
 		//increase score if that node have formed together and has a node captain
 		if(_Node.GetComponent<PlayerSquadFSM>() != null)

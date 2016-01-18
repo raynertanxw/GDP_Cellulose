@@ -3882,6 +3882,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 39ff773a20a214f4ba69362ee6db3c31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ECPool: {fileID: 0}
 --- !u!114 &397147976
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3897,6 +3898,7 @@ MonoBehaviour:
   bIsDefend: 0
   nDamageNum: 0
   fStunTime: 0
+  fNumOfDefaultCells: 0
   nCurrentNutrientNum: 0
 --- !u!114 &397147977
 MonoBehaviour:
@@ -3911,7 +3913,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyMainObject: {fileID: 397147972}
-  ECPool: {fileID: 91163309}
   emController: {fileID: 0}
   emHelper: {fileID: 0}
   emTransition: {fileID: 0}
@@ -4030,7 +4031,7 @@ MonoBehaviour:
   bIsExpanding: 0
   bIsShrinking: 0
   fExpandScale: 1.25
-  fExpandRate: .0500000007
+  fDefaultExpandRate: .0500000007
   bCanRotate: 0
   fAngularVelocity: 0
   fAngularIniFactor: 50
@@ -7678,7 +7679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4a5cf384bf3849ebad4d6baea33d2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nNodeEnum: 0
+  m_NodeEnum: 0
   m_bIsDefending: 1
   defendSprite: {fileID: 21300000, guid: 09b150486740b429983643ee1f523a93, type: 3}
   avoidSprite: {fileID: 21300000, guid: 348a457736c2a4b2eb3d36547a056f28, type: 3}
@@ -15192,7 +15193,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4a5cf384bf3849ebad4d6baea33d2fc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_nNodeEnum: 1
+  m_NodeEnum: 1
   m_bIsDefending: 1
   defendSprite: {fileID: 21300000, guid: 09b150486740b429983643ee1f523a93, type: 3}
   avoidSprite: {fileID: 21300000, guid: 348a457736c2a4b2eb3d36547a056f28, type: 3}

@@ -60,14 +60,14 @@ public class ECAttackState : IECState {
 	of total player cells and the amount of cells in each node*/
 	private bool IsThereThreatToMain()
 	{
-		int PlayerTotalCells = GetSquadCellCount() + m_LeftNode.GetNodeChildList().Count + m_RightNode.GetNodeChildList().Count;
+		int PlayerTotalCells = GetSquadCellCount() + m_LeftNode.activeChildCount + m_RightNode.activeChildCount;
 		int OwnTotalCells = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag).Length;
 		
 		if(PlayerTotalCells > OwnTotalCells)
 		{
 			return true;
 		}
-		else if (GetSquadCellCount() > 5 || m_LeftNode.GetNodeChildList().Count > 5 || m_RightNode.GetNodeChildList().Count > 5)
+		else if (GetSquadCellCount() > 5 || m_LeftNode.activeChildCount > 5 || m_RightNode.activeChildCount > 5)
 		{
 			return true;
 		}

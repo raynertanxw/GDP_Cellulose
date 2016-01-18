@@ -253,7 +253,7 @@ public class ECMineState : IECState {
 			return Spread.Tight;
 		}
 
-		if(Target.GetComponent<Node_Manager>() != null && Target.GetComponent<Node_Manager>().GetNodeChildList().Count > 6)
+		if(Target.GetComponent<Node_Manager>() != null && Target.GetComponent<Node_Manager>().activeChildCount > 6)
 		{
 			return Spread.Wide;
 		}

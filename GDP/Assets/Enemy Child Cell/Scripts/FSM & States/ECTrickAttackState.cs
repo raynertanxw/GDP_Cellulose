@@ -148,7 +148,7 @@ public class ECTrickAttackState : IECState {
 		bool bResult = false;
 		for(int i = 0; i < Threats.Count; i++)
 		{
-			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().activeChildCount > 0)
 			{
 				return false;
 			}
@@ -188,7 +188,7 @@ public class ECTrickAttackState : IECState {
 		int nthreatLevel = 0;
 
 		//increase score based on amount of cells in that node
-		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
+		nthreatLevel += _Node.GetComponent<Node_Manager>().activeChildCount;
 
 		return nthreatLevel;
 	}

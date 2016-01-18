@@ -16,15 +16,22 @@ public class PC_DeadState : IPCState
 		// Teleport far away.
 		m_pcFSM.transform.position = Constants.s_farfarAwayVector;
 
-		// Update active Child Count.
-		PlayerChildFSM.SetActiveChildCount(false);
-
 		// Remove from NodeList if any assignedNode.
 		if (m_pcFSM.m_assignedNode != null)
 		{
-			m_pcFSM.m_assignedNode.RemoveChildFromNodeList(m_pcFSM);
-			m_pcFSM.m_assignedNode = null;
+			if (PlayerChildFSM.s_playerChildStatus[m_pcFSM.poolIndex] != pcStatus.Attacking)
+			{
+				m_pcFSM.m_assignedNode.RemoveChildFromNode(m_pcFSM.poolIndex);
+				m_pcFSM.m_assignedNode = null;
+			}
+			else
+			{
+				PlayerChildFSM.s_playerChildStatus[m_pcFSM.poolIndex] = pcStatus.DeadState;
+			}
 		}
+
+		// Update active Child Count.
+		PlayerChildFSM.SetActiveChildCount(false);
 	}
 
 	public override void Execute()

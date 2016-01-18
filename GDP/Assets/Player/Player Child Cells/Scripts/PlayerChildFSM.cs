@@ -9,8 +9,10 @@ public class PlayerChildFSM : MonoBehaviour
 {
 	#region Pool Control
 	// singleton list to hold all out playerChildPoolControllers.
-	static private PlayerChildFSM[] s_playerChildFSMPool;
 	static private int s_nPoolPointerIndex = 0;
+	static private PlayerChildFSM[] s_playerChildFSMPool;
+	static public PlayerChildFSM[] playerChildPool { get { return s_playerChildFSMPool; } }
+	public static pcStatus[] s_playerChildStatus;
 	
 	static public PlayerChildFSM Spawn(Vector3 spawnPoint)
 	{
@@ -49,6 +51,7 @@ public class PlayerChildFSM : MonoBehaviour
 	private PCState m_deferredState;
 	public EnemyChildFSM m_currentEnemyCellTarget;
 	public Node_Manager m_assignedNode;
+	private int m_nPoolIndex;
 
 
 	// Component Cache.
@@ -60,6 +63,7 @@ public class PlayerChildFSM : MonoBehaviour
 	public PCState GetCurrentState() { return m_currentEnumState; }
 
 	public static int GetActiveChildCount() { return s_nActiveChildCount; }
+	public int poolIndex { get { return m_nPoolIndex; } }
 	#endregion
 
 	#region Setter functions
@@ -105,16 +109,6 @@ public class PlayerChildFSM : MonoBehaviour
 		DeferredChangeState(PCState.Dead);
 	}
 
-	public void RemoveChildFromNode()
-	{
-		// Remove from NodeList if any assignedNode.
-		if (this.m_assignedNode != null)
-		{
-			this.m_assignedNode.RemoveChildFromNodeList(this);
-			this.m_assignedNode = null;
-		}
-	}
-
 	void Awake()
 	{
 		// does the pool exist yet
@@ -122,9 +116,12 @@ public class PlayerChildFSM : MonoBehaviour
 		{
 			// lazy initialize it
 			s_playerChildFSMPool = new PlayerChildFSM[Settings.s_nPlayerMaxChildCount];
+			s_playerChildStatus = new pcStatus[Settings.s_nPlayerMaxChildCount];
 		}
 		// add myself
 		s_playerChildFSMPool[s_nPoolPointerIndex] = this;
+		s_playerChildStatus[s_nPoolPointerIndex] = pcStatus.DeadState;
+		m_nPoolIndex = s_nPoolPointerIndex;
 		s_nPoolPointerIndex++;
 
 
