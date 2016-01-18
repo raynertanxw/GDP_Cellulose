@@ -44,6 +44,8 @@ public class SquadChildFSM : MonoBehaviour
     private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
     private Vector2 mainDefenceVector;                          // mainDefenceVector: The main defence vector, this will be initilised at the start and will be use without change
 
+    private Vector3 gizmosPosition;
+
     private static Vector3 parentPosition;                             // parentPosition: The position of the squad captain
     private static Vector3 playerPosition;                             // playerPosition: The position of the player main
 
@@ -58,11 +60,13 @@ public class SquadChildFSM : MonoBehaviour
     // Private Functions
     void OnDrawGizmos()
     {
-        if (attackTarget != null)
-        {
-            Gizmos.color = Color.magenta;
-            Gizmos.DrawWireSphere(attackTarget.transform.position, 1f);
-        }
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(gizmosPosition, 1f);
+    }
+
+    public void gizmoo(Vector3 _position)
+    {
+        gizmosPosition = _position;
     }
 
     void OnCollisionEnter2D(Collision2D _collision)
@@ -533,15 +537,18 @@ public class SquadChildFSM : MonoBehaviour
     public static Vector3 StrafingVector()
     {
         float fCurrentRadius = Mathf.PingPong(Time.time, fStrafingRadius);
-        if (fCurrentRadius < 0.6f)
-            fCurrentRadius = 0.6f;
+        if (fCurrentRadius < 0.7f)
+            fCurrentRadius = 0.7f;
         // NOTE: Quaternions q * Vector v returns the v rotated in q direction, THOUGH REMEMBER TO NORMALIZED ELSE VECTOR WILL PISS OFF INTO SPACE
         m_strafingVector = (Quaternion.Euler(0, 0, fStrafingSpeed) * m_strafingVector).normalized * fCurrentRadius;
         return m_strafingVector;
     }
 
+    public static SquadChildFSM[] SquadChildArray { get { return s_array_SquadChildFSM; } }
+
     // Getter-Setter Functions
     public SCState EnumState { get { return m_currentEnumState; } }
     public ISCState State { get { return m_currentState; } }
     public bool IsAlive { get { return bIsAlive; } }
+
 }
