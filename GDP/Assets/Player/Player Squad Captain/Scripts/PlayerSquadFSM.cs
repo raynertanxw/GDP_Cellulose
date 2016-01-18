@@ -58,6 +58,8 @@ public class PlayerSquadFSM : MonoBehaviour
     [SerializeField] private float fDefenceRadius = 3f;
     [Tooltip("The speed of cells when in defence mode")]
     [SerializeField] private float fDefenceSpeed = 3f;
+    [Tooltip("The rigidity of the squad child when it is at the position. 0.0f = Fixed at Position")]
+    [SerializeField] private float fDefenceRigidity = 0.2f;
 
     // Uneditables Fields
     [HideInInspector] public bool bIsAlive = false;     // bIsAlive: Returns if the squad captain is alive
@@ -76,6 +78,7 @@ public class PlayerSquadFSM : MonoBehaviour
     // Co-Routines
     IEnumerator SpawnRoutine()
     {
+        this.CalculateCooldown();
         while (bIsProduce)
         {
             yield return new WaitForSeconds(fNextCooldown);
@@ -215,6 +218,7 @@ public class PlayerSquadFSM : MonoBehaviour
     public float DefenceAngle { get { return fDefenceAngle; } }
     public float DefenceRadius { get { return fDefenceRadius; } }
     public float DefenceSpeed { get { return fDefenceSpeed; } }
+    public float DefenceRigidity { get { return fDefenceRigidity; } }
     public float AttackSpeed { get { return fAttackSpeed; } }
 
     public bool IsAlive { get { return bIsAlive; } }

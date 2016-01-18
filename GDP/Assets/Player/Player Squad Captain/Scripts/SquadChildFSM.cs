@@ -25,12 +25,14 @@ public class SquadChildFSM : MonoBehaviour
     // Static Fields
     private static SquadChildFSM[] s_array_SquadChildFSM;     // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
 
+    // PlayerSquadFSM-Inherited variables
     private static Vector3 m_strafingVector;                    // m_strafingVector: The current direction of the strafing vector
     private static float fStrafingRadius;                       // fStrafingRadius: The maximum strafing radius of the child cells during production
     private static float fStrafingSpeed;                        // fStrafingSpeed: The maximum strafing speed of the child cells during production
     private static float fDefenceAngle;
     private static float fDefenceRadius;
     private static float fDefenceSpeed;
+    private static float fDefenceRigidity;
     private static float fAttackSpeed;
 
     // Uneditable Fields
@@ -123,6 +125,7 @@ public class SquadChildFSM : MonoBehaviour
         fDefenceAngle = PlayerSquadFSM.Instance.DefenceAngle;
         fDefenceRadius = PlayerSquadFSM.Instance.DefenceRadius;
         fDefenceSpeed = PlayerSquadFSM.Instance.DefenceSpeed;
+        fDefenceRigidity = PlayerSquadFSM.Instance.DefenceRigidity;
         fAttackSpeed = PlayerSquadFSM.Instance.AttackSpeed;
 
         mainDefenceVector = Quaternion.Euler(0f, 0f, (fDefenceAngle / 2.0f)) * Vector2.up * fDefenceRadius;
@@ -189,8 +192,11 @@ public class SquadChildFSM : MonoBehaviour
             return false;
         }
 
-        Vector3 targetPosition = Quaternion.Euler(0f, 0f, -fDefenceOffsetAngle) * mainDefenceVector + playerPosition;
-        m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * fDefenceSpeed + transform.position);
+        Vector3 toTargetPosition = Quaternion.Euler(0f, 0f, -fDefenceOffsetAngle) * mainDefenceVector + playerPosition - transform.position;
+        if (toTargetPosition.magnitude > fDefenceRigidity)
+            m_RigidBody.AddForce(toTargetPosition * Time.deltaTime * fDefenceSpeed);
+        m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, Mathf.Max(fDefenceRigidity, toTargetPosition.magnitude));
+
         return true;
     }
     
@@ -346,13 +352,16 @@ public class SquadChildFSM : MonoBehaviour
         // for: Checksthrough all the child in the array
         for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
-            // if: the current cell type is NOT the targeted cell type, as transition would be useless
-            if (s_array_SquadChildFSM[i].EnumState != _nextState)
+            if (s_array_SquadChildFSM[i].EnumState != SCState.Dead)
             {
-                // if: The it is within the chance range
-                if (UnityEngine.Random.value <= _chance)
+                // if: the current cell type is NOT the targeted cell type, as transition would be useless
+                if (s_array_SquadChildFSM[i].EnumState != _nextState)
                 {
-                    s_array_SquadChildFSM[i].Advance(_nextState);
+                    // if: The it is within the chance range
+                    if (UnityEngine.Random.value <= _chance)
+                    {
+                        s_array_SquadChildFSM[i].Advance(_nextState);
+                    }
                 }
             }
         }

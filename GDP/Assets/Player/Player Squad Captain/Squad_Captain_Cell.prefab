@@ -13,7 +13,7 @@ GameObject:
   - 58: {fileID: 5832618}
   - 114: {fileID: 11423594}
   - 114: {fileID: 11420688}
-  m_Layer: 12
+  m_Layer: 13
   m_Name: Squad_Captain_Cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ Rigidbody2D:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 175278}
   m_Mass: 10
-  m_LinearDrag: 0
+  m_LinearDrag: 3
   m_AngularDrag: .0500000007
   m_GravityScale: 0
   m_IsKinematic: 1
@@ -72,10 +72,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba07b66454e910547becc757f3154b50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fAggressiveToDefensive: .5
+  fAggressiveToDefensive: 1
   fThinkCooldown: .5
-  fMininumChildCount: 4
-  fMaximumChildCount: 10
+  fMininumChildCount: 2
+  fMaximumChildCount: 5
+  fMaxiumumChildDefence: 10
 --- !u!114 &11423594
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -88,14 +89,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nMaximumChildCount: 50
-  fMinimumCooldown: 2
-  fMaximumCooldown: 2
+  fMinimumCooldown: 3
+  fMaximumCooldown: 10
   fStrafingRadius: 1.5
   fStrafingSpeed: .5
-  fAttackSpeed: 3
+  fAttackSpeed: 50
   fDefenceAngle: 100
   fDefenceRadius: 5
-  fDefenceSpeed: 1
+  fDefenceSpeed: 50
+  fDefenceRigidity: .200000003
   bIsAlive: 0
   m_SpriteRenderer: {fileID: 21262188}
   m_Collider: {fileID: 5832618}
