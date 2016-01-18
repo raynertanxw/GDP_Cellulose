@@ -50,9 +50,10 @@ public class ECPoolManager : MonoBehaviour {
 	}
 	
 	//Extract an Enemy Child Cell from the pool and spawn it to the position given in the perimeter
-	public GameObject SpawnFromPool(Vector2 _SpawnPos)
+	public GameObject SpawnFromPool(Vector2 _SpawnPos, bool _Default)
 	{
-		EnemyMainFSM.Instance ().StartProduceChild ();
+		if (!_Default)
+			EnemyMainFSM.Instance ().StartProduceChild ();
 		SpawnCount++;
 		
 		//Extract the enemy child cell pool from the pool and add it to the enemy child cell list

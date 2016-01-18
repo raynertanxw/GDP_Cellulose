@@ -111,6 +111,12 @@ public class EMController : MonoBehaviour
 		fNumOfDefaultCells = 5f;
 	}
 
+	void Start ()
+	{
+		// Start with a few child cells
+		StartWithChildCells ();
+	}
+
 	void Update()
 	{
 		// Force back the enemy main cell when received damage and not forced back
@@ -385,7 +391,7 @@ public class EMController : MonoBehaviour
 	void StartWithChildCells ()
 	{
 		for (int i = 0; i < fNumOfDefaultCells; i++) {
-			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position);
+			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position, true);
 		}
 	}
 
