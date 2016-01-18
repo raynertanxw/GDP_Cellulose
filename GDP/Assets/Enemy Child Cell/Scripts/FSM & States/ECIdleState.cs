@@ -32,6 +32,7 @@ public class ECIdleState : IECState
 	private Collider2D[] Collisions;
 	private Rigidbody2D ChildRB;
 	private static Rigidbody2D MainRB;
+	private EMController EMControl;
 
 	private float fDirectionalWeight;
 	private float fSeperationalWeight;
@@ -54,6 +55,7 @@ public class ECIdleState : IECState
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/10;
 		
 		EMSpriteRender = m_Main.GetComponent<SpriteRenderer>();
+		EMControl = m_Main.GetComponent<EMController>();
 		EMBounds = m_Main.GetComponent<SpriteRenderer>().bounds;
 		ECTransform = m_Child.transform;
 		EMTransform = m_Main.transform;
@@ -94,7 +96,7 @@ public class ECIdleState : IECState
 			if(HasChildEnterMain(m_Child))
 			{
 				ChildRB.velocity = MainRB.velocity;
-				if(HasAllChildEnterMain())
+				if(EMControl.bIsAllChildWithinMain)
 				{
 					ResetAllChildVelocity();
 					ResetAllHitWall();
@@ -131,7 +133,7 @@ public class ECIdleState : IECState
 			}
 			else if(CurrentIdleState == IdleStatus.Seperate && !m_ecFSM.IsHittingSideWalls())
 			{
-				Acceleration += SeperateDirection.normalized * fIdleScale;
+				Acceleration += SeperateDirection.normalized * fIdleScale * 1.2f;
 				Acceleration += MainRB.velocity;
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
 			}
@@ -183,23 +185,9 @@ public class ECIdleState : IECState
 	}
 	
 	//A function that return a boolean on whether that specific child cell had entered the enemy main cell
-	private bool HasChildEnterMain(GameObject _Child)
+	public static bool HasChildEnterMain(GameObject _Child)
 	{
 		return (Utility.Distance(_Child.transform.position,EMTransform.position) <= EMBounds.size.x/8f) ? true : false;
-	}
-	
-	//A function that return a boolean on whether all enemy child cell had entered the enemy main cell
-	private bool HasAllChildEnterMain()
-	{
-		List<EnemyChildFSM> ECList = EMFSM.ECList;
-		for(int i = 0; i < ECList.Count; i++)
-		{
-			if(ECList[i].CurrentStateEnum == ECState.Idle && !HasChildEnterMain(ECList[i].gameObject))
-			{
-				return false;
-			}
-		}
-		return true;
 	}
 	
 	//A function that reset all enemy child cell velocity to the main cell velocity

@@ -12,6 +12,7 @@ public class EnemyChildFSM : MonoBehaviour
 	private static Node_Manager NodeRight;
 	public GameObject m_ChargeTarget;
 	private static EnemyMainFSM EMFSM;
+	private static EMController EMControl;
 
 	//3 variables to store the current state, the enumeration of the current state and the current command for
 	//the child cell
@@ -37,6 +38,7 @@ public class EnemyChildFSM : MonoBehaviour
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
 		EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
+		EMControl = m_EMain.GetComponent<EMController>();
 		NodeLeft = Node_Manager.GetNode(Node.LeftNode);
 		NodeRight = Node_Manager.GetNode(Node.RightNode);
 		
@@ -66,11 +68,11 @@ public class EnemyChildFSM : MonoBehaviour
 		m_CurrentState.Execute();
 		UpdateState();
 
-		if((m_CurrentEnum == ECState.Idle || m_CurrentEnum == ECState.Defend) && ShouldEMTank() && IsMainBeingAttacked())
+		if((m_CurrentEnum == ECState.Idle || m_CurrentEnum == ECState.Defend) && EMControl.bIsMainBeingAttacked && EMControl.bShouldMainTank)
 		{
 			AutoAvoid();
 		}
-		else if(m_CurrentEnum == ECState.Idle && IsMainBeingAttacked() && !IsEMTanking() && !IsThereEnoughDefence())
+		else if(m_CurrentEnum == ECState.Idle && EMControl.bIsMainBeingAttacked && !IsEMTanking() && !IsThereEnoughDefence())
 		{
 			AutoDefend();
 		}
@@ -177,7 +179,7 @@ public class EnemyChildFSM : MonoBehaviour
 		ChangeState(ECState.Dead);
 	}
 
-	private bool IsMainBeingAttacked()
+	/*private bool IsMainBeingAttacked()
 	{
 		Collider2D[] IncomingObjects;
 		PCState PCCurrentState = PCState.Dead;
@@ -194,21 +196,8 @@ public class EnemyChildFSM : MonoBehaviour
 				return true;
 			}
 		}
-		
-		//Incoming objects to child
-		IncomingObjects = Physics2D.OverlapCircleAll(gameObject.transform.position, 50f * GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
-		if(IncomingObjects.Length <= 0){return false;}
-		
-		for(int i = 0; i < IncomingObjects.Length; i++)
-		{
-			if(IncomingObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain)
-			{
-				return true;
-			}
-		}
-		
 		return false;
-	}
+	}*/
 
 	private bool IsThereEnoughDefence()
 	{
@@ -360,16 +349,6 @@ public class EnemyChildFSM : MonoBehaviour
 			//Debug.Log("Rotate ACW: " + gameObject.name);
 			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed);
 		}
-	}
-
-	private bool ShouldEMTank()
-	{
-		PlayerMain PM = m_PMain.GetComponent<PlayerMain>();
-		if(EMFSM.Health > PM.Health && EMFSM.ECList.Count > GameObject.FindGameObjectsWithTag("PlayerChild").Length && PM.Health < 35)
-		{
-			return true;
-		}
-		return false;
 	}
 
 	private bool IsEMTanking()
