@@ -38,7 +38,7 @@ public class EMDifficulty : MonoBehaviour
 		// Initialization of difficulty and factors
 		fHealthDiff = 1f;
 		fNutrientDiff = 1f;
-		fLevelDiff = 1f;
+		fLevelDiff = 3f;
 		fCurrentDiff = 1f;
 		fMaxHealthInfluence = .5f;
 		fMaxNutrientInfluence = .5f;
@@ -69,7 +69,7 @@ public class EMDifficulty : MonoBehaviour
 
 	void CurrentDiffUpdate ()
 	{
-		fCurrentDiff = fHealthDiff * fHealthWeight + fNutrientDiff * fNutrientWeight + fLevelDiff * fLevelWeight / 3f;
+		fCurrentDiff = (fHealthDiff * fHealthWeight + fNutrientDiff * fNutrientWeight + fLevelDiff * fLevelWeight) / 3f;
 	}
 
 	void HealthDiffUpdate ()

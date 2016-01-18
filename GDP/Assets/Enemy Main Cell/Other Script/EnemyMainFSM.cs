@@ -245,8 +245,8 @@ public class EnemyMainFSM : MonoBehaviour
 			// Randomize the interval time between spawns of child cells in terms of num of available child cells and current difficulty
 			yield return new WaitForSeconds (
 				UnityEngine.Random.Range (
-					Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)nAvailableChildNum))) * 2f / EMDifficulty.Instance().CurrentDiff, 
-					Mathf.Sqrt(Mathf.Sqrt ((float)nAvailableChildNum)) * 2f / EMDifficulty.Instance().CurrentDiff)
+					Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)nAvailableChildNum))) * 1f / EMDifficulty.Instance().CurrentDiff, 
+					Mathf.Sqrt(Mathf.Sqrt ((float)nAvailableChildNum)) * 1f / EMDifficulty.Instance().CurrentDiff)
 			);
 
 			bCanSpawn = true;
