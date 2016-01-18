@@ -40,6 +40,16 @@ public class PlayerSquadFSM : MonoBehaviour
     [Tooltip("The maximum amount of cooldown for each child spawn")]
     [SerializeField] private float fMaximumCooldown = 10f;
 
+    [Header("Child State: Idle")]
+    [Tooltip("The distance between two squad child before things happen")]
+    [SerializeField] private float fIdleDistance = 0.2f;
+    [Tooltip("The rigidity of the movement of each squad child. 0.0f = Fixed at position")]
+    [SerializeField] private float fIdleRigidity = 0.2f;
+    [Tooltip("The radius from the squad captain to idle in")]
+    [SerializeField] private float fIdleRadius = 1f;
+    [Tooltip("The maximum velocity the cell can move")]
+    [SerializeField] private float fIdleMaximumVelocity = 1f;
+
     [Header("Child State: Production")]
     // Strafing is used to rotate around the squad captain, used in production state
     [Tooltip("The radius of the circle from the center in which the cells are travelling")]
@@ -213,12 +223,19 @@ public class PlayerSquadFSM : MonoBehaviour
     public float Cooldown { get { return fNextCooldown; } }
     public int MaximumCount { get { return nMaximumChildCount; } }
 
+    public float IdleDistance { get { return fIdleDistance; } }
+    public float IdleRigidity { get { return fIdleRigidity; } }
+    public float IdleRadius { get { return fIdleRadius; } }
+    public float IdleMaximumVelocity { get { return fIdleMaximumVelocity; } }
+
     public float StrafingRadius { get { return fStrafingRadius; } }
     public float StrafingSpeed { get { return fStrafingSpeed; } }
+
     public float DefenceAngle { get { return fDefenceAngle; } }
     public float DefenceRadius { get { return fDefenceRadius; } }
     public float DefenceSpeed { get { return fDefenceSpeed; } }
     public float DefenceRigidity { get { return fDefenceRigidity; } }
+
     public float AttackSpeed { get { return fAttackSpeed; } }
 
     public bool IsAlive { get { return bIsAlive; } }

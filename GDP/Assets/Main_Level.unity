@@ -9296,7 +9296,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 988217527}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2.5, z: -5}
+  m_LocalPosition: {x: 0, y: 3, z: -5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1619169095}
@@ -18048,13 +18048,37 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 11420688, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
-      propertyPath: fMaximumChildCount
-      value: 9
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fIdleDistance
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fIdleRadius
+      value: 1.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fIdleRigidity
+      value: .5
       objectReference: {fileID: 0}
     - target: {fileID: 11420688, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
       propertyPath: fAggressiveToDefensive
       value: .5
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fMaximumCooldown
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fIdleMaximumVelocity
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fDefenceRadius
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 11423594, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
+      propertyPath: fDefenceAngle
+      value: 90
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3e2db2f3778c3b546b1c43231b39424d, type: 2}
