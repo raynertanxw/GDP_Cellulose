@@ -121,8 +121,9 @@ public class EMHelper : MonoBehaviour
     // Update width of enemy main cell
 	void widthUpdate ()
 	{
-		if (width != GetComponent<CircleCollider2D> ().bounds.size.x)
-			width = GetComponent<CircleCollider2D> ().bounds.size.x;
+		// Get the width without considering expand animation
+		if (width != EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance().Health))))
+			width = EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance().Health)));
 	}
 
 	#region Math

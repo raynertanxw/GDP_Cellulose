@@ -47,6 +47,7 @@ public class EMAnimation : MonoBehaviour
 
 	#region Scale
 	private Vector2 initialScale;
+	public Vector2 InitialScale { get { return initialScale; } }
 	private Vector2 currentScale;
 	public Vector2 CurrentScale { get { return currentScale; } }
 	#endregion

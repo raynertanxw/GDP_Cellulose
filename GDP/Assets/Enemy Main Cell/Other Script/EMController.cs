@@ -241,11 +241,31 @@ public class EMController : MonoBehaviour
 			else if (nDirCount > 0 && MovingLeft) 
 				bMovingLeft = false;
 			
-			// Change speed based on num of nutrient on one side of the enemy main cell
-			float fSpeed = Random.Range (.05f, (float)nDirCount / 10f);
+			// Change speed based on num of nutrient on one side of the enemy main cell and number of available child cells
+			float fSpeed = Random.Range (.05f, ((float)nDirCount + Mathf.Sqrt (Mathf.Sqrt (m_EMFSM.AvailableChildNum))) / 20f);
+			fHoriSpeed = fSpeed;
 			
 			// Frequency of checking for changing of direction in terms of health of enemy main cell
 			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)) * 1.5f, Mathf.Sqrt ((float)m_EMFSM.Health) * 1.5f);
+			
+			yield return new WaitForSeconds (fTime);
+			bCanChangeHori = true;
+		} 
+		else if (m_EMFSM.CurrentStateIndex == EMState.Defend) 
+		{
+			bCanChangeHori = false;
+			
+			// Change speed based on the number of child cells of the enemy main cell
+			float fSpeed = Random.Range (.1f, .5f / Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum) + 1f));
+			fHoriSpeed = fSpeed;
+			
+			// Frequency of checking for changing of direction in terms of the number of child cells of the enemy main cell
+			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 1f)) * 1.5f, 
+			                            Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 2f) * 1.5f);
+			
+			int bDirection = Random.Range (0, 2);
+			if (bDirection == 0) 
+				bMovingLeft = !bMovingLeft;
 			
 			yield return new WaitForSeconds (fTime);
 			bCanChangeHori = true;
@@ -261,25 +281,6 @@ public class EMController : MonoBehaviour
 			// Frequency of checking for changing of direction in terms of the current aggressiveness of the enemy main cell
 			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
 			                            Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 4f) * 1.5f);
-			
-			int bDirection = Random.Range (0, 2);
-			if (bDirection == 0) 
-				bMovingLeft = !bMovingLeft;
-			
-			yield return new WaitForSeconds (fTime);
-			bCanChangeHori = true;
-		} 
-		else if (m_EMFSM.CurrentStateIndex == EMState.Defend) 
-		{
-			bCanChangeHori = false;
-			
-			// Change speed based on the number of child cells of the enemy main cell
-			float fSpeed = Random.Range (.1f, .5f / Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum) + 1f);
-			fHoriSpeed = fSpeed;
-			
-			// Frequency of checking for changing of direction in terms of the number of child cells of the enemy main cell
-			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 1f)) * 1.5f, 
-			                            Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 2f) * 1.5f);
 			
 			int bDirection = Random.Range (0, 2);
 			if (bDirection == 0) 
