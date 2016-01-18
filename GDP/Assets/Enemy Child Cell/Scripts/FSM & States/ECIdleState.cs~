@@ -9,12 +9,12 @@ public class ECIdleState : IECState
 	
 	//A static float that store the time at which the previous idle status is changed
 	private static float fPreviousStatusTime;
-	
+
 	//A float that store how far the enemy child cell need to be spreaded out
-	private float fSpreadRange;
+	private static float fSpreadRange;
 	
 	//A float that dictate the strength of the idle directional vector and it is affected by the scale of the enemy main cell
-	private float fIdleScale;
+	private static float fIdleScale;
 	
 	//A static IdleStatus variable to store what the current idle status all the idle enemy child cell will have
 	private static IdleStatus CurrentIdleState;
@@ -24,14 +24,18 @@ public class ECIdleState : IECState
 	
 	private static int IdleCount;
 
-	private SpriteRenderer EMSpriteRender;
-	private Bounds EMBounds;
+	private static SpriteRenderer EMSpriteRender;
+	private static Bounds EMBounds;
 	private Transform ECTransform;
-	private Transform EMTransform;
-	private EnemyMainFSM EMFSM;
+	private static Transform EMTransform;
+	private static EnemyMainFSM EMFSM;
 	private Collider2D[] Collisions;
 	private Rigidbody2D ChildRB;
-	private Rigidbody2D MainRB;
+	private static Rigidbody2D MainRB;
+
+	private float fDirectionalWeight;
+	private float fSeperationalWeight;
+	private static float fTimerLimit;
 
 	//An enumeration for the type of idling the enemy child cell is having
 	private enum IdleStatus {Seperate, Cohesion};
@@ -44,6 +48,8 @@ public class ECIdleState : IECState
 		m_Main = m_ecFSM.m_EMain;
 		
 		fMaxMagnitude = 7.5f;
+		fDirectionalWeight = 1.0f;
+		fTimerLimit = 1.5f;
 		
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x/10;
 		
@@ -98,7 +104,7 @@ public class ECIdleState : IECState
 			}
 		}
 		//If the current idle status is seperating, all the child cells are being spread out fully and it has been 1.5s since the previous change of state or the time passed had been 1.75s, change the idle status to cohesion and record the time
-		else if(CurrentIdleState == IdleStatus.Seperate && Time.time - fPreviousStatusTime > 1.5f && HasCellsSpreadOutMax() || CurrentIdleState == IdleStatus.Seperate && Time.time - fPreviousStatusTime > 1.75f)
+		else if(CurrentIdleState == IdleStatus.Seperate && Time.time - fPreviousStatusTime > fTimerLimit)
 		{
 			ResetAllHitWall();
 			CurrentIdleState = IdleStatus.Cohesion;
@@ -143,32 +149,6 @@ public class ECIdleState : IECState
 			}
 		}
 
-		/*if(m_ecFSM.IsHittingSideWalls() && m_ecFSM.bHitWall == false)
-		{
-			m_ecFSM.bHitWall = true;
-			m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-		}
-		else if(CurrentIdleState == IdleStatus.Cohesion && !HasChildEnterMain(m_Child) && m_ecFSM.bHitWall == false)
-		{
-			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,20f);
-		}
-		//Else if the current idle status is seperating, add the specific directional force to travel, the velocity of the main cell to follow the main cell and the seperation force to seperate itself from the nearby enemy child cell
-		else if(CurrentIdleState == IdleStatus.Seperate && !m_ecFSM.IsHittingSideWalls() && m_ecFSM.bHitWall == false)
-		{
-			Acceleration += SeperateDirection.normalized * fIdleScale;
-			Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity;
-			//Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours());
-		}
-		else if(m_ecFSM.bHitWall == true && !HasChildEnterMain(m_Child))
-		{
-			m_Child.GetComponent<Rigidbody2D>().drag = 2.5f;
-			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,10f);
-		}
-		else if(m_ecFSM.bHitWall == true && HasChildEnterMain(m_Child))
-		{
-			m_Child.GetComponent<Rigidbody2D>().velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
-		}*/
-
 		//Clamp the acceleration of the enemy child cell to a specific maximum of magnitude and add that acceleration as a force on to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxMagnitude);
 		ChildRB.AddForce(Acceleration);
@@ -200,36 +180,6 @@ public class ECIdleState : IECState
 		}
 		
 		return Neighbours;
-	}
-	
-	//A function that return a boolean on whether the cells had spread out to its maximum potential
-	private bool HasCellsSpreadOutMax()
-	{
-		List<EnemyChildFSM> ECList = ECTracker.s_Instance.IdleCells;
-		Vector2 ReferencePos = Vector2.zero;
-		
-		for(int i = 0; i < ECList.Count; i++)
-		{
-			ReferencePos = ECList[i].transform.position;
-			for(int t = 0; t < ECList.Count; t++)
-			{
-				if(i != t && Utility.Distance(ReferencePos,ECList[t].transform.position) <= fSpreadRange)
-				{
-					return false;
-				}
-			}
-			
-			/*Collisions = Physics2D.OverlapCircleAll(ECList[i].transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);
-			for(int t = 0; t < Collisions.Length; t++)
-			{
-				if(Collisions[t].GetComponent<EnemyChildFSM>/().CurrentStateEnum == ECState.Idle)
-				{
-					return false;
-				}
-			}*/
-		}
-		
-		return true;
 	}
 	
 	//A function that return a boolean on whether that specific child cell had entered the enemy main cell
@@ -278,6 +228,11 @@ public class ECIdleState : IECState
 				ECList[i].GetComponent<Rigidbody2D>().drag = 0f;
 			}
 		}
+	}
+
+	private float GetTimeLimit()
+	{
+		return 1.5f + 0.015f * (ECTracker.s_Instance.IdleCells.Count);
 	}
 }
 
