@@ -53,6 +53,7 @@ public class PC_IdleState : IPCState
 
         // Add the force to the rigidbody and face the direction of movement
         m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, maxVelocity);
         FaceTowardsHeading();
     }
 
@@ -112,7 +113,8 @@ public class PC_IdleState : IPCState
 	private static float s_fSqrCohesionRadius = Mathf.Pow(s_fCohesionRadius, 2);
     private static float s_fSeparationRadius = 0.25f;
 	private static float s_fSqrSeperationRadius = Mathf.Pow(s_fSeparationRadius, 2);
-    private static float s_fMaxAcceleration = 10f;
+    private static float s_fMaxAcceleration = 250f;
+	private static float s_fMaxVelocity = 2f;
     // Weights
     private static float s_fCohesionWeight = 300;
     private static float s_fSeparationWeight = 1000;
@@ -123,6 +125,7 @@ public class PC_IdleState : IPCState
 	public static float sqrCohesionRadius { get { return s_fSqrCohesionRadius; } }
 	public static float sqrSeparationRadius { get { return s_fSqrSeperationRadius; } }
     public static float maxAcceleration { get { return s_fMaxAcceleration; } }
+	public static float maxVelocity { get { return s_fMaxVelocity; } }
     public static float cohesionWeight { get { return s_fCohesionWeight; } }
     public static float separationWeight { get { return s_fSeparationWeight; } }
     public static float originPullWeight { get { return s_fOriginPullWeight; } }
