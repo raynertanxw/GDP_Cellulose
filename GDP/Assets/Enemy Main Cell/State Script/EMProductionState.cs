@@ -6,7 +6,6 @@ public class EMProductionState : IEMState
 	private EMTransition transition;
 	private EMController controller;
 	private EMHelper helper;
-	private ECPoolManager ECPool;
 
 	public EMProductionState (EnemyMainFSM EMFSM)
 	{
@@ -31,11 +30,10 @@ public class EMProductionState : IEMState
 	{
 		controller = m_EMFSM.emController;
 		helper = m_EMFSM.emHelper;
-		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 	
 		// Produce enemy mini cell if has nutrient and can spawn
 		if (controller.NutrientNum > 0 && m_EMFSM.CanSpawn)
-			ECPool.SpawnFromPool (EMHelper.Instance().Position);
+			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position);
 		else if (controller.NutrientNum == 0 && EMTransition.Instance().CanTransit)
 			m_EMFSM.ChangeState (EMState.Maintain);
 

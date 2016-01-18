@@ -16,8 +16,6 @@ public class EnemyMainFSM : MonoBehaviour
 	
 	[SerializeField]
 	private GameObject enemyMainObject;
-	[SerializeField]
-	private ECPoolManager ECPool;
 	public GameObject EnemyMainObject { get { return enemyMainObject; } }
 	#region Classes for help
 	[HideInInspector]
@@ -113,7 +111,6 @@ public class EnemyMainFSM : MonoBehaviour
 	// Production status
 	private bool bCanSpawn; 
 	public bool CanSpawn { get { return bCanSpawn; } }
-	public ECPoolManager Pool { get { return ECPool; } }
 
 	void Awake ()
 	{
@@ -129,7 +126,6 @@ public class EnemyMainFSM : MonoBehaviour
 		nAggressivenessSquadChild = 0;
 		// Initialise status
 		bCanSpawn = true;
-		//ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 	}
 
 	void Start ()

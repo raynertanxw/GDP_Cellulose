@@ -16,6 +16,8 @@ public class EMHelper : MonoBehaviour
 
 	EnemyMainFSM m_EMFSM;
 
+	public ECPoolManager ECPool;
+
 	public static float leftLimit;
 	public static float rightLimit;
 	public static float topLimit;
@@ -45,6 +47,9 @@ public class EMHelper : MonoBehaviour
 		width = GetComponent<CircleCollider2D> ().bounds.size.x;
 		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		position = transform.position;
+
+		// Find gameObject
+		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 
 		// Able to command child cells to any state by default
 		bCanAddDefend = true;

@@ -53,6 +53,8 @@ public class EMController : MonoBehaviour
 	private bool bCanStun;
 	[SerializeField]
 	private float fStunTime;
+	[SerializeField]
+	private float fNumOfDefaultCells;
 	#endregion
 
 	#region Size
@@ -76,6 +78,7 @@ public class EMController : MonoBehaviour
 		// GetComponent
 		m_EMFSM = GetComponent<EnemyMainFSM> ();
 		thisRB = GetComponent<Rigidbody2D> ();
+
 		// Size
 		nInitialNutrientNum = 100;
 		nCurrentNutrientNum = nInitialNutrientNum;
@@ -105,6 +108,7 @@ public class EMController : MonoBehaviour
 		bStunned = false;
 		bCanStun = true;
 		fStunTime = 3f;
+		fNumOfDefaultCells = 5f;
 	}
 
 	void Update()
@@ -378,6 +382,13 @@ public class EMController : MonoBehaviour
 	}
 	#endregion
     
+	void StartWithChildCells ()
+	{
+		for (int i = 0; i < fNumOfDefaultCells; i++) {
+			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position);
+		}
+	}
+
 	// Checking whether the enemy main cell goes out of the screen or runs out of health 
 	// Deactivate enemy main cell gameObject if the player wins
 	void LoseCheck ()
