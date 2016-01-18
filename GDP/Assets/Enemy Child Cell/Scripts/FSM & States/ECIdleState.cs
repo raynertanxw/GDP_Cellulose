@@ -33,6 +33,7 @@ public class ECIdleState : IECState
 	private Rigidbody2D ChildRB;
 	private static Rigidbody2D MainRB;
 	private EMController EMControl;
+	private List<GameObject> Neighbours;
 
 	private float fDirectionalWeight;
 	private float fSeperationalWeight;
@@ -65,6 +66,7 @@ public class ECIdleState : IECState
 		MainRB = m_Main.GetComponent<Rigidbody2D>();
 		
 		Collisions = new Collider2D[EMFSM.ECList.Count];
+		Neighbours = new List<GameObject>();
 		
 		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
 		IdleCount = 0;
@@ -170,14 +172,14 @@ public class ECIdleState : IECState
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
 	private List<GameObject> TagNeighbours()
 	{
-		List<GameObject> Neighbours = new List<GameObject>();
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);//Change this value to how spread out the spreading is
-		
-		for(int i = 0; i < Neighbouring.Length; i++)
+		Neighbours.Clear();
+		Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,fSpreadRange,Constants.s_onlyEnemeyChildLayer);//Change this value to how spread out the spreading is
+			
+		for(int i = 0; i < Collisions.Length; i++)
 		{
-			if(Neighbouring[i].gameObject != m_Child && Neighbouring[i].gameObject.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
+			if(Collisions[i].gameObject != m_Child && Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Idle)
 			{
-				Neighbours.Add(Neighbouring[i].gameObject);
+				Neighbours.Add(Collisions[i].gameObject);
 			}
 		}
 		
