@@ -134,8 +134,6 @@ public class EMLeraningAgent : MonoBehaviour
 			{
 				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 4f, 
 				                               (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f);
-				Debug.Log ("Learning Attack");
-				Debug.Log (pastPlayerHealth - PlayerMain.s_Instance.Health);
 			}
 			else 
 				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f, 

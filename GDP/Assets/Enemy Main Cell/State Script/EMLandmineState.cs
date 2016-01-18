@@ -30,8 +30,8 @@ public class EMLandmineState : IEMState
 		// Reset transition availability
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
-		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness / 1.5f) / EMDifficulty.Instance().CurrentDiff, 
-		                                 Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / EMDifficulty.Instance().CurrentDiff);
+		float fPauseTime = Random.Range ((m_EMFSM.CurrentAggressiveness / 1.5f) / EMDifficulty.Instance().CurrentDiff, 
+		                                 (m_EMFSM.CurrentAggressiveness) / EMDifficulty.Instance().CurrentDiff);
 		m_EMFSM.StartPauseTransition (fPauseTime);
 	}
 
