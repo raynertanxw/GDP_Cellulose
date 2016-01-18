@@ -9,21 +9,22 @@ public class PlayerChildFSM : MonoBehaviour
 {
 	#region Pool Control
 	// singleton list to hold all out playerChildPoolControllers.
-	static private List<PlayerChildFSM> s_playerChildFSMPool;
+	static private PlayerChildFSM[] s_playerChildFSMPool;
+	static private int s_nPoolPointerIndex = 0;
 	
 	static public PlayerChildFSM Spawn(Vector3 spawnPoint)
 	{
-		foreach (PlayerChildFSM currentPCFSM in s_playerChildFSMPool)
+		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
 		{
 			// If disabled, thn it's available.
-			if (currentPCFSM.m_currentEnumState == PCState.Dead)
+			if (s_playerChildFSMPool[i].m_currentEnumState == PCState.Dead)
 			{
                 // Set it up
                 spawnPoint.z = 0; // Enforce all the spawnpoints to spawn at z = 0.
-				(currentPCFSM.m_statesDictionary[PCState.Dead] as PC_DeadState).CallFromPool(spawnPoint);
+				(s_playerChildFSMPool[i].m_statesDictionary[PCState.Dead] as PC_DeadState).CallFromPool(spawnPoint);
 				
 				// return a reference to the caller.
-				return currentPCFSM;
+				return s_playerChildFSMPool[i];
 			}
 		}
 		
@@ -31,17 +32,6 @@ public class PlayerChildFSM : MonoBehaviour
 		Debug.Log("Exhausted Player Child pool --> Increase pool size");
 		
 		return null;
-	}
-
-	void OnDestroy()
-	{
-		// remove myself from the pool
-		s_playerChildFSMPool.Remove(this);
-		// was I the last one?
-		if (s_playerChildFSMPool.Count == 0)
-		{
-			s_playerChildFSMPool = null;
-		}
 	}
 	#endregion
 	
@@ -131,10 +121,11 @@ public class PlayerChildFSM : MonoBehaviour
 		if (s_playerChildFSMPool == null)
 		{
 			// lazy initialize it
-			s_playerChildFSMPool = new List<PlayerChildFSM>();
+			s_playerChildFSMPool = new PlayerChildFSM[Settings.s_nPlayerMaxChildCount];
 		}
 		// add myself
-		s_playerChildFSMPool.Add(this);
+		s_playerChildFSMPool[s_nPoolPointerIndex] = this;
+		s_nPoolPointerIndex++;
 
 
 		// Cache components
