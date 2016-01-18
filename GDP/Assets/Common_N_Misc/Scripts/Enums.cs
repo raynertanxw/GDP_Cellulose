@@ -31,3 +31,5 @@ public enum Formation {Empty, Crescent, ReverseCrescent, CircularSurround, AreaB
 public enum PlayerAttackMode {BurstShot, SwarmTarget, ScatterShot};
 
 public enum Node {LeftNode, RightNode};
+
+public enum pcStatus {DeadState, InLeftNode, InRightNode, Attacking};
