@@ -80,13 +80,8 @@ public class EMLeraningAgent : MonoBehaviour
 		}
 		// Penalty for loss of health of the enemy main cell
 		if (pastEnemyHealth > m_EMFSM.Health) {
-			if (((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.CurrentAggressiveness)) < 
-			    (pastEnemyHealth - m_EMFSM.Health))
-				fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.CurrentAggressiveness), 
-			                               (pastEnemyHealth - m_EMFSM.Health));
-			else 
-				fOverallScore -= Random.Range ((pastEnemyHealth - m_EMFSM.Health), 
-				                               (pastEnemyHealth - m_EMFSM.Health) * 3f / Mathf.Sqrt(m_EMFSM.CurrentAggressiveness));
+			fOverallScore -= Random.Range ((float)(pastEnemyHealth - m_EMFSM.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness), 
+			                               (float)(pastEnemyHealth - m_EMFSM.Health) * m_EMFSM.CurrentAggressiveness);
 		}
 
 		#endregion
