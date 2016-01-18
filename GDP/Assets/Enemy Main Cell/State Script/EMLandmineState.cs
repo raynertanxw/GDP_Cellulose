@@ -22,6 +22,10 @@ public class EMLandmineState : IEMState
 		// Reset availability to command mini cell to Landmine state
 		if (!helper.CanAddLandmine)
 			helper.CanAddLandmine = true;
+
+		// Enable expand animation
+		if (!EMAnimation.Instance ().IsExpanding)
+			EMAnimation.Instance ().IsExpanding = true;
 		
 		// Reset transition availability
 		transition.CanTransit = true;

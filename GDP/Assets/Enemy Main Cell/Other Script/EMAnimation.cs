@@ -23,8 +23,12 @@ public class EMAnimation : MonoBehaviour
 	[SerializeField]
 	private float fExpandScale = 1.25f;
 	[SerializeField]
-	private float fExpandRate = .05f;
+	private float fDefaultExpandRate = .05f;
 	private float fTargetSize;
+
+	#region Status
+	private bool bLandmineAniOn;
+	private float fLandmineExpandFactor;
 
 	[SerializeField]
 	bool bCanRotate;
@@ -39,6 +43,7 @@ public class EMAnimation : MonoBehaviour
 	private float fMinAngularVelocity = 20f;
 	[SerializeField]
 	private bool bIsRotatingLeft;
+	#endregion
 
 	#region Scale
 	private Vector2 initialScale;
@@ -53,6 +58,8 @@ public class EMAnimation : MonoBehaviour
 		// GetComponent
 		thisRB = GetComponent<Rigidbody2D> ();
 		// Initialization of status
+		bLandmineAniOn = false;
+		fLandmineExpandFactor = 3f;
 		bCanRotate = true;
 		bIsExpanding = false;
 		bIsShrinking = false;
@@ -83,6 +90,8 @@ public class EMAnimation : MonoBehaviour
 		FasterRotationDecline ();
 		// Enemy main cell expands in size when receives nutrient
 		ExpandAnimation ();
+		// Expand animation in Landmine state
+		LandmineAnimation ();
 	}
 
 	// Update the size of enemy main cell according to current health
@@ -152,33 +161,72 @@ public class EMAnimation : MonoBehaviour
 	{
 		if (!bIsExpanding && !bIsShrinking)
 			fTargetSize = currentScale.x * fExpandScale;
-		if (bIsExpanding) 
-		{
-			if (currentScale.x <= fTargetSize)
-			{
-				currentScale.x += fExpandRate * Mathf.Sqrt (fTargetSize - currentScale.x);
-				currentScale.y += fExpandRate * Mathf.Sqrt (fTargetSize - currentScale.y);
+		if (!bLandmineAniOn) {
+			if (bIsExpanding) {
+				if (currentScale.x <= fTargetSize) {
+					currentScale.x += fDefaultExpandRate * Mathf.Sqrt (fTargetSize - currentScale.x);
+					currentScale.y += fDefaultExpandRate * Mathf.Sqrt (fTargetSize - currentScale.y);
+				} else {
+					bIsExpanding = false;
+					bIsShrinking = true;
+				}
+			} else if (!bIsExpanding && 
+				bIsShrinking &&
+				currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) {
+				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
+				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
+			} else if (!bIsExpanding && 
+				bIsShrinking &&
+				currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) {
+				bIsShrinking = false;
 			}
-			else 
-			{
-				bIsExpanding = false;
-				bIsShrinking = true;
-			}
-		} 
-		else if (!bIsExpanding && 
-		         bIsShrinking &&
-			currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
-		{
-			currentScale.x -= fExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
-			currentScale.y -= fExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
-		}
-		else if (!bIsExpanding && 
-		         bIsShrinking &&
-		         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
-		{
-			bIsShrinking = false;
-		}
 
-		transform.localScale = (Vector3)currentScale;
+			transform.localScale = (Vector3)currentScale;
+		}
 	}
+
+	#region State Animations
+	// Expand animation in Landmine state
+	private void LandmineAnimation ()
+	{
+		// Landmine status update 
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Landmine)
+			bLandmineAniOn = true;
+		else 
+			bLandmineAniOn = false;
+
+		if (bLandmineAniOn) 
+		{
+			if (bIsExpanding) 
+			{
+				if (currentScale.x <= fTargetSize)
+				{
+					currentScale.x += fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (fTargetSize - currentScale.x);
+					currentScale.y += fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (fTargetSize - currentScale.y);
+				}
+				else 
+				{
+					bIsExpanding = false;
+					bIsShrinking = true;
+				}
+			} 
+			else if (!bIsExpanding && 
+			         bIsShrinking &&
+			         currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
+			{
+				currentScale.x -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
+				currentScale.y -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
+			}
+			else if (!bIsExpanding && 
+			         bIsShrinking &&
+			         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
+			{
+				bIsShrinking = false;
+				bIsExpanding = true;
+			}
+			
+			transform.localScale = (Vector3)currentScale;
+		}
+	}
+	#endregion
 }
