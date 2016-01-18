@@ -65,7 +65,8 @@ public class ECPoolManager : MonoBehaviour {
 		
 		if(IsPoolEmpty())
 		{
-			RestockPool();
+			Debug.Log("100 Enemy Child Cell Reached");
+			return null;
 		}
 		
 		return newChild;
@@ -75,13 +76,5 @@ public class ECPoolManager : MonoBehaviour {
 	private bool IsPoolEmpty()
 	{
 		return (s_ECPool.Count > 0) ? false : true;
-	}
-	
-	//a function to extend the size of the pool by adding another enemy child cell in the case of an empty pool
-	//and the enemy main cell require a new enemy child cell
-	private void RestockPool()
-	{
-		GameObject newChild = (GameObject) Instantiate(EnemyChildCell, transform.position, Quaternion.identity);
-		MessageDispatcher.Instance.DispatchMessage(gameObject, newChild, MessageType.Dead, 0);
 	}
 }
