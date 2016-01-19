@@ -28,10 +28,14 @@ public class EMAnimation : MonoBehaviour
 	private float fTargetSize;
 
 	#region Status
+	private bool bProductionAniOn;
+	private bool bMaintainAniOn;
+	private bool bDefendAniOn;
 	private bool bAggressiveAniOn;
 	private bool bCautiousAniOn;
 	private bool bLandmineAniOn;
 	private float fLandmineExpandFactor;
+	private bool bStunAniOn;
 
 	[SerializeField]
 	bool bCanRotate;
@@ -69,11 +73,16 @@ public class EMAnimation : MonoBehaviour
 		// GetComponent
 		thisRB = GetComponent<Rigidbody2D> ();
 		thisRend = GetComponent<Renderer> ();
-		// Initialization of status
+		// Initialization of state status
+		bProductionAniOn = false;
+		bMaintainAniOn = false;
+		bDefendAniOn = false;
 		bAggressiveAniOn = false;
 		bCautiousAniOn = false;
 		bLandmineAniOn = false;
 		fLandmineExpandFactor = 3f;
+		bStunAniOn = false;
+		// Initialization of status
 		bCanRotate = true;
 		bIsExpanding = false;
 		bIsShrinking = false;
@@ -212,6 +221,15 @@ public class EMAnimation : MonoBehaviour
 	// Update current state
 	private void CurrentStateUpdate ()
 	{
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Production)
+			bProductionAniOn = true;
+
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Maintain)
+			bMaintainAniOn = true;
+
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Defend)
+			bDefendAniOn = true;
+
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.AggressiveAttack)
 			bAggressiveAniOn = true;
 		else
@@ -226,6 +244,9 @@ public class EMAnimation : MonoBehaviour
 			bLandmineAniOn = true;
 		else 
 			bLandmineAniOn = false;
+
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Stunned)
+			bStunAniOn = true;
 	}
 
 	// Expand animation in Landmine state
