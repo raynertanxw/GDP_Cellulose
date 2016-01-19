@@ -85,18 +85,7 @@ public class PC_IdleState : IPCState
 	#region Helper functions
 	private bool DetectedEnemyInRange()
 	{
-		Collider2D enemyChild = Physics2D.OverlapCircle(PlayerMain.s_Instance.transform.position, PlayerMain.s_Instance.m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
-		if (enemyChild != null)
-		{
-			// Assign the currentEnemyCellTarget in the FSM to the returned enemy cell.
-			m_pcFSM.m_currentEnemyCellTarget = enemyChild.gameObject.GetComponent<EnemyChildFSM>();
-
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		return PlayerMain.s_Instance.hasSurroundingEnemyCells;
 	}
     #endregion
 

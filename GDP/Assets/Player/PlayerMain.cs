@@ -8,6 +8,19 @@ public class PlayerMain : MonoBehaviour
 	private int m_nHealth = 100;
 	public int Health { get { return m_nHealth; } }
 
+	private Collider2D[] m_surroundingEnemyCells;
+	public Collider2D[] surroundingEnemyCells { get { return m_surroundingEnemyCells; } }
+	public bool hasSurroundingEnemyCells
+	{
+		get
+		{
+			if (m_surroundingEnemyCells.Length > 0)
+				return true;
+			else
+				return false;
+		}
+	}
+
 	public float m_fDetectionRadius = 5.0f;
 
 	public static PlayerMain s_Instance;
@@ -24,20 +37,9 @@ public class PlayerMain : MonoBehaviour
 		}
 	}
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-
-	}
-
-	public int GetEnemyCountSurroundingPlayer()
+	void FixedUpdate()
 	{
-		Collider2D[] surroudingEnemyChildren = Physics2D.OverlapCircleAll(transform.position, m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
-		return surroudingEnemyChildren.Length;
+		m_surroundingEnemyCells = Physics2D.OverlapCircleAll(transform.position, m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
 	}
 
 	public void HurtPlayerMain()

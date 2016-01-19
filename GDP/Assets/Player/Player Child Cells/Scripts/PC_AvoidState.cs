@@ -34,9 +34,7 @@ public class PC_AvoidState : IPCState
     public override void FixedExecute()
     {
         // Get the cohesion, alignment, and separation components of the flocking.
-        Vector2 acceleration = Cohesion() * cohesionWeight;
-        acceleration += Alignment() * alignmentWeight;
-        acceleration += Separation() * separationWeight;
+        Vector2 acceleration = Separation() * separationWeight;
         acceleration += OriginPull() * originPullWeight;
         acceleration += Avoidance() * avoidanceWeight;
         // Clamp the acceleration to a maximum value
@@ -71,15 +69,7 @@ public class PC_AvoidState : IPCState
     #region Helper functions
     private bool DetectedEnemyInRange()
     {
-        Collider2D enemyChild = Physics2D.OverlapCircle(PlayerMain.s_Instance.transform.position, PlayerMain.s_Instance.m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
-        if (enemyChild != null)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+		return PlayerMain.s_Instance.hasSurroundingEnemyCells;
     }
     #endregion
 
@@ -111,7 +101,7 @@ public class PC_AvoidState : IPCState
 	private static float s_fAlignmentWeight = 0;
 	private static float s_fSeparationWeight = 100;
 	private static float s_fOriginPullWeight = 5;
-    private static float s_fAvoidanceWeight = 1000;
+    private static float s_fAvoidanceWeight = 1500;
 	
 	
 	// Getters for the various values.
@@ -226,16 +216,10 @@ public class PC_AvoidState : IPCState
         Vector2 sumVector = Vector2.zero;
         int count = 0;
 
-        Collider2D[] enemyCells = Physics2D.OverlapCircleAll(m_pcFSM.transform.position, s_fAvoidRadius, Constants.s_onlyEnemeyChildLayer);
-
-        Vector2 tmp_enemyPos = Vector2.zero;
-        for (int i = 0; i < enemyCells.Length; i++)
+		for (int i = 0; i < PlayerMain.s_Instance.surroundingEnemyCells.Length; i++)
         {
-            tmp_enemyPos.x = enemyCells[i].transform.position.x;
-            tmp_enemyPos.y = enemyCells[i].transform.position.y;
-
-            float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, tmp_enemyPos);
-            sumVector += (m_pcFSM.rigidbody2D.position - tmp_enemyPos).normalized / fDist;
+            float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, PlayerMain.s_Instance.surroundingEnemyCells[i].attachedRigidbody.position);
+			sumVector += (m_pcFSM.rigidbody2D.position - PlayerMain.s_Instance.surroundingEnemyCells[i].attachedRigidbody.position).normalized / fDist;
 
             count++;
         }

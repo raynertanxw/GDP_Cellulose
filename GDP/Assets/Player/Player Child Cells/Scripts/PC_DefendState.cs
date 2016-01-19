@@ -127,10 +127,9 @@ public class PC_DefendState : IPCState
 	{
 		if (FindNewLocalTarget() == false) // If can't find local target, find in danger zone.
 		{
-			Collider2D enemyChild = Physics2D.OverlapCircle(PlayerMain.s_Instance.transform.position, PlayerMain.s_Instance.m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
-			if (enemyChild != null)
+			if (PlayerMain.s_Instance.hasSurroundingEnemyCells == true)
 			{
-				m_pcFSM.m_currentEnemyCellTarget = enemyChild.gameObject.GetComponent<EnemyChildFSM>();
+				m_pcFSM.m_currentEnemyCellTarget = PlayerMain.s_Instance.surroundingEnemyCells[0].gameObject.GetComponent<EnemyChildFSM>();
 				return true;
 			}
 			else
