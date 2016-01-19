@@ -155,7 +155,28 @@ public class ECChargeCState : IECState {
 		//If the target to obtain a child cell to attack is any of the two nodes, loop through the cells within that specific node to get the closest child cell to the enemy child cell
 		if(TargetSource.name.Contains("Node"))
 		{
-			List<PlayerChildFSM> m_PotentialTargets = TargetSource.GetComponent<Node_Manager>().DEPRECIATED_GetNodeChildList();
+			List<PlayerChildFSM> m_PotentialTargets = new List<PlayerChildFSM>();
+			if(TargetSource.name.Contains("Left"))
+			{
+				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				{
+					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
+					{
+						m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[i]);
+					}
+				}
+				
+			}
+			else if(TargetSource.name.Contains("Right"))
+			{
+				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				{
+					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
+					{
+						m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[i]);
+					}
+				}
+			}
 
 			float fDistanceBetween = Mathf.Infinity;
 			int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;

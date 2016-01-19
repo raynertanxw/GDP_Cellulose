@@ -201,30 +201,16 @@ public class EnemyChildFSM : MonoBehaviour
 
 	private bool IsThereEnoughDefence()
 	{
-		List<PlayerChildFSM> Attackers = NodeLeft.DEPRECIATED_GetNodeChildList();
-		Attackers.AddRange(NodeRight.DEPRECIATED_GetNodeChildList());
-		List<EnemyChildFSM> Defenders = EMFSM.ECList;
-		PCState PCCurrentState = PCState.Idle;
 		int AttackerAmount = 0;
-		int DefenderAmount = 0;
+		int DefenderAmount = ECTracker.s_Instance.DefendCells.Count;
 
-		for(int i = 0; i < Attackers.Count; i++)
+		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
 		{
-			PCCurrentState = Attackers[i].GetCurrentState();
-			if(PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain)
+			if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
 			{
 				AttackerAmount++;
 			}
 		}
-
-		for(int i = 0; i < Defenders.Count; i++)
-		{
-			if(Defenders[i].CurrentStateEnum == ECState.Defend)
-			{
-				DefenderAmount++;
-			}
-		}
-
 		return (DefenderAmount > AttackerAmount) ? true : false;
 	}
 	

@@ -155,7 +155,28 @@ public class ECChargeCState : IECState {
 		//If the target to obtain a child cell to attack is any of the two nodes, loop through the cells within that specific node to get the closest child cell to the enemy child cell
 		if(TargetSource.name.Contains("Node"))
 		{
-			List<PlayerChildFSM> m_PotentialTargets = TargetSource.GetComponent<Node_Manager>().GetNodeChildList();
+			List<PlayerChildFSM> m_PotentialTargets = new List<PlayerChildFSM>();
+			if(TargetSource.name.Contains("Left"))
+			{
+				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				{
+					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
+					{
+						m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[i]);
+					}
+				}
+				
+			}
+			else if(TargetSource.name.Contains("Right"))
+			{
+				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				{
+					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
+					{
+						m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[i]);
+					}
+				}
+			}
 
 			float fDistanceBetween = Mathf.Infinity;
 			int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
@@ -254,7 +275,7 @@ public class ECChargeCState : IECState {
 	private int EvaluateNode (GameObject _Node)
 	{
 		//if the node contains no cell, it serve no threat to the enemy main cell
-		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
+		if(_Node.GetComponent<Node_Manager>().activeChildCount == 0)
 		{
 			return 0;
 		}
@@ -262,7 +283,7 @@ public class ECChargeCState : IECState {
 		int nthreatLevel = 0;
 
 		//increase score based on amount of cells in that node
-		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
+		nthreatLevel += _Node.GetComponent<Node_Manager>().activeChildCount;
 
 		return nthreatLevel;
 	}
@@ -328,7 +349,7 @@ public class ECChargeCState : IECState {
 		float EnemyHP = m_Main.GetComponent<EnemyMainFSM>().Health;
 
 		float EnemyChildAmt = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
-		float PlayerChildAmt = Node_Manager.GetNode(Node.LeftNode).GetNodeChildList().Count + Node_Manager.GetNode(Node.RightNode).GetNodeChildList().Count;
+		float PlayerChildAmt = Node_Manager.GetNode(Node.LeftNode).activeChildCount + Node_Manager.GetNode(Node.RightNode).activeChildCount;
 		float SquadChildAmt = GameObject.Find("Squad_Captain_Cell").GetComponent<PlayerSquadFSM>().AliveChildCount();
 
 		int Score = 0;
