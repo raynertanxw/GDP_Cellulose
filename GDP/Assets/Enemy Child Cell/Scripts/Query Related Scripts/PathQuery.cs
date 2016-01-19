@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -121,6 +121,7 @@ public class PathQuery
 				}
 			}
 		}
+		
 	}
 	
 	private bool IsTwoPointsFreeToMove(Point _P1, Point _P2)
