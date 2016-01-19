@@ -43,15 +43,14 @@ public class PC_DefendState : IPCState
     public override void FixedExecute()
     {
 		// Get the cohesion, alignment, and separation components of the flocking.
-		Vector2 acceleration = Cohesion() * cohesionWeight;
-		acceleration += Alignment() * alignmentWeight;
-		acceleration += Separation() * separationWeight;
+		Vector2 acceleration = Separation() * separationWeight;
 		acceleration += Target() * targetPullWeight;
 		// Clamp the acceleration to a maximum value
 		acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
 		
 		// Add the force to the rigidbody and face the direction of movement
 		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, maxVelocity);
 		FaceTowardsHeading();
     }
 
@@ -165,11 +164,12 @@ public class PC_DefendState : IPCState
 	private static float s_fSqrCohesionRadius = Mathf.Pow(s_fCohesionRadius, 2);
 	private static float s_fSeparationRadius = 0.5f;
 	private static float s_fSqrSeperationRadius = Mathf.Pow(s_fSeparationRadius, 2);
-	private static float s_fMaxAcceleration = 200f;
+	private static float s_fMaxAcceleration = 1000f;
+	private static float s_fMacVelocity = 2.5f;
 	// Weights
 	private static float s_fCohesionWeight = 30;
 	private static float s_fAlignmentWeight = 10;
-	private static float s_fSeparationWeight = 50;
+	private static float s_fSeparationWeight = 1500;
 	private static float s_fTargetPullWeight = 5000;
 	
 	
@@ -177,6 +177,7 @@ public class PC_DefendState : IPCState
 	public static float sqrCohesionRadius { get { return s_fSqrCohesionRadius; } }
 	public static float sqrSeparationRadius { get { return s_fSqrSeperationRadius; } }
 	public static float maxAcceleration { get { return s_fMaxAcceleration; } }
+	public static float maxVelocity { get { return s_fMacVelocity; } }
 	public static float cohesionWeight { get { return s_fCohesionWeight; } }
 	public static float alignmentWeight { get { return s_fAlignmentWeight; } }
 	public static float separationWeight { get { return s_fSeparationWeight; } }
@@ -280,10 +281,18 @@ public class PC_DefendState : IPCState
 	public Vector2 Target()
 	{
 		Vector2 sumVector = -m_pcFSM.rigidbody2D.position;
-		sumVector.x += m_pcFSM.m_currentEnemyCellTarget.transform.position.x;
-		sumVector.y += m_pcFSM.m_currentEnemyCellTarget.transform.position.y;
-		
+		float fSqrDist = (sumVector + m_pcFSM.m_currentEnemyCellTarget.rigidbody2D.position).sqrMagnitude;
+		if (fSqrDist < 1.0f)
+			sumVector += PredictPos(0f, m_pcFSM.m_currentEnemyCellTarget.rigidbody2D.position, m_pcFSM.m_currentEnemyCellTarget.rigidbody2D.velocity);
+		else
+			sumVector += PredictPos(0.35f, m_pcFSM.m_currentEnemyCellTarget.rigidbody2D.position, m_pcFSM.m_currentEnemyCellTarget.rigidbody2D.velocity);
+
 		return sumVector;
+	}
+
+	private Vector2 PredictPos(float _T, Vector2 _posVec, Vector2 _velVec)
+	{
+		return _posVec + _velVec * _T;
 	}
 	#endregion
 }
