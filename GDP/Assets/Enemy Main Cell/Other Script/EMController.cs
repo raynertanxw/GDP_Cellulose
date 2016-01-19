@@ -24,6 +24,7 @@ public class EMController : MonoBehaviour
 	public float Speed{ get { return fSpeed; } }
 	private float fHoriSpeed;
 	public float HoriSpeed { get { return fHoriSpeed; } }
+	private float fMinHoriSpeed;
 	// Speed factor that changes speed
 	private float fSpeedFactor;
 	public float SpeedFactor { get { return fSpeedFactor; } }
@@ -101,8 +102,9 @@ public class EMController : MonoBehaviour
 			bMovingLeft = true;
 		else 
 			bMovingLeft = false;
-		// Randomize speed
-		fHoriSpeed = Random.Range (0.06f, 0.12f);
+		// Horizontal speed
+		fMinHoriSpeed = 0.05f;
+		fHoriSpeed = Random.Range (fMinHoriSpeed, fMinHoriSpeed * 2f);
 		bCanChangeHori = true;
 		// Velocity
 		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
@@ -171,6 +173,8 @@ public class EMController : MonoBehaviour
 		}
 		// Check the direction of horizontal movement is correct
 		HorizontalCheck();
+		// Make sure the horizntal velocity is not lower than its minimum value
+		HorizontalVelocityCheck ();
 	}
 
 	#region Damage behavior
@@ -230,6 +234,13 @@ public class EMController : MonoBehaviour
 			thisRB.velocity = velocity;
 			fSpeedTemp = fSpeed;
 		}
+	}
+
+	// Make sure the horizntal velocity is not lower than its minimum value
+	void HorizontalVelocityCheck ()
+	{
+		if (thisRB.velocity.x < fMinHoriSpeed)
+			thisRB.velocity = new Vector2 (fMinHoriSpeed, thisRB.velocity.y);
 	}
 
 	// Move the enemy main cell left or right
@@ -379,7 +390,7 @@ public class EMController : MonoBehaviour
 	}
 	#endregion
 
-	#region Change aggressiveness due to the existence of squad captain
+	#region Change aggressiveness due to the existence of squad captain and its child cells
 	void UpdateAggressiveness ()
 	{
 		// Reset Aggressiveness factor (Captain)
