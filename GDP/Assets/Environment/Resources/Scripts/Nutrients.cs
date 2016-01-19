@@ -63,7 +63,8 @@ public class Nutrients : MonoBehaviour
 	{
 		if (bIsCollectable)
 		{
-			player_control.s_nResources += s_nNutrients;
+			player_control.Instance.s_nResources += s_nNutrients;
+			player_control.Instance.UpdateUI_nutrients();
 			fClickMagnitude = (transform.position - playerMainTransform.position).magnitude;
 			bIsCollectable = false;
 		}
