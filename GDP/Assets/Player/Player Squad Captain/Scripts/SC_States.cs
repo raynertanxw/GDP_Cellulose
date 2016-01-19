@@ -33,6 +33,7 @@ public class SC_DeadState : ISCState
 // SC_IdleState: The idle state of the player squad's captain FSM
 public class SC_IdleState : ISCState
 {
+    // Static Fields
     private static List<SC_IdleState> list_IdleChild = new List<SC_IdleState>();
 
     private static float s_fIdleDistance = PlayerSquadFSM.Instance.IdleDistance;
@@ -40,6 +41,7 @@ public class SC_IdleState : ISCState
     private static float s_fIdleRadius = PlayerSquadFSM.Instance.IdleRadius;
     private static float s_fIdleMaximumVelocity = PlayerSquadFSM.Instance.IdleMaximumVelocity;
 
+    // Uneditable Fields
     private float fAngularPosition = 0f;
     private float fAngularVelocity = 0f;
 
@@ -49,63 +51,8 @@ public class SC_IdleState : ISCState
         m_scFSM = m_SquadChildFSM;
     }
 
-    // Private Functions:
-    //private static bool RecalculateAveragePosition()
-    //{
-    //    if (SquadChildFSM.StateCount(SCState.Idle) == 0)
-    //        return false;
-
-    //    averagePosition = Vector3.zero;                                     // averagePosition: Temporary used as the total vector of all idle child
-    //    SquadChildFSM[] array_SquadChild = SquadChildFSM.SquadChildArray;   // array_SquadChild: The array of squad child
-    //    int nIdleCount = 0;                                                 // nIdleCount: The number of squad child in idle state
-    //    for (int i = 0; i < array_SquadChild.Length; i++)
-    //    {
-    //        if (array_SquadChild[i].EnumState == SCState.Idle)
-    //        {
-    //            averagePosition += array_SquadChild[i].transform.position;
-    //            nIdleCount++;
-    //        }
-    //    }
-
-    //    averagePosition = averagePosition / (float)nIdleCount;
-    //    return true;
-    //}
-
-    public static bool CalculateVelocity()
-    {
-
-        for (int i = 0; i < list_IdleChild.Count - 1; i++)
-        {
-            for (int j = i + 1; j < list_IdleChild.Count; j++)
-            {
-                // distanceBetweenChild: Initialise a value between 0 and 180 between the two angles
-                float distanceBetweenChild = Mathf.Abs(Mathf.DeltaAngle(list_IdleChild[j].fAngularPosition, list_IdleChild[i].fAngularPosition));
-                // if: The distance between two children is less than the desired space, space them apart
-                if (distanceBetweenChild < s_fIdleDistance)
-                {
-                    // j child moves to the left, i child moves to the right, Mathf.Max() is used to prevent infinity;
-                    list_IdleChild[j].fAngularVelocity += 1.0f - (Mathf.Max(1f, distanceBetweenChild) / s_fIdleDistance) * s_fIdleDistance;
-                    list_IdleChild[i].fAngularVelocity -= (1.0f - (Mathf.Max(1f, distanceBetweenChild) / s_fIdleDistance) * s_fIdleDistance);
-
-                    // Clamp the velocity of the children
-                    if (list_IdleChild[j].fAngularVelocity > 0.0f)
-                        list_IdleChild[j].fAngularVelocity = Mathf.Min(s_fIdleMaximumVelocity, list_IdleChild[j].fAngularVelocity);
-                    else
-                        list_IdleChild[j].fAngularVelocity = Mathf.Max(-s_fIdleMaximumVelocity, list_IdleChild[j].fAngularVelocity);
-
-                    if (list_IdleChild[i].fAngularVelocity > 0.0f)
-                        list_IdleChild[i].fAngularVelocity = Mathf.Min(s_fIdleMaximumVelocity, list_IdleChild[i].fAngularVelocity);
-                    else
-                        list_IdleChild[i].fAngularVelocity = Mathf.Max(-s_fIdleMaximumVelocity, list_IdleChild[i].fAngularVelocity);
-
-                    //Debug.Log("Idle distance between " + i + " and " + j + ": " + distanceBetweenChild);
-                }
-            }
-        }
-        return true;
-    }
-
     // State Execution:
+    // Enter(): When the squad child enters this state
     public override void Enter()
     {
         list_IdleChild.Add(this);
@@ -115,6 +62,7 @@ public class SC_IdleState : ISCState
         fAngularVelocity = UnityEngine.Random.value * s_fIdleMaximumVelocity - (s_fIdleMaximumVelocity / 2f);
     }
 
+    // Execute(): When the squad child is in this state. Runs once every frame on every instance
     public override void Execute()
     {
 
@@ -133,42 +81,52 @@ public class SC_IdleState : ISCState
             fAngularPosition -= 360.0f;
         else if (fAngularPosition < 0.0f)
             fAngularPosition += 360.0f;
-
-        m_scFSM.gizmoo(toTargetVector + m_scFSM.transform.position);
-
-        //// if: the distance to target is smaller than 0.1f -> then sets a new targetPosition
-        //if ((targetPosition - m_scFSM.transform.position).sqrMagnitude < 0.1f)
-        //{
-        //    // Idling Squad cells got too far from the captain
-        //    if ((PlayerSquadFSM.Instance.transform.position - m_scFSM.transform.position).magnitude > 1.0f)
-        //    {
-        //        targetPosition = PlayerSquadFSM.Instance.transform.position - m_scFSM.transform.position;
-        //        // if: The cell is further away from the squad captain in the x-direction than the y-direction
-        //        if (targetPosition.x > targetPosition.y)
-        //            targetPosition = new Vector3(0f, targetPosition.y, 0f);
-        //        else
-        //            targetPosition = new Vector3(targetPosition.x, 0f, 0f);
-        //        targetPosition = m_scFSM.transform.position + targetPosition;
-        //    }
-        //    else
-        //    {
-        //        bool isX = Random.value >= 0.5f;
-        //        if (isX)
-        //            targetPosition = m_scFSM.transform.position + new Vector3(0.5f, 0f, 0f);
-        //        else
-        //            targetPosition = m_scFSM.transform.position + new Vector3(0f, 0.5f, 0f);
-        //    }
-        //}
-        //else
-        //{
-        //    m_scFSM.transform.position = Vector3.Lerp(m_scFSM.transform.position, targetPosition, Time.deltaTime);
-        //}
     }
 
+    // Exit(): When the squad child exits this state
     public override void Exit()
     {
         list_IdleChild.Remove(this);
-        m_scFSM.gizmoo(Vector3.zero);
+    }
+
+    // Public Static Functions:
+    // CalculateVelocity(): Re-calculates all the velocity of all squad children that is in idling state
+    public static bool CalculateVelocity()
+    {
+        // for, for: The for loops will check if i with j and j with i whether they are close to each other. Checks are onmi-directional
+        for (int i = 0; i < list_IdleChild.Count; i++)
+        {
+            for (int j = 0; j < list_IdleChild.Count; j++)
+            {
+                // if: i and j is not the same squad child
+                if (i != j)
+                {
+                    // distanceBetweenChild: Initialise a value between 0 and 180 between the two angles
+                    float distanceBetweenChild = Mathf.DeltaAngle(list_IdleChild[j].fAngularPosition, list_IdleChild[i].fAngularPosition);
+                    // if: The distance between two children is less than the desired space, space them apart
+                    if (distanceBetweenChild < s_fIdleDistance && distanceBetweenChild > 0.0f)
+                    {
+                        // j child moves to the left, i child moves to the right, Mathf.Max() is used to prevent infinity;
+                        list_IdleChild[j].fAngularVelocity -= s_fIdleDistance / Mathf.Max(1f, distanceBetweenChild);
+                        list_IdleChild[i].fAngularVelocity += s_fIdleDistance / Mathf.Max(1f, distanceBetweenChild);
+
+                        // Clamp the velocity of the children
+                        if (list_IdleChild[j].fAngularVelocity > 0.0f)
+                            list_IdleChild[j].fAngularVelocity = Mathf.Min(s_fIdleMaximumVelocity, list_IdleChild[j].fAngularVelocity);
+                        else
+                            list_IdleChild[j].fAngularVelocity = Mathf.Max(-s_fIdleMaximumVelocity, list_IdleChild[j].fAngularVelocity);
+
+                        if (list_IdleChild[i].fAngularVelocity > 0.0f)
+                            list_IdleChild[i].fAngularVelocity = Mathf.Min(s_fIdleMaximumVelocity, list_IdleChild[i].fAngularVelocity);
+                        else
+                            list_IdleChild[i].fAngularVelocity = Mathf.Max(-s_fIdleMaximumVelocity, list_IdleChild[i].fAngularVelocity);
+
+                        //Debug.Log("Idle distance between " + i + " and " + j + ": " + distanceBetweenChild + " = " + list_IdleChild[i].fAngularPosition + " + " + list_IdleChild[j].fAngularPosition);
+                    }
+                }
+            }
+        }
+        return true;
     }
 }
 

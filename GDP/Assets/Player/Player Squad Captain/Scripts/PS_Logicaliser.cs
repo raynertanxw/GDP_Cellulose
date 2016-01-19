@@ -13,13 +13,15 @@ public class PS_Logicaliser : MonoBehaviour
 
 	[Header("Conditions: Production")]
 	[Tooltip("The minimum amount of child to consider producing")]
-	[SerializeField] private int fMinimumChildProducing = 4;
+	[SerializeField] private int nMinimumChildProducing = 4;
 	[Tooltip("The maximum amount of child to be at production")]
-	[SerializeField] private int fMaximumChildProducing = 10;
+	[SerializeField] private int nMaximumChildProducing = 10;
+	[Tooltip("The amount of alive child to determine that its not important to produce anymore")]
+	[SerializeField] private int nOptionalToProduceAt = 40;
 
 	[Header("Conditions: Defensive")]
 	[Tooltip("The maximum amount of aggressive cells at any one point")]
-	[SerializeField] private int fMaximumChildDefence = 10;
+	[SerializeField] private int nMaximumChildDefence = 10;
 
 	// Uneditable Fields
 	private PlayerSquadFSM m_PlayerSquadFSM;    // m_SquadCaptain: The instance of the squad captain
@@ -47,19 +49,19 @@ public class PS_Logicaliser : MonoBehaviour
 
 		// Production State Check
 		// if: The number of alive squad child is less than fMininumChildCount <--------------------------------------------- DEPERATE TIMES
-		if (PlayerSquadFSM.Instance.AliveChildCount() < fMinimumChildProducing)
+		if (PlayerSquadFSM.Instance.AliveChildCount() < nMinimumChildProducing)
 		{
 			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 1f);
 			m_PlayerSquadFSM.Advance(PSState.Produce);
 		}
 		// else if: There is more than enough child cells producing, moves to idle <----------------------------------------- RECOVERY
-		else if (SquadChildFSM.StateCount(SCState.Produce) > fMaximumChildProducing)
+		else if (SquadChildFSM.StateCount(SCState.Produce) > nMaximumChildProducing)
 		{
 			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 0.75f);
 		}
 
 		// if: There is child idling, assign them to defence <-------------------------------------------------------------- ASSIGN JOB
-		if (SquadChildFSM.StateCount(SCState.Idle) > 100)
+		if (SquadChildFSM.StateCount(SCState.Idle) > 0)
 		{
 			// Runs a randomiser to determine whether if the cell will be assign to aggesive or defensive
 			// if: The cells will become aggressive
@@ -73,11 +75,16 @@ public class PS_Logicaliser : MonoBehaviour
 			{
 				// if: This will check if the current condition still have room to move squad childs to defence state,
 				//     and is NOT the maximum number of child cells that can be in defence squad
-				if (SquadChildFSM.StateCount(SCState.Defend) < fMaximumChildDefence)
+				if (SquadChildFSM.StateCount(SCState.Defend) < nMaximumChildDefence)
 				{
 					SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 1f);
 				}
 			}
+		}
+		// if: There is no child cells producing but it is still important to do it <-------------------------------------- ASSIGN JOB
+		if (SquadChildFSM.StateCount(SCState.Produce) == 0 && SquadChildFSM.AliveCount() < nOptionalToProduceAt)
+		{
+			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 0.2f);
 		}
 	}
 }

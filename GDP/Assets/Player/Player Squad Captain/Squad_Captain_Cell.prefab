@@ -72,11 +72,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ba07b66454e910547becc757f3154b50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fAggressiveToDefensive: 0
+  fAggressiveToDefensive: .5
   fThinkCooldown: .5
-  fMinimumChildProducing: 4
-  fMaximumChildProducing: 10
-  fMaximumChildDefence: 10
+  nMinimumChildProducing: 4
+  nMaximumChildProducing: 10
+  nOptionalToProduceAt: 40
+  nMaximumChildDefence: 10
 --- !u!114 &11423594
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -91,11 +92,15 @@ MonoBehaviour:
   nMaximumChildCount: 50
   fMinimumCooldown: 1
   fMaximumCooldown: 5
+  fIdleDistance: 30
+  fIdleRigidity: .200000003
+  fIdleRadius: 1.5
+  fIdleMaximumVelocity: 25
   fStrafingRadius: 1.5
   fStrafingSpeed: .5
   fAttackSpeed: 50
-  fDefenceAngle: 100
-  fDefenceRadius: 5
+  fDefenceAngle: 90
+  fDefenceRadius: 6
   fDefenceSpeed: 50
   fDefenceRigidity: .200000003
   bIsAlive: 0

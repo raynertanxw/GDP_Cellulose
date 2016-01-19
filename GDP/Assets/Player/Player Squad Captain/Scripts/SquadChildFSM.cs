@@ -46,8 +46,8 @@ public class SquadChildFSM : MonoBehaviour
 
     private Vector3 gizmosPosition;
 
-    private static Vector3 parentPosition;                             // parentPosition: The position of the squad captain
-    private static Vector3 playerPosition;                             // playerPosition: The position of the player main
+    private static Vector3 parentPosition;                      // parentPosition: The position of the squad captain
+    private static Vector3 playerPosition;                      // playerPosition: The position of the player main
 
     [HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
     [HideInInspector] public EnemyChildFSM attackTarget;        // attackTarget: The target to attack
@@ -58,16 +58,16 @@ public class SquadChildFSM : MonoBehaviour
     public Collider2D m_Collider;                            // m_Collider: It is public so that states can references it
 
     // Private Functions
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(gizmosPosition, 1f);
-    }
+    //void OnDrawGizmos()
+    //{
+    //    Gizmos.color = Color.magenta;
+    //    Gizmos.DrawWireSphere(gizmosPosition, 1f);
+    //}
 
-    public void gizmoo(Vector3 _position)
-    {
-        gizmosPosition = _position;
-    }
+    //public void gizmoo(Vector3 _position)
+    //{
+    //    gizmosPosition = _position;
+    //}
 
     void OnCollisionEnter2D(Collision2D _collision)
     {
