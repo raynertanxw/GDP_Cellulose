@@ -210,6 +210,7 @@ public class PlayerSquadFSM : MonoBehaviour
         if (SquadChildFSM.AliveCount() == 0)
         {
             Advance(PSState.Dead);
+            MainCamera.CameraShake(5, 0.7f);
             return true;
         }
         else
