@@ -14,6 +14,7 @@ public class EMAnimation : MonoBehaviour
 	}
 
 	private Rigidbody2D thisRB;
+	private Renderer thisRend;
 
 	[SerializeField]
 	private bool bIsExpanding;
@@ -27,6 +28,8 @@ public class EMAnimation : MonoBehaviour
 	private float fTargetSize;
 
 	#region Status
+	private bool bAggressiveAniOn;
+	private bool bCautiousAniOn;
 	private bool bLandmineAniOn;
 	private float fLandmineExpandFactor;
 
@@ -52,13 +55,22 @@ public class EMAnimation : MonoBehaviour
 	public Vector2 CurrentScale { get { return currentScale; } }
 	#endregion
 
+	#region Color
+	private Color defaultColor;
+	private Color aggressieColor;
+	private Color cautiousColor;
+	#endregion
+
 	void Start () 
 	{
 		if (instance == null)
 			instance = this;
 		// GetComponent
 		thisRB = GetComponent<Rigidbody2D> ();
+		thisRend = GetComponent<Renderer> ();
 		// Initialization of status
+		bAggressiveAniOn = false;
+		bCautiousAniOn = false;
 		bLandmineAniOn = false;
 		fLandmineExpandFactor = 3f;
 		bCanRotate = true;
@@ -76,6 +88,10 @@ public class EMAnimation : MonoBehaviour
 		initialScale = gameObject.transform.localScale;
 		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
 		transform.localScale = (Vector3)currentScale;
+		// Initialization of color
+		defaultColor = thisRend.material.color;
+		aggressieColor = new Vector4 (1f, 0.25f, 0.25f, 1f);
+		cautiousColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 	}
 
 	void Update () 
@@ -91,6 +107,8 @@ public class EMAnimation : MonoBehaviour
 		FasterRotationDecline ();
 		// Enemy main cell expands in size when receives nutrient
 		ExpandAnimation ();
+		// Update the color of enemy main cell
+		ColorUpdate ();
 		// Expand animation in Landmine state
 		LandmineAnimation ();
 	}
@@ -227,6 +245,32 @@ public class EMAnimation : MonoBehaviour
 			}
 			
 			transform.localScale = (Vector3)currentScale;
+		}
+	}
+	// Color change in AggresiveAttack and CautiousAttack states
+	private void ColorUpdate ()
+	{
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.AggressiveAttack)
+			bAggressiveAniOn = true;
+		else
+			bAggressiveAniOn = false;
+
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.CautiousAttack)
+			bCautiousAniOn = true;
+		else
+			bCautiousAniOn = false;
+
+		if (bAggressiveAniOn && !bCautiousAniOn)
+		{
+			thisRend.material.color = aggressieColor;
+		}
+		else if (!bAggressiveAniOn && bCautiousAniOn)
+		{
+			thisRend.material.color = cautiousColor;
+		}
+		else if (!bAggressiveAniOn && !bCautiousAniOn)
+		{
+			thisRend.material.color = defaultColor;
 		}
 	}
 	#endregion
