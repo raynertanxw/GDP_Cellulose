@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 [RequireComponent (typeof (EnemyMainFSM))]
@@ -48,6 +48,8 @@ public class EMAnimation : MonoBehaviour
 	private float fAngularDeclineFactor = .01f;
 	[SerializeField]
 	private float fMinAngularVelocity = 20f;
+	[SerializeField]
+	private float fMaxAngularVelocity = 200f;
 	[SerializeField]
 	private bool bIsRotatingLeft;
 	#endregion
@@ -114,7 +116,11 @@ public class EMAnimation : MonoBehaviour
 	{
 		// Update angular velocity of the enemy main cell when rotation is allowed
 		RotationUpdate ();
-		// Angular velocity declines faster as time goes by
+		// Make sure the angular velocity does not exceed its limit
+		RotationLimit ();
+		// Rotate faster in AggresiveAttack and CautiousAttack states
+		FasterRotation ();
+		// Angular velocity declines faster as time goes by in Stun state
 		FasterRotationDecline ();
 		// Enemy main cell expands in size when receives nutrient
 		ExpandAnimation ();
@@ -140,17 +146,17 @@ public class EMAnimation : MonoBehaviour
 	// Update angular velocity of the enemy main cell when rotation is allowed
 	private void RotationUpdate ()
 	{
-		// Angular velocity declines as time goes by
-		if (fAngularVelocity >= 0f && bCanRotate) {
+		// Angular velocity declines as time goes by in Production state
+		if (fAngularVelocity >= 0f && bCanRotate && bProductionAniOn) {
 			if (fAngularVelocity >= fMinAngularVelocity)
 				fAngularVelocity -= fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity));
-		} else if (fAngularVelocity < 0f && bCanRotate) {
+		} else if (fAngularVelocity < 0f && bCanRotate && bProductionAniOn) {
 			if (fAngularVelocity <= -fMinAngularVelocity)
 				fAngularVelocity += fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity));
 		}
 
 		// Make sure the angular velocity is not less than the minimum value
-		if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity && bCanRotate) 
+		if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity && bCanRotate && bProductionAniOn) 
 		{
 			if (!bIsRotatingLeft) {
 				fAngularVelocity = -fAngularIniFactor * Random.Range (.75f, 1.25f);
@@ -164,22 +170,11 @@ public class EMAnimation : MonoBehaviour
 
 		thisRB.angularVelocity = fAngularVelocity;
 	}
-	// Angular velocity declines faster as time goes by
-	private void FasterRotationDecline ()
+	// Make sure the angular velocity does not exceed its limit
+	private void RotationLimit ()
 	{
-		if (!bCanRotate) 
-		{
-			if (fAngularVelocity >= 0f) {
-				if (fAngularVelocity >= fMinAngularVelocity)
-					fAngularVelocity -= fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity) * 5f);
-			} else if (fAngularVelocity < 0f) {
-				if (fAngularVelocity <= -fMinAngularVelocity)
-					fAngularVelocity += fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity) * 5f);
-			}
-			// If the angular velocity is too small, set it to zero
-			if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity / 2f) 
-				fAngularVelocity = 0f;
-		}
+		if (thisRB.angularVelocity > fMaxAngularVelocity)
+			thisRB.angularVelocity = fMaxAngularVelocity;
 	}
 	// Pause rotation for seconds
 	public IEnumerator RotationPause (float time)
@@ -223,12 +218,18 @@ public class EMAnimation : MonoBehaviour
 	{
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Production)
 			bProductionAniOn = true;
+		else 
+			bProductionAniOn = false;
 
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Maintain)
 			bMaintainAniOn = true;
+		else
+			bMaintainAniOn = false;
 
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Defend)
 			bDefendAniOn = true;
+		else
+			bDefendAniOn = false;
 
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.AggressiveAttack)
 			bAggressiveAniOn = true;
@@ -247,6 +248,8 @@ public class EMAnimation : MonoBehaviour
 
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Stunned)
 			bStunAniOn = true;
+		else
+			bStunAniOn = false;
 	}
 
 	// Expand animation in Landmine state
@@ -285,7 +288,7 @@ public class EMAnimation : MonoBehaviour
 			transform.localScale = (Vector3)currentScale;
 		}
 	}
-	// Color change in AggresiveAttack and CautiousAttack states
+	// Color change in AggresiveAttack, CautiousAttack and Landmine states
 	private void ColorUpdate ()
 	{
 		if (bAggressiveAniOn && !bCautiousAniOn && !bLandmineAniOn)
@@ -303,6 +306,56 @@ public class EMAnimation : MonoBehaviour
 		else if (!bAggressiveAniOn && !bCautiousAniOn && !bLandmineAniOn)
 		{
 			thisRend.material.color = defaultColor;
+		}
+	}
+	// Rotate faster in AggresiveAttack and CautiousAttack states
+	private void FasterRotation ()
+	{
+		if (bAggressiveAniOn || bCautiousAniOn) 
+		{
+			// Angular velocity increases as time goes by
+			if (fAngularVelocity >= 0f && bCanRotate) 
+			{
+				if (fAngularVelocity >= fMinAngularVelocity)
+					fAngularVelocity += fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity)) * 
+						Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness));
+			} 
+			else if (fAngularVelocity < 0f && bCanRotate) 
+			{
+				if (fAngularVelocity <= -fMinAngularVelocity)
+					fAngularVelocity -= fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity)) * 
+						Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness));
+			}
+			
+			// Make sure the angular velocity is not less than the minimum value
+			if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity * 3f && bCanRotate) {
+				if (!bIsRotatingLeft) {
+					fAngularVelocity = -fAngularIniFactor * Random.Range (.75f, 1.25f) * 1.5f;
+					bIsRotatingLeft = true;
+				} else {
+					fAngularVelocity = fAngularIniFactor * Random.Range (.75f, 1.25f) * 1.5f;
+					bIsRotatingLeft = false;
+				}
+			}
+			
+			thisRB.angularVelocity = fAngularVelocity;
+		}
+	}
+	// Angular velocity declines faster in Stun state
+	private void FasterRotationDecline ()
+	{
+		if (bCanRotate && bStunAniOn) 
+		{
+			if (fAngularVelocity >= 0f) {
+				if (fAngularVelocity >= fMinAngularVelocity)
+					fAngularVelocity -= fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity) * 5f);
+			} else if (fAngularVelocity < 0f) {
+				if (fAngularVelocity <= -fMinAngularVelocity)
+					fAngularVelocity += fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity) * 5f);
+			}
+			// If the angular velocity is too small, set it to zero
+			if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity / 2f) 
+				fAngularVelocity = 0f;
 		}
 	}
 	#endregion

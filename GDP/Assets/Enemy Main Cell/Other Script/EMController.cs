@@ -205,8 +205,6 @@ public class EMController : MonoBehaviour
         // When already stunned cannot call this function
 		bStunned = true;
 		bCanStun = false;
-		// Pause rotation animation
-		StartCoroutine (EMAnimation.Instance ().RotationPause (fStunTime / EMDifficulty.Instance().CurrentDiff));
         // Wait(being stunned) for seconds
 		yield return new WaitForSeconds (fStunTime / EMDifficulty.Instance().CurrentDiff);
         // Set back the stunned status
