@@ -78,6 +78,8 @@ public class EMHelper : MonoBehaviour
 		WidthUpdate();
 		// Update enemy main position
 		position = transform.position;
+		// Prevent having more than 100 child cells
+		ChildCellsLimit ();
 	}
 
 	#region Functions for pausing commanding child cells
@@ -132,6 +134,12 @@ public class EMHelper : MonoBehaviour
 		// Get the width without considering expand animation
 		if (width != EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (m_EMFSM.Health))))
 			width = EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (m_EMFSM.Health)));
+	}
+	// Prevent having more than 100 child cells
+	void ChildCellsLimit ()
+	{
+		if (m_EMFSM.AvailableChildNum >= 100)
+			m_EMFSM.CanSpawn = false;
 	}
 
 	#region Math

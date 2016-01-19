@@ -110,7 +110,7 @@ public class EnemyMainFSM : MonoBehaviour
 	#endregion
 	// Production status
 	private bool bCanSpawn; 
-	public bool CanSpawn { get { return bCanSpawn; } }
+	public bool CanSpawn { get { return bCanSpawn; } set { bCanSpawn = value; } }
 
 	void Awake ()
 	{
@@ -245,7 +245,8 @@ public class EnemyMainFSM : MonoBehaviour
 					Mathf.Sqrt(Mathf.Sqrt ((float)nAvailableChildNum)) * 1f / EMDifficulty.Instance().CurrentDiff)
 			);
 
-			bCanSpawn = true;
+			if (nAvailableChildNum < 100)
+				bCanSpawn = true;
 		}
 	}
 
