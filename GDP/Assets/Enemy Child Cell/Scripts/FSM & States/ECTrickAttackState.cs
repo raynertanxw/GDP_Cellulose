@@ -145,7 +145,6 @@ public class ECTrickAttackState : IECState {
 		Threats.Add(m_Nodes[1]);
 		Threats.Add(m_SquadCaptain);
 
-		bool bResult = false;
 		for(int i = 0; i < Threats.Count; i++)
 		{
 			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().activeChildCount > 0)

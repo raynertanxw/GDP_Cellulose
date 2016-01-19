@@ -179,7 +179,6 @@ public class ECChargeCState : IECState {
 			}
 
 			float fDistanceBetween = Mathf.Infinity;
-			int nAvaliableEnemyChildCells = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
 			GameObject m_TargetCell = null;
 			float ChildToPotentialTarget = 0f;
 			PCState TargetCurrentState = PCState.Idle;
@@ -350,7 +349,6 @@ public class ECChargeCState : IECState {
 
 		float EnemyChildAmt = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
 		float PlayerChildAmt = Node_Manager.GetNode(Node.LeftNode).activeChildCount + Node_Manager.GetNode(Node.RightNode).activeChildCount;
-		float SquadChildAmt = GameObject.Find("Squad_Captain_Cell").GetComponent<PlayerSquadFSM>().AliveChildCount();
 
 		int Score = 0;
 

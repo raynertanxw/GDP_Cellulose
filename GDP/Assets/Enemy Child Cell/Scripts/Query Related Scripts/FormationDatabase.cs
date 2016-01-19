@@ -166,10 +166,14 @@ public class FormationDatabase
 					}
 					else
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 9].x, FPositionDatabase[FIndex - 9].y + NextLineInterval);
-						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						if(FPositionDatabase.ContainsKey(FIndex - 9))
+						{
+							CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 9].x, FPositionDatabase[FIndex - 9].y + NextLineInterval);
+							StoredFormationPos = CurrentFormationPos;
+							FPositionDatabase[FIndex] = StoredFormationPos;
+							FAvaliabilityDatabase[FIndex] = false;
+						}
+						
 						continue;
 					}
 				}

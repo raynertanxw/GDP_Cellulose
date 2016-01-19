@@ -224,5 +224,11 @@ public class ECIdleState : IECState
 	{
 		return 1.5f + 0.015f * (ECTracker.s_Instance.IdleCells.Count);
 	}
+	
+	public static void ImmediateCohesion()
+	{
+		CurrentIdleState = IdleStatus.Cohesion;
+		fPreviousStatusTime = Time.time;
+	}
 }
 

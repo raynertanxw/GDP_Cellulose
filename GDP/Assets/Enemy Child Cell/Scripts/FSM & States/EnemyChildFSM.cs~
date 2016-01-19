@@ -306,9 +306,9 @@ public class EnemyChildFSM : MonoBehaviour
 
 	public void RotateToHeading()
 	{
-		Vector2 Heading = gameObject.GetComponent<Rigidbody2D>().velocity.normalized;
+		Vector2 Heading = m_Rigidbody2D.velocity.normalized;
 		float Rotation = -Mathf.Atan2(Heading.x, Heading.y) * Mathf.Rad2Deg;
-		gameObject.GetComponent<Rigidbody2D>().MoveRotation(Rotation);
+		m_Rigidbody2D.MoveRotation(Rotation);
 	}
 
 	public void RandomRotation(float _RotateSpeed)
