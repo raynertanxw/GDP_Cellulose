@@ -149,10 +149,10 @@ public class EMAnimation : MonoBehaviour
 		// Angular velocity declines as time goes by in Production state
 		if (fAngularVelocity >= 0f && bCanRotate && bProductionAniOn) {
 			if (fAngularVelocity >= fMinAngularVelocity)
-				fAngularVelocity -= fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity));
+				fAngularVelocity -= fAngularDeclineFactor * Mathf.Abs (fAngularVelocity / 3f);
 		} else if (fAngularVelocity < 0f && bCanRotate && bProductionAniOn) {
 			if (fAngularVelocity <= -fMinAngularVelocity)
-				fAngularVelocity += fAngularDeclineFactor * Mathf.Sqrt (Mathf.Abs (fAngularVelocity));
+				fAngularVelocity += fAngularDeclineFactor * Mathf.Abs (fAngularVelocity / 3f);
 		}
 
 		// Make sure the angular velocity is not less than the minimum value
