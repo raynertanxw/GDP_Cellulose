@@ -13,6 +13,7 @@ public class EnemyChildFSM : MonoBehaviour
 	public GameObject m_ChargeTarget;
 	private static EnemyMainFSM EMFSM;
 	private static EMController EMControl;
+	private Rigidbody2D m_Rigidbody2D;
 
 	//3 variables to store the current state, the enumeration of the current state and the current command for
 	//the child cell
@@ -39,6 +40,7 @@ public class EnemyChildFSM : MonoBehaviour
 		m_EMain = GameObject.Find("Enemy_Cell");
 		EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
 		EMControl = m_EMain.GetComponent<EMController>();
+		m_Rigidbody2D = GetComponent<Rigidbody2D>();
 		NodeLeft = Node_Manager.GetNode(Node.LeftNode);
 		NodeRight = Node_Manager.GetNode(Node.RightNode);
 		
@@ -80,6 +82,8 @@ public class EnemyChildFSM : MonoBehaviour
 		{
 			ReinforceDefence();
 		}
+		
+		//Debug.Log(rigidbody2D.name);
 	}
 
 	void FixedUpdate()
@@ -114,6 +118,11 @@ public class EnemyChildFSM : MonoBehaviour
 	public ECState CurrentStateEnum
 	{
 		get { return m_CurrentEnum; }
+	}
+	
+	public Rigidbody2D rigidbody2D
+	{
+		get{ return m_Rigidbody2D;}
 	}
 
 	//a function to change the enemy child state and make the appropriate changes to the enemy child cell
