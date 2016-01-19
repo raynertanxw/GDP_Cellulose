@@ -44,7 +44,7 @@ public class ECChargeCState : IECState {
 		}
 		else if(m_ecFSM.Target != null)
 		{
-			m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
+			m_ecFSM.rigidbody2D.drag = 2.6f;
 		}
 		
 		ECTracker.s_Instance.ChargeChildCells.Add(m_ecFSM);
@@ -106,7 +106,7 @@ public class ECChargeCState : IECState {
 
 		//Clamp the acceleration of the enemy child cell to a maximum value and then add that acceleration force to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
-		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration);
+		m_ecFSM.rigidbody2D.AddForce(Acceleration);
 		//Rotate the enemy child cell based on the direction of travel
 		m_ecFSM.RotateToHeading();
 	}
@@ -114,8 +114,8 @@ public class ECChargeCState : IECState {
 	public override void Exit()
 	{
 		//Stop the child cell from moving after it charges finish
-		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		m_ecFSM.rigidbody2D.drag = 0f;
+		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 		ECTracker.s_Instance.ChargeChildCells.Remove(m_ecFSM);
 	}
 

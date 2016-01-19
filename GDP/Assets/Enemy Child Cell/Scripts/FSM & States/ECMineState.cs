@@ -107,14 +107,14 @@ public class ECMineState : IECState {
 		{
 			bExploding = true;
 			bExplodeCorountineStart = true;
-			m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(m_Child.GetComponent<Rigidbody2D>().velocity.x * 0.75f,m_Child.GetComponent<Rigidbody2D>().velocity.y);
+			m_ecFSM.rigidbody2D.drag = 0f;
+			m_ecFSM.rigidbody2D.velocity = new Vector2(m_ecFSM.rigidbody2D.velocity.x * 0.75f,m_ecFSM.rigidbody2D.velocity.y);
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());
 		}
 
 		if(IsCellReachingWall())
 		{
-			m_Child.GetComponent<Rigidbody2D>().velocity = new Vector2(0f,m_Child.GetComponent<Rigidbody2D>().velocity.y);;
+			m_ecFSM.rigidbody2D.velocity = new Vector2(0f,m_ecFSM.rigidbody2D.velocity.y);
 		}
 
 		if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),PathToTarget[PathToTarget.Count - 1].Position))
@@ -141,7 +141,7 @@ public class ECMineState : IECState {
 
 		if(!GatherTogether)
 		{
-			m_Child.GetComponent<Rigidbody2D>().drag = 3f;
+			m_ecFSM.rigidbody2D.drag = 3f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,7.5f);
 		}
 		else if(GatherTogether && PathToTarget == null)
@@ -159,7 +159,7 @@ public class ECMineState : IECState {
 
 			if(!HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) )
 			{
-				m_Child.GetComponent<Rigidbody2D>().drag = 3f;
+				m_ecFSM.rigidbody2D.drag = 3f;
 				Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,9f);
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Tight)) * 5f;
 			}
@@ -186,13 +186,13 @@ public class ECMineState : IECState {
 			{
 				if(CurrentSpreadness == Spread.Tight)
 				{
-					m_Child.GetComponent<Rigidbody2D>().drag = 5f;
+					m_ecFSM.rigidbody2D.drag = 5f;
 					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
 					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Tight)) * 7.5f;
 				}
 				else if(CurrentSpreadness == Spread.Wide)
 				{
-					m_Child.GetComponent<Rigidbody2D>().drag = 5f;
+					m_ecFSM.rigidbody2D.drag = 5f;
 					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
 					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
 				}
@@ -205,7 +205,7 @@ public class ECMineState : IECState {
 		}
 
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
-		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 
 		if(!bExploding)
 		{
@@ -221,8 +221,8 @@ public class ECMineState : IECState {
 	{
 		bExplodeCorountineStart = false;
 		m_Child.transform.localScale = Vector3.one;
-		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		m_ecFSM.rigidbody2D.drag = 0f;
+		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 
 		//if the landmine has not exploded and its going to die, it self-destruct instantly
 		if(!bExploded)
@@ -579,7 +579,7 @@ public class ECMineState : IECState {
 	//during explosions
 	private void ExplodeSetup()
 	{
-		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 		bExploding = false;
 		m_Child.transform.localScale = Vector3.one;
 	}

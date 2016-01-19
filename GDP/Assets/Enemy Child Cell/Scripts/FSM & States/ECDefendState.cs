@@ -163,7 +163,7 @@ public class ECDefendState : IECState {
 		else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
 		{
 			fDefendTime += Time.deltaTime;
-			if(fDefendTime >= 10f)
+			if(fDefendTime >= 20f)
 			{
 				bReturnToMain = true;
 			}

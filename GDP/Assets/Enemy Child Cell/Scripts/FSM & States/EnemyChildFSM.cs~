@@ -297,8 +297,8 @@ public class EnemyChildFSM : MonoBehaviour
 
 	public IEnumerator PassThroughDeath(float _Time)
 	{
-		GetComponent<Rigidbody2D>().drag = 0f;
-		GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x * 0.75f,GetComponent<Rigidbody2D>().velocity.y);
+		rigidbody2D.drag = 0f;
+		rigidbody2D.velocity = new Vector2(rigidbody2D.velocity.x * 0.75f,rigidbody2D.velocity.y);
 
 		yield return new WaitForSeconds(_Time);
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,this.gameObject,MessageType.Dead,0);

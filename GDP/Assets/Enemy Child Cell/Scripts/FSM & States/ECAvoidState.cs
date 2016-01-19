@@ -37,7 +37,7 @@ public class ECAvoidState : IECState {
 	public override void Enter()
 	{
 		fAvoidTimer = 0f;
-		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
+		m_ecFSM.rigidbody2D.drag = 2.6f;
 		ECTracker.s_Instance.AvoidCells.Add(m_ecFSM);
 	}
 	
@@ -76,7 +76,7 @@ public class ECAvoidState : IECState {
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		
 		//Add the calculate force to the enemy child cell to move it
-		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 		
 		//If the enemy child cell is avoiding, rotate the cell to whichever direction it travel. Else, just randomly rotate clockwise and anti-clockwise
 		if(Acceleration.magnitude > m_Main.GetComponent<Rigidbody2D>().velocity.magnitude)
@@ -91,7 +91,7 @@ public class ECAvoidState : IECState {
 
     public override void Exit()
     {
-		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
+		m_ecFSM.rigidbody2D.drag = 0f;
 		ECTracker.s_Instance.AvoidCells.Remove(m_ecFSM);
     }
 

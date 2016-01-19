@@ -5,10 +5,10 @@ using System.Collections.Generic;
 public class ECAvoidState : IECState {
 
 	//A float to limit the amount of acceleration the child cell can take when avoiding
-	private float fMaxAcceleration;
+	private static float fMaxAcceleration;
 	
 	//A float to dictate how far the enemy child cell can dected any player-related cells that are attacking
-	private float fDetectRange;
+	private static float fDetectRange;
 	
 	//Two floats to dictate how long the enemy child cell had waited to avoid any player cells and once over the limit, return the cell back to idle state
 	private float fAvoidTimer;
@@ -37,7 +37,7 @@ public class ECAvoidState : IECState {
 	public override void Enter()
 	{
 		fAvoidTimer = 0f;
-		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
+		m_ecFSM.rigidbody2D.drag = 2.6f;
 		ECTracker.s_Instance.AvoidCells.Add(m_ecFSM);
 	}
 	
@@ -76,7 +76,7 @@ public class ECAvoidState : IECState {
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		
 		//Add the calculate force to the enemy child cell to move it
-		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 		
 		//If the enemy child cell is avoiding, rotate the cell to whichever direction it travel. Else, just randomly rotate clockwise and anti-clockwise
 		if(Acceleration.magnitude > m_Main.GetComponent<Rigidbody2D>().velocity.magnitude)
@@ -91,7 +91,7 @@ public class ECAvoidState : IECState {
 
     public override void Exit()
     {
-		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
+		m_ecFSM.rigidbody2D.drag = 0f;
 		ECTracker.s_Instance.AvoidCells.Remove(m_ecFSM);
     }
 

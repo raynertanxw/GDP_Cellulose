@@ -72,7 +72,7 @@ public class ECTrickAttackState : IECState {
 		CurrentTargetPoint = PathToTarget[0];
 		bTeleported = false;
 
-		m_Child.GetComponent<Rigidbody2D>().drag = 6f;
+		m_ecFSM.rigidbody2D.drag = 6f;
 		ECTracker.s_Instance.TrickAttackCells.Add(m_ecFSM);
 	}
 
@@ -123,7 +123,7 @@ public class ECTrickAttackState : IECState {
 
 		//Clamp the acceleration of the enemy child cell to a maximum value and then add that acceleration force to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
-		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 
 		//Rotate the enemy child cell based on the direction of travel
 		m_ecFSM.RotateToHeading();
@@ -132,8 +132,8 @@ public class ECTrickAttackState : IECState {
 	public override void Exit()
 	{
 		//Reset the force acting on the enemy child cell
-		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		m_ecFSM.rigidbody2D.drag = 0f;
+		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 		ECTracker.s_Instance.TrickAttackCells.Remove(m_ecFSM);
 	}
 
@@ -278,7 +278,7 @@ public class ECTrickAttackState : IECState {
 		//disable the enemy child cell
 		m_Child.GetComponent<SpriteRenderer>().enabled = false;
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
-		m_Child.GetComponent<Rigidbody2D>().isKinematic = true;
+		m_ecFSM.rigidbody2D.isKinematic = true;
 
 		//wait for 1 second
 		yield return new WaitForSeconds(2.5f);
@@ -286,7 +286,7 @@ public class ECTrickAttackState : IECState {
 		//reenable the enemy child cell
 		m_Child.GetComponent<SpriteRenderer>().enabled = true;
 		m_Child.GetComponent<BoxCollider2D>().enabled = true;
-		m_Child.GetComponent<Rigidbody2D>().isKinematic = false;
+		m_ecFSM.rigidbody2D.isKinematic = false;
 
 		//and, change the position of the enemy child cell to the end of teleport position
 		m_Child.transform.position = m_EndTelePos;

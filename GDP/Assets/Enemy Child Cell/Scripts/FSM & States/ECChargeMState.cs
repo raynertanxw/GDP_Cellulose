@@ -44,8 +44,8 @@ public class ECChargeMState : IECState {
 	public override void Enter()
 	{
 		//Reset the velocity of enemy child cell
-		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-		m_Child.GetComponent<Rigidbody2D>().drag = 2.6f;
+		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
+		m_ecFSM.rigidbody2D.drag = 2.6f;
 		bReachPosition = false;
 		ECTracker.s_Instance.ChargeMainCells.Add(m_ecFSM);
 	}
@@ -81,7 +81,7 @@ public class ECChargeMState : IECState {
 
 		if(!bGatherTogether && PathToTarget == null)
 		{
-			m_Child.GetComponent<Rigidbody2D>().drag = 3f;
+			m_ecFSM.rigidbody2D.drag = 3f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,7.5f);
 		}
 		else if(bGatherTogether && PathToTarget == null)
@@ -114,7 +114,7 @@ public class ECChargeMState : IECState {
 	
 		//Clamp the acceleration of the enemy child cell and add that acceleration to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
-		m_ecFSM.GetComponent<Rigidbody2D>().AddForce(Acceleration,ForceMode2D.Force);
+		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 		
 		//Rotate the enemy child to the direction of the velocity
 		m_ecFSM.RotateToHeading();
@@ -123,8 +123,8 @@ public class ECChargeMState : IECState {
 	public override void Exit()
 	{
 		//Reset the velocity and the force acting on the enemy child cell
-		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
-		m_Child.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+		m_ecFSM.rigidbody2D.drag = 0f;
+		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 
 		if(GetEnemyChargingCells().Count <= 1)
 		{

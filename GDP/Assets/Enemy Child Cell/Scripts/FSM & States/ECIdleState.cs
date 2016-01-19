@@ -68,7 +68,7 @@ public class ECIdleState : IECState
 		Collisions = new Collider2D[EMFSM.ECList.Count];
 		Neighbours = new List<GameObject>();
 		
-		m_Child.GetComponent<Rigidbody2D>().drag = 0f;
+		m_ecFSM.rigidbody2D.drag = 0f;
 		IdleCount = 0;
 	}
 
