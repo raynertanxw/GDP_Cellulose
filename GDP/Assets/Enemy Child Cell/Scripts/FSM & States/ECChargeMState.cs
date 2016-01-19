@@ -214,5 +214,27 @@ public class ECChargeMState : IECState {
 		}
 		return ECChargers;
 	}
+	
+	
+	/*private IEnumerator SqueezeBeforeCharge(Vector2 _TargetPos)
+	{
+		//Rotate the cell to face the target that it is charging towards
+		Vector2 Heading = (m_Child.transform.position - _TargetPos).normalized;
+		float Rotation = -Mathf.Atan2(Heading.x, Heading.y) * Mathf.Rad2Deg;
+		m_ecFSM.rigidbody2D.MoveRotation(Rotation);
+		
+		//The child cell will retreat slightly back before charging 
+		m_ecFSM.rigidbody2D.velocity.x = new Vector2(Random.Range(-0.1f,0.1f),0.1f);
+		
+		Vector3 ShrinkScale = new Vector3(0f,-0.075f,0f);
+		
+		while(m_Child.transform.localScale.y > 0.5f)
+		{
+			m_Child.transform.localScale += ShrinkScale;
+			yield return new WaitForSeconds(0.0005f);//0.0005
+		}
+		
+		
+	}*/
 }
 

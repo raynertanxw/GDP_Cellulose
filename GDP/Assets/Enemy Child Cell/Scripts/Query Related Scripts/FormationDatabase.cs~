@@ -52,10 +52,13 @@ public class FormationDatabase
 
 		for(int i = 0; i < _EnemyChild.Count; i++)
 		{
-			FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);
-			FPositionDatabase.Add(FormationIndex,Vector2.zero);
-			FAvaliabilityDatabase.Add(FormationIndex,true);
-			FormationIndex++;
+			if(!FIndexDatabase.ContainsKey(_EnemyChild[i].name))
+			{
+				FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);
+				FPositionDatabase.Add(FormationIndex,Vector2.zero);
+				FAvaliabilityDatabase.Add(FormationIndex,true);
+				FormationIndex++;
+			}
 		}
     }
 
