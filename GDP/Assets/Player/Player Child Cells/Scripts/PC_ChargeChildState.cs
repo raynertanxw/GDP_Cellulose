@@ -138,20 +138,22 @@ public class PC_ChargeChildState : IPCState
 
 
     #region Movement and Physics
-    private static float s_fAvoidRadius = 2.0f;
+    private static float s_fAvoidRadius = 1.0f;
     private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
 	private static float s_fSeparationRadius = 0.5f;
 	private static float s_fSqrSeparationRadius = Mathf.Pow(s_fSeparationRadius, 2);
-    private static float s_fMaxAcceleration = 2000f;
+    private static float s_fMaxAcceleration = 200000f;
+	private static float s_fMaxVelocity = 3.5f;
     // Weights
-    private static float s_fTargetPullWeight = 50;
-    private static float s_fAvoidanceWeight = 2000;
-	private static float s_fSeparationWeight = 2000;
+    private static float s_fTargetPullWeight = 100;
+    private static float s_fAvoidanceWeight = 2500;
+	private static float s_fSeparationWeight = 1000;
 
     // Getters for the various values.
     public static float sqrAvoidRadius { get { return s_fSqrAvoidRadius; } }
 	public static float sqrSeparationRadius { get { return s_fSqrSeparationRadius; } }
     public static float maxAcceleration { get { return s_fMaxAcceleration; } }
+	public static float maxVelocity { get { return s_fMaxVelocity; } }
     public static float targetPullWeight { get { return s_fTargetPullWeight; } }
     public static float avoidanceWeight { get { return s_fAvoidanceWeight; } }
 	public static float separationWeight { get { return s_fSeparationWeight; } }
@@ -165,7 +167,7 @@ public class PC_ChargeChildState : IPCState
         acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
 
         m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
-
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, maxVelocity);
         FaceTowardsHeading();
     }
 
@@ -260,7 +262,7 @@ public class PC_ChargeChildState : IPCState
 
 
     #region Helper functions
-    private static float s_fDetectionRange = 2.0f;
+    private static float s_fDetectionRange = 1.0f;
 
     private bool IsTargetAlive()
 	{
@@ -288,12 +290,13 @@ public class PC_ChargeChildState : IPCState
 	private void FindFarTarget()
 	{
 		int nClosestEnemyCell = 0;
-		float fSqrDistance = 10000f; // Arbitrarily high number.
+		float fshortestYDist = 10000f; // Arbitrarily high number.
 		// Get Random Target from List.
 		for (int i = 0; i < EnemyMainFSM.Instance().ECList.Count; i++)
 		{
-			if ((m_pcFSM.transform.position - EnemyMainFSM.Instance().ECList[i].transform.position).sqrMagnitude < fSqrDistance)
+			if (EnemyMainFSM.Instance().ECList[i].transform.position.y < fshortestYDist)
 			{
+				fshortestYDist = EnemyMainFSM.Instance().ECList[i].transform.position.y;
 				nClosestEnemyCell = i;
 			}
 		}
