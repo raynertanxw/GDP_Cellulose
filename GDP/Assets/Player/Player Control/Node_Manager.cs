@@ -129,19 +129,6 @@ public class Node_Manager : MonoBehaviour
 	}
 
 	#region Getter and Setters
-	public List<PlayerChildFSM> DEPRECIATED_GetNodeChildList()
-	{
-		List<PlayerChildFSM> nodeChildList = new List<PlayerChildFSM>();
-		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
-		{
-			if (PlayerChildFSM.s_playerChildStatus[i] == nodePCStatus)
-			{
-				nodeChildList.Add(PlayerChildFSM.playerChildPool[i]);
-			}
-		}
-
-		return nodeChildList;
-	}
 	public int activeChildCount { get { return nChildrenInNode; } }
 	public pcStatus nodePCStatus { get { return m_NodePCStatusEnum; } }
 
