@@ -403,6 +403,7 @@ public class EMController : MonoBehaviour
 	}
 	#endregion
     
+	// Spawn a few child cells when the game starts
 	void StartWithChildCells ()
 	{
 		for (int i = 0; i < fNumOfDefaultCells; i++) {

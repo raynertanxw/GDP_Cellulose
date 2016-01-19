@@ -75,7 +75,7 @@ public class EMHelper : MonoBehaviour
 		// Make sure the enemy main cell do not go outside the screen
 		PositionLimit ();
 		// Update width of enemy main cell
-		widthUpdate();
+		WidthUpdate();
 		// Update enemy main position
 		position = transform.position;
 	}
@@ -115,15 +115,23 @@ public class EMHelper : MonoBehaviour
     // Make sure the enemy main cell do not go outside the screen
     void PositionLimit ()
 	{
-		if (transform.position.x <= EMHelper.leftLimit + width / 2 || transform.position.x >= EMHelper.rightLimit - width / 2)
+		if (transform.position.x <= EMHelper.leftLimit + width || transform.position.x >= EMHelper.rightLimit - width)
+		{
+			// Make sure the enemy main cell is cannot go out of the camera
+			if (transform.position.x < EMHelper.leftLimit + width)
+				transform.position = new Vector2(EMHelper.leftLimit + width, transform.position.y);
+			else if (transform.position.x > EMHelper.rightLimit - width)
+				transform.position = new Vector2(EMHelper.rightLimit - width, transform.position.y);
+
 			EMController.Instance ().ChangeDirection ();
+		}
 	}
     // Update width of enemy main cell
-	void widthUpdate ()
+	void WidthUpdate ()
 	{
 		// Get the width without considering expand animation
-		if (width != EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance().Health))))
-			width = EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance().Health)));
+		if (width != EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (m_EMFSM.Health))))
+			width = EMAnimation.Instance().InitialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (m_EMFSM.Health)));
 	}
 
 	#region Math
