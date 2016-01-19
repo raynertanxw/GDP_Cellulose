@@ -59,6 +59,7 @@ public class EMAnimation : MonoBehaviour
 	private Color defaultColor;
 	private Color aggressieColor;
 	private Color cautiousColor;
+	private Color landmineColor;
 	#endregion
 
 	void Start () 
@@ -92,6 +93,7 @@ public class EMAnimation : MonoBehaviour
 		defaultColor = thisRend.material.color;
 		aggressieColor = new Vector4 (1f, 0.25f, 0.25f, 1f);
 		cautiousColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
+		landmineColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 	}
 
 	void Update () 
@@ -109,6 +111,8 @@ public class EMAnimation : MonoBehaviour
 		ExpandAnimation ();
 		// Update the color of enemy main cell
 		ColorUpdate ();
+		// Update current state
+		CurrentStateUpdate ();
 		// Expand animation in Landmine state
 		LandmineAnimation ();
 	}
@@ -205,15 +209,28 @@ public class EMAnimation : MonoBehaviour
 	}
 
 	#region State Animations
-	// Expand animation in Landmine state
-	private void LandmineAnimation ()
+	// Update current state
+	private void CurrentStateUpdate ()
 	{
-		// Landmine status update 
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.AggressiveAttack)
+			bAggressiveAniOn = true;
+		else
+			bAggressiveAniOn = false;
+		
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.CautiousAttack)
+			bCautiousAniOn = true;
+		else
+			bCautiousAniOn = false;
+
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Landmine)
 			bLandmineAniOn = true;
 		else 
 			bLandmineAniOn = false;
+	}
 
+	// Expand animation in Landmine state
+	private void LandmineAnimation ()
+	{
 		if (bLandmineAniOn) 
 		{
 			if (bIsExpanding) 
@@ -250,25 +267,19 @@ public class EMAnimation : MonoBehaviour
 	// Color change in AggresiveAttack and CautiousAttack states
 	private void ColorUpdate ()
 	{
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.AggressiveAttack)
-			bAggressiveAniOn = true;
-		else
-			bAggressiveAniOn = false;
-
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.CautiousAttack)
-			bCautiousAniOn = true;
-		else
-			bCautiousAniOn = false;
-
-		if (bAggressiveAniOn && !bCautiousAniOn)
+		if (bAggressiveAniOn && !bCautiousAniOn && !bLandmineAniOn)
 		{
 			thisRend.material.color = aggressieColor;
 		}
-		else if (!bAggressiveAniOn && bCautiousAniOn)
+		else if (!bAggressiveAniOn && bCautiousAniOn && !bLandmineAniOn)
 		{
 			thisRend.material.color = cautiousColor;
 		}
-		else if (!bAggressiveAniOn && !bCautiousAniOn)
+		else if (!bAggressiveAniOn && !bCautiousAniOn && bLandmineAniOn)
+		{
+			thisRend.material.color = landmineColor;
+		}
+		else if (!bAggressiveAniOn && !bCautiousAniOn && !bLandmineAniOn)
 		{
 			thisRend.material.color = defaultColor;
 		}
