@@ -28,6 +28,8 @@ public class PC_DeadState : IPCState
 			{
 				PlayerChildFSM.s_playerChildStatus[m_pcFSM.poolIndex] = pcStatus.DeadState;
 			}
+
+			player_control.Instance.UpdateUI_nodeChildCountText();
 		}
 
 		// Update active Child Count.

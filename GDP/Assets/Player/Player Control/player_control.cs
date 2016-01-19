@@ -5,13 +5,17 @@ using System.Collections.Generic;
 
 public class player_control : MonoBehaviour
 {
-	public static int s_nResources;
+	private static player_control s_Instance;
+	public static player_control Instance { get { return s_Instance; } }
+
+	public int s_nResources;
 	private Transform m_SquadCaptainNode;
 	
 	private Node m_nActiveNode = Node.RightNode;
 
 	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp;
 	private RectTransform[] btnRectTransform;
+	private Text leftNodeChildText, rightNodeChildText, nutrientText;
 	private Vector3 mainCellPos;
 	private Vector3[] btnPos;
 	private const float s_UIFadeOutDelay = 1.5f;
@@ -21,6 +25,11 @@ public class player_control : MonoBehaviour
 	
 	void Awake()
 	{
+		if (Instance == null)
+			s_Instance = this;
+		else
+			Destroy(this.gameObject);
+
 		s_nResources = Settings.s_nPlayerInitialResourceCount;
 
 		m_SquadCaptainNode = GameObject.Find("Node_Captain").transform;
@@ -35,6 +44,9 @@ public class player_control : MonoBehaviour
 		btnPos = new Vector3[3];
 		for (int i = 0; i < btnRectTransform.Length; i++)
 			btnPos[i] = btnRectTransform[i].localPosition;
+		nutrientText = transform.GetChild(7).GetChild(1).GetComponent<Text>();
+		leftNodeChildText = transform.GetChild(7).GetChild(0).GetChild(0).GetComponent<Text>();
+		rightNodeChildText = transform.GetChild(7).GetChild(0).GetChild(1).GetComponent<Text>();
 
 		// Hide both left and right node.
 		leftNodeCanvasGrp.alpha = 0f;
@@ -44,6 +56,26 @@ public class player_control : MonoBehaviour
 		SetRightNodeControlVisibility(false);
 		SetSpawnCtrlVisibility(false);
 	}
+
+	void Start()
+	{
+		// Update UI
+		UpdateUI_nutrients();
+		UpdateUI_nodeChildCountText();
+	}
+
+	#region UI HUD update functions
+	public void UpdateUI_nutrients()
+	{
+		nutrientText.text = s_nResources.ToString();
+	}
+
+	public void UpdateUI_nodeChildCountText()
+	{
+		leftNodeChildText.text = Node_Manager.GetNode(Node.LeftNode).activeChildCount.ToString();
+		rightNodeChildText.text = Node_Manager.GetNode(Node.RightNode).activeChildCount.ToString();
+	}
+	#endregion
 
 	#region Bringing up and hiding control sets
 	public void ChangeActiveNode(Node nNewNode)
@@ -223,6 +255,7 @@ public class player_control : MonoBehaviour
             currentChild.m_assignedNode.AddChildToNode(currentChild.poolIndex);
 
 			s_nResources -= Settings.s_nPlayerChildSpawnCost;
+			UpdateUI_nutrients();
 		}
 		else
 		{
@@ -230,6 +263,7 @@ public class player_control : MonoBehaviour
 		}
 
 		RestartSpawnCtrlFadeOut();
+		UpdateUI_nodeChildCountText();
 	}
 
 	public void ActionDefendAvoid(int _nodeIndex)
@@ -274,6 +308,7 @@ public class player_control : MonoBehaviour
 		}
 
 		RestartFadeOut(_selectedNode);
+		UpdateUI_nodeChildCountText();
 	}
 
 	public void ActionSwarmTarget(int _nodeIndex)
@@ -307,6 +342,7 @@ public class player_control : MonoBehaviour
         }
 
 		RestartFadeOut(_selectedNode);
+		UpdateUI_nodeChildCountText();
 	}
 
 	public void ActionScatterShot(int _nodeIndex)
@@ -340,6 +376,7 @@ public class player_control : MonoBehaviour
 		}
 
 		RestartFadeOut(_selectedNode);
+		UpdateUI_nodeChildCountText();
 	}
 
 	public void ActionSpawnCaptain()
@@ -445,6 +482,7 @@ public class player_control : MonoBehaviour
 		}
 
 		RestartSpawnCtrlFadeOut();
+		UpdateUI_nodeChildCountText();
 	}
 	#endregion
 

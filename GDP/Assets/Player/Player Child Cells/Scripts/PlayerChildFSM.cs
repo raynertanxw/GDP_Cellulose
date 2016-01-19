@@ -177,6 +177,7 @@ public class PlayerChildFSM : MonoBehaviour
 		{
 			// Damage Enemy.
 			EMController.Instance().CauseDamageOne();
+			MainCamera.CameraShake();
 
 			KillPlayerChildCell();
 		}
