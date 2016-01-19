@@ -1,0 +1,155 @@
+fileFormatVersion: 2
+guid: 2d941aaa6ede54605b38281cf934b6f5
+timeCreated: 1453185838
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: DeadParticles_0
+    21300002: DeadParticles_1
+    21300004: DeadParticles_2
+    21300006: DeadParticles_3
+    21300008: DeadParticles_4
+    21300010: DeadParticles_5
+    21300012: DeadParticles_6
+    21300014: DeadParticles_7
+    21300016: DeadParticles_8
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: .25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 8
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -3
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: .5, y: .5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: DeadParticles_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 683.333374
+        width: 341.666656
+        height: 341.666626
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_1
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 683.333374
+        width: 341.666626
+        height: 341.666626
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_2
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 683.333374
+        width: 341.666626
+        height: 341.666626
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 342.333344
+        width: 341.666656
+        height: 341.666656
+      alignment: 0
+      pivot: {x: .5, y: .50000006}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_4
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 342.333344
+        width: 341.666626
+        height: 341.666656
+      alignment: 0
+      pivot: {x: .5, y: .50000006}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_5
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 342.333344
+        width: 341.666626
+        height: 341.666656
+      alignment: 0
+      pivot: {x: .5, y: .50000006}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 1.33334351
+        width: 341.666656
+        height: 341.666656
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_7
+      rect:
+        serializedVersion: 2
+        x: 341
+        y: 1.33334351
+        width: 341.666626
+        height: 341.666656
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: DeadParticles_8
+      rect:
+        serializedVersion: 2
+        x: 682
+        y: 1
+        width: 342
+        height: 342
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

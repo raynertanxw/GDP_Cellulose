@@ -28,6 +28,8 @@ public class Wall : MonoBehaviour
 	[SerializeField] private float fMinimumArtilleryRGB = 0.3f;
 	[Tooltip("The maximum RGB value for the artillery color")]
 	[SerializeField] private float fMaximumArtilleryRGB = 0.8f;
+	
+
 
 	// Uneditable Fields
 	private static Wall s_Instance = null;
@@ -35,6 +37,7 @@ public class Wall : MonoBehaviour
 	private float fUpperLimit;
 	private float fLowerLimit;
 	private Color colorArtillery = Color.black;
+	private ParticleSystem bgParticleSystem;
 
 	// Private Functions
 	// Awake(): is called at the start of the program
@@ -56,6 +59,15 @@ public class Wall : MonoBehaviour
 			resultColor = colorArtillery.r + colorArtillery.g + colorArtillery.b;
 
 		} while (resultColor < 3f * fMinimumArtilleryRGB || resultColor > 3f * fMaximumArtilleryRGB);
+
+		// Background particle system set-up 
+		bgParticleSystem = transform.GetChild(2).GetComponent<ParticleSystem>();
+		// Use the same color as the wall-sides and background
+		bgParticleSystem.startColor = colorArtillery;
+		// Since prewarm of particle systems doesn't adapt to the new color, the particle system will be simulated beforehand
+		bgParticleSystem.Clear();
+		bgParticleSystem.Simulate(bgParticleSystem.startLifetime);
+		bgParticleSystem.Play();
 	}
 
 	// Start(): Use this for initialization
