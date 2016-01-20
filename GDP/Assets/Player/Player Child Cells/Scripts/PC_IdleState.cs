@@ -8,8 +8,16 @@ public class PC_IdleState : IPCState
 
 	public override void Enter()
 	{
-        if (m_pcFSM.m_assignedNode != null)
+		if (m_pcFSM.m_bSacrificeToSquadCpt == true)
+		{
+			m_nodeOrigin = (Vector2) PlayerMain.s_Instance.transform.position;
+			s_fMaxVelocity = 5f;
+			s_fMaxAcceleration = 1000f;
+		}
+        else if (m_pcFSM.m_assignedNode != null)
+		{
 		    m_nodeOrigin = m_pcFSM.m_assignedNode.transform.position;
+		}
 
         // Give a random velocity.
         m_pcFSM.rigidbody2D.velocity = (Random.insideUnitCircle * 0.25f);
@@ -17,6 +25,14 @@ public class PC_IdleState : IPCState
 	
 	public override void Execute()
 	{
+		if (m_pcFSM.m_bSacrificeToSquadCpt == true)
+		{
+			if (Vector3.Distance(m_pcFSM.transform.position, PlayerMain.s_Instance.transform.position) < 0.5f)
+				m_pcFSM.KillPlayerChildCell();
+
+			return;
+		}
+
 		if (DetectedEnemyInRange() == true)
 		{
 			if (m_pcFSM.m_bIsDefending == true)
@@ -40,7 +56,8 @@ public class PC_IdleState : IPCState
 	
 	public override void Exit()
 	{
-		
+		s_fMaxVelocity = 2f;
+		s_fMaxAcceleration = 250f;
 	}
 
     public override void FixedExecute()

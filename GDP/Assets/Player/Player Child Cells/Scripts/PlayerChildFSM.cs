@@ -43,9 +43,9 @@ public class PlayerChildFSM : MonoBehaviour
 	private PCState m_currentEnumState;
 	private IPCState m_currentState;
 	private Dictionary<PCState, IPCState> m_statesDictionary;
-	[SerializeField]
 	public bool m_bIsDefending = true;
 	public bool m_bHasAwaitingDeferredStateChange = false;
+	public bool m_bSacrificeToSquadCpt = false;
 	public PlayerChildFSM[] m_formationCells;
     public PlayerAttackMode attackMode;
 	private PCState m_deferredState;
@@ -102,11 +102,17 @@ public class PlayerChildFSM : MonoBehaviour
 		m_bHasAwaitingDeferredStateChange = false;
 	}
 
+	public void SacrificeToSquadCpt()
+	{
+		m_bSacrificeToSquadCpt = true;
+		ChangeState(PCState.Idle);
+	}
 
 	// For Enemy to call
 	public void KillPlayerChildCell()
 	{
 		DeferredChangeState(PCState.Dead);
+		m_bSacrificeToSquadCpt = false;
 	}
 
 	void Awake()
@@ -164,6 +170,10 @@ public class PlayerChildFSM : MonoBehaviour
 
 	void OnCollisionEnter2D(Collision2D col)
 	{
+		// Ignore collisions if is being scrificed for squad captain.
+		if (m_bSacrificeToSquadCpt == true)
+			return;
+
 		// Hit Enemy Child
 		if (col.gameObject.tag == Constants.s_strEnemyChildTag)
 		{

@@ -404,7 +404,8 @@ public class player_control : MonoBehaviour
 					// Kill them.
 					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
 					{
-						PlayerChildFSM.playerChildPool[i].KillPlayerChildCell();
+						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
+						rightNode.SendChildToAttack(i);
 						childrenLeftToConsume--;
 
 						if (childrenLeftToConsume <= Settings.s_nPlayerSqaudCaptainChildCost / 2)
@@ -422,7 +423,8 @@ public class player_control : MonoBehaviour
 					// Kill them.
 					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
 					{
-						PlayerChildFSM.playerChildPool[i].KillPlayerChildCell();
+						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
+						leftNode.SendChildToAttack(i);
 						childrenLeftToConsume--;
 						
 						if (childrenLeftToConsume == 0)
@@ -444,7 +446,8 @@ public class player_control : MonoBehaviour
 					// Kill them.
 					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
 					{
-						PlayerChildFSM.playerChildPool[i].KillPlayerChildCell();
+						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
+						leftNode.SendChildToAttack(i);
 						childrenLeftToConsume--;
 						
 						if (childrenLeftToConsume <= Settings.s_nPlayerSqaudCaptainChildCost / 2)
@@ -462,7 +465,8 @@ public class player_control : MonoBehaviour
 					// Kill them.
 					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
 					{
-						PlayerChildFSM.playerChildPool[i].KillPlayerChildCell();
+						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
+						rightNode.SendChildToAttack(i);
 						childrenLeftToConsume--;
 						
 						if (childrenLeftToConsume == 0)
