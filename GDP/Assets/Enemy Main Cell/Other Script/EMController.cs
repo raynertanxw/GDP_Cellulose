@@ -36,6 +36,7 @@ public class EMController : MonoBehaviour
 	// Velocity
 	private Vector2 velocity;
 	// Horizontal movement
+	[SerializeField]
 	private bool bMovingLeft;
 	public bool MovingLeft { get { return bMovingLeft; } }
 	private bool bCanChangeHori;
@@ -237,8 +238,11 @@ public class EMController : MonoBehaviour
 	// Make sure the horizntal velocity is not lower than its minimum value
 	void HorizontalVelocityCheck ()
 	{
-		if (thisRB.velocity.x < fMinHoriSpeed)
-			thisRB.velocity = new Vector2 (fMinHoriSpeed, thisRB.velocity.y);
+		if (Mathf.Abs (thisRB.velocity.x) < fMinHoriSpeed)
+			if (thisRB.velocity.x > 0)
+				thisRB.velocity = new Vector2 (fMinHoriSpeed, thisRB.velocity.y);
+		else if (thisRB.velocity.x < 0)
+			thisRB.velocity = new Vector2 (-fMinHoriSpeed, thisRB.velocity.y);
 	}
 
 	// Move the enemy main cell left or right
@@ -265,13 +269,13 @@ public class EMController : MonoBehaviour
 				bMovingLeft = false;
 			
 			// Change speed based on num of nutrient on one side of the enemy main cell and number of available child cells
-			float fSpeed = Random.Range (.05f, ((float)nDirCount + Mathf.Sqrt (Mathf.Sqrt (m_EMFSM.AvailableChildNum))) / 20f);
-			fHoriSpeed = fSpeed;
+			float speed = Random.Range (.05f, ((float)nDirCount + Mathf.Sqrt (Mathf.Sqrt (m_EMFSM.AvailableChildNum))) / 20f);
+			fHoriSpeed = speed;
 			
 			// Frequency of checking for changing of direction in terms of health of enemy main cell
-			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)) * 1.5f, Mathf.Sqrt ((float)m_EMFSM.Health) * 1.5f);
+			float time = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)) * 1.5f, Mathf.Sqrt ((float)m_EMFSM.Health) * 1.5f);
 			
-			yield return new WaitForSeconds (fTime);
+			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
 		} 
 		else if (m_EMFSM.CurrentStateIndex == EMState.Defend) 
@@ -279,18 +283,18 @@ public class EMController : MonoBehaviour
 			bCanChangeHori = false;
 			
 			// Change speed based on the number of child cells of the enemy main cell
-			float fSpeed = Random.Range (.1f, .5f / Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum) + 1f));
-			fHoriSpeed = fSpeed;
+			float speed = Random.Range (.1f, .5f / Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum) + 1f));
+			fHoriSpeed = speed;
 			
 			// Frequency of checking for changing of direction in terms of the number of child cells of the enemy main cell
-			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 1f)) * 1.5f, 
+			float time = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 1f)) * 1.5f, 
 			                            Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum * 2f) * 1.5f);
 			
-			int bDirection = Random.Range (0, 2);
-			if (bDirection == 0) 
+			int direction = Random.Range (0, 2);
+			if (direction == 0) 
 				bMovingLeft = !bMovingLeft;
 			
-			yield return new WaitForSeconds (fTime);
+			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
 		} 
 		else if (m_EMFSM.CurrentStateIndex == EMState.AggressiveAttack) 
@@ -298,18 +302,18 @@ public class EMController : MonoBehaviour
 			bCanChangeHori = false;
 			
 			// Change speed based on the current aggressiveness of the enemy main cell
-			float fSpeed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
-			fHoriSpeed = fSpeed;
+			float speed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
+			fHoriSpeed = speed;
 			
 			// Frequency of checking for changing of direction in terms of the current aggressiveness of the enemy main cell
-			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
+			float time = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
 			                            Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 4f) * 1.5f);
 			
-			int bDirection = Random.Range (0, 2);
-			if (bDirection == 0) 
+			int direction = Random.Range (0, 2);
+			if (direction == 0) 
 				bMovingLeft = !bMovingLeft;
 			
-			yield return new WaitForSeconds (fTime);
+			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
 		} 
 		else if (m_EMFSM.CurrentStateIndex == EMState.CautiousAttack) 
@@ -317,39 +321,39 @@ public class EMController : MonoBehaviour
 			bCanChangeHori = false;
 			
 			// Change speed based on the current aggressiveness of the enemy main cell
-			float fSpeed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
-			fHoriSpeed = fSpeed;
+			float speed = Random.Range (.1f, Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / 7.5f);
+			fHoriSpeed = speed;
 			
 			// Frequency of checking for changing of direction in terms of the current aggressiveness of the enemy main cell
-			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
+			float time = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 2f)) * 1.5f, 
 			                            Mathf.Sqrt ((float)m_EMFSM.CurrentAggressiveness * 4f) * 1.5f);
 			
-			int bDirection = Random.Range (0, 2);
-			if (bDirection == 0) 
+			int direction = Random.Range (0, 2);
+			if (direction == 0) 
 				bMovingLeft = !bMovingLeft;
 			
-			yield return new WaitForSeconds (fTime);
+			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
 		}
 		else 
 		{
 			bCanChangeHori = false;
-			int bDirection = Random.Range (0, 2);
+			int direction = Random.Range (0, 2);
 			// Frequency of checking for changing of direction in terms of health of enemy main cell
-			float fTime = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)), Mathf.Sqrt ((float)m_EMFSM.Health));
+			float time = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)), Mathf.Sqrt ((float)m_EMFSM.Health));
 			// Make sure the frequency of changing direction is not higher not once per second
-			if (fTime <= 1.5f)
-				fTime = Random.Range (1f, 1.5f);
+			if (time <= 1.5f)
+				time = Random.Range (1f, 1.5f);
 			// Horizontal speed in terms of num of nutrient
-			float fSpeed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nCurrentNutrientNum) + 1f);
+			float speed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nCurrentNutrientNum) + 1f);
 		
-			if (bDirection == 0) 
+			if (direction == 0) 
 				bMovingLeft = !bMovingLeft;
 
-			fHoriSpeed = fSpeed;
+			fHoriSpeed = speed;
 			ResetVelocity ();
 
-			yield return new WaitForSeconds (fTime);
+			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
 		}
 	}
@@ -364,22 +368,6 @@ public class EMController : MonoBehaviour
 			fHoriSpeed *= -1f;
 			ResetVelocity ();
 		}
-	}
-
-	public void ChangeSpeed(float changeInSpeed)
-	{
-		fSpeedTemp += changeInSpeed;
-		velocity = new Vector2(fHoriSpeed, fSpeed * fSpeedFactor);
-		thisRB.velocity = velocity;
-	}
-	
-	public void ChangeSpeedFactor(float changeInSpeedF)
-	{
-		// Change speed factor
-		fSpeedFactor += changeInSpeedF;
-		// Reset velocity
-		velocity = new Vector2(0, fSpeed * fSpeedFactor);
-		thisRB.velocity = velocity;
 	}
 
 	public void ChangeDirection ()
