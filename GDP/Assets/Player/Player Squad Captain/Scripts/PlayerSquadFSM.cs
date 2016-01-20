@@ -85,6 +85,8 @@ public class PlayerSquadFSM : MonoBehaviour
 
     private float fNextCooldown = 0.0f;                 // fNextCooldown: Stores the time of the cooldown
 
+    private Animate mAnimate;
+
     // Co-Routines
     IEnumerator SpawnRoutine()
     {
@@ -100,6 +102,7 @@ public class PlayerSquadFSM : MonoBehaviour
             else
             {
                 SquadChildFSM.Spawn(transform.position);
+                mAnimate.ExpandContract(0.1f, 1, 1.1f);
             }
         }
     }
@@ -120,6 +123,7 @@ public class PlayerSquadFSM : MonoBehaviour
     {
         // Variable Initialisation
         m_Brain = this.GetComponent<PS_Logicaliser>();
+        mAnimate = new Animate(this.transform);
 
         dict_States = new Dictionary<PSState, IPSState>();
         dict_States.Add(PSState.Idle, new PS_IdleState(this, m_Brain));
