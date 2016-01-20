@@ -263,7 +263,7 @@ public class EMController : MonoBehaviour
 	// Move the enemy main cell left or right
 	IEnumerator MovingHorizontally ()
 	{
-		if (m_EMFSM.CurrentStateIndex == EMState.Production) 
+		if (m_EMFSM.CurrentStateIndex == EMState.Production && m_EMFSM.CurrentStateIndex == EMState.Maintain) 
 		{
 			bCanChangeHori = false;
 			// Change direction based on the position of enemy nutrient and enemy main cell
@@ -360,7 +360,7 @@ public class EMController : MonoBehaviour
 			if (time <= 1.5f)
 				time = Random.Range (1f, 1.5f);
 			// Horizontal speed in terms of num of nutrient
-			float speed = Random.Range (.05f, 1f / Mathf.Sqrt ((float)nCurrentNutrientNum) + 1f);
+			float speed = Random.Range (.05f, 1f / (Mathf.Sqrt ((float)nCurrentNutrientNum) + fMinHoriSpeed));
 		
 			if (direction == 0) 
 				bMovingLeft = !bMovingLeft;
