@@ -15,7 +15,15 @@ public class ECChargeCState : IECState {
 	private Vector2 TargetEndPos;
 
 	private bool bReturnToIdle;
-
+	
+	private bool bSqueezeToggle;
+	
+	private bool bSqueezeDone;
+	
+	private static Vector3 ShrinkRate;
+	
+	private static float fSpreadRange;
+	
 	private enum Style {Aggressive,Defensive};
 
 	//Constructor
@@ -25,8 +33,10 @@ public class ECChargeCState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 		m_Child = _childCell;
 
-		fMaxAcceleration = 10f;
+		fMaxAcceleration = 18f;
 		TargetEndPos = Vector2.zero;
+		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
+		ShrinkRate = new Vector3(-0.1f, 0.1f, 0.0f);
 	}
 
 
@@ -53,13 +63,22 @@ public class ECChargeCState : IECState {
 	public override void Execute()
 	{
 		//if at any point of time during attacking, it fall out of bound, transition the enemy child cell to dead state
-		if(m_ecFSM.OutOfBound())
+		if(bSqueezeDone && m_ecFSM.OutOfBound())
 		{
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
-
+		
+		if(!bSqueezeDone)
+		{
+			if(!bSqueezeToggle && m_ecFSM.Target != null)
+			{
+				m_ecFSM.StartChildCorountine(SqueezeBeforeCharge(m_ecFSM.Target));
+				bSqueezeToggle = true;
+			}
+		}
+		
 		//If the target of this cell is dead, find another target if there is one, else just pass through and die/return back to main cell
-		if(m_ecFSM.Target != null && (m_ecFSM.Target.name.Contains("Player_Child") && m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Avoid || m_ecFSM.Target.name.Contains("Player_Child") && m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead || m_ecFSM.Target.name.Contains("Squad_Child") && m_ecFSM.Target.GetComponent<SquadChildFSM>().EnumState == SCState.Dead))
+		if(bSqueezeDone && m_ecFSM.Target != null && (m_ecFSM.Target.name.Contains("Player_Child") && m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Avoid || m_ecFSM.Target.name.Contains("Player_Child") && m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead || m_ecFSM.Target.name.Contains("Squad_Child") && m_ecFSM.Target.GetComponent<SquadChildFSM>().EnumState == SCState.Dead))
 		{
 			GameObject NewTarget = FindTargetChild();
 			if(NewTarget != null)
@@ -84,12 +103,13 @@ public class ECChargeCState : IECState {
 		Vector2 Acceleration = Vector2.zero;
 
 		//If the enemy child cell had not traveled through the path given and the target child cell is still alive, continue drive the enemy child cell towards the target player cell
-		if(bReturnToIdle == false && bReachTarget == false && m_ecFSM.Target != null && !HasCellReachTargetPos(m_ecFSM.Target.transform.position))
+		if(bSqueezeDone && !bReturnToIdle && !bReachTarget && m_ecFSM.Target != null && !HasCellReachTargetPos(m_ecFSM.Target.transform.position))
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_ecFSM.Target.transform.position,24f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
+			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
 		}
-		else if(bReturnToIdle == false && bReachTarget == true && !HasCellReachTargetPos(TargetEndPos))
+		else if(bSqueezeDone && !bReturnToIdle && bReachTarget == true && !HasCellReachTargetPos(TargetEndPos))
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,TargetEndPos,24f);
 		}
@@ -108,7 +128,7 @@ public class ECChargeCState : IECState {
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		m_ecFSM.rigidbody2D.AddForce(Acceleration);
 		//Rotate the enemy child cell based on the direction of travel
-		m_ecFSM.RotateToHeading();
+		if(bSqueezeDone) {m_ecFSM.RotateToHeading();}
 	}
 
 	public override void Exit()
@@ -397,5 +417,25 @@ public class ECChargeCState : IECState {
 		}
 
 		return Style.Defensive;
+	}
+	
+	private IEnumerator SqueezeBeforeCharge(GameObject _Target)
+	{
+		//The child cell will retreat slightly back before charging 
+		Vector3 ShrinkScale = new Vector3(0f,-0.1f,0f);
+		
+		while(m_Child.transform.localScale.y > 0.5f)
+		{
+			Vector2 DirectionToTarget = -(_Target.transform.position - m_Child.transform.position).normalized;
+			float Rotation = -Mathf.Atan2(DirectionToTarget.x, DirectionToTarget.y) * Mathf.Rad2Deg;
+			m_ecFSM.transform.eulerAngles = new Vector3(0.0f,0.0f,Rotation);
+			
+			m_ecFSM.rigidbody2D.velocity = DirectionToTarget;
+			
+			m_Child.transform.localScale += ShrinkScale;
+			yield return new WaitForSeconds(0.2f);//0.0005
+		}
+		
+		bSqueezeDone = true;
 	}
 }
