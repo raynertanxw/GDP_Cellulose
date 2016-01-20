@@ -6,6 +6,8 @@ public class ECChargeCState : IECState {
 
 	//A static float variable that state the maximum accelerateion that the enemy child cell can have at any point of time
 	private static float fMaxAcceleration;
+	
+	private static float fEnemyMaxSpeed;
 
 	//A boolean to state whether this enemy child cell had reach the final waypoint of the given path
 	private bool bReachTarget;
@@ -24,6 +26,12 @@ public class ECChargeCState : IECState {
 	
 	private static float fSpreadRange;
 	
+	private static float fPlayerIdleMaxVelo;
+	
+	private static float fPlayerAvoidMaxVelo;
+	
+	private static float fPlayerDefendMaxVelo;
+	
 	private enum Style {Aggressive,Defensive};
 
 	//Constructor
@@ -37,6 +45,11 @@ public class ECChargeCState : IECState {
 		TargetEndPos = Vector2.zero;
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
 		ShrinkRate = new Vector3(-0.1f, 0.1f, 0.0f);
+		
+		fEnemyMaxSpeed = (18f / 1f) * Time.fixedDeltaTime;
+		fPlayerIdleMaxVelo = (250f / 1f) * Time.fixedDeltaTime;
+		fPlayerAvoidMaxVelo = (500f / 1f) * Time.fixedDeltaTime;
+		fPlayerDefendMaxVelo = (1000 / 1f) * Time.fixedDeltaTime;
 	}
 
 
@@ -105,7 +118,28 @@ public class ECChargeCState : IECState {
 		//If the enemy child cell had not traveled through the path given and the target child cell is still alive, continue drive the enemy child cell towards the target player cell
 		if(bSqueezeDone && !bReturnToIdle && !bReachTarget && m_ecFSM.Target != null && !HasCellReachTargetPos(m_ecFSM.Target.transform.position))
 		{
-			Acceleration += SteeringBehavior.Seek(m_Child,m_ecFSM.Target.transform.position,24f);
+			//Acceleration += SteeringBehavior.Seek(m_Child,m_ecFSM.Target.transform.position,24f);
+			if(!m_ecFSM.Target.name.Contains("Squad"))
+			{
+				if(m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Idle)
+				{
+					Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,fPlayerIdleMaxVelo);
+				}
+				else if(m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Defend)
+				{
+					Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,fPlayerDefendMaxVelo);
+				}
+				else if( m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Avoid)
+				{
+					Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,fPlayerAvoidMaxVelo);
+				}
+			}
+			else if(m_ecFSM.Target.name.Contains("Squad"))
+			{
+				Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,PlayerSquadFSM.Instance.IdleMaximumVelocity);
+			}
+			//Debug.Log("acceleration pursuit: " + Acceleration);
+			
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
 			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
 		}

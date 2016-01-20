@@ -12,6 +12,30 @@ public static class SteeringBehavior
 		return -Difference.normalized * _Speed;	
 	}
 	
+	public static Vector2 Pursuit(GameObject _Agent, GameObject _Target, float _Speed, float _AgentMaxSpeed, float _TargetMaxSpeed)
+	{
+		Vector2 DirectionToTarget = _Target.transform.position - _Agent.transform.position;
+		//Debug.Log("DirectionToTarget: " + DirectionToTarget);
+		float RelativeHeading = Vector2.Dot(_Agent.GetComponent<Rigidbody2D>().velocity,_Target.GetComponent<Rigidbody2D>().velocity);
+		//Debug.Log("RelativeHeading: " + RelativeHeading);
+		//If the target is directly ahead of the agent and they are moving in both same direction
+		
+		if(Vector2.Dot(DirectionToTarget,_Agent.GetComponent<Rigidbody2D>().velocity) > 0.0f && RelativeHeading < -0.95f)
+		{
+			//Debug.Log("enter if statement and start normal seek");
+			return Seek (_Agent,_Target.transform.position,_Speed);
+		}
+		
+		//If the target is not directly ahead of the agent, the agent will need to predict the direction to move towards based of the target's velocity
+		float LookAheadTime = 0.5f;//DirectionToTarget.magnitude / (_AgentMaxSpeed + _TargetMaxSpeed);
+		//Debug.Log("lookahead time: " + LookAheadTime);
+		
+		Vector2 Adjustment = (_Target.GetComponent<Rigidbody2D>().velocity * LookAheadTime);
+		Vector2 TargetPos = new Vector2(_Target.transform.position.x + Adjustment.x, _Target.transform.position.y + Adjustment.y);
+		//Utility.DrawCross(TargetPos,Color.red,0.5f);
+		return Seek(_Agent, TargetPos ,_Speed);
+	}
+	
 	//Return a steering force away from the target position
 	public static Vector2 Flee(GameObject _Agent, Vector2 _TargetPos, float _Speed)
 	{
