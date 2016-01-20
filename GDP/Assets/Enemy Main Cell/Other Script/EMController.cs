@@ -239,10 +239,25 @@ public class EMController : MonoBehaviour
 	void HorizontalVelocityCheck ()
 	{
 		if (Mathf.Abs (thisRB.velocity.x) < fMinHoriSpeed)
-			if (thisRB.velocity.x > 0)
-				thisRB.velocity = new Vector2 (fMinHoriSpeed, thisRB.velocity.y);
-		else if (thisRB.velocity.x < 0)
+		if (thisRB.velocity.x > 0) {
+			thisRB.velocity = new Vector2 (fMinHoriSpeed, thisRB.velocity.y);
+			bMovingLeft = false;
+		} else if (thisRB.velocity.x < 0) {
 			thisRB.velocity = new Vector2 (-fMinHoriSpeed, thisRB.velocity.y);
+			bMovingLeft = true;
+		}
+	}
+
+	// Check the direction of horizontal movement is correct
+	void HorizontalCheck ()
+	{
+		if (bMovingLeft && fHoriSpeed > 0f) {
+			fHoriSpeed *= -1f;
+			thisRB.velocity = new Vector2 (fHoriSpeed, thisRB.velocity.y);
+		} else if (!bMovingLeft && fHoriSpeed < 0f) {
+			fHoriSpeed *= -1f;
+			thisRB.velocity = new Vector2 (fHoriSpeed, thisRB.velocity.y);
+		}
 	}
 
 	// Move the enemy main cell left or right
@@ -273,7 +288,7 @@ public class EMController : MonoBehaviour
 			fHoriSpeed = speed;
 			
 			// Frequency of checking for changing of direction in terms of health of enemy main cell
-			float time = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health / 2f)) * 1.5f, Mathf.Sqrt ((float)m_EMFSM.Health) * 1.5f);
+			float time = Random.Range (Mathf.Sqrt (Mathf.Sqrt ((float)m_EMFSM.Health)) * 1.5f, Mathf.Sqrt ((float)m_EMFSM.Health) * 1.5f);
 			
 			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
@@ -355,18 +370,6 @@ public class EMController : MonoBehaviour
 
 			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
-		}
-	}
-
-	// Check the direction of horizontal movement is correct
-	void HorizontalCheck ()
-	{
-		if (bMovingLeft && fHoriSpeed > 0f) {
-			fHoriSpeed *= -1f;
-			ResetVelocity ();
-		} else if (!bMovingLeft && fHoriSpeed < 0f) {
-			fHoriSpeed *= -1f;
-			ResetVelocity ();
 		}
 	}
 

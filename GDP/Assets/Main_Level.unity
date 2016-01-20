@@ -3896,6 +3896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bIsDefend: 0
+  bMovingLeft: 0
   nDamageNum: 0
   fStunTime: 0
   fNumOfDefaultCells: 0
@@ -4040,6 +4041,7 @@ MonoBehaviour:
   fAngularIniFactor: 50
   fAngularDeclineFactor: .00999999978
   fMinAngularVelocity: 20
+  fMaxAngularVelocity: 200
   bIsRotatingLeft: 0
 --- !u!1001 &401706930
 Prefab:
@@ -6091,6 +6093,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 373eae5b2efa44fa1908be39e881e838, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  s_nResources: 0
 --- !u!1001 &690220269
 Prefab:
   m_ObjectHideFlags: 0
