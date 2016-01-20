@@ -14,10 +14,10 @@ public class ECChargeMState : IECState {
 	private static List<Point> PathToTarget;
 	
 	//A Point variable that store the current Point that the enemy child cell is traveling towards in the path
-	private Point CurrentTargetPoint;
+	private static Point CurrentTargetPoint;
 	
 	//An integer variable that store the current Point index that the enemy child cell is traveling towards
-	private int CurrentTargetIndex;
+	private static int CurrentTargetIndex;
 
 	private int ChargeNearby;
 
@@ -30,6 +30,8 @@ public class ECChargeMState : IECState {
 	private static Vector2 EndPos;
 	
 	private static Vector3 ShrinkRate;
+	
+	private static float fSpreadRange;
 
 	//Constructor
 	public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -40,7 +42,8 @@ public class ECChargeMState : IECState {
 		m_PlayerMain = m_ecFSM.m_PMain;
 		
 		PathToTarget = null;
-		fMaxAcceleration = 15f;
+		fMaxAcceleration = 25f;
+		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
 		ShrinkRate = new Vector3(-0.1f, 0.1f, 0.0f);
 	}
 	
@@ -139,7 +142,7 @@ public class ECChargeMState : IECState {
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
 		
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x/2,Constants.s_onlyEnemeyChildLayer);
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, fSpreadRange,Constants.s_onlyEnemeyChildLayer);
 		
 		for(int i = 0; i < Neighbouring.Length; i++)
 		{
@@ -168,12 +171,30 @@ public class ECChargeMState : IECState {
 		return ECChargeCount;
 	}
 	
+	private EnemyChildFSM GetClosestChargerToPMain()
+	{
+		List<EnemyChildFSM> Chargers = ECTracker.s_Instance.ChargeMainCells;
+		int ChargeIndex = 0;
+		float ClosestDist = Mathf.Infinity;
+		
+		for(int i = 0; i < Chargers.Count; i++)
+		{
+			if(Utility.Distance(Chargers[i].transform.position,m_PlayerMain.transform.position) < ClosestDist)
+			{
+				ChargeIndex = i;
+				ClosestDist = Utility.Distance(Chargers[i].transform.position,m_PlayerMain.transform.position);
+			}
+		}
+		
+		return Chargers[ChargeIndex];
+	}
+	
 	private IEnumerator SqueezeBeforeCharge(Vector2 _TargetPos)
 	{
 		//The child cell will retreat slightly back before charging 
-		m_ecFSM.rigidbody2D.velocity = new Vector2(Random.Range(-0.05f,0.05f),2f);
+		m_ecFSM.rigidbody2D.velocity = new Vector2(Random.Range(-0.05f,0.05f),2.5f);
 		
-		Vector3 ShrinkScale = new Vector3(0f,-0.075f,0f);
+		Vector3 ShrinkScale = new Vector3(0f,-0.1f,0f);
 		
 		while(m_Child.transform.localScale.y > 0.5f)
 		{
@@ -182,14 +203,14 @@ public class ECChargeMState : IECState {
 			m_ecFSM.rigidbody2D.MoveRotation(Rotation);
 		
 			m_Child.transform.localScale += ShrinkScale;
-			yield return new WaitForSeconds(0.025f);//0.0005
+			yield return new WaitForSeconds(0.2f);//0.0005
 		}
 		
 		if(PathToTarget == null)
 		{
-			PathQuery.Instance.AStarSearch(m_Child.transform.position,m_ecFSM.m_PMain.transform.position,false);
+			PathQuery.Instance.AStarSearch(GetClosestChargerToPMain().transform.position,m_ecFSM.m_PMain.transform.position,false);
 			PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
-			//Utility.DrawPath(PathToTarget,Color.red,0.1f);
+			Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		}
 		
 		CurrentTargetIndex = 0;
