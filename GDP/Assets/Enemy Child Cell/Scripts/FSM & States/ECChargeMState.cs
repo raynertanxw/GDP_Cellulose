@@ -33,7 +33,6 @@ public class ECChargeMState : IECState {
 	
 	private static float fSpreadRange;
 
-	//Constructor
 	public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
 		m_Child = _childCell;

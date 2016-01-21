@@ -81,6 +81,11 @@ public class ECChargeCState : IECState {
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
 		
+		if(bSqueezeDone && m_ecFSM.HitBottomOfScreen())
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
+		}
+		
 		if(!bSqueezeDone)
 		{
 			if(!bSqueezeToggle && m_ecFSM.Target != null)
