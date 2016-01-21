@@ -28,7 +28,7 @@ public class EMCautiousAttackState : IEMState
 		// Pause the transition for randomized time
 		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) / EMDifficulty.Instance().CurrentDiff, 
 		                                 Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 2f / EMDifficulty.Instance().CurrentDiff);
-		m_EMFSM.StartPauseTransition (fPauseTime);
+		helper.StartPauseTransition (fPauseTime);
 	}
 	
 	public override void Execute ()
@@ -81,7 +81,7 @@ public class EMCautiousAttackState : IEMState
 			// Pause duration depends on the difference in cell numbers
 			float fPauseTime = 1.5f - (nEnemyChildFactor - nPlayerChildFactor) / 10f / EMDifficulty.Instance().CurrentDiff;
 			if (fPauseTime > 0f)
-				m_EMFSM.StartPauseAddAttack (fPauseTime);
+				helper.StartPauseAddAttack (fPauseTime);
 		}
 		#endregion
 

@@ -25,7 +25,7 @@ public class EMMaintainState : IEMState
 		// Pause the transition for randomized time based on num of available child cells
 		float fPauseTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().AvailableChildNum) * 10f) / EMDifficulty.Instance().CurrentDiff, 
 		                                 Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().AvailableChildNum) * 50f) / EMDifficulty.Instance().CurrentDiff);
-		m_EMFSM.StartPauseTransition (fPauseTime);
+		helper.StartPauseTransition (fPauseTime);
 	}
 
 	public override void Execute ()
@@ -168,7 +168,7 @@ public class EMMaintainState : IEMState
 			
 			// Check transition every 0.1 second to save computing power
 			if (transition.CanTransit)
-				m_EMFSM.StartPauseTransition (.1f);
+				helper.StartPauseTransition (.1f);
 		}
 	}
 

@@ -32,7 +32,7 @@ public class EMLandmineState : IEMState
 		// Pause the transition for randomized time
 		float fPauseTime = Random.Range ((m_EMFSM.CurrentAggressiveness / 1.5f) / EMDifficulty.Instance().CurrentDiff, 
 		                                 (m_EMFSM.CurrentAggressiveness) / EMDifficulty.Instance().CurrentDiff);
-		m_EMFSM.StartPauseTransition (fPauseTime);
+		helper.StartPauseTransition (fPauseTime);
 	}
 
 	public override void Execute ()
@@ -92,7 +92,7 @@ public class EMLandmineState : IEMState
 			
 			// Pause commanding enemy mini cells to Attack state
 			// Pause duration depends only on the number of enemy mini cell commanded
-			m_EMFSM.StartPauseAddLandmine ((float)nCommandNum);
+			helper.StartPauseAddLandmine ((float)nCommandNum);
 		}
 		#endregion
 

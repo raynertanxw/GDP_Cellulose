@@ -178,7 +178,13 @@ public class EMNutrientMainAgent : MonoBehaviour
 		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.1f)) && 
 			Vector2.Distance (EMHelper.Instance().Position, transform.position) > fInitialRadius * nSize + EMHelper.Instance ().Radius)
 		{
+			// Instantiate a mini nutrient object
 			Instantiate (miniNutrient, position, Quaternion.identity);
+			// Calling the Animate class for spawn animation
+			Animate mAnimate;
+			mAnimate = new Animate (this.transform);
+			mAnimate.ExpandContract (0.1f, 1, 1.1f);
+			// Reduce the size of the current main nutrient by 1
 			nSize--;
 		}
 		bCanSpawn = true;

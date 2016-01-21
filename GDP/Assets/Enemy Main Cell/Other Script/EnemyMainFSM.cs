@@ -108,9 +108,6 @@ public class EnemyMainFSM : MonoBehaviour
 	public Dictionary<EMState, float> LearningDictionary{ get { return m_learningDictionary; } }
 	public void SetLearningScore (EMState key, float value) {m_learningDictionary [key] = value;}
 	#endregion
-	// Production status
-	private bool bCanSpawn; 
-	public bool CanSpawn { get { return bCanSpawn; } set { bCanSpawn = value; } }
 
 	void Awake ()
 	{
@@ -124,8 +121,6 @@ public class EnemyMainFSM : MonoBehaviour
 		nCurrentAggressiveness = nInitialAggressiveness;
 		nAggressivenessSquadCap = 0;
 		nAggressivenessSquadChild = 0;
-		// Initialise status
-		bCanSpawn = true;
 	}
 
 	void Start ()
@@ -203,80 +198,6 @@ public class EnemyMainFSM : MonoBehaviour
 		m_CurrentState = m_statesDictionary [newState];
 		m_CurrentState.Enter ();
 	}
-
-	public IEnumerator ProduceChild ()
-	{
-		if (bCanSpawn) 
-		{
-			bCanSpawn = false;
-			/*
-			for (int i = 0; i < ecList.Count; i++)
-			{
-				if (ecList[i].CurrentStateEnum == ECState.Dead)
-				{
-					ecList[i].ChangeState(ECState.Idle);
-					break;
-				}
-			}
-			nAvailableChildNum++;
-			emController.ReduceNutrient ();
-
-			bCanSpawn = false;
-			*/
-			/*GameObject newChild = ECPool.SpawnFromPool(gameObject.transform.position);	
-			newChild.transform.SetParent(this.transform);
-			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
-			nAvailableChildNum++;
-			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
-			emController.ReduceNutrient ();*/
-			/*
-			GameObject newChild = (GameObject) Instantiate(enemyMiniPrefab, transform.position, Quaternion.identity);
-			newChild.transform.SetParent(this.transform);
-			ecList.Add (newChild.GetComponent<EnemyChildFSM> ());
-			nAvailableChildNum++;
-			newChild.GetComponent<Rigidbody2D>().velocity = emController.Rigibody.velocity;
-			emController.ReduceNutrient ();
-			*/
-			emController.ReduceNutrient ();
-			// Randomize the interval time between spawns of child cells in terms of num of available child cells and current difficulty
-			yield return new WaitForSeconds (
-				UnityEngine.Random.Range (
-					Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)nAvailableChildNum))) * 1f / EMDifficulty.Instance().CurrentDiff, 
-					Mathf.Sqrt(Mathf.Sqrt ((float)nAvailableChildNum)) * 1f / EMDifficulty.Instance().CurrentDiff)
-			);
-
-			if (nAvailableChildNum < 100)
-				bCanSpawn = true;
-		}
-	}
-
-	#region Coroutine functions
-	// Things needed when produce child cells
-	public void StartProduceChild ()
-	{
-		StartCoroutine (ProduceChild ());
-	}
-	// Disable transition for fTime
-	public void StartPauseTransition (float fTime)
-	{
-		StartCoroutine (emTransition.TransitionAvailability (fTime));
-	}
-	// Stop commanding child cells to Attack state for fTime
-	public void StartPauseAddAttack (float fTime)
-	{
-		StartCoroutine (emHelper.PauseAddAttack (fTime));
-	}
-	// Stop commanding child cells to Defend state for fTime
-	public void StartPauseAddDefend (float fTime)
-	{
-		StartCoroutine (emHelper.PauseAddDefend (fTime));
-	}
-	// Stop commanding child cells to Landmine state for fTime
-	public void StartPauseAddLandmine (float fTime)
-	{
-		StartCoroutine (emHelper.PauseAddLandmine (fTime));
-	}
-	#endregion
 
 	// Update the score on the inspector
 	public void ScoreUpdate ()

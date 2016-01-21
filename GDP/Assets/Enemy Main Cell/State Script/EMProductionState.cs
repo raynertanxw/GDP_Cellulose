@@ -23,7 +23,7 @@ public class EMProductionState : IEMState
 		// Pause the transition for randomized time based on num of available nutrient
 		float fPauseTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 2f) / EMDifficulty.Instance().CurrentDiff, 
 		                                 Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 10f) / EMDifficulty.Instance().CurrentDiff);
-		m_EMFSM.StartPauseTransition (fPauseTime);
+		helper.StartPauseTransition (fPauseTime);
 	}
 
 	public override void Execute ()
@@ -32,8 +32,8 @@ public class EMProductionState : IEMState
 		helper = m_EMFSM.emHelper;
 	
 		// Produce enemy mini cell if has nutrient and can spawn
-		if (controller.NutrientNum > 0 && m_EMFSM.CanSpawn)
-			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position, false);
+		if (controller.NutrientNum > 0 && helper.CanSpawn)
+			helper.ECPool.SpawnFromPool (EMHelper.Instance().Position, false);
 		else if (controller.NutrientNum == 0 && EMTransition.Instance().CanTransit)
 			m_EMFSM.ChangeState (EMState.Maintain);
 
@@ -173,7 +173,7 @@ public class EMProductionState : IEMState
 			// With the value given by learning element increases, the transition check will be less frequent
 			// Thus transition probability will decline
 			if (EMTransition.Instance().CanTransit)
-				m_EMFSM.StartPauseTransition (.2f * (1f + EnemyMainFSM.Instance().LearningDictionary[EMState.Production] / 100f));
+				helper.StartPauseTransition (.2f * (1f + EnemyMainFSM.Instance().LearningDictionary[EMState.Production] / 100f));
 		}
 	}
 

@@ -30,12 +30,17 @@ public class EMHelper : MonoBehaviour
 	public float Radius { get { return fRadius; } }
 	private float width;
 
+	// Production status
+	private bool bCanSpawn; 
+	public bool CanSpawn { get { return bCanSpawn; } set { bCanSpawn = value; } }
+	// Avilability of commanding child cells
 	private bool bCanAddDefend;
 	public bool CanAddDefend { get { return bCanAddDefend; } set { bCanAddDefend = value; } }
 	private bool bCanAddAttack;
 	public bool CanAddAttack { get { return bCanAddAttack; } set { bCanAddAttack = value; } }
 	private bool bCanAddLandmine;
 	public bool CanAddLandmine { get { return bCanAddLandmine; } set { bCanAddLandmine = value; } }
+
 
 	void Start () 
 	{
@@ -51,6 +56,8 @@ public class EMHelper : MonoBehaviour
 		// Find gameObject
 		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 
+		// Initialise status
+		bCanSpawn = true;
 		// Able to command child cells to any state by default
 		bCanAddDefend = true;
 		bCanAddAttack = true;
@@ -139,8 +146,60 @@ public class EMHelper : MonoBehaviour
 	void ChildCellsLimit ()
 	{
 		if (m_EMFSM.AvailableChildNum >= 100)
-			m_EMFSM.CanSpawn = false;
+			bCanSpawn = false;
 	}
+	// Used to handle everything happens when spawns a child cell
+	public IEnumerator ProduceChild ()
+	{
+		if (bCanSpawn) 
+		{
+			bCanSpawn = false;
+
+			// Calling the Animate class for spawn animation
+			Animate mAnimate;
+			mAnimate = new Animate (this.transform);
+			mAnimate.ExpandContract (0.1f, 1, 1.1f);
+			
+			EMController.Instance().ReduceNutrient ();
+			// Randomize the interval time between spawns of child cells in terms of num of available child cells and current difficulty
+			yield return new WaitForSeconds (
+				UnityEngine.Random.Range (
+				Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)m_EMFSM.AvailableChildNum))) * 1f / EMDifficulty.Instance().CurrentDiff, 
+				Mathf.Sqrt(Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum)) * 1f / EMDifficulty.Instance().CurrentDiff)
+				);
+			
+			if (m_EMFSM.AvailableChildNum < 100)
+				bCanSpawn = true;
+		}
+	}
+
+	#region Coroutine functions
+	// Things needed when produce child cells
+	public void StartProduceChild ()
+	{
+		StartCoroutine (ProduceChild ());
+	}
+	// Disable transition for fTime
+	public void StartPauseTransition (float fTime)
+	{
+		StartCoroutine (EMTransition.Instance().TransitionAvailability (fTime));
+	}
+	// Stop commanding child cells to Attack state for fTime
+	public void StartPauseAddAttack (float fTime)
+	{
+		StartCoroutine (PauseAddAttack (fTime));
+	}
+	// Stop commanding child cells to Defend state for fTime
+	public void StartPauseAddDefend (float fTime)
+	{
+		StartCoroutine (PauseAddDefend (fTime));
+	}
+	// Stop commanding child cells to Landmine state for fTime
+	public void StartPauseAddLandmine (float fTime)
+	{
+		StartCoroutine (PauseAddLandmine (fTime));
+	}
+	#endregion
 
 	#region Math
 	// Returns value raised to power

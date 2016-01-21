@@ -41,22 +41,44 @@ public class EMTransition : MonoBehaviour
 		DieTransition ();
 	}
 
-	// Universal transition probability checking function
-	public void Transition (float nChanceFactor, EMState state)
+	/// <summary>
+	/// Constructor of Transition function
+	/// </summary>
+	public bool Transition (float nChanceFactor, EMState state)
+	{
+		return Transition (nChanceFactor, state, 1.0f);
+	}
+
+	/// <summary>
+	/// Universal transition probability checking function
+	/// <param name="nChanceFactor">Equal to one tenth of the persentage.</param>
+	/// <param name="state">State trying to transition to.</param>
+	/// <param name="fExtraChanceFactor">Extra chance if any (1.0f by default).</param>
+	/// </summary>
+	public bool Transition (float nChanceFactor, EMState state, float fExtraChanceFactor)
 	{
 		float nChance = 0f;
 
-		if (nChanceFactor <= 10f)
+		if (nChanceFactor * fExtraChanceFactor <= 10f)
+		{
 			m_EMFSM.ChangeState (state);
+			return true;
+		}
 		else
 		{
 			nChance = Random.Range (0f, nChanceFactor);
 			if (nChance <= 1f)
 				m_EMFSM.ChangeState (state);
+			return true;
 		}
+
+		return false;
 	}
 
-	// Universal function for pausing transition availability
+	/// <summary>
+	/// Universal function for pausing transition availability
+	/// <param name="fTIme">Used to indicate pause time.</param>
+	/// </summary>
 	public IEnumerator TransitionAvailability (float fTime)
 	{
 		EMState currentStateIndex = m_EMFSM.CurrentStateIndex;
