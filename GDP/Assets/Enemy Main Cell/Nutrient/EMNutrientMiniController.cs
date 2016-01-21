@@ -39,8 +39,8 @@ public class EMNutrientMiniController : MonoBehaviour
 
 	void Update () 
 	{
-		// Destroy the nutrient if enemy main cell does not exist
-		if (EnemyMainFSM.Instance ().isActiveAndEnabled == false)
+		// Destroy the nutrient if enemy main cell is invisible
+		if (!EMHelper.Instance().IsEnemyVisible)
 			Destroy (this.gameObject);
 		// Absorb behaviour
 		if (bIsAbsorbed)

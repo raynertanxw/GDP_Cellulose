@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 
 [RequireComponent (typeof (EnemyMainFSM))]
+[RequireComponent (typeof (Renderer))]
 [RequireComponent (typeof (Rigidbody2D))]
 public class EMAnimation : MonoBehaviour 
 {

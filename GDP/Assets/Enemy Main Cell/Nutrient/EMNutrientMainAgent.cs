@@ -72,8 +72,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Remove destroyed from the list
 		AgentList.RemoveAll(item => item == null);
-		// Deactivate the nutrient if enemy main cell does not exist
-		if (EnemyMainFSM.Instance ().isActiveAndEnabled == false)
+		// Deactivate the nutrient if enemy main cell is invisible
+		if (!EMHelper.Instance().IsEnemyVisible)
 			ActivateOrDeactivate (false);
 		// Deactivate the nutrient if it is empty
 		if (nSize == 0)
