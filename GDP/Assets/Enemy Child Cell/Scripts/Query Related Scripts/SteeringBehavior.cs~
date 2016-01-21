@@ -19,7 +19,7 @@ public static class SteeringBehavior
 		float RelativeHeading = Vector2.Dot(_Agent.GetComponent<Rigidbody2D>().velocity,_Target.GetComponent<Rigidbody2D>().velocity);
 		
 		//If the target is directly ahead of the agent and they are moving in both same direction
-		if(Vector2.Dot(DirectionToTarget,_Agent.GetComponent<Rigidbody2D>().velocity) > 0.0f && RelativeHeading < -0.95f && DistanceBetween < 0.75f)
+		if(_Target.name.Contains("Player") && _Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Defend||Vector2.Dot(DirectionToTarget,_Agent.GetComponent<Rigidbody2D>().velocity) > 0.0f && RelativeHeading < -0.95f && DistanceBetween < 0.75f)
 		{
 			return Seek (_Agent,_Target.transform.position,_Speed);
 		}

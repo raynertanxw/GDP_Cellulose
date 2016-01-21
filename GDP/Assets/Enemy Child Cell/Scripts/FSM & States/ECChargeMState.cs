@@ -74,6 +74,12 @@ public class ECChargeMState : IECState {
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
+		
+		if(CurrentTargetPoint != null && m_Child.transform.position.y < CurrentTargetPoint.Position.y)
+		{
+			CurrentTargetIndex++;
+			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+		}
 	}
 	
 	public override void FixedExecute()
@@ -202,14 +208,14 @@ public class ECChargeMState : IECState {
 			m_ecFSM.rigidbody2D.MoveRotation(Rotation);
 		
 			m_Child.transform.localScale += ShrinkScale;
-			yield return new WaitForSeconds(0.2f);//0.0005
+			yield return new WaitForSeconds(0.25f);//0.0005
 		}
 		
 		if(PathToTarget == null)
 		{
 			PathQuery.Instance.AStarSearch(GetClosestChargerToPMain().transform.position,m_ecFSM.m_PMain.transform.position,false);
 			PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
-			Utility.DrawPath(PathToTarget,Color.red,0.1f);
+			//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		}
 		
 		CurrentTargetIndex = 0;
