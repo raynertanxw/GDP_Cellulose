@@ -30,7 +30,7 @@ public class EMDefendState : IEMState
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
 		float fPauseTime = Random.Range (2f, 4f);
-		m_EMFSM.StartPauseTransition (fPauseTime);
+		helper.StartPauseTransition (fPauseTime);
 	}
 	
 	public override void Execute ()
@@ -59,7 +59,7 @@ public class EMDefendState : IEMState
 				}
 
 				if (helper.CanAddDefend)
-					m_EMFSM.StartPauseAddDefend (0.25f);
+					EMHelper.Instance().StartPauseAddDefend (0.25f);
 			}
 			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50 && helper.CanAddDefend)
 			{
@@ -75,7 +75,7 @@ public class EMDefendState : IEMState
 			}
 
 			// Pause commanding enemy mini cells to defend state
-			m_EMFSM.StartPauseTransition (2f);
+			helper.StartPauseTransition (2f);
 		}
 		#endregion
 		
@@ -101,7 +101,7 @@ public class EMDefendState : IEMState
 
 		// Check transition every 0.2 second to save computing power
 		if (transition.CanTransit)
-			m_EMFSM.StartPauseTransition (.2f);
+			helper.StartPauseTransition (.2f);
 	}
 
 	public override void Exit ()

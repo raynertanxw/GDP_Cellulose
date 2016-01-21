@@ -156,8 +156,6 @@ public class EMController : MonoBehaviour
         }
 		// Update Aggresiveness
 		UpdateAggressiveness ();
-		// Which whether the player wins
-		LoseCheck ();
 		// Check whether the Enemy main is being attacked by the player
 		IsMainBeingAttacked();
 		// Check whether the Enemy main is having enough of an advantage to tank player's attack to deal more damage onto the player's main
@@ -409,16 +407,6 @@ public class EMController : MonoBehaviour
 		for (int i = 0; i < fNumOfDefaultCells; i++) {
 			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position, true);
 		}
-	}
-
-	// Checking whether the enemy main cell goes out of the screen or runs out of health 
-	// Deactivate enemy main cell gameObject if the player wins
-	void LoseCheck ()
-	{
-		if (transform.position.y - EMHelper.Instance().Radius / 2f > EMHelper.topLimit)
-			this.gameObject.SetActive (false);
-		else if (m_EMFSM.Health <= 0)
-			this.gameObject.SetActive (false);
 	}
 	
 	//Check whether the enemy main cell is being attacked by a chargeChild/chargeMain player child cell, toggle the boolean "bIsMainBeingAttacked" accordingly

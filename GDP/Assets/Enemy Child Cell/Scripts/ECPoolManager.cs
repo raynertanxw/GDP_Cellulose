@@ -53,7 +53,7 @@ public class ECPoolManager : MonoBehaviour {
 	public GameObject SpawnFromPool(Vector2 _SpawnPos, bool _Default)
 	{
 		if (!_Default)
-			EnemyMainFSM.Instance ().StartProduceChild ();
+			EMHelper.Instance ().StartProduceChild ();
 		SpawnCount++;
 		
 		//Extract the enemy child cell pool from the pool and add it to the enemy child cell list
