@@ -12,7 +12,7 @@ public static class SteeringBehavior
 		return -Difference.normalized * _Speed;	
 	}
 	
-	public static Vector2 Pursuit(GameObject _Agent, GameObject _Target, float _Speed, float _AgentMaxSpeed, float _TargetMaxSpeed)
+	public static Vector2 Pursuit(GameObject _Agent, GameObject _Target, float _Speed)
 	{
 		Vector2 DirectionToTarget = _Target.transform.position - _Agent.transform.position;
 		float DistanceBetween = Utility.Distance(_Target.transform.position,_Agent.transform.position);

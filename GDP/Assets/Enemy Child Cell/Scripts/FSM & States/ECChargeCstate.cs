@@ -123,28 +123,7 @@ public class ECChargeCState : IECState {
 		//If the enemy child cell had not traveled through the path given and the target child cell is still alive, continue drive the enemy child cell towards the target player cell
 		if(bSqueezeDone && !bReturnToIdle && !bReachTarget && m_ecFSM.Target != null && !HasCellReachTargetPos(m_ecFSM.Target.transform.position))
 		{
-			//Acceleration += SteeringBehavior.Seek(m_Child,m_ecFSM.Target.transform.position,24f);
-			if(!m_ecFSM.Target.name.Contains("Squad"))
-			{
-				if(m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Idle)
-				{
-					Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,fPlayerIdleMaxVelo);
-				}
-				else if(m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Defend)
-				{
-					Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,fPlayerDefendMaxVelo);
-				}
-				else if( m_ecFSM.Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Avoid)
-				{
-					Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,fPlayerAvoidMaxVelo);
-				}
-			}
-			else if(m_ecFSM.Target.name.Contains("Squad"))
-			{
-				Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f,fEnemyMaxSpeed,PlayerSquadFSM.Instance.IdleMaximumVelocity);
-			}
-			//Debug.Log("acceleration pursuit: " + Acceleration);
-			
+			Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.Target,24f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
 			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
 		}
