@@ -59,18 +59,25 @@ public class Animate
         // if: The animation is overridable
         if (bExpandContract_IsOverridable)
         {
-            if (AnimateHandler.ActivateExpandContract(this))
+            // if: It is not currently expanding and contracting, which means that this is a new animation and not an overriden one
+            if (!bIsExpandContract)
             {
-                // Initialisation of Expand-Contract Animation Fields
-                fExpandContract_Timer = _fTimer;
-                nExpandContract_Frequency = _nFrequency * 2;
-                fExpandContract_Size = _fSize - 1f;
-                fExpandContract_CurrentTimer = _fStartTime * fExpandContract_Timer;
-                bExpandContract_IsOverridable = _bIsOverridable;
-
-                bIsExpandContract = true;
-                return true;
+                // if: This animation cannot be passed to AnimateHandler.cs (cache is probably full)
+                if (!AnimateHandler.ActivateExpandContract(this))
+                {
+                    return false;
+                }
             }
+
+            // Initialisation of Expand-Contract Animation Fields
+            fExpandContract_Timer = _fTimer;
+            nExpandContract_Frequency = _nFrequency * 2;
+            fExpandContract_Size = _fSize - 1f;
+            fExpandContract_CurrentTimer = _fStartTime * fExpandContract_Timer;
+            bExpandContract_IsOverridable = _bIsOverridable;
+
+            bIsExpandContract = true;
+            return true;
         }
         return false;
     }
