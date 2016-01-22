@@ -17,11 +17,10 @@ public class ECPoolManager : MonoBehaviour {
 		if(s_ECPool == null)
 		{
 			s_ECPool = new Queue<GameObject>();
-			
 		}
-	
+		
 		s_ECTracker = ECTracker.Instance;
-	
+		
 		//Store all enemy child cells into the pool
 		foreach(Transform child in transform)
 		{
@@ -76,5 +75,10 @@ public class ECPoolManager : MonoBehaviour {
 	private bool IsPoolEmpty()
 	{
 		return (s_ECPool.Count > 0) ? false : true;
+	}
+	
+	public static void ResetStatics()
+	{
+		s_ECPool = null;
 	}
 }
