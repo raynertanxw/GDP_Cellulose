@@ -36,4 +36,9 @@ public class ECTracker
 		AvoidCells = new List<EnemyChildFSM>();
 		DefendCells = new List<EnemyChildFSM>();
 	}
+	
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }
