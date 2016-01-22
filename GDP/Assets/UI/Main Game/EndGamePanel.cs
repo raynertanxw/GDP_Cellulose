@@ -81,17 +81,17 @@ public class EndGamePanel : MonoBehaviour
 	#region OnClick functions
 	public void ButtonBackToMenu()
 	{
-		Application.LoadLevel(0);
+		SceneManager.LoadScene(0);
 	}
 
 	public void ButtonNextLevel()
 	{
-		Application.LoadLevel(Application.loadedLevel);
+		SceneManager.LoadScene(Application.loadedLevel);
 	}
 
 	public void ButtonRetry()
 	{
-		Application.LoadLevel(Application.loadedLevel);
+		SceneManager.LoadScene(Application.loadedLevel);
 	}
 	#endregion
 }
