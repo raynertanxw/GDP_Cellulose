@@ -18,8 +18,17 @@ public class PC_ChargeChildState : IPCState
         m_nLeaderIndex = 0;
         m_targetPos = m_pcFSM.transform; // In case leader doesn't process first.
 
-		if (m_pcFSM.attackMode == PlayerAttackMode.ScatterShot)
+		if (m_pcFSM.attackMode == PlayerAttackMode.SwarmTarget)
+		{
+			s_fMaxAcceleration = 200000f;
+			s_fMaxVelocity = 3.5f;
+		}
+		else if (m_pcFSM.attackMode == PlayerAttackMode.ScatterShot)
+		{
 			m_targetPos = EnemyMainFSM.Instance().transform;
+			s_fMaxAcceleration = 2000f;
+			s_fMaxVelocity = 10f;
+		}
     }
 	
 	public override void Execute()
@@ -179,8 +188,9 @@ public class PC_ChargeChildState : IPCState
 		acceleration += Separation() * separationWeight;
 		// Clamp the acceleration to a maximum value
 		acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
-		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
 
+		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, maxVelocity);
         FaceTowardsHeading();
     }
 
