@@ -110,4 +110,19 @@ public class WallRenderer : MonoBehaviour
             }
         }
     }
+
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_lastWallBackgroundInstance = null;
+		s_lastWallSideInstance = null;
+	}
 }

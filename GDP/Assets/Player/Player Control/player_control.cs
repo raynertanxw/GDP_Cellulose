@@ -507,4 +507,24 @@ public class player_control : MonoBehaviour
 		return numChild;
 	}
 	#endregion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }

@@ -132,4 +132,17 @@ public class Nutrients : MonoBehaviour
 
 	// Getter-Setter Functions
 	public static int Nutrient { get { return s_nNutrients; } }
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_playerNutrientPool = null;
+	}
 }

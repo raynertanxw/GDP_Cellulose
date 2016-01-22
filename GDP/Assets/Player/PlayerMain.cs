@@ -76,4 +76,24 @@ public class PlayerMain : MonoBehaviour
 		Gizmos.DrawWireSphere(transform.position, m_fDetectionRadius);
 	}
 	#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }

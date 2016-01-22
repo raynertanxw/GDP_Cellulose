@@ -59,4 +59,20 @@ public class GameManager : MonoBehaviour
 	{
 		EndGamePanel.Instance.SetEndGamePanelVisibility(true);
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }
