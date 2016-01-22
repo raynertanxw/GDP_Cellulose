@@ -4,10 +4,15 @@ using System.Collections;
 [RequireComponent (typeof (Collider2D))]
 public class PlayerMain : MonoBehaviour
 {
+	public static PlayerMain s_Instance;
+
 	[SerializeField]
 	private int m_nHealth = 100;
 	public int Health { get { return m_nHealth; } }
+	private bool m_bIsAlive = true;
+	public bool IsAlive { get { return m_bIsAlive; } }
 
+	public float m_fDetectionRadius = 5.0f;
 	private Collider2D[] m_surroundingEnemyCells;
 	public Collider2D[] surroundingEnemyCells { get { return m_surroundingEnemyCells; } }
 	public bool hasSurroundingEnemyCells
@@ -21,9 +26,7 @@ public class PlayerMain : MonoBehaviour
 		}
 	}
 
-	public float m_fDetectionRadius = 5.0f;
 
-	public static PlayerMain s_Instance;
 
 	void Awake()
 	{
@@ -35,6 +38,9 @@ public class PlayerMain : MonoBehaviour
 		{
 			Destroy(this.gameObject);
 		}
+
+		m_bIsAlive = true;
+		m_nHealth = Settings.s_nPlayerInitialHealth;
 	}
 
 	void FixedUpdate()
@@ -45,6 +51,11 @@ public class PlayerMain : MonoBehaviour
 	public void HurtPlayerMain()
 	{
 		m_nHealth--;
+
+		if (m_nHealth <= 0)
+		{
+			m_bIsAlive = false;
+		}
 	}
 
 	void OnTriggerEnter2D(Collider2D col)
