@@ -123,6 +123,7 @@ public class PlayerChildFSM : MonoBehaviour
 			// lazy initialize it
 			s_playerChildFSMPool = new PlayerChildFSM[Settings.s_nPlayerMaxChildCount];
 			s_playerChildStatus = new pcStatus[Settings.s_nPlayerMaxChildCount];
+			s_nPoolPointerIndex = 0;
 		}
 		// add myself
 		s_playerChildFSMPool[s_nPoolPointerIndex] = this;

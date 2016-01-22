@@ -12,8 +12,6 @@ public class Wall : MonoBehaviour
 	[SerializeField] private float fNutrientsDelay = 1.0f;
 	[Tooltip("The length of the spawnable distance")]
 	[SerializeField] private float fSpawnYLimit = 20f;
-	[Tooltip("The nutrient gameObject to spawn")]
-	[SerializeField] private GameObject nutrientGO;
 
 	[Header("Wall Renderer Properties")]
 	[Tooltip("The array of wall-sides")]
@@ -100,7 +98,7 @@ public class Wall : MonoBehaviour
 					xPos = -6.5f;
 
 				Vector3 spawnPos = new Vector3(xPos, Random.Range(fLowerLimit, fUpperLimit), 0);
-				Instantiate(nutrientGO, spawnPos, Quaternion.identity);
+				Nutrients.Spawn(spawnPos);
 			}
 		}
 	}
