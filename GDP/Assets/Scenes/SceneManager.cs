@@ -19,6 +19,12 @@ public class SceneManager : MonoBehaviour
 		Nutrients.ResetStatics();
 
 		ECPoolManager.ResetStatics();
+		ECIdleState.ResetStatics();
+		DirectionDatabase.ResetStatics();
+		FormationDatabase.ResetStatics();
+		PathQuery.ResetStatics();
+		PointDatabase.ResetStatics();
+		PositionQuery.ResetStatics();
 
 		Application.LoadLevel(_sceneId);
 	}
@@ -34,7 +40,17 @@ public class SceneManager : MonoBehaviour
 		GameManager.ResetStatics();
 		EndGamePanel.ResetStatics();
 		
+		Wall.ResetStatics();
+		WallRenderer.ResetStatics();
+		Nutrients.ResetStatics();
+		
 		ECPoolManager.ResetStatics();
+		ECIdleState.ResetStatics();
+		DirectionDatabase.ResetStatics();
+		FormationDatabase.ResetStatics();
+		PathQuery.ResetStatics();
+		PointDatabase.ResetStatics();
+		PositionQuery.ResetStatics();
 		
 		Application.LoadLevel(_sceneName);
 	}
