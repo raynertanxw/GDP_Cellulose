@@ -85,6 +85,9 @@ public class Nutrients : MonoBehaviour
 	// Update(): is called once per frame
 	void Update () 
 	{
+		if (bIsInPool)
+			return;
+
 		// if: Checks if the resource is clicked
 		if (bIsCollectable)
 		{
@@ -111,6 +114,7 @@ public class Nutrients : MonoBehaviour
 	void SendBackToPool()
 	{
 		spriteRen.enabled = false;
+		transform.localScale = Vector3.one;
 		bIsInPool = true;
 	}
 

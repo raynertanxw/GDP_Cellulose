@@ -11,7 +11,9 @@ public class Wall : MonoBehaviour
 	[Tooltip("The duration between each tries")]
 	[SerializeField] private float fNutrientsDelay = 1.0f;
 	[Tooltip("The length of the spawnable distance")]
-	[SerializeField] private float fSpawnYLimit = 20f;
+	[SerializeField] private float fSpawnYRange = 15f;
+	[Tooltip("The verticle offsent of the spawnable range")]
+	[SerializeField] private float fSpawnYOffset = 2.5f;
 
 	[Header("Wall Renderer Properties")]
 	[Tooltip("The array of wall-sides")]
@@ -72,8 +74,8 @@ public class Wall : MonoBehaviour
 	void Start ()
 	{
 		// Fields Initialisation
-		fUpperLimit = fSpawnYLimit / 2f;
-		fLowerLimit = -(fSpawnYLimit / 2f);
+		fUpperLimit = (fSpawnYRange / 2f) + fSpawnYOffset;
+		fLowerLimit = -(fSpawnYRange / 2f) + fSpawnYOffset;
 
 		// Initiate nutrients Spawning Routine
 		StartCoroutine("SpawnNutrients");
