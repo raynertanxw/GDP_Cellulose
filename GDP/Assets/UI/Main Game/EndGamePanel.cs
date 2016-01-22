@@ -7,8 +7,7 @@ public class EndGamePanel : MonoBehaviour
 	private static EndGamePanel s_Instance = null;
 	public static EndGamePanel Instance { get { return s_Instance; } }
 
-	private CanvasGroup canvasGrp;
-	private Text endGameText, nextRetryText;
+	private CanvasGroup winCanvasGrp, loseCanvasGrp;
 
 	void Awake()
 	{
@@ -17,9 +16,8 @@ public class EndGamePanel : MonoBehaviour
 		else
 			Destroy(this.gameObject);
 
-		canvasGrp = GetComponent<CanvasGroup>();
-		endGameText = transform.GetChild(0).GetComponent<Text>();
-		nextRetryText = transform.GetChild(1).GetChild(0).GetComponent<Text>();
+		winCanvasGrp = transform.GetChild(0).GetComponent<CanvasGroup>();
+		loseCanvasGrp = transform.GetChild(1).GetComponent<CanvasGroup>();
 
 		SetEndGamePanelVisibility(false);
 	}
@@ -28,30 +26,72 @@ public class EndGamePanel : MonoBehaviour
 	{
 		if (_visible)
 		{
-			canvasGrp.interactable = true;
-			canvasGrp.blocksRaycasts = true;
-			canvasGrp.alpha = 1f;
+			if (GameManager.Instance.bPlayerWon == true)
+			{
+				SetWinGameVisibility(true);
+				SetLoseGameVisibility(false);
+			}
+			else
+			{
+				SetWinGameVisibility(false);
+				SetLoseGameVisibility(true);
+			}
 		}
 		else
 		{
-			canvasGrp.interactable = false;
-			canvasGrp.blocksRaycasts = false;
-			canvasGrp.alpha = 0f;
+			SetWinGameVisibility(false);
+			SetLoseGameVisibility(false);
 		}
 	}
 
+	private void SetWinGameVisibility(bool _visible)
+	{
+		if (_visible)
+		{
+			winCanvasGrp.interactable = true;
+			winCanvasGrp.blocksRaycasts = true;
+			winCanvasGrp.alpha = 1f;
+		}
+		else
+		{
+			winCanvasGrp.interactable = false;
+			winCanvasGrp.blocksRaycasts = false;
+			winCanvasGrp.alpha = 0f;
+		}
+	}
+
+	private void SetLoseGameVisibility(bool _visible)
+	{
+		if (_visible)
+		{
+			loseCanvasGrp.interactable = true;
+			loseCanvasGrp.blocksRaycasts = true;
+			loseCanvasGrp.alpha = 1f;
+		}
+		else
+		{
+			loseCanvasGrp.interactable = false;
+			loseCanvasGrp.blocksRaycasts = false;
+			loseCanvasGrp.alpha = 0f;
+		}
+	}
 
 
 
 	#region OnClick functions
 	public void ButtonBackToMenu()
 	{
-
+		SceneManager.LoadScene(0);
 	}
 
-	public void ButtonNextOrRetryLevel()
+	public void ButtonNextLevel()
 	{
+		SceneManager.LoadScene(Application.loadedLevel);
+	}
 
+	public void ButtonRetry()
+	{
+		SceneManager.LoadScene(Application.loadedLevel);
 	}
 	#endregion
 }
