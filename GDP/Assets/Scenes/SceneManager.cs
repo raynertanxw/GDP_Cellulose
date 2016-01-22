@@ -25,6 +25,7 @@ public class SceneManager : MonoBehaviour
 		PathQuery.ResetStatics();
 		PointDatabase.ResetStatics();
 		PositionQuery.ResetStatics();
+		ECTracker.ResetStatics();
 
 		Application.LoadLevel(_sceneId);
 	}
@@ -51,6 +52,7 @@ public class SceneManager : MonoBehaviour
 		PathQuery.ResetStatics();
 		PointDatabase.ResetStatics();
 		PositionQuery.ResetStatics();
+		ECTracker.ResetStatics();
 		
 		Application.LoadLevel(_sceneName);
 	}

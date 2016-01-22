@@ -36,6 +36,8 @@ public class EndGamePanel : MonoBehaviour
 				SetWinGameVisibility(false);
 				SetLoseGameVisibility(true);
 			}
+
+			player_control.Instance.DeselectAllCtrls();
 		}
 		else
 		{
