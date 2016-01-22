@@ -35,6 +35,8 @@ public class EMController : MonoBehaviour
 	private float fDefendFactor;
 	// Velocity
 	private Vector2 velocity;
+	private Vector2 pushBackVel;
+	private Vector2 pushForwardVel;
 	// Horizontal movement
 	[SerializeField]
 	private bool bMovingLeft;
@@ -110,6 +112,8 @@ public class EMController : MonoBehaviour
 		// Velocity
 		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
+		pushBackVel = new Vector2 (0.0f, -2.0f);
+		pushForwardVel = new Vector2 (0.0f, 1.0f);
 		// Damage
 		nDamageNum = 0;
 		// State
@@ -180,13 +184,18 @@ public class EMController : MonoBehaviour
 	// Push back the enemy main cell when received attack
 	IEnumerator ForceBack()
 	{
+		// Push forward first
+		Vector2 velocityTemp = pushForwardVel;
+		thisRB.velocity = velocityTemp;
+		// Wait for 0.1 second
+		yield return new WaitForSeconds (.1f);
         // Temporary velocity for enemy main cell when being pushed
-		Vector2 velocityTemp = new Vector2 (0f, -velocity.y * 2.5f);
+		velocityTemp = pushBackVel;
 		thisRB.velocity = velocityTemp;
         // Set the push status to true
 		bPushed = true;
-        // Wait for 0.4 second
-		yield return new WaitForSeconds (.4f);
+        // Wait for 0.1 second
+		yield return new WaitForSeconds (.1f);
 		// Reduce damage count by 1
 		nDamageNum--;
         // Reset velocity if the enemy main cell is not stunned
