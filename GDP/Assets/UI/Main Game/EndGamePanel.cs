@@ -94,4 +94,18 @@ public class EndGamePanel : MonoBehaviour
 		SceneManager.LoadScene(Application.loadedLevel);
 	}
 	#endregion
+
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }

@@ -8,6 +8,17 @@ public class SceneManager : MonoBehaviour
 		Application.LoadLevel(2);
 
 		// Call All Reset Statics
+		PlayerChildFSM.ResetStatics();
+		PlayerMain.ResetStatics();
+		player_control.ResetStatics();
+		GameManager.ResetStatics();
+		EndGamePanel.ResetStatics();
+
+		Wall.ResetStatics();
+		WallRenderer.ResetStatics();
+		Nutrients.ResetStatics();
+
+		ECPoolManager.ResetStatics();
 
 		Application.LoadLevel(_sceneId);
 	}
@@ -17,6 +28,13 @@ public class SceneManager : MonoBehaviour
 		Application.LoadLevel(2);
 		
 		// Call All Reset Statics
+		PlayerChildFSM.ResetStatics();
+		PlayerMain.ResetStatics();
+		player_control.ResetStatics();
+		GameManager.ResetStatics();
+		EndGamePanel.ResetStatics();
+		
+		ECPoolManager.ResetStatics();
 		
 		Application.LoadLevel(_sceneName);
 	}

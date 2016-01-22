@@ -9,9 +9,9 @@ public class PlayerChildFSM : MonoBehaviour
 {
 	#region Pool Control
 	// singleton list to hold all out playerChildPoolControllers.
-	static private int s_nPoolPointerIndex = 0;
-	static private PlayerChildFSM[] s_playerChildFSMPool;
-	static public PlayerChildFSM[] playerChildPool { get { return s_playerChildFSMPool; } }
+	private static int s_nPoolPointerIndex = 0;
+	private static PlayerChildFSM[] s_playerChildFSMPool;
+	public static PlayerChildFSM[] playerChildPool { get { return s_playerChildFSMPool; } }
 	public static pcStatus[] s_playerChildStatus;
 	
 	static public PlayerChildFSM Spawn(Vector3 spawnPoint)
@@ -208,5 +208,19 @@ public class PlayerChildFSM : MonoBehaviour
 //        Gizmos.DrawWireSphere(transform.position, fGizmoSeparationRadius);
 //    }
     #endif
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_playerChildFSMPool = null;
+		s_playerChildStatus = null;
+	}
 }
 

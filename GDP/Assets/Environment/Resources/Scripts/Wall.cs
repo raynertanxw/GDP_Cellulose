@@ -149,4 +149,22 @@ public class Wall : MonoBehaviour
 	public float WallSidesSpeed { get { return fWallSidesSpeed; } }
 	public float WallBackgroundSpeed { get { return fWallBackgroundSpeed; } }
 	public Color ArtilleryColor { get { return colorArtillery; } }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }
