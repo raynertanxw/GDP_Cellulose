@@ -40,7 +40,7 @@ public class ECIdleState : IECState
 	private static float fTimerLimit;
 
 	//An enumeration for the type of idling the enemy child cell is having
-	private enum IdleStatus {Seperate, Cohesion};
+	private enum IdleStatus {None, Seperate, Cohesion};
 
 	//Constructor
 	public ECIdleState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -70,12 +70,13 @@ public class ECIdleState : IECState
 		
 		m_ecFSM.rigidbody2D.drag = 0f;
 		IdleCount = 0;
+		CurrentIdleState = IdleStatus.None;
 	}
 
 	public override void Enter()
 	{
 		//If there is no idle status specified, start the idle status being the seperate status and set the previous status time being the current time in-game
-		if(CurrentIdleState == null)
+		if(CurrentIdleState == IdleStatus.None)
 		{
 			CurrentIdleState = IdleStatus.Seperate;
 			fPreviousStatusTime = Time.time;
@@ -229,6 +230,11 @@ public class ECIdleState : IECState
 	{
 		CurrentIdleState = IdleStatus.Cohesion;
 		fPreviousStatusTime = Time.time;
+	}
+	
+	public static void ResetStatics()
+	{
+		CurrentIdleState = IdleStatus.None;
 	}
 }
 

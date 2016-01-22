@@ -257,4 +257,9 @@ public class PathQuery
 		}
 		return StartPoint;
 	}
+	
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }

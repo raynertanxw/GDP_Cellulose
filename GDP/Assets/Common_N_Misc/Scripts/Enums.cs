@@ -16,7 +16,7 @@ public enum ECState {Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend,
 
 public enum MessageType {Empty, Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend, Avoid, Landmine, Dead};
 
-public enum PositionType {Aggressive, Neutral, Defensive};
+public enum PositionType {Empty, Aggressive, Neutral, Defensive};
 
 public enum QueryType   {Exact, Around, Path};
 
@@ -26,7 +26,7 @@ public enum RangeValue  {Min, Max, None};
 
 public enum Directness  {Low, Mid, High};
 
-public enum Formation {Empty, Crescent, ReverseCrescent, CircularSurround, AreaBlock};
+public enum Formation {Empty, QuickCircle, Ladder, ReverseCircular, Turtle};
 
 public enum PlayerAttackMode {BurstShot, SwarmTarget, ScatterShot};
 

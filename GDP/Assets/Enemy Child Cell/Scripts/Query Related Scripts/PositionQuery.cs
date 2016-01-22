@@ -297,42 +297,26 @@ public class PositionQuery
 			int Choice = Random.Range(0, 4);
 			if(Choice == 0)
 			{
-				return Formation.Crescent;
+				return Formation.QuickCircle;
 			}
 			else if(Choice == 1)
 			{
-				return Formation.ReverseCrescent;
+				return Formation.ReverseCircular;
 			}
 			else if(Choice == 2)
 			{
-				return Formation.CircularSurround;
+				return Formation.Turtle;
 			}
 			else if(Choice == 3)
 			{
-				return Formation.AreaBlock;
+				return Formation.Ladder;
 			}
 		}*/
-		return Formation.ReverseCrescent;
+		return Formation.Ladder;
 	}
-		
-	/*
-	public static Vector2[] GetPathToPM(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
+
+	public static void ResetStatics()
 	{
-	
+		s_Instance = null;
 	}
-	
-	public static Vector2[] GetPathToPC(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
-	{
-		
-	}
-	
-	public static Vector2[] GetTrickAttackPathToPM(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
-	{
-	
-	}
-	
-	public static Vector2 GetECPosAwayFromPC(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
-	{
-	
-	}*/
 }

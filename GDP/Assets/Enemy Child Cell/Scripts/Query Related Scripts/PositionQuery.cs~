@@ -40,7 +40,7 @@ public class PositionQuery
 
 		for(int i = 0; i < Threats.Count; i++)
 		{
-			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().GetNodeChildList().Count > 0)
+			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().activeChildCount > 0)
 			{
 				return false;
 			}
@@ -111,7 +111,7 @@ public class PositionQuery
 	private int EvaluateNode (GameObject _Node)
 	{
 		//if the node contains no cell, it serve no threat to the enemy main cell
-		if(_Node.GetComponent<Node_Manager>().GetNodeChildList().Count == 0)
+		if(_Node.GetComponent<Node_Manager>().activeChildCount == 0)
 		{
 			return 0;
 		}
@@ -119,7 +119,7 @@ public class PositionQuery
 		int nthreatLevel = 0;
 		
 		//increase score based on amount of cells in that node
-		nthreatLevel += _Node.GetComponent<Node_Manager>().GetNodeChildList().Count;
+		nthreatLevel += _Node.GetComponent<Node_Manager>().activeChildCount;
 		
 		//increase score if that node have formed together and has a node captain
 		if(_Node.GetComponent<PlayerSquadFSM>() != null)
@@ -297,42 +297,26 @@ public class PositionQuery
 			int Choice = Random.Range(0, 4);
 			if(Choice == 0)
 			{
-				return Formation.Crescent;
+				return Formation.QuickCircle;
 			}
 			else if(Choice == 1)
 			{
-				return Formation.ReverseCrescent;
+				return Formation.ReverseCircular;
 			}
 			else if(Choice == 2)
 			{
-				return Formation.CircularSurround;
+				return Formation.Turtle;
 			}
 			else if(Choice == 3)
 			{
-				return Formation.AreaBlock;
+				return Formation.Ladder;
 			}
 		}*/
-		return Formation.ReverseCrescent;
+		return Formation.Ladder;
 	}
-		
-	/*
-	public static Vector2[] GetPathToPM(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
+
+	public static void ResetStatics()
 	{
-	
+		s_Instance = null;
 	}
-	
-	public static Vector2[] GetPathToPC(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
-	{
-		
-	}
-	
-	public static Vector2[] GetTrickAttackPathToPM(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
-	{
-	
-	}
-	
-	public static Vector2 GetECPosAwayFromPC(QueryType Qtype, TargetType Ttype, RangeValue Range, Directness Direct)
-	{
-	
-	}*/
 }

@@ -254,4 +254,9 @@ public class PointDatabase
 		
 		return TargetPoint;
 	}
+	
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }

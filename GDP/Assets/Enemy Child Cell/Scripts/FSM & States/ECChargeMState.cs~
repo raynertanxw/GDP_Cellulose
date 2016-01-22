@@ -44,6 +44,10 @@ public class ECChargeMState : IECState {
 		fMaxAcceleration = 25f;
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
 		ShrinkRate = new Vector3(-0.1f, 0.1f, 0.0f);
+		PathToTarget = null;
+		CurrentTargetPoint = null;
+		CurrentTargetIndex = 0;
+		EndPos = Vector2.zero;
 	}
 	
 	public override void Enter()
@@ -215,11 +219,11 @@ public class ECChargeMState : IECState {
 		{
 			PathQuery.Instance.AStarSearch(GetClosestChargerToPMain().transform.position,m_ecFSM.m_PMain.transform.position,false);
 			PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
-			//Utility.DrawPath(PathToTarget,Color.red,0.1f);
+			CurrentTargetIndex = 0;
+			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
 		
-		CurrentTargetIndex = 0;
-		CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+		
 		
 		bSqueezeDone = true;
 	}

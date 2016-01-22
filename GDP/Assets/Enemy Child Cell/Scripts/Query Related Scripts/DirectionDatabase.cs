@@ -121,4 +121,9 @@ public class DirectionDatabase
 		_Angle *= Mathf.Deg2Rad;
 		return new Vector2(Mathf.Cos(_Angle),Mathf.Sin(_Angle));
 	}
+	
+	public static void ResetStatics()
+	{
+		s_Instance = null;
+	}
 }

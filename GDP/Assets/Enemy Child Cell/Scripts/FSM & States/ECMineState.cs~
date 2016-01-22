@@ -59,6 +59,12 @@ public class ECMineState : IECState {
 
 		fExplosiveRange = 3.2f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
 		fKillRange = 0.5f * fExplosiveRange;
+		GeneralTargetIndex = 0;
+		SpreadPoint = null;
+		GeneralTargetPoint = null;
+		Target = null;
+		CurrentPositionType = PositionType.Empty;
+		PathToTarget = new List<Point>();
 	}
 
 	public override void Enter()
