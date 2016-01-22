@@ -11,6 +11,7 @@ public class MainCamera : MonoBehaviour
     private static float nShake = 0;           // fShake: The number of shake the camera will perform
     private static float fIntensity = 0f;       // fIntensity: The intensity of the shake
     private static Vector3 vCameraPosition;      // vCameraPosition: The initial camera position
+    private Animate mAnimate;
 
     // Co-Routines
     // ShakeRoutine(): The co-routine that handles the shaking
@@ -38,12 +39,22 @@ public class MainCamera : MonoBehaviour
             m_Instance = this;
         else
             Destroy(this.gameObject);
+
+        mAnimate = new Animate(transform);
+        Debug.Log(mAnimate.AnimatedTransform);
     }
 
     // Start(): Use this for initialisation
     void Start()
     {
         vCameraPosition = transform.position;
+        mAnimate.Idle(0.4f, 1f, true, false, true);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.P))
+            mAnimate.StopIdle(true);
     }
 
     // Public Static Functions
