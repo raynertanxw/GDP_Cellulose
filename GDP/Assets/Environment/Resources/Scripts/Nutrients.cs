@@ -79,7 +79,7 @@ public class Nutrients : MonoBehaviour
 	void Start () 
 	{
 		// Definition of variables
-		playerMainTransform = PlayerMain.s_Instance.transform;
+		playerMainTransform = PlayerMain.Instance.transform;
 	}
 	
 	// Update(): is called once per frame

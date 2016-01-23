@@ -121,7 +121,7 @@ public class SquadChildFSM : MonoBehaviour
         dict_States.Add(SCState.FindResource, new SC_FindResourceState(this));
 
         // Initialisation
-        playerPosition = PlayerMain.s_Instance.transform.position;
+        playerPosition = PlayerMain.Instance.transform.position;
         m_strafingVector = Vector3.up;
 
         fStrafingRadius = PlayerSquadFSM.Instance.StrafingRadius;

@@ -69,7 +69,7 @@ public class PC_AvoidState : IPCState
     #region Helper functions
     private bool DetectedEnemyInRange()
     {
-		return PlayerMain.s_Instance.hasSurroundingEnemyCells;
+		return PlayerMain.Instance.hasSurroundingEnemyCells;
     }
     #endregion
 
@@ -216,10 +216,10 @@ public class PC_AvoidState : IPCState
         Vector2 sumVector = Vector2.zero;
         int count = 0;
 
-		for (int i = 0; i < PlayerMain.s_Instance.surroundingEnemyCells.Length; i++)
+		for (int i = 0; i < PlayerMain.Instance.surroundingEnemyCells.Length; i++)
         {
-            float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, PlayerMain.s_Instance.surroundingEnemyCells[i].attachedRigidbody.position);
-			sumVector += (m_pcFSM.rigidbody2D.position - PlayerMain.s_Instance.surroundingEnemyCells[i].attachedRigidbody.position).normalized / fDist;
+            float fDist = Vector2.Distance(m_pcFSM.rigidbody2D.position, PlayerMain.Instance.surroundingEnemyCells[i].attachedRigidbody.position);
+			sumVector += (m_pcFSM.rigidbody2D.position - PlayerMain.Instance.surroundingEnemyCells[i].attachedRigidbody.position).normalized / fDist;
 
             count++;
         }

@@ -131,15 +131,15 @@ public class EMLeraningAgent : MonoBehaviour
 			}
 
 			// Reward for loss of health of the player main cell
-			if (((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness)) * 4f < 
-			    (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f)
+			if (((pastPlayerHealth - PlayerMain.Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness)) * 4f < 
+			    (pastPlayerHealth - PlayerMain.Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f)
 			{
-				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 4f, 
-				                               (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f);
+				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 4f, 
+				                               (pastPlayerHealth - PlayerMain.Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f);
 			}
 			else 
-				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f, 
-				                               (pastPlayerHealth - PlayerMain.s_Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 4f);
+				fOverallScore += Random.Range ((pastPlayerHealth - PlayerMain.Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 8f, 
+				                               (pastPlayerHealth - PlayerMain.Instance.Health) * Mathf.Sqrt(m_EMFSM.CurrentAggressiveness) * 4f);
 		}
 		// Landmine state
 		if (state == EMState.Landmine)
@@ -168,8 +168,8 @@ public class EMLeraningAgent : MonoBehaviour
 		bool bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
 		int nCurrentEnemyHealth = m_EMFSM.Health;
 		int nCurrentPlayerHealth = 0;
-		if (PlayerMain.s_Instance != null)
-			nCurrentPlayerHealth = PlayerMain.s_Instance.Health;
+		if (PlayerMain.Instance != null)
+			nCurrentPlayerHealth = PlayerMain.Instance.Health;
 		// Pause calling the function for checking and wait for the result
 		fCheckFreq = Random.Range (0.25f, .5f);
 		StartCoroutine (PauseCheck (fCheckFreq, currentStateEnum, nCurrentEnemyChild, nCurrentPlayerChild, nCurrentSquadChild, bSquadCaptainIsAlive, 

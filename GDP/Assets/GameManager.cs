@@ -39,7 +39,7 @@ public class GameManager : MonoBehaviour
 			bGameIsOver = true;
 			return true;
 		}
-		else if (PlayerMain.s_Instance.IsAlive == false)
+		else if (PlayerMain.Instance.IsAlive == false)
 		{
 			bPlayerWon = false;
 			bGameIsOver = true;

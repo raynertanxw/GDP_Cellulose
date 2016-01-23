@@ -90,7 +90,7 @@ public class PC_DefendState : IPCState
 		if (m_pcFSM.m_currentEnemyCellTarget == null)
 			return false;
 
-		if (Vector2.Distance(PlayerMain.s_Instance.transform.position, m_pcFSM.m_currentEnemyCellTarget.transform.position) > PlayerMain.s_Instance.m_fDetectionRadius)
+		if (Vector2.Distance(PlayerMain.Instance.transform.position, m_pcFSM.m_currentEnemyCellTarget.transform.position) > PlayerMain.Instance.m_fDetectionRadius)
 		{
 			if (Vector2.Distance(m_pcFSM.transform.position, m_pcFSM.m_currentEnemyCellTarget.transform.position) > s_fNearDetectionRange)
 			{
@@ -126,9 +126,9 @@ public class PC_DefendState : IPCState
 	{
 		if (FindNewLocalTarget() == false) // If can't find local target, find in danger zone.
 		{
-			if (PlayerMain.s_Instance.hasSurroundingEnemyCells == true)
+			if (PlayerMain.Instance.hasSurroundingEnemyCells == true)
 			{
-				m_pcFSM.m_currentEnemyCellTarget = PlayerMain.s_Instance.surroundingEnemyCells[0].gameObject.GetComponent<EnemyChildFSM>();
+				m_pcFSM.m_currentEnemyCellTarget = PlayerMain.Instance.surroundingEnemyCells[0].gameObject.GetComponent<EnemyChildFSM>();
 				return true;
 			}
 			else
