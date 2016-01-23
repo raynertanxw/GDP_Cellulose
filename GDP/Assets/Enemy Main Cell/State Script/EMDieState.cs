@@ -27,6 +27,11 @@ public class EMDieState : IEMState
 	
 	public override void Execute ()
 	{
-		m_EMFSM.ChangeState (EMState.Production);
+		//m_EMFSM.ChangeState (EMState.Production);
+	}
+
+	public override void Exit ()
+	{
+
 	}
 }
