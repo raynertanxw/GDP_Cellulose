@@ -53,6 +53,12 @@ public class SceneManager : MonoBehaviour
 		PointDatabase.ResetStatics();
 		PositionQuery.ResetStatics();
 		ECTracker.ResetStatics();
+
+		EnemyMainFSM.ResetStatics ();
+		EMController.ResetStatics ();
+		EMHelper.ResetStatics ();
+		EMTransition.ResetStatics ();
+		EMLeraningAgent.ResetStatics ();
 		
 		Application.LoadLevel(_sceneName);
 	}

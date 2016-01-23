@@ -445,34 +445,33 @@ public class EMController : MonoBehaviour
 	//Check whether the Enemy main is having enough of an advantage to tank player's attack to deal more damage onto the player's main
 	void ShouldMainBeTanking()
 	{
-		int PCCount = 0;
-		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
-		{
-			if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode || PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
-			{
-				PCCount++;
+		if (PlayerChildFSM.s_playerChildStatus != null) {
+			int PCCount = 0;
+			for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++) {
+				if (PlayerChildFSM.s_playerChildStatus [i] == pcStatus.InLeftNode || PlayerChildFSM.s_playerChildStatus [i] == pcStatus.InRightNode) {
+					PCCount++;
+				}
 			}
+		
+			if (m_EMFSM.Health > PMain.Health && m_EMFSM.ECList.Count > PCCount && PMain.Health < 35) {
+				bShouldMainTank = true;
+			}
+			bShouldMainTank = false;
 		}
-	
-		if(m_EMFSM.Health > PMain.Health && m_EMFSM.ECList.Count > PCCount && PMain.Health < 35)
-		{
-			bShouldMainTank = true;
-		}
-		bShouldMainTank = false;
 	}
 	
 	void HasAllCellsEnterMain()
 	{
-		List<EnemyChildFSM> ECList = ECTracker.s_Instance.IdleCells;
-		for(int i = 0; i < ECList.Count; i++)
-		{
-			if(!ECIdleState.HasChildEnterMain(ECList[i].gameObject))
-			{
-				bIsAllChildWithinMain = false;
-				return;
+		if (ECTracker.s_Instance != null) {
+			List<EnemyChildFSM> ECList = ECTracker.s_Instance.IdleCells;
+			for (int i = 0; i < ECList.Count; i++) {
+				if (!ECIdleState.HasChildEnterMain (ECList [i].gameObject)) {
+					bIsAllChildWithinMain = false;
+					return;
+				}
 			}
+			bIsAllChildWithinMain = true;
 		}
-		bIsAllChildWithinMain = true;
 	}
 
 	public static void ResetStatics()
