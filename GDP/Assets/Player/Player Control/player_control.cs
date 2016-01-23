@@ -256,6 +256,9 @@ public class player_control : MonoBehaviour
 
 			s_nResources -= Settings.s_nPlayerChildSpawnCost;
 			UpdateUI_nutrients();
+			UpdateUI_nodeChildCountText();
+
+			PlayerMain.s_Instance.animate.ExpandContract(0.5f, 1, 1.2f, true, 0.2f);
 		}
 		else
 		{
@@ -263,7 +266,6 @@ public class player_control : MonoBehaviour
 		}
 
 		RestartSpawnCtrlFadeOut();
-		UpdateUI_nodeChildCountText();
 	}
 
 	public void ActionDefendAvoid(int _nodeIndex)
@@ -479,6 +481,8 @@ public class player_control : MonoBehaviour
 			Vector3 spawnPos = m_SquadCaptainNode.position;
 			spawnPos.z = 0.0f;
 			PlayerSquadFSM.Instance.Initialise(spawnPos);
+
+			PlayerMain.s_Instance.animate.ExpandContract(1.0f, 1, 1.75f);
 		}
 		else
 		{
