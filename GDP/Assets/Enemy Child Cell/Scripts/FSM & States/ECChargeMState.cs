@@ -43,7 +43,7 @@ public class ECChargeMState : IECState {
 		PathToTarget = null;
 		fMaxAcceleration = 25f;
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
-		ShrinkRate = new Vector3(-0.1f, 0.1f, 0.0f);
+		ShrinkRate = new Vector3(-0.4f, 0.4f, 0.0f);
 		PathToTarget = null;
 		CurrentTargetPoint = null;
 		CurrentTargetIndex = 0;
@@ -204,6 +204,7 @@ public class ECChargeMState : IECState {
 		m_ecFSM.rigidbody2D.velocity = new Vector2(Random.Range(-0.05f,0.05f),2.5f);
 		
 		Vector3 ShrinkScale = new Vector3(0f,-0.1f,0f);
+		Vector3 ExpandScale = new Vector3(0.1f,0f,0f);
 		
 		while(m_Child.transform.localScale.y > 0.5f)
 		{
@@ -212,6 +213,7 @@ public class ECChargeMState : IECState {
 			m_ecFSM.rigidbody2D.MoveRotation(Rotation);
 		
 			m_Child.transform.localScale += ShrinkScale;
+			m_Child.transform.localScale += ExpandScale;
 			yield return new WaitForSeconds(0.25f);//0.0005
 		}
 		
@@ -222,9 +224,7 @@ public class ECChargeMState : IECState {
 			CurrentTargetIndex = 0;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
-		
-		
-		
+
 		bSqueezeDone = true;
 	}
 }

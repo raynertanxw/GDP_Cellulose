@@ -44,7 +44,7 @@ public class ECChargeCState : IECState {
 		fMaxAcceleration = 18f;
 		TargetEndPos = Vector2.zero;
 		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
-		ShrinkRate = new Vector3(-0.1f, 0.1f, 0.0f);
+		ShrinkRate = new Vector3(-0.4f, 0.4f, 0.0f);
 		
 		fEnemyMaxSpeed = (18f / 1f) * Time.fixedDeltaTime;
 		fPlayerIdleMaxVelo = (250f / 1f) * Time.fixedDeltaTime;
@@ -154,6 +154,7 @@ public class ECChargeCState : IECState {
 		//Stop the child cell from moving after it charges finish
 		m_ecFSM.rigidbody2D.drag = 0f;
 		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
+		m_Child.transform.localScale = Vector3.one;
 		ECTracker.s_Instance.ChargeChildCells.Remove(m_ecFSM);
 	}
 
@@ -441,6 +442,7 @@ public class ECChargeCState : IECState {
 	{
 		//The child cell will retreat slightly back before charging 
 		Vector3 ShrinkScale = new Vector3(0f,-0.1f,0f);
+		Vector3 ExpandScale = new Vector3(0.1f,0f,0f);
 		
 		while(m_Child.transform.localScale.y > 0.5f)
 		{
@@ -451,6 +453,7 @@ public class ECChargeCState : IECState {
 			m_ecFSM.rigidbody2D.velocity = DirectionToTarget;
 			
 			m_Child.transform.localScale += ShrinkScale;
+			m_Child.transform.localScale += ExpandScale;
 			yield return new WaitForSeconds(0.2f);//0.0005
 		}
 		
