@@ -5,6 +5,8 @@ using System.Collections;
 public class PlayerMain : MonoBehaviour
 {
 	public static PlayerMain s_Instance;
+	private Animate mAnimate;
+	public Animate animate { get { return mAnimate; } }
 
 	[SerializeField]
 	private int m_nHealth = 100;
@@ -41,6 +43,12 @@ public class PlayerMain : MonoBehaviour
 
 		m_bIsAlive = true;
 		m_nHealth = Settings.s_nPlayerInitialHealth;
+		mAnimate = new Animate(this.transform);
+	}
+
+	void Start()
+	{
+		mAnimate.Idle(0.15f, 0.25f);
 	}
 
 	void FixedUpdate()

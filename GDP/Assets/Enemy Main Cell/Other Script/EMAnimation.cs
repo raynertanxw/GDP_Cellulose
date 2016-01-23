@@ -229,7 +229,7 @@ public class EMAnimation : MonoBehaviour
 			else if (nDieAniPhase == 2)
 				nDieAniPhase = 3;
 
-			if (nDieAniPhase == 3 && transform.localScale.x > initialScale.x / 2f)
+			if (nDieAniPhase == 3 && transform.localScale.x > initialScale.x / 2.5f)
 			{
 				bIsExpanding = false;
 				bIsShrinking = true;
@@ -239,12 +239,12 @@ public class EMAnimation : MonoBehaviour
 			else if (nDieAniPhase == 3)
 				nDieAniPhase = 4;
 
-			if (nDieAniPhase == 4 && transform.localScale.x <= initialScale.x)
+			if (nDieAniPhase == 4 && transform.localScale.x <= initialScale.x / 1.25f)
 			{
 				bIsExpanding = true;
 				bIsShrinking = false;
-				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x));
-				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y));
+				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x / 1.25f - currentScale.x));
+				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y / 1.25f - currentScale.y));
 			}
 			else if (nDieAniPhase == 4)
 				nDieAniPhase = 5;
