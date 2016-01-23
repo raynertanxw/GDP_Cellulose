@@ -56,8 +56,21 @@ public class EMController : MonoBehaviour
 	private bool bStunned;
 	public bool Stunned { get { return bStunned; } }
 	private bool bCanStun;
+	#endregion
+
+	[Header("Stun state value")]
+	[Tooltip("Value used in Stun state")]
+	#region Value
 	[SerializeField]
-	private float fStunTime;
+	private float fDefaultStunTime;
+	[SerializeField]
+	private float fCurrentStunTime;
+	[SerializeField]
+	private float fStunCoolDown;
+	[SerializeField]
+	private float fDefaultStunTolerance;
+	[SerializeField]
+	private float fCurrentStunTolerance;
 	[SerializeField]
 	private float fNumOfDefaultCells;
 	#endregion
@@ -120,9 +133,14 @@ public class EMController : MonoBehaviour
 		bPushed = false;
 		bStunned = false;
 		bCanStun = true;
+		fDefaultStunTime = 3f;
+		fCurrentStunTime = fDefaultStunTime;
+		fStunCoolDown = fDefaultStunTime * 2.0f;
+		fDefaultStunTolerance = 5f;
+		fCurrentStunTolerance = fDefaultStunTolerance;
+
 		bIsMainBeingAttacked = false;
 		bIsAllChildWithinMain = false;
-		fStunTime = 3f;
 		fNumOfDefaultCells = 5f;
 	}
 
@@ -140,7 +158,7 @@ public class EMController : MonoBehaviour
 			StartCoroutine(ForceBack());
 		}
 		// Stun the enemy main cell when received certain amount of hits, can be stunned but not stunned
-		if (nDamageNum > 5 && !bStunned && bCanStun) 
+		if (nDamageNum > fDefaultStunTolerance && !bStunned && bCanStun) 
 		{
 			StartCoroutine(Stun ());
 		}
@@ -178,6 +196,8 @@ public class EMController : MonoBehaviour
 		HorizontalCheck();
 		// Make sure the horizntal velocity is not lower than its minimum value
 		HorizontalVelocityCheck ();
+		// Update values according to current dificulty
+		DifficultyUpdate ();
 	}
 
 	#region Damage behavior
@@ -214,11 +234,11 @@ public class EMController : MonoBehaviour
 		bStunned = true;
 		bCanStun = false;
         // Wait(being stunned) for seconds
-		yield return new WaitForSeconds (fStunTime / EMDifficulty.Instance().CurrentDiff);
+		yield return new WaitForSeconds (fCurrentStunTime);
         // Set back the stunned status
 		bStunned = false;
         // Cannot be stunned within seconds
-		yield return new WaitForSeconds (fStunTime * EMDifficulty.Instance().CurrentDiff * 1.5f);
+		yield return new WaitForSeconds (fCurrentStunTime);
 		bCanStun = true;
 	}
 	#endregion
@@ -407,6 +427,22 @@ public class EMController : MonoBehaviour
 		// Update Aggressiveness
 		if (m_EMFSM.CurrentAggressiveness != m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild)
 			m_EMFSM.CurrentAggressiveness = m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild;
+	}
+	#endregion
+
+	#region Difficulty Update
+	// Update values according to current dificulty
+	void DifficultyUpdate ()
+	{
+		// Stun time
+		if (fCurrentStunTime != fDefaultStunTime / EMDifficulty.Instance().CurrentDiff)
+			fCurrentStunTime = fDefaultStunTime / EMDifficulty.Instance().CurrentDiff;
+		// Stun cool down
+		if (fStunCoolDown != fCurrentStunTime * 2.0f)
+			fStunCoolDown = fCurrentStunTime * 2.0f;
+		// Stun tolerance
+		if (fCurrentStunTolerance != fDefaultStunTolerance * EMDifficulty.Instance().CurrentDiff)
+			fCurrentStunTolerance = fDefaultStunTolerance * EMDifficulty.Instance().CurrentDiff;
 	}
 	#endregion
     
