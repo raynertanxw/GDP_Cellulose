@@ -21,6 +21,9 @@ public class PlayerMain : MonoBehaviour
 	{
 		get
 		{
+			if (m_surroundingEnemyCells == null)
+				return false;
+
 			if (m_surroundingEnemyCells.Length > 0)
 				return true;
 			else
