@@ -45,9 +45,11 @@ public class EMLeraningAgent : MonoBehaviour
 		if (bCanRegain)
 			RegainScoreCall ();
 		// // Update the score on the inspector
-		EnemyMainFSM.Instance ().ScoreUpdate ();
+		if (EnemyMainFSM.Instance () != null)
+			EnemyMainFSM.Instance ().ScoreUpdate ();
 		// Clamp the hided score value between -100f and 100f
-		EnemyMainFSM.Instance ().ScoreLimit ();
+		if (EnemyMainFSM.Instance () != null)
+			EnemyMainFSM.Instance ().ScoreLimit ();
 	}
 
 	// Learning Element: Correspond with the FSM to make improvements
@@ -252,10 +254,5 @@ public class EMLeraningAgent : MonoBehaviour
 			EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine] *= 0.95f;
 		else 
 			EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine] = 0f;
-	}
-
-	public static void ResetStatics()
-	{
-		instance = null;
 	}
 }

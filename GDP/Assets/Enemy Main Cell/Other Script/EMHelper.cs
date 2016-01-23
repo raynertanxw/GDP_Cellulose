@@ -80,7 +80,8 @@ public class EMHelper : MonoBehaviour
 	void Update () 
 	{
 		// Remove destroyed items in enemy child list
-		EnemyMainFSM.Instance().ECList.RemoveAll(item => item.CurrentStateEnum == ECState.Dead);
+		if (EnemyMainFSM.Instance () != null)
+			EnemyMainFSM.Instance().ECList.RemoveAll(item => item.CurrentStateEnum == ECState.Dead);
 		//Recalculate available enemy child cells
 		m_EMFSM.AvailableChildNum = m_EMFSM.ECList.Count;
 		// Check whether the player loses
@@ -273,9 +274,4 @@ public class EMHelper : MonoBehaviour
 		return Mathf.Abs (value);
 	}
 	#endregion
-
-	public static void ResetStatics()
-	{
-		instance = null;
-	}
 }

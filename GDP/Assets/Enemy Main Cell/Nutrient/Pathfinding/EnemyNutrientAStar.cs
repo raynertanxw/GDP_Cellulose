@@ -112,9 +112,4 @@ public class EnemyNutrientAStar
 		// Calculate the path based on the final node
 		return CalculatePath(node);
 	}
-
-	public static void ResetStatics()
-	{
-		exploredSet = frontier = null;
-	}
 }

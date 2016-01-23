@@ -299,9 +299,4 @@ public class MapManager : MonoBehaviour
 			Debug.DrawLine(startPos, endPos, color);
 		}
 	}
-
-	public static void ResetStatics()
-	{
-		instance = null;
-	}
 }

@@ -124,13 +124,16 @@ public class EMAnimation : MonoBehaviour
 	// Update the size of enemy main cell according to current health
 	private void SizeUpdate ()
 	{
-		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health))) && 
-		    !bIsExpanding &&
-		    !bIsShrinking &&
-		    EnemyMainFSM.Instance().CurrentStateIndex != EMState.Die)
+		if (EnemyMainFSM.Instance() != null)
 		{
-			currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
-			transform.localScale = (Vector3)currentScale;
+			if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health))) && 
+			    !bIsExpanding &&
+			    !bIsShrinking &&
+			    EnemyMainFSM.Instance().CurrentStateIndex != EMState.Die)
+			{
+				currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
+				transform.localScale = (Vector3)currentScale;
+			}
 		}
 	}
 	// Update angular velocity of the enemy main cell when rotation is allowed
@@ -376,9 +379,4 @@ public class EMAnimation : MonoBehaviour
 		}
 	}
 	#endregion
-
-	public static void ResetStatics()
-	{
-		instance = null;
-	}
 }

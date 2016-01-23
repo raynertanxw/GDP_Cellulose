@@ -52,17 +52,20 @@ public class EMDifficulty : MonoBehaviour
 	void Update () 
 	{
 		#region Update of health and num of nutrient, and difficulty factors
-		// Health Update
-		if (nPrecedingHealth != EnemyMainFSM.Instance ().Health)
+		if (EnemyMainFSM.Instance () != null)
 		{
-			nPrecedingHealth = EnemyMainFSM.Instance ().Health;
-			HealthDiffUpdate ();
-		}
-		// Nutrient Update
-		if (nPrecedingNutrient != EMController.Instance ().NutrientNum)
-		{
-			nPrecedingNutrient = EMController.Instance ().NutrientNum;
-			NutrientDiffUpdate ();
+			// Health Update
+			if (nPrecedingHealth != EnemyMainFSM.Instance ().Health)
+			{
+				nPrecedingHealth = EnemyMainFSM.Instance ().Health;
+				HealthDiffUpdate ();
+			}
+			// Nutrient Update
+			if (nPrecedingNutrient != EMController.Instance ().NutrientNum)
+			{
+				nPrecedingNutrient = EMController.Instance ().NutrientNum;
+				NutrientDiffUpdate ();
+			}
 		}
 		#endregion
 	}
@@ -90,9 +93,4 @@ public class EMDifficulty : MonoBehaviour
 	{
 
 	}	
-
-	public static void ResetStatics()
-	{
-		instance = null;
-	}
 }
