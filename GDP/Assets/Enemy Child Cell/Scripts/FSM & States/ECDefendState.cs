@@ -57,8 +57,8 @@ public class ECDefendState : IECState {
 		ECTransform = m_Child.transform;
 		EMTransform = m_Main.transform;
 
-		fMaxAcceleration = 40f;
-		fAutoDefendRange = 9f;//12f//9f;//4f;//5.5f;
+		fMaxAcceleration = 150f;
+		fAutoDefendRange = 20f;//12f//9f;//4f;//5.5f;
 		fDefendTime = 0f;
 		bReturnToMain = false;
 		bReachedMain = false;
@@ -105,19 +105,10 @@ public class ECDefendState : IECState {
 	{
 		Vector2 Acceleration = Vector2.zero;
 
-		/*if(!bGathered && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,EMTransform.position) && !HasAllCellsGathered())
-		{
-			m_ecFSM.RotateToHeading();
-			Acceleration += SteeringBehavior.Seek(m_Child,EMTransform.position,35f);
-		}*/
 		if(!bReachPos && !bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos))
 		{
-			m_ecFSM.rigidbody2D.drag = 5f;
-			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,40f);//27
-		}
-		else if(!bReachPos && bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos))
-		{
-			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,35f);
+			m_ecFSM.rigidbody2D.drag = 9.5f;//5f;
+			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,300f);//27
 		}
 		else if(!bReachPos && !bReturnToMain && HasCellReachTargetPos(ECTransform.position,m_TargetPos))
 		{
@@ -144,6 +135,7 @@ public class ECDefendState : IECState {
 			m_ecFSM.rigidbody2D.drag = 2.3f;
 			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 			m_ecFSM.m_ChargeTarget = GetClosestAttacker();
+			//Utility.CheckEmpty<GameObject>(m_ecFSM.m_ChargeTarget);
 			if(m_ecFSM.m_ChargeTarget == null)
 			{
 				bKillClosestAttacker = false;
@@ -229,7 +221,7 @@ public class ECDefendState : IECState {
 	//A function that return a boolean that show whether the cell had reached the given position in the perimeter
 	private bool HasCellReachTargetPos(Vector2 _CellPos,Vector2 _TargetPos)
 	{
-		return (Utility.Distance(_CellPos, _TargetPos) <= 0.05f) ? true : false;
+		return (Utility.Distance(_CellPos, _TargetPos) <= 0.1f) ? true : false;
 	}
 
 	//A function that return a boolean on whether all the cells had reached the given position in the perimeter
@@ -280,26 +272,54 @@ public class ECDefendState : IECState {
 	//A function that return a GameObject variable on the closest attacking player child cell
 	private GameObject GetClosestAttacker()
 	{
-		GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
 		GameObject ClosestAttacker = null;
 		float Distance = Mathf.Infinity;
 		
-		float ECtoPCDistance = 0f;
-		PCState PCCurrentState = PCState.Idle;
-		
-		for(int i = 0; i < PlayerChilds.Length; i++)
+		if(IsthereBurstShot())
 		{
-			ECtoPCDistance = Utility.Distance(PlayerChilds[i].transform.position,m_Child.transform.position);
-			PCCurrentState = PlayerChilds[i].GetComponent<PlayerChildFSM>().GetCurrentState();
-			
-			if((PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain) && ECtoPCDistance < Distance)
+			//Debug.Log("check for burst target");
+			for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
 			{
-				ClosestAttacker = PlayerChilds[i];
-				Distance = ECtoPCDistance;
+				if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.BurstShot && Utility.Distance(PlayerChildFSM.playerChildPool[i].transform.position,m_ecFSM.m_EMain.transform.position) < Distance)
+				{
+					ClosestAttacker = PlayerChildFSM.playerChildPool[i].gameObject;
+					Distance = Utility.Distance(PlayerChildFSM.playerChildPool[i].transform.position,m_ecFSM.m_EMain.transform.position);
+				}
 			}
 		}
-
+		else
+		{
+			Debug.Log("no burst target");
+			GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
+			float ECtoPCDistance = 0f;
+			PCState PCCurrentState = PCState.Idle;
+			
+			for(int i = 0; i < PlayerChilds.Length; i++)
+			{
+				ECtoPCDistance = Utility.Distance(PlayerChilds[i].transform.position,m_Child.transform.position);
+				PCCurrentState = PlayerChilds[i].GetComponent<PlayerChildFSM>().GetCurrentState();
+				
+				if((PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain) && ECtoPCDistance < Distance)
+				{
+					ClosestAttacker = PlayerChilds[i];
+					Distance = ECtoPCDistance;
+				}
+			}
+		}
+	
 		return ClosestAttacker;
+	}
+
+	private bool IsthereBurstShot()
+	{
+		for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
+		{
+			if(PlayerChildFSM.playerChildPool[i].GetCurrentState() == PCState.ChargeMain && PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.BurstShot)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	//A function that return a boolean on whether if all cells had gathered together in the enemy main cell

@@ -363,10 +363,19 @@ public class FormationDatabase
 		//If not,
 		else
 		{
-			FIndexDatabase.Add(_NewDefender.name, FIndexDatabase.Count);
-			FPositionDatabase.Add(FIndexDatabase[_NewDefender.name], Vector2.zero);
-			FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
-
+			if(!FIndexDatabase.ContainsKey(_NewDefender.name))
+			{
+				FIndexDatabase.Add(_NewDefender.name, FIndexDatabase.Count);
+				FPositionDatabase.Add(FIndexDatabase[_NewDefender.name], Vector2.zero);
+				FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
+			}
+			else
+			{
+				FIndexDatabase[_NewDefender.name] = FIndexDatabase.Count;
+				FPositionDatabase[FIndexDatabase[_NewDefender.name]] = Vector2.zero;
+				FAvaliabilityDatabase[FIndexDatabase[_NewDefender.name]] = false;
+			}
+			
 			//Update the database to recalculate the position for all indexes
 			UpdateDatabaseFormation(CurrentFormation,fCurrentMainScale);
 		}
@@ -420,13 +429,13 @@ public class FormationDatabase
 		Vector2 EMPosition = GameObject.Find("Enemy_Cell").transform.position;
 		Vector2 TargetPosition = Vector2.zero;
 		
-		if(_Formation == Formation.QuickCircle)
+		if(_Formation == Formation.Ladder)
 		{
-			TargetPosition = new Vector2(EMPosition.x + PosDifference.x, EMPosition.y + PosDifference.y);
+			TargetPosition = new Vector2(PosDifference.x, EMPosition.y + PosDifference.y);
 			return TargetPosition;
 		}
 		
-		TargetPosition = new Vector2(PosDifference.x, EMPosition.y + PosDifference.y);
+		TargetPosition = new Vector2(EMPosition.x + PosDifference.x, EMPosition.y + PosDifference.y);
 		return TargetPosition;
     }
 
