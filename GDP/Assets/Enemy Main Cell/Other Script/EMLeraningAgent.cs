@@ -253,4 +253,9 @@ public class EMLeraningAgent : MonoBehaviour
 		else 
 			EnemyMainFSM.Instance ().LearningDictionary [EMState.Landmine] = 0f;
 	}
+
+	public static void ResetStatics()
+	{
+		instance = null;
+	}
 }

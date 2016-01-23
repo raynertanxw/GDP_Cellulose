@@ -360,4 +360,9 @@ public class EMAnimation : MonoBehaviour
 		}
 	}
 	#endregion
+
+	public static void ResetStatics()
+	{
+		instance = null;
+	}
 }

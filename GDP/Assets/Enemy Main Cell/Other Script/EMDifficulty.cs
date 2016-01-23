@@ -90,4 +90,9 @@ public class EMDifficulty : MonoBehaviour
 	{
 
 	}	
+
+	public static void ResetStatics()
+	{
+		instance = null;
+	}
 }
