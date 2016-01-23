@@ -28,14 +28,6 @@ public class SceneManager : MonoBehaviour
 		ECTracker.ResetStatics();
 
 		EnemyMainFSM.ResetStatics();
-		EMController.ResetStatics();
-		EMHelper.ResetStatics();
-		EMTransition.ResetStatics();
-		EMAnimation.ResetStatics();
-		EMDifficulty.ResetStatics();
-		EMLeraningAgent.ResetStatics();
-		EMNutrientMainAgent.ResetStatics();
-		EnemyNutrientAStar.ResetStatics();
 
 		Application.LoadLevel(_sceneId);
 	}
@@ -65,14 +57,6 @@ public class SceneManager : MonoBehaviour
 		ECTracker.ResetStatics();
 		
 		EnemyMainFSM.ResetStatics();
-		EMController.ResetStatics();
-		EMHelper.ResetStatics();
-		EMTransition.ResetStatics();
-		EMAnimation.ResetStatics();
-		EMDifficulty.ResetStatics();
-		EMLeraningAgent.ResetStatics();
-		EMNutrientMainAgent.ResetStatics();
-		EnemyNutrientAStar.ResetStatics();
 		
 		Application.LoadLevel(_sceneName);
 	}
