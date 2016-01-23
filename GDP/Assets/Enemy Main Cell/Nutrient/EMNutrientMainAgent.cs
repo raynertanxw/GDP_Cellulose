@@ -59,7 +59,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 		position = this.gameObject.transform.position;
 
 		// Add the agent to the agent list
-		AgentList.Add(this);
+		if (AgentList != null)
+			AgentList.Add(this);
 	}
 
 	void Start()
@@ -71,7 +72,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 	void Update()
 	{
 		// Remove destroyed from the list
-		AgentList.RemoveAll(item => item == null);
+		if (AgentList != null)
+			AgentList.RemoveAll(item => item == null);
 		// Deactivate the nutrient if enemy main cell is invisible
 		if (!EMHelper.Instance().IsEnemyVisible)
 			ActivateOrDeactivate (false);
@@ -193,11 +195,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 	void OnDestroy()
 	{
 		// Remove the agent from the list if it is destroyed
-		AgentList.Remove(this);
-	}
-
-	public static void ResetStatics()
-	{
-		AgentList = null;
+		if (AgentList != null)
+			AgentList.Remove(this);
 	}
 }

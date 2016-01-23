@@ -41,7 +41,8 @@ public class EMNutrientMainFlock : MonoBehaviour
 	void Update ()
 	{
 		// Update enemy main cell's position
-		targetPosition = EMHelper.Instance ().Position;
+		if (EMHelper.Instance () != null)
+			targetPosition = EMHelper.Instance ().Position;
 		// Update seek weight
 		if (fSeekWeight != .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum))))
 			fSeekWeight = .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)));
@@ -110,11 +111,14 @@ public class EMNutrientMainFlock : MonoBehaviour
 		// Clean up the list of neighbouring agents
 		neighbouringAgents.Clear();
 		// Add neighbouring agents into the list if they are within the radius
-		foreach (EMNutrientMainAgent agent in EMNutrientMainAgent.AgentList)
+		if (EMNutrientMainAgent.AgentList != null) 
 		{
-			if (Vector2.Distance((Vector2)agent.transform.position, currentPosition) < fNeighbourRadius)
+			foreach (EMNutrientMainAgent agent in EMNutrientMainAgent.AgentList)
 			{
-				neighbouringAgents.Add(agent);
+				if (Vector2.Distance ((Vector2)agent.transform.position, currentPosition) < fNeighbourRadius)
+				{
+					neighbouringAgents.Add (agent);
+				}
 			}
 		}
 	}
