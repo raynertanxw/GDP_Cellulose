@@ -115,4 +115,9 @@ public class EMTransition : MonoBehaviour
 		}
 	}
 	#endregion
+
+	public static void ResetStatics()
+	{
+		instance = null;
+	}
 }

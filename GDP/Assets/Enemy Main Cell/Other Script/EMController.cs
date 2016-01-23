@@ -112,7 +112,7 @@ public class EMController : MonoBehaviour
 		// Velocity
 		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
-		pushBackVel = new Vector2 (0.0f, -2.0f);
+		pushBackVel = new Vector2 (0.0f, -1.75f);
 		pushForwardVel = new Vector2 (0.0f, 1.0f);
 		// Damage
 		nDamageNum = 0;
@@ -473,5 +473,10 @@ public class EMController : MonoBehaviour
 			}
 		}
 		bIsAllChildWithinMain = true;
+	}
+
+	public static void ResetStatics()
+	{
+		instance = null;
 	}
 }

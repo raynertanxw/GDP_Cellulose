@@ -177,14 +177,10 @@ public class EMHelper : MonoBehaviour
 		if (GetComponent<Renderer> ().enabled) 
 		{
 			bIsEnemyVisible = true;
-			if (!GetComponent<Collider2D> ().enabled)
-				GetComponent<Collider2D> ().enabled = true;
 		}
 		else 
 		{
 			bIsEnemyVisible = false;
-			if (GetComponent<Collider2D>().enabled)
-				GetComponent<Collider2D>().enabled = false;;
 		}
 	}
 	// Prevent having more than 100 child cells
@@ -277,4 +273,9 @@ public class EMHelper : MonoBehaviour
 		return Mathf.Abs (value);
 	}
 	#endregion
+
+	public static void ResetStatics()
+	{
+		instance = null;
+	}
 }

@@ -219,4 +219,9 @@ public class EnemyMainFSM : MonoBehaviour
 		LearningDictionary [EMState.CautiousAttack] = Mathf.Clamp (LearningDictionary [EMState.CautiousAttack], -100f, 100f);
 		LearningDictionary [EMState.Landmine] = Mathf.Clamp (LearningDictionary [EMState.Landmine], -100f, 100f);
 	}
+
+	public static void ResetStatics()
+	{
+		instance = null;
+	}
 }
