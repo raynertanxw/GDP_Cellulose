@@ -60,7 +60,7 @@ public class EnemyNutrientAStar
 			}
 			
 			ArrayList neighbours = new ArrayList();
-			MapManager.instance.GetNeighbours(node, neighbours);
+			MapManager.Instance.GetNeighbours(node, neighbours);
 			
 			#region CheckNeighbours
 			
@@ -111,5 +111,10 @@ public class EnemyNutrientAStar
 		
 		// Calculate the path based on the final node
 		return CalculatePath(node);
+	}
+
+	public static void ResetStatics()
+	{
+		exploredSet = frontier = null;
 	}
 }

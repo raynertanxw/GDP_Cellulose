@@ -43,10 +43,10 @@ public class EMNutrientPathfindingManager : MonoBehaviour
 		endPos = goalObject.transform;
 		
 		// Initialize start and goal node
-		startNode = new EnemyNutrientNode(MapManager.instance.GetNodeCenter(MapManager.instance.GetGridIndex((Vector2)startPos.position)));
-		goalNode = new EnemyNutrientNode(MapManager.instance.GetNodeCenter(MapManager.instance.GetGridIndex((Vector2)endPos.position)));
+		startNode = new EnemyNutrientNode(MapManager.Instance.GetNodeCenter(MapManager.Instance.GetGridIndex((Vector2)startPos.position)));
+		goalNode = new EnemyNutrientNode(MapManager.Instance.GetNodeCenter(MapManager.Instance.GetGridIndex((Vector2)endPos.position)));
 		// Update the size and position of all obstacles in map
-		MapManager.instance.GetObstacles ();
+		MapManager.Instance.GetObstacles ();
 		// Find a new path between the start and goal node
 		pathArray = EnemyNutrientAStar.FindPath(startNode, goalNode);
 	}

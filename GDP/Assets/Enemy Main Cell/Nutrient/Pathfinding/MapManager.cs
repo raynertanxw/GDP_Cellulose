@@ -6,28 +6,28 @@ using System.Collections.Generic;
 public class MapManager : MonoBehaviour
 {
 	// Single instance of the MapManager class
-	private static MapManager Instance = null;
+	private static MapManager instance = null;
 	
 	// Singleton of the MapManager instance
-	public static MapManager instance
+	public static MapManager Instance
 	{
 		get
 		{
-			if (Instance == null)
+			if (instance == null)
 			{
 				// Get the MapManager object
-				Instance = FindObjectOfType(typeof(MapManager)) as MapManager;
-				if (Instance == null)
+				instance = FindObjectOfType(typeof(MapManager)) as MapManager;
+				if (instance == null)
 					Debug.LogError("MapManager cannot be found!");
 			}
-			return Instance;
+			return instance;
 		}
 	}
 	
 	// Destroy the instance when the game is stopped
 	void OnApplicationQuit()
 	{
-		Instance = null;
+		instance = null;
 	}
 	
 	#region Fields
@@ -298,5 +298,10 @@ public class MapManager : MonoBehaviour
 			Vector2 endPos = startPos + height * new Vector2(0.0f, 1.0f);
 			Debug.DrawLine(startPos, endPos, color);
 		}
+	}
+
+	public static void ResetStatics()
+	{
+		instance = null;
 	}
 }

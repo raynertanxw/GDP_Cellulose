@@ -110,7 +110,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		}
 
 		// Instantiate mini nutrient
-		if (bCanSpawn && MapManager.instance.IsInBounds ((Vector2)(position * 1.5f)) && gameObject.activeSelf) 
+		if (bCanSpawn && MapManager.Instance.IsInBounds ((Vector2)(position * 1.5f)) && gameObject.activeSelf) 
 		{
 			StartCoroutine (PauseSpawn ());
 		}
@@ -175,7 +175,7 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Pause for random amount of time depending on the size of the agent
 		yield return new WaitForSeconds (Random.Range (Mathf.Sqrt (Mathf.Pow (nSize, 1f)), Mathf.Sqrt (Mathf.Pow (nSize, 3f))));
 		// Double check if the main nutrient is in the map and not too close to the enemy main cell
-		if (MapManager.instance.IsInBounds ((Vector2)(position * 1.1f)) && 
+		if (MapManager.Instance.IsInBounds ((Vector2)(position * 1.1f)) && 
 			Vector2.Distance (EMHelper.Instance().Position, transform.position) > fInitialRadius * nSize + EMHelper.Instance ().Radius)
 		{
 			// Instantiate a mini nutrient object
@@ -194,5 +194,10 @@ public class EMNutrientMainAgent : MonoBehaviour
 	{
 		// Remove the agent from the list if it is destroyed
 		AgentList.Remove(this);
+	}
+
+	public static void ResetStatics()
+	{
+		AgentList = null;
 	}
 }
