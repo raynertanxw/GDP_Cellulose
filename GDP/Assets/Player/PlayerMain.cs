@@ -4,7 +4,8 @@ using System.Collections;
 [RequireComponent (typeof (Collider2D))]
 public class PlayerMain : MonoBehaviour
 {
-	public static PlayerMain s_Instance;
+	private static PlayerMain s_Instance;
+	public static PlayerMain Instance { get { return s_Instance; } }
 	private Animate mAnimate;
 	public Animate animate { get { return mAnimate; } }
 
@@ -47,6 +48,7 @@ public class PlayerMain : MonoBehaviour
 		m_bIsAlive = true;
 		m_nHealth = Settings.s_nPlayerInitialHealth;
 		mAnimate = new Animate(this.transform);
+		m_surroundingEnemyCells = null;
 	}
 
 	void Start()

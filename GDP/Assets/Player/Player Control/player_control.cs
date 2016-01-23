@@ -249,7 +249,7 @@ public class player_control : MonoBehaviour
 			Node _selectedNode = (Node) _nodeIndex;
 
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
-			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(PlayerMain.s_Instance.transform.position + (Vector3)Random.insideUnitCircle*0.25f);
+			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(PlayerMain.Instance.transform.position + (Vector3)Random.insideUnitCircle*0.25f);
 			currentChild.m_assignedNode = Node_Manager.GetNode(_selectedNode);
 			currentChild.m_bIsDefending = Node_Manager.GetNode(_selectedNode).m_bIsDefending;
             currentChild.m_assignedNode.AddChildToNode(currentChild.poolIndex);
@@ -258,7 +258,7 @@ public class player_control : MonoBehaviour
 			UpdateUI_nutrients();
 			UpdateUI_nodeChildCountText();
 
-			PlayerMain.s_Instance.animate.ExpandContract(0.5f, 1, 1.2f, true, 0.2f);
+			PlayerMain.Instance.animate.ExpandContract(0.5f, 1, 1.2f, true, 0.2f);
 		}
 		else
 		{
@@ -482,7 +482,7 @@ public class player_control : MonoBehaviour
 			spawnPos.z = 0.0f;
 			PlayerSquadFSM.Instance.Initialise(spawnPos);
 
-			PlayerMain.s_Instance.animate.ExpandContract(1.0f, 1, 1.75f);
+			PlayerMain.Instance.animate.ExpandContract(1.0f, 1, 1.75f);
 		}
 		else
 		{

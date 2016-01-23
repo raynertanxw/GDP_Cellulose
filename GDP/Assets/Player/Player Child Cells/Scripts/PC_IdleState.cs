@@ -10,7 +10,7 @@ public class PC_IdleState : IPCState
 	{
 		if (m_pcFSM.m_bSacrificeToSquadCpt == true)
 		{
-			m_nodeOrigin = (Vector2) PlayerMain.s_Instance.transform.position;
+			m_nodeOrigin = (Vector2) PlayerMain.Instance.transform.position;
 			s_fMaxVelocity = 5f;
 			s_fMaxAcceleration = 1000f;
 		}
@@ -27,7 +27,7 @@ public class PC_IdleState : IPCState
 	{
 		if (m_pcFSM.m_bSacrificeToSquadCpt == true)
 		{
-			if (Vector3.Distance(m_pcFSM.transform.position, PlayerMain.s_Instance.transform.position) < 0.5f)
+			if (Vector3.Distance(m_pcFSM.transform.position, PlayerMain.Instance.transform.position) < 0.5f)
 				m_pcFSM.KillPlayerChildCell();
 
 			return;
@@ -102,7 +102,10 @@ public class PC_IdleState : IPCState
 	#region Helper functions
 	private bool DetectedEnemyInRange()
 	{
-		return PlayerMain.s_Instance.hasSurroundingEnemyCells;
+		if (PlayerMain.Instance == null)
+			return false;
+
+		return PlayerMain.Instance.hasSurroundingEnemyCells;
 	}
     #endregion
 
