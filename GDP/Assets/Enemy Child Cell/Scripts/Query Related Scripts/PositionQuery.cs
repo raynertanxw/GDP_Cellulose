@@ -291,7 +291,7 @@ public class PositionQuery
 
 	public Formation GetDefensiveFormation()
 	{
-		/*GameObject EMain = GameObject.Find("Enemy_Cell");
+		GameObject EMain = GameObject.Find("Enemy_Cell");
 		if(EMain.transform.position.x >= -0.05f && EMain.transform.position.x <= 0.05f)
 		{
 			int Choice = Random.Range(0, 4);
@@ -311,8 +311,8 @@ public class PositionQuery
 			{
 				return Formation.Ladder;
 			}
-		}*/
-		return Formation.Ladder;
+		}
+		return Formation.Turtle;
 	}
 
 	public static void ResetStatics()

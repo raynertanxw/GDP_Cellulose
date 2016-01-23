@@ -57,6 +57,7 @@ public class FormationDatabase
 		{
 			if(!FIndexDatabase.ContainsKey(_EnemyChild[i].name))
 			{
+				//Debug.Log("add formation index: " + FormationIndex);
 				FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);
 				FPositionDatabase.Add(FormationIndex,Vector2.zero);
 				FAvaliabilityDatabase.Add(FormationIndex,true);
@@ -269,72 +270,68 @@ public class FormationDatabase
 			int RightCount = 0;
 			int LeftCount = 0;
 			
-			float XInterval = 0.65f * _MainScale;
-			float XBlockGap = 0.45f * _MainScale;
+			float XInterval = 0.45f * _MainScale;
+			float XBlockGap = 0.65f * _MainScale;
 			float YInterval = 0.5f * _MainScale;
 			
 			Vector2 CurrentFormationPos = Vector2.zero;
 			List<int> Keys = new List<int>(FPositionDatabase.Keys);
-			
 			foreach(int FIndex in Keys)
 			{
-				if(FIndex % 8 == 0)
+				if(FIndex % 12 == 0)
 				{
-					RightCount = LeftCount = 0;
+					LeftCount = RightCount = 0;
 					if(FIndex == 0)
 					{
-						CurrentFormationPos.x = XInterval;
-						CurrentFormationPos.y = EMPos.y - 2 * YInterval;
+						RightCount++;
+						CurrentFormationPos.x = XBlockGap;
+						CurrentFormationPos.y = -YInterval * 4;
 						FPositionDatabase[FIndex] = CurrentFormationPos;
 						FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 					else
 					{
-						CurrentFormationPos.x = FPositionDatabase[FIndex - 8].x;
-						CurrentFormationPos.y -= YInterval;
+						RightCount++;
+						CurrentFormationPos.x = FPositionDatabase[FIndex - 12].x;
+						CurrentFormationPos.y = FPositionDatabase[FIndex - 12].y - YInterval;
 						FPositionDatabase[FIndex] = CurrentFormationPos;
 						FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 				}
-				else if(FIndex % 8 != 0)
+				else if(FIndex % 2 != 0)
 				{
-					if(FIndex % 2 != 0)
+					if(LeftCount == 0)
+					{
+						LeftCount++;
+						CurrentFormationPos.x = FPositionDatabase[FIndex - 1].x - (2 * XBlockGap);
+						CurrentFormationPos.y = FPositionDatabase[FIndex - 1].y;
+						FPositionDatabase[FIndex] = CurrentFormationPos;
+						FAvaliabilityDatabase[FIndex] = false;
+						continue;
+					}
+					else
+					{
+						LeftCount++;
+						//Debug.Log("left trying to access: " + (FIndex - 2));
+						CurrentFormationPos.x = FPositionDatabase[FIndex - 2].x - XInterval;
+						CurrentFormationPos.y = FPositionDatabase[FIndex - 2].y;
+						FPositionDatabase[FIndex] = CurrentFormationPos;
+						FAvaliabilityDatabase[FIndex] = false;
+						continue;
+					}
+				}
+				else if(FIndex % 2 == 0)
+				{
+					if(RightCount != 0)
 					{
 						RightCount++;
-						if(RightCount == 1)
-						{
-							CurrentFormationPos.x = XBlockGap;
-							FPositionDatabase[FIndex] = CurrentFormationPos;
-							FAvaliabilityDatabase[FIndex] = false;
-							continue;
-						}
-						else 
-						{
-							CurrentFormationPos.x = FPositionDatabase[FIndex - 2].x + XInterval;
-							FPositionDatabase[FIndex] = CurrentFormationPos;
-							FAvaliabilityDatabase[FIndex] = false;
-							continue;
-						}
-					}
-					else if(FIndex % 2 == 0)
-					{
-						LeftCount++; 
-						if(LeftCount == 1)
-						{
-							CurrentFormationPos.x = -XBlockGap;
-							FPositionDatabase[FIndex] = CurrentFormationPos;
-							FAvaliabilityDatabase[FIndex] = false;
-							continue;
-						}
-						else 
-						{
-							CurrentFormationPos.x = FPositionDatabase[FIndex - 2].x - XInterval;
-							FPositionDatabase[FIndex] = CurrentFormationPos;
-							FAvaliabilityDatabase[FIndex] = false;
-							continue;
-						}
+						CurrentFormationPos.x = FPositionDatabase[FIndex - 2].x + XInterval;
+						CurrentFormationPos.y = FPositionDatabase[FIndex - 2].y;
+						FPositionDatabase[FIndex] = CurrentFormationPos;
+						FAvaliabilityDatabase[FIndex] = false;
+						continue;
 					}
 				}
 			}
@@ -358,14 +355,7 @@ public class FormationDatabase
 				if(FIndexDatabase[Key] == AvaliableIndex)
 				{
 					FIndexDatabase.Remove(Key);
-					
-					if(FIndexDatabase.ContainsKey(_NewDefender.name))
-					{
-						FIndexDatabase[_NewDefender.name] = AvaliableIndex;
-						break;
-					}
-					
-					FIndexDatabase.Add(_NewDefender.name, AvaliableIndex);
+					FIndexDatabase[_NewDefender.name] = AvaliableIndex;
 					break;
 				}
 			}
@@ -373,34 +363,10 @@ public class FormationDatabase
 		//If not,
 		else
 		{
-			//Add the new defender into the index database with a new index
-			if(FIndexDatabase.ContainsKey(_NewDefender.name))
-			{
-				FIndexDatabase[_NewDefender.name] = FIndexDatabase.Count + 1;
-			}
-			else
-			{
-				FIndexDatabase.Add(_NewDefender.name,FIndexDatabase.Count + 1);
-			}
-			
-			if(FPositionDatabase.ContainsKey(FIndexDatabase[_NewDefender.name]))
-			{
-				FPositionDatabase[FIndexDatabase[_NewDefender.name]] = Vector2.zero;
-			}
-			else
-			{
-				FPositionDatabase.Add(FIndexDatabase[_NewDefender.name],Vector2.zero);
-			}
+			FIndexDatabase.Add(_NewDefender.name, FIndexDatabase.Count);
+			FPositionDatabase.Add(FIndexDatabase[_NewDefender.name], Vector2.zero);
+			FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
 
-			if(FAvaliabilityDatabase.ContainsKey(FIndexDatabase[_NewDefender.name]))
-			{
-				FAvaliabilityDatabase[FIndexDatabase[_NewDefender.name]] = false;
-			}
-			else
-			{
-				FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
-			}
-			
 			//Update the database to recalculate the position for all indexes
 			UpdateDatabaseFormation(CurrentFormation,fCurrentMainScale);
 		}

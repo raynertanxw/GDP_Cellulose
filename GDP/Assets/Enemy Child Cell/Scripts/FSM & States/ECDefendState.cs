@@ -161,14 +161,14 @@ public class ECDefendState : IECState {
 			Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.m_ChargeTarget,26f);
 		}
 		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
-		/*else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
+		else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
 		{
 			fDefendTime += Time.deltaTime;
 			if(fDefendTime >= 20f)
 			{
 				bReturnToMain = true;
 			}
-		}*/
+		}
 
 		//If the enemy child cells is return back to the enemy main cell but has not reach the position, continue seek back to the main cell
 		if(!bReachedMain && bReturnToMain && !HasCellReachTargetPos(ECTransform.position,EMTransform.position))
