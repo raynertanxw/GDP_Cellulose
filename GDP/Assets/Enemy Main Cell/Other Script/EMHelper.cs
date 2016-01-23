@@ -84,7 +84,7 @@ public class EMHelper : MonoBehaviour
 		//Recalculate available enemy child cells
 		m_EMFSM.AvailableChildNum = m_EMFSM.ECList.Count;
 		// Check whether the player loses
-		LoseCheck ();
+		///LoseCheck ();
 		// Check if the enemy main cell is visible
 		VisibilityCheck ();
 	}

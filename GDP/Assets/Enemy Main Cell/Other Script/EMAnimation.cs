@@ -29,14 +29,8 @@ public class EMAnimation : MonoBehaviour
 	private float fTargetSize;
 
 	#region Status
-	private bool bProductionAniOn;
-	private bool bMaintainAniOn;
-	private bool bDefendAniOn;
-	private bool bAggressiveAniOn;
-	private bool bCautiousAniOn;
-	private bool bLandmineAniOn;
 	private float fLandmineExpandFactor;
-	private bool bStunAniOn;
+	private int nDieAniPhase;
 
 	[SerializeField]
 	bool bCanRotate;
@@ -77,14 +71,8 @@ public class EMAnimation : MonoBehaviour
 		thisRB = GetComponent<Rigidbody2D> ();
 		thisRend = GetComponent<Renderer> ();
 		// Initialization of state status
-		bProductionAniOn = false;
-		bMaintainAniOn = false;
-		bDefendAniOn = false;
-		bAggressiveAniOn = false;
-		bCautiousAniOn = false;
-		bLandmineAniOn = false;
 		fLandmineExpandFactor = 3f;
-		bStunAniOn = false;
+		nDieAniPhase = 0;
 		// Initialization of status
 		bCanRotate = true;
 		bIsExpanding = false;
@@ -127,8 +115,8 @@ public class EMAnimation : MonoBehaviour
 		ExpandAnimation ();
 		// Update the color of enemy main cell
 		ColorUpdate ();
-		// Update current state
-		CurrentStateUpdate ();
+		// Die animation called in the Die state
+		DieAnimation ();
 		// Expand animation in Landmine state
 		LandmineAnimation ();
 	}
@@ -138,7 +126,8 @@ public class EMAnimation : MonoBehaviour
 	{
 		if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health))) && 
 		    !bIsExpanding &&
-		    !bIsShrinking)
+		    !bIsShrinking &&
+		    EnemyMainFSM.Instance().CurrentStateIndex != EMState.Die)
 		{
 			currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
 			transform.localScale = (Vector3)currentScale;
@@ -148,16 +137,16 @@ public class EMAnimation : MonoBehaviour
 	private void RotationUpdate ()
 	{
 		// Angular velocity declines as time goes by in Production state
-		if (fAngularVelocity >= 0f && bCanRotate && bProductionAniOn) {
+		if (fAngularVelocity >= 0f && bCanRotate && EnemyMainFSM.Instance().CurrentStateIndex == EMState.Production) {
 			if (fAngularVelocity >= fMinAngularVelocity)
 				fAngularVelocity -= fAngularDeclineFactor * Mathf.Abs (fAngularVelocity / 3f);
-		} else if (fAngularVelocity < 0f && bCanRotate && bProductionAniOn) {
+		} else if (fAngularVelocity < 0f && bCanRotate && EnemyMainFSM.Instance().CurrentStateIndex == EMState.Production) {
 			if (fAngularVelocity <= -fMinAngularVelocity)
 				fAngularVelocity += fAngularDeclineFactor * Mathf.Abs (fAngularVelocity / 3f);
 		}
 
 		// Make sure the angular velocity is not less than the minimum value
-		if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity && bCanRotate && bProductionAniOn) 
+		if (Mathf.Abs (fAngularVelocity) < fMinAngularVelocity && bCanRotate && EnemyMainFSM.Instance().CurrentStateIndex == EMState.Production) 
 		{
 			if (!bIsRotatingLeft) {
 				fAngularVelocity = -fAngularIniFactor * Random.Range (.75f, 1.25f);
@@ -189,7 +178,8 @@ public class EMAnimation : MonoBehaviour
 	{
 		if (!bIsExpanding && !bIsShrinking)
 			fTargetSize = currentScale.x * fExpandScale;
-		if (!bLandmineAniOn) {
+		if (EnemyMainFSM.Instance().CurrentStateIndex != EMState.Landmine &&
+		    EnemyMainFSM.Instance().CurrentStateIndex != EMState.Die) {
 			if (bIsExpanding) {
 				if (currentScale.x <= fTargetSize) {
 					currentScale.x += fDefaultExpandRate * Mathf.Sqrt (fTargetSize - currentScale.x);
@@ -214,49 +204,72 @@ public class EMAnimation : MonoBehaviour
 	}
 
 	#region State Animations
-	// Update current state
-	private void CurrentStateUpdate ()
+	// Die animation called in the Die state
+	private void DieAnimation ()
 	{
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Production)
-			bProductionAniOn = true;
-		else 
-			bProductionAniOn = false;
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Die) {
 
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Maintain)
-			bMaintainAniOn = true;
-		else
-			bMaintainAniOn = false;
+			if (nDieAniPhase == 1 && transform.localScale.x > initialScale.x / 2f)
+			{
+				bIsExpanding = false;
+				bIsShrinking = true;
+				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2f));
+				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2f));
+			}
+			else if (nDieAniPhase == 1)
+				nDieAniPhase = 2;
 
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Defend)
-			bDefendAniOn = true;
-		else
-			bDefendAniOn = false;
+			if (nDieAniPhase == 2 && transform.localScale.x <= initialScale.x)
+			{
+				bIsExpanding = true;
+				bIsShrinking = false;
+				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x));
+				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y));
+			}
+			else if (nDieAniPhase == 2)
+				nDieAniPhase = 3;
 
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.AggressiveAttack)
-			bAggressiveAniOn = true;
-		else
-			bAggressiveAniOn = false;
-		
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.CautiousAttack)
-			bCautiousAniOn = true;
-		else
-			bCautiousAniOn = false;
+			if (nDieAniPhase == 3 && transform.localScale.x > initialScale.x / 2f)
+			{
+				bIsExpanding = false;
+				bIsShrinking = true;
+				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2f));
+				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2f));
+			}
+			else if (nDieAniPhase == 3)
+				nDieAniPhase = 4;
 
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Landmine)
-			bLandmineAniOn = true;
-		else 
-			bLandmineAniOn = false;
+			if (nDieAniPhase == 4 && transform.localScale.x <= initialScale.x)
+			{
+				bIsExpanding = true;
+				bIsShrinking = false;
+				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x));
+				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y));
+			}
+			else if (nDieAniPhase == 4)
+				nDieAniPhase = 5;
 
-		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Stunned)
-			bStunAniOn = true;
-		else
-			bStunAniOn = false;
+			if (nDieAniPhase == 5 && transform.localScale.x > initialScale.x / 20f)
+			{
+				bIsExpanding = false;
+				bIsShrinking = true;
+				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x / 3f));
+				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y / 3f));
+			}
+			else if (nDieAniPhase == 5)
+			{
+				nDieAniPhase = 0;							// Prevent the animation from showing again before the next death
+				EMHelper.Instance ().Visibility (false); 	// Make the enemy main cell invisible
+			}
+
+			transform.localScale = (Vector3)currentScale;
+		} else
+			nDieAniPhase = 1;								// Reset the animation phase after exit Die state
 	}
-
 	// Expand animation in Landmine state
 	private void LandmineAnimation ()
 	{
-		if (bLandmineAniOn) 
+		if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine) 
 		{
 			if (bIsExpanding) 
 			{
@@ -292,19 +305,21 @@ public class EMAnimation : MonoBehaviour
 	// Color change in AggresiveAttack, CautiousAttack and Landmine states
 	private void ColorUpdate ()
 	{
-		if (bAggressiveAniOn && !bCautiousAniOn && !bLandmineAniOn)
+		if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack)
 		{
 			thisRend.material.color = aggressieColor;
 		}
-		else if (!bAggressiveAniOn && bCautiousAniOn && !bLandmineAniOn)
+		else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack)
 		{
 			thisRend.material.color = cautiousColor;
 		}
-		else if (!bAggressiveAniOn && !bCautiousAniOn && bLandmineAniOn)
+		else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine)
 		{
 			thisRend.material.color = landmineColor;
 		}
-		else if (!bAggressiveAniOn && !bCautiousAniOn && !bLandmineAniOn)
+		else if (EnemyMainFSM.Instance().CurrentStateIndex != EMState.AggressiveAttack && 
+		         EnemyMainFSM.Instance().CurrentStateIndex != EMState.CautiousAttack && 
+		         EnemyMainFSM.Instance().CurrentStateIndex != EMState.Landmine)
 		{
 			thisRend.material.color = defaultColor;
 		}
@@ -312,7 +327,8 @@ public class EMAnimation : MonoBehaviour
 	// Rotate faster in AggresiveAttack and CautiousAttack states
 	private void FasterRotation ()
 	{
-		if (bAggressiveAniOn || bCautiousAniOn) 
+		if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack || 
+		    EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack) 
 		{
 			// Angular velocity increases as time goes by
 			if (fAngularVelocity >= 0f && bCanRotate) 
@@ -345,7 +361,7 @@ public class EMAnimation : MonoBehaviour
 	// Angular velocity declines faster in Stun state
 	private void FasterRotationDecline ()
 	{
-		if (bCanRotate && bStunAniOn) 
+		if (bCanRotate && EnemyMainFSM.Instance().CurrentStateIndex == EMState.Stunned) 
 		{
 			if (fAngularVelocity >= 0f) {
 				if (fAngularVelocity >= fMinAngularVelocity)

@@ -20,9 +20,6 @@ public class EMDieState : IEMState
 		
 		// Reset transition availability
 		transition.CanTransit = false;
-
-		// Make the dead main cell invisible
-		EMHelper.Instance ().Visibility (false);
 	}
 	
 	public override void Execute ()
