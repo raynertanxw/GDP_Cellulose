@@ -167,7 +167,9 @@ public class EMLeraningAgent : MonoBehaviour
 		int nCurrentSquadChild = PlayerSquadFSM.Instance.AliveChildCount ();
 		bool bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
 		int nCurrentEnemyHealth = m_EMFSM.Health;
-		int nCurrentPlayerHealth = PlayerMain.s_Instance.Health;
+		int nCurrentPlayerHealth = 0;
+		if (PlayerMain.s_Instance != null)
+			nCurrentPlayerHealth = PlayerMain.s_Instance.Health;
 		// Pause calling the function for checking and wait for the result
 		fCheckFreq = Random.Range (0.25f, .5f);
 		StartCoroutine (PauseCheck (fCheckFreq, currentStateEnum, nCurrentEnemyChild, nCurrentPlayerChild, nCurrentSquadChild, bSquadCaptainIsAlive, 
