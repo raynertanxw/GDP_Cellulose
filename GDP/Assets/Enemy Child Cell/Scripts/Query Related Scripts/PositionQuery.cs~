@@ -291,28 +291,160 @@ public class PositionQuery
 
 	public Formation GetDefensiveFormation()
 	{
-		GameObject EMain = GameObject.Find("Enemy_Cell");
-		if(EMain.transform.position.x >= -0.05f && EMain.transform.position.x <= 0.05f)
+		int BurstCount = 0;
+		int SwarmCount = 0;
+		int ScatterCount = 0;
+		
+		for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
 		{
-			int Choice = Random.Range(0, 4);
-			if(Choice == 0)
+			if(PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
 			{
-				return Formation.QuickCircle;
-			}
-			else if(Choice == 1)
-			{
-				return Formation.ReverseCircular;
-			}
-			else if(Choice == 2)
-			{
-				return Formation.Turtle;
-			}
-			else if(Choice == 3)
-			{
-				return Formation.Ladder;
+				if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.BurstShot)
+				{
+					BurstCount++;
+				}
+				else if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.SwarmTarget)
+				{
+					SwarmCount++;
+				}
+				else if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.ScatterShot)
+				{
+					ScatterCount++;
+				}
 			}
 		}
-		return Formation.Turtle;
+		
+		int EnemyChildAmt = EnemyMain.GetComponent<EnemyMainFSM>().AvailableChildNum;
+		int EnemyHP = EnemyMain.GetComponent<EnemyMainFSM>().Health;
+		int PlayerHP = PlayerMain.GetComponent<PlayerMain>().Health;
+		int DifferenceInHP = EnemyHP - PlayerHP;
+		
+		float QCDesirability = 0f;
+		float RCDesirability = 0f;
+		float TurtleDesirability = 0f;
+		float LadderDesirability = 0f;
+		
+		//Very Desirable = 2, Desirable = 1, Undesirable = -1 , Very Undesirable = -2
+		if(BurstCount > SwarmCount)
+		{
+			TurtleDesirability += 2;
+			LadderDesirability += 2;
+			QCDesirability -= 2;
+			RCDesirability -= 2;
+		}
+		if(BurstCount > ScatterCount)
+		{
+			TurtleDesirability += 2;
+			LadderDesirability += 2;
+			QCDesirability -= 2;
+			RCDesirability -= 2;
+		}
+		
+		if(SwarmCount > BurstCount)
+		{
+			QCDesirability += 2;
+			RCDesirability += 2;
+			TurtleDesirability -= 2;
+			LadderDesirability -= 2;
+		}
+		if(SwarmCount > ScatterCount)
+		{
+			QCDesirability += 2;
+			RCDesirability += 2;
+			TurtleDesirability -= 2;
+			LadderDesirability -= 2;
+		}
+		
+		if(ScatterCount > BurstCount)
+		{
+			TurtleDesirability += 2;
+			LadderDesirability += 2;
+			QCDesirability -= 2;
+			RCDesirability -= 2;
+		}
+		if(ScatterCount > SwarmCount)
+		{
+			TurtleDesirability += 2;
+			LadderDesirability += 2;
+			QCDesirability -= 2;
+			RCDesirability -= 2;
+		}
+		
+		if(EnemyChildAmt <= 25)
+		{
+			LadderDesirability += 1;
+			TurtleDesirability += 1;
+			QCDesirability -= 1;
+			RCDesirability -= 1;
+		}
+		else if(EnemyChildAmt <= 50)
+		{
+			LadderDesirability += 1;
+			TurtleDesirability += 1;
+			RCDesirability += 1;
+			QCDesirability -= 1;
+		}
+		else if(EnemyChildAmt > 50 && EnemyChildAmt <= 75)
+		{
+			LadderDesirability += 1;
+			TurtleDesirability += 1;
+			RCDesirability += 1;
+			QCDesirability += 1;
+		}
+		else if(EnemyChildAmt > 75)
+		{
+			LadderDesirability += 1;
+			TurtleDesirability += 1;
+			QCDesirability += 1;
+			RCDesirability -= 1;
+		}
+		
+		if(EnemyHP <= 25)
+		{
+			TurtleDesirability += 1;
+			RCDesirability += 1;
+		}
+		else if(EnemyHP <= 50)
+		{
+			LadderDesirability += 1;
+			RCDesirability += 1;
+		}
+		else if(EnemyHP > 50 && EnemyHP <= 100)
+		{
+			LadderDesirability += 1;
+			RCDesirability += 1;
+			QCDesirability += 1;
+		}
+		
+		if(DifferenceInHP >= 25 && DifferenceInHP < 50)
+		{
+			TurtleDesirability += 1;
+			RCDesirability += 1;
+		}
+		else if(DifferenceInHP >= 50)
+		{
+			RCDesirability += 1;
+			QCDesirability += 1;
+		}
+		else if(DifferenceInHP <= -25 && DifferenceInHP > -50)
+		{
+			TurtleDesirability += 1;
+			RCDesirability += 1;
+		}
+		else if(DifferenceInHP <= -50)
+		{
+			TurtleDesirability += 1;
+			LadderDesirability += 1;
+		}
+		
+		float HighestDesirability = Mathf.Max(QCDesirability,Mathf.Max(RCDesirability,Mathf.Max(TurtleDesirability,LadderDesirability)));
+		
+		if(HighestDesirability == QCDesirability){return Formation.QuickCircle;}
+		if(HighestDesirability == RCDesirability){return Formation.ReverseCircular;}
+		if(HighestDesirability == TurtleDesirability){return Formation.Turtle;}
+		if(HighestDesirability == LadderDesirability){return Formation.Ladder;}
+		
+		return Formation.Ladder;
 	}
 
 	public static void ResetStatics()

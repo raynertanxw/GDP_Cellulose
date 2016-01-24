@@ -11,6 +11,7 @@ public class EnemyChildFSM : MonoBehaviour
 	private static Node_Manager NodeLeft;
 	private static Node_Manager NodeRight;
 	public GameObject m_ChargeTarget;
+	public GameObject m_AttackTarget;
 	private static EnemyMainFSM EMFSM;
 	private static EMController EMControl;
 	private Rigidbody2D m_Rigidbody2D;

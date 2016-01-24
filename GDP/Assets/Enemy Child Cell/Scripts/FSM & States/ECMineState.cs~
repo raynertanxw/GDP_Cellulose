@@ -89,7 +89,11 @@ public class ECMineState : IECState {
 			{
 				CurrentPositionType = DeterminePositionType();
 
-				Target = PositionQuery.Instance.GetLandmineTarget(CurrentPositionType,m_Child);
+				Target = m_ecFSM.m_AttackTarget;
+				if(Target == null)
+				{
+					Target = PositionQuery.Instance.GetLandmineTarget(CurrentPositionType,m_Child);
+				}
 				TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),CurrentPositionType,m_Child);
 				PathQuery.Instance.AStarSearch(m_Child.transform.position,TargetLandminePos,false);
 				PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(Target));

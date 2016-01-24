@@ -181,7 +181,7 @@ public class ECChargeCState : IECState {
 		//Find the node to obtain a target child by evaluating which node is the most threatening
 		if(TargetSource == null)
 		{
-			GameObject Source = GetMostThreateningSource();
+			GameObject Source = m_ecFSM.m_AttackTarget;
 			if(Source == null)
 			{
 				return null;

@@ -56,7 +56,7 @@ public class ECTrickAttackState : IECState {
 	//initialize the array and various variables for the trick attack
 	public override void Enter()
 	{
-		m_AttackTarget = GetTarget();
+		m_AttackTarget = m_ecFSM.m_AttackTarget;
 		bReachStart = false;
 		bReachTarget = false;
 
