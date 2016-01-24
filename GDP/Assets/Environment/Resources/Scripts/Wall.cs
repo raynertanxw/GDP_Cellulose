@@ -38,6 +38,7 @@ public class Wall : MonoBehaviour
 	private float fLowerLimit;
 	private Color colorArtillery = Color.black;
 	private ParticleSystem bgParticleSystem;
+	private Animate mAnimate;
 
 	// Private Functions
 	// Awake(): is called at the start of the program
@@ -68,6 +69,8 @@ public class Wall : MonoBehaviour
 		bgParticleSystem.Clear();
 		bgParticleSystem.Simulate(bgParticleSystem.startLifetime);
 		bgParticleSystem.Play();
+
+		mAnimate = new Animate(transform.GetChild(0)); // Pool_WallSidesRenderer
 	}
 
 	// Start(): Use this for initialization
@@ -83,6 +86,7 @@ public class Wall : MonoBehaviour
 		// Initiate Wall-rendering Routine
 		SpawnWallSides();
 		SpawnWallBackground();
+		mAnimate.Idle(0.2f, 0.5f, false, false, true);
 	}
 	
 	// SpawnNutrients(): Handles the spawning of nutrients
