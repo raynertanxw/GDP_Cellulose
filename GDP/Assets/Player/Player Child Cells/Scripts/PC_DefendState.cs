@@ -169,7 +169,7 @@ public class PC_DefendState : IPCState
 	// Weights
 	private static float s_fCohesionWeight = 30;
 	private static float s_fAlignmentWeight = 10;
-	private static float s_fSeparationWeight = 1500;
+	private static float s_fSeparationWeight = 5000;
 	private static float s_fTargetPullWeight = 5000;
 	
 	
