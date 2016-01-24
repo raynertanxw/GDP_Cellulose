@@ -1,18 +1,9 @@
 fileFormatVersion: 2
-guid: 2d941aaa6ede54605b38281cf934b6f5
-timeCreated: 1453185838
+guid: 9bab68ad362164283b3a361b73be9165
+timeCreated: 1453678714
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName:
-    21300000: DeadParticles_0
-    21300002: DeadParticles_1
-    21300004: DeadParticles_2
-    21300006: DeadParticles_3
-    21300008: DeadParticles_4
-    21300010: DeadParticles_5
-    21300012: DeadParticles_6
-    21300014: DeadParticles_7
-    21300016: DeadParticles_8
+  fileIDToRecycleName: {}
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -35,19 +26,19 @@ TextureImporter:
   cubemapConvolutionSteps: 8
   cubemapConvolutionExponent: 1.5
   seamlessCubemap: 0
-  textureFormat: -3
-  maxTextureSize: 2048
+  textureFormat: -5
+  maxTextureSize: 128
   textureSettings:
-    filterMode: -1
+    filterMode: 1
     aniso: 16
     mipBias: -1
     wrapMode: 1
   nPOTScale: 0
   lightmap: 0
   rGBM: 0
-  compressionQuality: 50
+  compressionQuality: 100
   allowsAlphaSplitting: 0
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -58,97 +49,7 @@ TextureImporter:
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
-    sprites:
-    - name: DeadParticles_0
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 683.333374
-        width: 341.666656
-        height: 341.666626
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_1
-      rect:
-        serializedVersion: 2
-        x: 341
-        y: 683.333374
-        width: 341.666626
-        height: 341.666626
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_2
-      rect:
-        serializedVersion: 2
-        x: 682
-        y: 683.333374
-        width: 341.666626
-        height: 341.666626
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_3
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 342.333344
-        width: 341.666656
-        height: 341.666656
-      alignment: 0
-      pivot: {x: .5, y: .50000006}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_4
-      rect:
-        serializedVersion: 2
-        x: 341
-        y: 342.333344
-        width: 341.666626
-        height: 341.666656
-      alignment: 0
-      pivot: {x: .5, y: .50000006}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_5
-      rect:
-        serializedVersion: 2
-        x: 682
-        y: 342.333344
-        width: 341.666626
-        height: 341.666656
-      alignment: 0
-      pivot: {x: .5, y: .50000006}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_6
-      rect:
-        serializedVersion: 2
-        x: 0
-        y: 1.33334351
-        width: 341.666656
-        height: 341.666656
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_7
-      rect:
-        serializedVersion: 2
-        x: 341
-        y: 1.33334351
-        width: 341.666626
-        height: 341.666656
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-    - name: DeadParticles_8
-      rect:
-        serializedVersion: 2
-        x: 682
-        y: 1
-        width: 342
-        height: 342
-      alignment: 0
-      pivot: {x: .5, y: .5}
-      border: {x: 0, y: 0, z: 0, w: 0}
+    sprites: []
   spritePackingTag: 
   userData: 
   assetBundleName: 
