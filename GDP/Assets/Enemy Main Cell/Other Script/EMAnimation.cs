@@ -66,9 +66,11 @@ public class EMAnimation : MonoBehaviour
 	private Color aggressiveColor;
 	public Color AggressiveColor { get { return aggressiveColor; } }
 	private Color cautiousColor;
-	public Color CautiousColor { get { return CautiousColor; } }
+	public Color CautiousColor { get { return cautiousColor; } }
 	private Color landmineColor;
-	public Color LandmineColor { get { return LandmineColor; } }
+	public Color LandmineColor { get { return landmineColor; } }
+	private Color defendColor;
+	public Color DefendColor { get { return defendColor; } }
 	#endregion
 
 	void Start () 
@@ -315,7 +317,7 @@ public class EMAnimation : MonoBehaviour
 			transform.localScale = (Vector3)currentScale;
 		}
 	}
-	// Color blink animation in AggresiveAttack, CautiousAttack and Landmine states
+	// Color blink animation in AggresiveAttack, CautiousAttack, Landmine and defend states
 	private void ColorBlink ()
 	{
 		// Reset elapsed time when blink animation is disabled
@@ -325,24 +327,58 @@ public class EMAnimation : MonoBehaviour
 		if (bCanBlink) 
 		{
 			fBlinkElapsedTime += Time.deltaTime;
-			if(fBlinkElapsedTime >= 1.0f / EnemyMainFSM.Instance().CurrentAggressiveness)
+			if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack)
 			{
-				fBlinkElapsedTime = 0.0f;
-
-				if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack && thisRend.material.color != aggressiveColor)
+				if(fBlinkElapsedTime >= 1.5f / EnemyMainFSM.Instance().CurrentAggressiveness)
 				{
-					thisRend.material.color = aggressiveColor;
+					if (thisRend.material.color != aggressiveColor)
+					{
+						thisRend.material.color = aggressiveColor;
+					}
+					else 
+						thisRend.material.color = defaultColor;
 				}
-				else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack && thisRend.material.color != cautiousColor)
+			}
+			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack)
+			{
+				if(fBlinkElapsedTime >= 2.0f / EnemyMainFSM.Instance().CurrentAggressiveness)
 				{
-					thisRend.material.color = cautiousColor;
+					if (thisRend.material.color != cautiousColor)
+					{
+						thisRend.material.color = cautiousColor;
+					}
+					else 
+						thisRend.material.color = defaultColor;
 				}
-				else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine && thisRend.material.color != landmineColor)
+			}
+			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine)
+			{
+				if(fBlinkElapsedTime >= 2.0f / EnemyMainFSM.Instance().CurrentAggressiveness)
 				{
-					thisRend.material.color = landmineColor;
+					if (thisRend.material.color != landmineColor)
+					{
+						thisRend.material.color = landmineColor;
+					}
+					else 
+						thisRend.material.color = defaultColor;
 				}
-				else 
-					thisRend.material.color = defaultColor;
+			}
+			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Defend)
+			{
+				// When there are more player cells than enemy cells
+				if (EnemyMainFSM.Instance().AvailableChildNum < PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount ())
+				{
+					if(fBlinkElapsedTime >= 2.0f / 
+					   (Mathf ((PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount () - EnemyMainFSM.Instance().AvailableChildNum) / 2.0f) / 10.0f))
+					{
+						if (thisRend.material.color != defendColor)
+						{
+							thisRend.material.color = defendColor;
+						}
+						else 
+							thisRend.material.color = defaultColor;
+					}
+				}
 			}
 		}
 		else
