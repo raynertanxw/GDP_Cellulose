@@ -345,6 +345,8 @@ public class EMAnimation : MonoBehaviour
 					thisRend.material.color = defaultColor;
 			}
 		}
+		else
+			thisRend.material.color = defaultColor;
 	}
 	// Rotate faster in AggresiveAttack and CautiousAttack states
 	private void FasterRotation ()
