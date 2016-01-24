@@ -33,7 +33,11 @@ public class EMAnimation : MonoBehaviour
 	private int nDieAniPhase;
 
 	[SerializeField]
-	bool bCanRotate;
+	private bool bCanRotate;
+	[SerializeField]
+	private bool bCanBlink;
+	public bool CanBlink { get { return bCanBlink; } set { bCanBlink = value; } }
+	private float fBlinkElapsedTime;
 	[SerializeField]
 	private float fAngularVelocity;
 	public float AngularVelocity { get { return fAngularVelocity; } set { fAngularVelocity = value; } }
@@ -58,9 +62,13 @@ public class EMAnimation : MonoBehaviour
 
 	#region Color
 	private Color defaultColor;
-	private Color aggressieColor;
+	public Color DefaultColor { get { return defaultColor; } }
+	private Color aggressiveColor;
+	public Color AggressiveColor { get { return aggressiveColor; } }
 	private Color cautiousColor;
+	public Color CautiousColor { get { return CautiousColor; } }
 	private Color landmineColor;
+	public Color LandmineColor { get { return LandmineColor; } }
 	#endregion
 
 	void Start () 
@@ -75,9 +83,11 @@ public class EMAnimation : MonoBehaviour
 		nDieAniPhase = 0;
 		// Initialization of status
 		bCanRotate = true;
+		bCanBlink = false;
 		bIsExpanding = false;
 		bIsShrinking = false;
 		fTargetSize = 0f;
+		fBlinkElapsedTime = 0.0f;
 		// Initialization of velocity
 		fAngularVelocity = fAngularIniFactor * Random.Range (.75f, 1.25f);
 		thisRB.angularVelocity = fAngularVelocity;
@@ -91,7 +101,7 @@ public class EMAnimation : MonoBehaviour
 		transform.localScale = (Vector3)currentScale;
 		// Initialization of color
 		defaultColor = thisRend.material.color;
-		aggressieColor = new Vector4 (1f, 0.25f, 0.25f, 1f);
+		aggressiveColor = new Vector4 (1f, 0.25f, 0.25f, 1f);
 		cautiousColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 		landmineColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 	}
@@ -113,8 +123,8 @@ public class EMAnimation : MonoBehaviour
 		FasterRotationDecline ();
 		// Enemy main cell expands in size when receives nutrient
 		ExpandAnimation ();
-		// Update the color of enemy main cell
-		ColorUpdate ();
+		// Color blink animation of enemy main cell
+		ColorBlink ();
 		// Die animation called in the Die state
 		DieAnimation ();
 		// Expand animation in Landmine state
@@ -305,26 +315,35 @@ public class EMAnimation : MonoBehaviour
 			transform.localScale = (Vector3)currentScale;
 		}
 	}
-	// Color change in AggresiveAttack, CautiousAttack and Landmine states
-	private void ColorUpdate ()
+	// Color blink animation in AggresiveAttack, CautiousAttack and Landmine states
+	private void ColorBlink ()
 	{
-		if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack)
+		// Reset elapsed time when blink animation is disabled
+		if (!bCanBlink && fBlinkElapsedTime != 0.0f)
+			fBlinkElapsedTime = 0.0f;
+
+		if (bCanBlink) 
 		{
-			thisRend.material.color = aggressieColor;
-		}
-		else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack)
-		{
-			thisRend.material.color = cautiousColor;
-		}
-		else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine)
-		{
-			thisRend.material.color = landmineColor;
-		}
-		else if (EnemyMainFSM.Instance().CurrentStateIndex != EMState.AggressiveAttack && 
-		         EnemyMainFSM.Instance().CurrentStateIndex != EMState.CautiousAttack && 
-		         EnemyMainFSM.Instance().CurrentStateIndex != EMState.Landmine)
-		{
-			thisRend.material.color = defaultColor;
+			fBlinkElapsedTime += Time.deltaTime;
+			if(fBlinkElapsedTime >= 1.0f / EnemyMainFSM.Instance().CurrentAggressiveness)
+			{
+				fBlinkElapsedTime = 0.0f;
+
+				if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack && thisRend.material.color != aggressiveColor)
+				{
+					thisRend.material.color = aggressiveColor;
+				}
+				else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack && thisRend.material.color != cautiousColor)
+				{
+					thisRend.material.color = cautiousColor;
+				}
+				else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine && thisRend.material.color != landmineColor)
+				{
+					thisRend.material.color = landmineColor;
+				}
+				else 
+					thisRend.material.color = defaultColor;
+			}
 		}
 	}
 	// Rotate faster in AggresiveAttack and CautiousAttack states
