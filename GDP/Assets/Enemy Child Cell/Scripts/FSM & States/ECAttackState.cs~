@@ -24,7 +24,7 @@ public class ECAttackState : IECState {
 	
 	public override void Enter()
 	{
-		Debug.Log("Enter Attack");
+
 	}
 	
 	public override void Execute()
@@ -1147,9 +1147,9 @@ public class ECAttackState : IECState {
 			#endregion
 		}
 		
-		Debug.Log("PCDesirability: " + PCDesirability);
-		Debug.Log("PMDesirability: " + PMDesirability);
-		Debug.Log("SQCDesirability: " + SQCDesirability);
+		//Debug.Log("PCDesirability: " + PCDesirability);
+		//Debug.Log("PMDesirability: " + PMDesirability);
+		//Debug.Log("SQCDesirability: " + SQCDesirability);
 		
 		int HighestDesirability = Mathf.Max(PCDesirability,Mathf.Max(PMDesirability,SQCDesirability));
 		if(PCDesirability == HighestDesirability){return (m_LeftNode.activeChildCount > m_RightNode.activeChildCount) ? m_LeftNode.gameObject : m_RightNode.gameObject;}
@@ -1162,7 +1162,7 @@ public class ECAttackState : IECState {
 	{
 		GameObject Target = DetermineTargetToAttack();
 		m_ecFSM.m_AttackTarget = Target;
-		Debug.Log("Target determined: " + m_ecFSM.m_AttackTarget.name);
+		//Debug.Log("Target determined: " + m_ecFSM.m_AttackTarget.name);
 
 		int PlayerDefence = PlayerChildFSM.GetActiveChildCount() + m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
 		int ECToPCDifference = m_Main.GetComponent<EnemyMainFSM>().AvailableChildNum - PlayerChildFSM.GetActiveChildCount();
@@ -1512,14 +1512,14 @@ public class ECAttackState : IECState {
 				#endregion
 			}
 			
-			Debug.Log("CCDesirability: " + CCDesirability);
-			Debug.Log("LMDesirability: " + LMDesirability);
-			Debug.Log("TADesirability: " + TADesirability);
+			//Debug.Log("CCDesirability: " + CCDesirability);
+			//Debug.Log("LMDesirability: " + LMDesirability);
+			//Debug.Log("TADesirability: " + TADesirability);
 			
 			int HighestDesirability = Mathf.Max(CCDesirability,Mathf.Max(LMDesirability, TADesirability));
-			if(CCDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeChild,0); Debug.Log("Node - Change to CC");}
-			if(LMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0); Debug.Log("Node - Change to LM");}
-			if(TADesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0); Debug.Log("Node - Change to TA");}
+			if(CCDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeChild,0);}// Debug.Log("Node - Change to CC");}
+			if(LMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0);}// Debug.Log("Node - Change to LM");}
+			if(TADesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0);}// Debug.Log("Node - Change to TA");}
 		}
 		else if(Target.name.Contains("Player_Cell"))
 		{
@@ -1783,14 +1783,14 @@ public class ECAttackState : IECState {
 				#endregion
 			}
 			
-			Debug.Log("CMDesirability: " + CMDesirability);
-			Debug.Log("LMDesirability: " + LMDesirability);
-			Debug.Log("TADesirability: " + TADesirability);
+			//Debug.Log("CMDesirability: " + CMDesirability);
+			//Debug.Log("LMDesirability: " + LMDesirability);
+			//Debug.Log("TADesirability: " + TADesirability);
 			
 			int HighestDesirability = Mathf.Max(CMDesirability,Mathf.Max(LMDesirability,TADesirability));
-			if(CMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeMain,0); Debug.Log("PlayerMain - Change to CM");}
-			if(LMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0); Debug.Log("PlayerMain - Change to LM");}
-			if(TADesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0); Debug.Log("PlayerMain - Change to TA");}
+			if(CMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeMain,0);}// Debug.Log("PlayerMain - Change to CM");}
+			if(LMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0);}// Debug.Log("PlayerMain - Change to LM");}
+			if(TADesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0);}// Debug.Log("PlayerMain - Change to TA");}
 		}
 		else if(Target.name.Contains("Squad"))
 		{
@@ -2003,14 +2003,14 @@ public class ECAttackState : IECState {
 				#endregion
 			}
 			
-			Debug.Log("CCDesirability: " + CCDesirability);
-			Debug.Log("LMDesirability: " + LMDesirability);
-			Debug.Log("TADesirability: " + TADesirability);
+			//Debug.Log("CCDesirability: " + CCDesirability);
+			//Debug.Log("LMDesirability: " + LMDesirability);
+			//Debug.Log("TADesirability: " + TADesirability);
 			
 			int HighestDesirability = Mathf.Max(CCDesirability,Mathf.Max(LMDesirability,TADesirability));
-			if(CCDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeChild,0);Debug.Log("Squad - Change to CC");}
-			if(LMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0);Debug.Log("Squad - Change to LM");}
-			if(TADesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0);Debug.Log("Squad - Change to TA");}
+			if(CCDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeChild,0);}//Debug.Log("Squad - Change to CC");}
+			if(LMDesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0);}//Debug.Log("Squad - Change to LM");}
+			if(TADesirability == HighestDesirability){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0);}//Debug.Log("Squad - Change to TA");}
 		}
 		
 		/*if the player child cells become a threat to the enemy main cell, transition to the chargeChild state.

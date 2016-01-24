@@ -289,7 +289,7 @@ public class ECDefendState : IECState {
 		}
 		else
 		{
-			Debug.Log("no burst target");
+			//Debug.Log("no burst target");
 			GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
 			float ECtoPCDistance = 0f;
 			PCState PCCurrentState = PCState.Idle;

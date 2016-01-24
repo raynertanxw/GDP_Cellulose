@@ -64,7 +64,6 @@ public class ECPoolManager : MonoBehaviour {
 		
 		if(IsPoolEmpty())
 		{
-			Debug.Log("100 Enemy Child Cell Reached");
 			return null;
 		}
 		
