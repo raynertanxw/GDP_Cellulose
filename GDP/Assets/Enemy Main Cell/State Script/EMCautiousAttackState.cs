@@ -19,6 +19,9 @@ public class EMCautiousAttackState : IEMState
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 
+		// Turn blink animation on
+		EMAnimation.Instance ().CanBlink = true;
+
 		// Reset availability to command mini cell to Attack state
 		if (!helper.CanAddAttack)
 			helper.CanAddAttack = true;
@@ -100,6 +103,9 @@ public class EMCautiousAttackState : IEMState
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 
+		// Reset animation status
+		if (EMAnimation.Instance ().CanBlink)
+			EMAnimation.Instance ().CanBlink = false;
 		// Reset availability to command mini cell to Attack state
 		if (!helper.CanAddAttack)
 			helper.CanAddAttack = true;

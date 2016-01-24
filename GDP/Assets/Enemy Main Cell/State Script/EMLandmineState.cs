@@ -19,6 +19,9 @@ public class EMLandmineState : IEMState
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 
+		// Turn blink animation on
+		EMAnimation.Instance ().CanBlink = true;
+
 		// Reset availability to command mini cell to Landmine state
 		if (!helper.CanAddLandmine)
 			helper.CanAddLandmine = true;
@@ -110,6 +113,9 @@ public class EMLandmineState : IEMState
 
 		transition = m_EMFSM.emTransition;
 
+		// Reset animation status
+		if (EMAnimation.Instance ().CanBlink)
+			EMAnimation.Instance ().CanBlink = false;
 		// Reset availability to command mini cell to Landmine state
 		if (!helper.CanAddLandmine)
 			helper.CanAddLandmine = true;
