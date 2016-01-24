@@ -329,7 +329,7 @@ public class EMAnimation : MonoBehaviour
 			fBlinkElapsedTime += Time.deltaTime;
 			if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack)
 			{
-				if(fBlinkElapsedTime >= 1.5f / EnemyMainFSM.Instance().CurrentAggressiveness)
+				if(fBlinkElapsedTime >= 1.5f / Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness))
 				{
 					if (thisRend.material.color != aggressiveColor)
 					{
@@ -337,11 +337,13 @@ public class EMAnimation : MonoBehaviour
 					}
 					else 
 						thisRend.material.color = defaultColor;
+
+					fBlinkElapsedTime = 0.0f;
 				}
 			}
 			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack)
 			{
-				if(fBlinkElapsedTime >= 2.0f / EnemyMainFSM.Instance().CurrentAggressiveness)
+				if(fBlinkElapsedTime >= 2.5f / Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness))
 				{
 					if (thisRend.material.color != cautiousColor)
 					{
@@ -349,11 +351,13 @@ public class EMAnimation : MonoBehaviour
 					}
 					else 
 						thisRend.material.color = defaultColor;
+
+					fBlinkElapsedTime = 0.0f;
 				}
 			}
 			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine)
 			{
-				if(fBlinkElapsedTime >= 2.0f / EnemyMainFSM.Instance().CurrentAggressiveness)
+				if(fBlinkElapsedTime >= 2.5f / Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness))
 				{
 					if (thisRend.material.color != landmineColor)
 					{
@@ -361,6 +365,8 @@ public class EMAnimation : MonoBehaviour
 					}
 					else 
 						thisRend.material.color = defaultColor;
+
+					fBlinkElapsedTime = 0.0f;
 				}
 			}
 			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Defend)
@@ -368,7 +374,7 @@ public class EMAnimation : MonoBehaviour
 				// When there are more player cells than enemy cells
 				if (EnemyMainFSM.Instance().AvailableChildNum < PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount ())
 				{
-					if(fBlinkElapsedTime >= 2.0f / 
+					if(fBlinkElapsedTime >= 2.5f / 
 					   (Mathf.Sqrt ((PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount () - EnemyMainFSM.Instance().AvailableChildNum) / 2.0f) / 10.0f))
 					{
 						if (thisRend.material.color != defendColor)
@@ -377,6 +383,8 @@ public class EMAnimation : MonoBehaviour
 						}
 						else 
 							thisRend.material.color = defaultColor;
+
+						fBlinkElapsedTime = 0.0f;
 					}
 				}
 			}

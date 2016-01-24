@@ -32,7 +32,7 @@ public class EMAggressiveAttackState : IEMState
 		// Reset transition availability
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
-		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 1.5f/ EMDifficulty.Instance().CurrentDiff, 
+		float fPauseTime = Random.Range (Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 2.5f/ EMDifficulty.Instance().CurrentDiff, 
 		                                 Mathf.Sqrt (m_EMFSM.CurrentAggressiveness) * 3f / EMDifficulty.Instance().CurrentDiff);
 		helper.StartPauseTransition (fPauseTime);
 	}
