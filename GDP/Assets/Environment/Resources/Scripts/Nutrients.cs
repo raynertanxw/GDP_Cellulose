@@ -33,7 +33,6 @@ public class Nutrients : MonoBehaviour
 	}
 	#endregion
 
-
 	// Static Variables
 	private static int s_nNutrients = 10;   // s_nNutrients: The default amount of nutrients of each nutrients node
 
@@ -130,8 +129,12 @@ public class Nutrients : MonoBehaviour
 		}
 	}
 
-	// Getter-Setter Functions
+	// Public Static Functions
 	public static int Nutrient { get { return s_nNutrients; } }
+
+	// Getter-Setter Functions
+	public bool IsInPool { get { return bIsInPool; } }
+	public bool IsCollectable { get { return bIsCollectable; } }
 
 
 
