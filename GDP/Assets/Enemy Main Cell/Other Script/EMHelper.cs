@@ -31,6 +31,8 @@ public class EMHelper : MonoBehaviour
 	public float MaxY { get { return fMaxY; } }
 	private float fMinY;
 	public float MinY { get { return fMinY; } }
+	private float fMinToMaxYRatio;
+	public float MinToMaxYRatio { get { return fMinToMaxYRatio; } }
 	private float fRadius;
 	public float Radius { get { return fRadius; } }
 	private float width;
@@ -104,6 +106,9 @@ public class EMHelper : MonoBehaviour
 		// Update Radius
 		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
 			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
+		// Update the ratio of y distance
+		if (fMinToMaxYRatio != (transform.position.y - fMinY) / (fMaxY - fMinY))
+			fMinToMaxYRatio = (transform.position.y - fMinY) / (fMaxY - fMinY);
 		// Update camera border
 		CameraLimit ();
 		// Make sure the enemy main cell do not go outside the screen
