@@ -60,8 +60,8 @@ public class ECMineState : IECState {
 		fExpansionSpeed = 0.1f;
 		bExpanding = true;
 
-		fExplosiveRange = 3.2f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
-		fKillRange = 0.5f * fExplosiveRange;
+		fExplosiveRange = 3.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
+		fKillRange = 0.75f * fExplosiveRange;
 		GeneralTargetIndex = 0;
 		SpreadPoint = null;
 		GeneralTargetPoint = null;
@@ -163,6 +163,7 @@ public class ECMineState : IECState {
 			TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),CurrentPositionType,m_Child);
 			PathQuery.Instance.AStarSearch(m_Child.transform.position,TargetLandminePos,false);
 			PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(Target));
+			//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		}
 
 
@@ -202,12 +203,14 @@ public class ECMineState : IECState {
 					m_ecFSM.rigidbody2D.drag = 5f;
 					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
 					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Tight)) * 7.5f;
+					Utility.DrawCross(GeneralTargetPoint.Position,Color.white,0.75f);
 				}
 				else if(CurrentSpreadness == Spread.Wide)
 				{
 					m_ecFSM.rigidbody2D.drag = 5f;
 					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
 					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
+					Utility.DrawCross(GeneralTargetPoint.Position,Color.white,0.75f);
 				}
 			}
 			else if(HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) && GeneralTargetIndex + 1 < PathToTarget.Count)
@@ -239,6 +242,7 @@ public class ECMineState : IECState {
 		//if the landmine has not exploded and its going to die, it self-destruct instantly
 		if(!bExploded)
 		{
+			MainCamera.CameraShake();
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());//ExplodeDestroy();
 		}
 
@@ -336,7 +340,8 @@ public class ECMineState : IECState {
 
 	private bool HasCenterReachTarget(Vector2 _Center, Vector2 _TargetPos)
 	{
-		return Utility.Distance(_Center,_TargetPos) <= 0.4f ? true : false;
+		return (_Center.y < _TargetPos.y) ? true : false;
+		//return Utility.Distance(_Center,_TargetPos) <= 0.4f ? true : false;
 	}
 
 	private bool HasAllCellsReachTarget (Vector2 _TargetPos)
@@ -475,7 +480,7 @@ public class ECMineState : IECState {
 			return false;
 		}
 
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.82f);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1);
 
 		for(int i = 0; i < NearbyObjects.Length; i++)
 		{
@@ -486,43 +491,6 @@ public class ECMineState : IECState {
 		}
 
 		return false;
-
-		/*if(_PlayerCell.name.Contains("Node"))
-		{
-			PlayerChildFSM PCFSM = null;
-			for(int i = 0; i < NearbyObjects.Length; i++)
-			{
-				PCFSM = NearbyObjects[i].GetComponent<PlayerChildFSM>();
-				if(PCFSM != null && PCFSM.GetCurrentState() != PCState.Dead)
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-		else if(_PlayerCell.name == "Player_Cell")
-		{
-			for(int i = 0; i < NearbyObjects.Length; i++)
-			{
-				if(NearbyObjects[i].name == "Player_Cell")
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-		else if(_PlayerCell.name.Contains("Squad"))
-		{
-			for(int i = 0; i < NearbyObjects.Length; i++)
-			{
-				if(NearbyObjects[i].name.Contains("Squad"))
-				{
-					return true;
-				}
-			}
-			return false;
-		}
-		return false;*/
 	}
 
 	//A function that activate the "PassThroughDeath" corountine on all landmines whereby they will continue to travel in their velocity for a short period of time before exploding and die
