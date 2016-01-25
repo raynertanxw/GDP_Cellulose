@@ -38,6 +38,12 @@ public class ECTrickAttackState : IECState {
 	//A boolean that state whether the enemy child cell had reached the last point of the calculated path
 	private bool bReachTarget;
 
+	private bool bSqueezeToggle;
+	
+	private bool bSqueezeDone;
+
+	private static Vector3 ShrinkRate;
+
 	//constructor
 	public ECTrickAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
@@ -46,11 +52,12 @@ public class ECTrickAttackState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 
 		m_Nodes = new GameObject[3];
-		fMaxAcceleration = 20f;
+		fMaxAcceleration = 40f;
 
 		m_Nodes[0] = Node_Manager.GetNode(Node.LeftNode).gameObject;
 		m_Nodes[1] = Node_Manager.GetNode(Node.RightNode).gameObject;
 		m_SquadCaptain = PlayerSquadFSM.Instance.gameObject;
+		ShrinkRate = new Vector3(-0.225f, 0.225f, 0.0f);
 	}
 
 	//initialize the array and various variables for the trick attack
@@ -79,7 +86,20 @@ public class ECTrickAttackState : IECState {
 	public override void Execute()
 	{
 		//If the cell had teleported and reach the final point of its travel, let it continue travel a short amount of distance before killing it
-		if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported && bReachStart)
+		if(!bSqueezeDone)
+		{
+			if(!bSqueezeToggle)
+			{
+				m_ecFSM.StartChildCorountine(SqueezeBeforeCharge(m_Main.transform.position));
+				bSqueezeToggle = true;
+			}
+		}
+		else if(bSqueezeDone && m_ecFSM.HitBottomOfScreen())
+		{
+			m_ecFSM.StopChildCorountine(m_ecFSM.PassThroughDeath(1f));
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
+		}
+		else if(bSqueezeDone && HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported && bReachStart)
 		{
 			bReachTarget = true;
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
@@ -94,29 +114,31 @@ public class ECTrickAttackState : IECState {
 		//move towards the player main cell
 		Vector2 Acceleration = Vector2.zero;
 
-		if(bTeleporting && !HasCellReachTargetPos(m_StartTelePos))
+		if(bSqueezeDone && bTeleporting && !HasCellReachTargetPos(m_StartTelePos))
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_StartTelePos, 45f);
+			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
 		}
-		else if(bTeleporting && HasCellReachTargetPos(m_StartTelePos))
+		else if(bSqueezeDone && bTeleporting && HasCellReachTargetPos(m_StartTelePos))
 		{
 			bTeleported = true;
 			bTeleporting = false;
 			m_ecFSM.StartChildCorountine(Teleport());
 		}
 		//If the cell has not reached the current target position, continue seek towards that target position and remain seperate from rest of the enemy child cells
-		else if(!HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
+		else if(bSqueezeDone && !HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
+			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
 		}
-		else if(CurrentTargetIndex + 1 < PathToTarget.Count && !bReachTarget)
+		else if(bSqueezeDone && CurrentTargetIndex + 1 < PathToTarget.Count && !bReachTarget)
 		{
 			CurrentTargetIndex++;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 		}
 		//If the cell had reached the teleporting position and it hasn't teleported, start teleporting the cell to the calculated position
-		else if(HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleporting == false && bTeleported == false)
+		else if(bSqueezeDone && HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleporting == false && bTeleported == false)
 		{
 			bTeleporting = true;
 		}
@@ -317,5 +339,27 @@ public class ECTrickAttackState : IECState {
 		}
 
 		return Neighbours;
+	}
+
+	private IEnumerator SqueezeBeforeCharge(Vector2 _TargetPos)
+	{
+		//The child cell will retreat slightly back before charging 
+		m_ecFSM.rigidbody2D.velocity = new Vector2(Random.Range(-0.05f,0.05f),2.5f);
+		
+		Vector3 ShrinkScale = new Vector3(0f,-0.1f,0f);
+		Vector3 ExpandScale = new Vector3(0.1f,0f,0f);
+		
+		while(m_Child.transform.localScale.y > 0.5f)
+		{
+			Vector2 Heading = new Vector2(m_Child.transform.position.x - _TargetPos.x,m_Child.transform.position.y - _TargetPos.y).normalized;
+			float Rotation = -Mathf.Atan2(Heading.x, Heading.y) * Mathf.Rad2Deg;
+			m_ecFSM.rigidbody2D.MoveRotation(Rotation);
+			
+			m_Child.transform.localScale += ShrinkScale;
+			m_Child.transform.localScale += ExpandScale;
+			yield return new WaitForSeconds(0.25f);//0.0005
+		}
+		
+		bSqueezeDone = true;
 	}
 }

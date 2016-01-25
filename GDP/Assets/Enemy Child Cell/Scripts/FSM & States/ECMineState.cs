@@ -42,6 +42,9 @@ public class ECMineState : IECState {
 	private static PositionType CurrentPositionType;
 	private static List<Point> PathToTarget;
 
+	private bool ExpandContractStart;
+	private Animate Animator;
+
 	private enum Spread{Empty,Tight, Wide};
 
 	//Constructor
@@ -57,14 +60,17 @@ public class ECMineState : IECState {
 		fExpansionSpeed = 0.1f;
 		bExpanding = true;
 
-		fExplosiveRange = 3.2f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
-		fKillRange = 0.5f * fExplosiveRange;
+		fExplosiveRange = 3.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
+		fKillRange = 0.75f * fExplosiveRange;
 		GeneralTargetIndex = 0;
 		SpreadPoint = null;
 		GeneralTargetPoint = null;
 		Target = null;
 		CurrentPositionType = PositionType.Empty;
 		PathToTarget = new List<Point>();
+
+		ExpandContractStart = false;
+		Animator = new Animate(m_Child.transform);
 	}
 
 	public override void Enter()
@@ -139,9 +145,10 @@ public class ECMineState : IECState {
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 
-		if(GatherTogether)
+		if(GatherTogether && !ExpandContractStart)
 		{
-			ExplodingGrowShrink();
+			Animator.ExpandContract(15f,60,1.9f);//ExplodingGrowShrink();
+			ExpandContractStart = true;
 		}
 	}
 
@@ -160,6 +167,7 @@ public class ECMineState : IECState {
 			TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),CurrentPositionType,m_Child);
 			PathQuery.Instance.AStarSearch(m_Child.transform.position,TargetLandminePos,false);
 			PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(Target));
+			//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		}
 
 
@@ -199,12 +207,14 @@ public class ECMineState : IECState {
 					m_ecFSM.rigidbody2D.drag = 5f;
 					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
 					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Tight)) * 7.5f;
+					Utility.DrawCross(GeneralTargetPoint.Position,Color.white,0.75f);
 				}
 				else if(CurrentSpreadness == Spread.Wide)
 				{
 					m_ecFSM.rigidbody2D.drag = 5f;
 					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
 					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
+					Utility.DrawCross(GeneralTargetPoint.Position,Color.white,0.75f);
 				}
 			}
 			else if(HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) && GeneralTargetIndex + 1 < PathToTarget.Count)
@@ -230,16 +240,17 @@ public class ECMineState : IECState {
 	public override void Exit()
 	{
 		bExplodeCorountineStart = false;
-		m_Child.transform.localScale = Vector3.one;
 		m_ecFSM.rigidbody2D.drag = 0f;
 		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 
 		//if the landmine has not exploded and its going to die, it self-destruct instantly
 		if(!bExploded)
 		{
-			ExplodeDestroy();
+			MainCamera.CameraShake();
+			m_ecFSM.StartChildCorountine(ExplodeCorountine());//ExplodeDestroy();
 		}
 
+		m_Child.transform.localScale = Vector3.one;
 	}
 
 	private List<GameObject> GetLandmines()
@@ -333,7 +344,8 @@ public class ECMineState : IECState {
 
 	private bool HasCenterReachTarget(Vector2 _Center, Vector2 _TargetPos)
 	{
-		return Utility.Distance(_Center,_TargetPos) <= 0.4f ? true : false;
+		return (_Center.y < _TargetPos.y) ? true : false;
+		//return Utility.Distance(_Center,_TargetPos) <= 0.4f ? true : false;
 	}
 
 	private bool HasAllCellsReachTarget (Vector2 _TargetPos)
@@ -472,32 +484,16 @@ public class ECMineState : IECState {
 			return false;
 		}
 
-		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.82f);
+		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1);
 
-		if(_PlayerCell.name.Contains("Node"))
+		for(int i = 0; i < NearbyObjects.Length; i++)
 		{
-			PlayerChildFSM PCFSM = null;
-			for(int i = 0; i < NearbyObjects.Length; i++)
+			if(NearbyObjects[i].tag == Constants.s_strPlayerChildTag || NearbyObjects[i].tag == Constants.s_strPlayerTag || NearbyObjects[i].name.Contains("Squad"))
 			{
-				PCFSM = NearbyObjects[i].GetComponent<PlayerChildFSM>();
-				if(PCFSM != null && PCFSM.GetCurrentState() != PCState.Dead)
-				{
-					return true;
-				}
+				return true;
 			}
-			return false;
 		}
-		else if(_PlayerCell.name == "Player_Cell")
-		{
-			for(int i = 0; i < NearbyObjects.Length; i++)
-			{
-				if(NearbyObjects[i].name == "Player_Cell")
-				{
-					return true;
-				}
-			}
-			return false;
-		}
+
 		return false;
 	}
 
@@ -592,11 +588,14 @@ public class ECMineState : IECState {
 		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 		bExploding = false;
 		m_Child.transform.localScale = Vector3.one;
+		Animator.ExpandContract(0.0f,0,0.0f,true,0.0f);
 	}
 
 	//Go through all the surround cells, destroy any player child cells and damaing the player main cell if in range
 	private void ExplodeDestroy()
 	{
+		MainCamera.CameraShake();
+
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		float DistanceFromCenterOfBlast = 0f;
 		

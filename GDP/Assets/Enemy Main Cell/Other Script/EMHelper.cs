@@ -24,12 +24,17 @@ public class EMHelper : MonoBehaviour
 	public static float topLimit;
 	public static float bottomLimit;
 
-	// Properties of the enemy main cell
+	#region Properties of the enemy main cell
 	private Vector2 position;
 	public Vector2 Position { get { return position; } set { position = value; } }
+	private float fMaxY;
+	public float MaxY { get { return fMaxY; } }
+	private float fMinY;
+	public float MinY { get { return fMinY; } }
 	private float fRadius;
 	public float Radius { get { return fRadius; } }
 	private float width;
+	#endregion
 
 	[SerializeField]
 	private bool bIsEnemyVisible;
@@ -64,6 +69,10 @@ public class EMHelper : MonoBehaviour
 		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		position = transform.position;
 
+		// Position limitation
+		fMaxY = 9.6f;
+		fMinY = -2.0f;
+
 		// Find gameObject
 		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 
@@ -85,7 +94,7 @@ public class EMHelper : MonoBehaviour
 		//Recalculate available enemy child cells
 		m_EMFSM.AvailableChildNum = m_EMFSM.ECList.Count;
 		// Check whether the player loses
-		///LoseCheck ();
+		LoseCheck ();
 		// Check if the enemy main cell is visible
 		VisibilityCheck ();
 	}
@@ -153,6 +162,9 @@ public class EMHelper : MonoBehaviour
 
 			EMController.Instance ().ChangeDirection ();
 		}
+
+		if (transform.position.y < fMinY)
+			transform.position = new Vector2 (transform.position.x, fMinY);
 	}
     // Update width of enemy main cell
 	void WidthUpdate ()
@@ -217,11 +229,11 @@ public class EMHelper : MonoBehaviour
 			mAnimate.ExpandContract (0.1f, 1, 1.1f);
 			
 			EMController.Instance().ReduceNutrient ();
-			// Randomize the interval time between spawns of child cells in terms of num of available child cells and current difficulty
+			// Randomize the interval time between spawns of child cells in terms of current difficulty
 			yield return new WaitForSeconds (
 				UnityEngine.Random.Range (
-				Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)m_EMFSM.AvailableChildNum))) * 1f / EMDifficulty.Instance().CurrentDiff, 
-				Mathf.Sqrt(Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum)) * 1f / EMDifficulty.Instance().CurrentDiff)
+				1.0f / EMDifficulty.Instance().CurrentDiff, 
+				1.5f / EMDifficulty.Instance().CurrentDiff)
 				);
 			
 			if (m_EMFSM.AvailableChildNum < 100)

@@ -13,7 +13,8 @@ public class player_control : MonoBehaviour
 	
 	private Node m_nActiveNode = Node.RightNode;
 
-	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp;
+	private GameObject spwnCptBtnGO;
+	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp;
 	private RectTransform[] btnRectTransform;
 	private Text leftNodeChildText, rightNodeChildText, nutrientText;
 	private Vector3 mainCellPos;
@@ -22,6 +23,7 @@ public class player_control : MonoBehaviour
 	private const float s_UIFadeOutSpeed = 0.8f;
 	private const float s_UIPopInSpeed = 3.5f;
 	private const float s_UIPopOutSpeed = 5.0f;
+	private const float s_UIHurtTintFadeSpeed = 2.0f;
 	
 	void Awake()
 	{
@@ -33,6 +35,7 @@ public class player_control : MonoBehaviour
 		s_nResources = Settings.s_nPlayerInitialResourceCount;
 
 		m_SquadCaptainNode = GameObject.Find("Node_Captain").transform;
+		spwnCptBtnGO = transform.GetChild(3).GetChild(1).gameObject;
 		spawnCtrlCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
 		leftNodeCanvasGrp = transform.GetChild(4).GetComponent<CanvasGroup>();
 		rightNodeCanavsGrp = transform.GetChild(5).GetComponent<CanvasGroup>();
@@ -44,9 +47,11 @@ public class player_control : MonoBehaviour
 		btnPos = new Vector3[3];
 		for (int i = 0; i < btnRectTransform.Length; i++)
 			btnPos[i] = btnRectTransform[i].localPosition;
-		nutrientText = transform.GetChild(7).GetChild(1).GetComponent<Text>();
-		leftNodeChildText = transform.GetChild(7).GetChild(0).GetChild(0).GetComponent<Text>();
-		rightNodeChildText = transform.GetChild(7).GetChild(0).GetChild(1).GetComponent<Text>();
+		playerHurtTintCanvasGrp = transform.GetChild(7).GetChild(0).GetComponent<CanvasGroup>();
+		enemyWarningTintCanvasGrp = transform.GetChild(7).GetChild(1).GetComponent<CanvasGroup>();
+		leftNodeChildText = transform.GetChild(7).GetChild(2).GetChild(0).GetComponent<Text>();
+		rightNodeChildText = transform.GetChild(7).GetChild(2).GetChild(1).GetComponent<Text>();
+		nutrientText = transform.GetChild(7).GetChild(3).GetComponent<Text>();
 
 		// Hide both left and right node.
 		leftNodeCanvasGrp.alpha = 0f;
@@ -55,6 +60,10 @@ public class player_control : MonoBehaviour
 		SetLeftNodeControlVisibility(false);
 		SetRightNodeControlVisibility(false);
 		SetSpawnCtrlVisibility(false);
+
+		// Hide tints
+		playerHurtTintCanvasGrp.alpha = 0f;
+		enemyWarningTintCanvasGrp.alpha = 0f;
 	}
 
 	void Start()
@@ -62,6 +71,25 @@ public class player_control : MonoBehaviour
 		// Update UI
 		UpdateUI_nutrients();
 		UpdateUI_nodeChildCountText();
+	}
+
+	void Update()
+	{
+		playerHurtTintCanvasGrp.alpha -= s_UIHurtTintFadeSpeed * Time.deltaTime;
+
+		if (PlayerSquadFSM.Instance == null)
+			return;
+
+		if (PlayerSquadFSM.Instance.bIsAlive == true)
+		{
+			if (spwnCptBtnGO.activeSelf == true)
+				spwnCptBtnGO.SetActive(false);
+		}
+		else
+		{
+			if (spwnCptBtnGO.activeSelf == false)
+				spwnCptBtnGO.SetActive(true);
+		}
 	}
 
 	#region UI HUD update functions
@@ -74,6 +102,11 @@ public class player_control : MonoBehaviour
 	{
 		leftNodeChildText.text = Node_Manager.GetNode(Node.LeftNode).activeChildCount.ToString();
 		rightNodeChildText.text = Node_Manager.GetNode(Node.RightNode).activeChildCount.ToString();
+	}
+
+	public void FlashPlayerHurtTint()
+	{
+		playerHurtTintCanvasGrp.alpha = 1f;
 	}
 	#endregion
 
@@ -244,7 +277,7 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)
 	{
-		if (s_nResources > Settings.s_nPlayerChildSpawnCost && PlayerChildFSM.GetActiveChildCount() < Settings.s_nPlayerMaxChildCount)
+		if (s_nResources >= Settings.s_nPlayerChildSpawnCost && PlayerChildFSM.GetActiveChildCount() < Settings.s_nPlayerMaxChildCount)
 		{
 			Node _selectedNode = (Node) _nodeIndex;
 
@@ -262,7 +295,7 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
-			Debug.Log("Not enough resources " + s_nResources + "\nOr not enough child in pool");
+			Debug.Log("Not enough resources " + s_nResources);
 		}
 
 		RestartSpawnCtrlFadeOut();

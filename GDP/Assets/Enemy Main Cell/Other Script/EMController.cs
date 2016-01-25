@@ -37,6 +37,7 @@ public class EMController : MonoBehaviour
 	private Vector2 velocity;
 	private Vector2 pushBackVel;
 	private Vector2 pushForwardVel;
+	private Vector2 stunVel;
 	// Horizontal movement
 	[SerializeField]
 	private bool bMovingLeft;
@@ -50,12 +51,15 @@ public class EMController : MonoBehaviour
 	[SerializeField] 
 	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
 	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
-	public void CauseDamageOne () { nDamageNum++; m_EMFSM.Health--;}
+	public void CauseDamageOne () { nDamageNum++; m_EMFSM.Health--; fAttackElapsedTime = 0.1f; }
 	private bool bPushed; 
 	public bool Pushed { get { return bPushed; } }
 	private bool bStunned;
 	public bool Stunned { get { return bStunned; } }
+	private bool bCanPush;
 	private bool bCanStun;
+	private bool bJustAttacked;
+	private float fAttackElapsedTime;
 	#endregion
 
 	[Header("Stun state value")]
@@ -125,15 +129,19 @@ public class EMController : MonoBehaviour
 		// Velocity
 		velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor);
 		thisRB.velocity = velocity;
-		pushBackVel = new Vector2 (0.0f, -1.75f);
+		pushBackVel = new Vector2 (0.0f, -5.0f);
 		pushForwardVel = new Vector2 (0.0f, 1.0f);
+		stunVel = new Vector2 (0.0f, -2.0f);
 		// Damage
 		nDamageNum = 0;
 		// State
 		bPushed = false;
 		bStunned = false;
+		bCanPush = true;
 		bCanStun = true;
-		fDefaultStunTime = 3f;
+		bJustAttacked = false;
+		fAttackElapsedTime = 0.1f;
+		fDefaultStunTime = 5f;
 		fCurrentStunTime = fDefaultStunTime;
 		fStunCoolDown = fDefaultStunTime * 2.0f;
 		fDefaultStunTolerance = 5f;
@@ -153,29 +161,17 @@ public class EMController : MonoBehaviour
 	void Update()
 	{
 		// Force back the enemy main cell when received damage and not forced back
-		if (nDamageNum > 0 && !bPushed) 
+		if (nDamageNum > 0 && bCanPush && !bPushed && !Stunned && bJustAttacked) 
 		{
 			StartCoroutine(ForceBack());
 		}
-		// Stun the enemy main cell when received certain amount of hits, can be stunned but not stunned
-		if (nDamageNum > fDefaultStunTolerance && !bStunned && bCanStun) 
+		if ((float)nDamageNum > fCurrentStunTolerance && !bStunned && bCanStun && !bPushed) 
 		{
 			StartCoroutine(Stun ());
 		}
-        // Reset velocity when current velocity is incorrect and the enemy main cell is free to move
-        if (!bPushed && !bStunned)
-        {
-            if (bIsDefend)
-            {
-                if (thisRB.velocity.y != fSpeed * fSpeedFactor * fDefendFactor)
-                    ResetVelocity();
-            }
-            else
-            {
-                if (thisRB.velocity.y != fSpeed * fSpeedFactor)
-                    ResetVelocity();
-            }
-        }
+		// Keep updating velocity when stunned
+		if (bStunned)
+			ResetVelocity ();
 		// Update Aggresiveness
 		UpdateAggressiveness ();
 		// Check whether the Enemy main is being attacked by the player
@@ -184,6 +180,8 @@ public class EMController : MonoBehaviour
 		ShouldMainBeTanking();
 		// Check Whether all idling enemy child cells had entered the enemy main cell
 		HasAllCellsEnterMain();
+		// Check whether the enemy main cell was just attacked
+		DamageTimer ();
 	}
 
 	void FixedUpdate ()
@@ -201,19 +199,32 @@ public class EMController : MonoBehaviour
 	}
 
 	#region Damage behavior
+	// Check whether the enemy main cell was just attacked
+	void DamageTimer ()
+	{
+		fAttackElapsedTime -= Time.deltaTime;
+		if (fAttackElapsedTime <= 0.0f)
+			bJustAttacked = false;
+		else
+			bJustAttacked = true;
+	}
+
 	// Push back the enemy main cell when received attack
 	IEnumerator ForceBack()
 	{
+		// One push at a time
+		bCanPush = false;
+		bPushed = true;
+
 		// Push forward first
-		Vector2 velocityTemp = pushForwardVel;
-		thisRB.velocity = velocityTemp;
+		if (EMHelper.Instance ().Position.y > EMHelper.Instance ().MinY && !bStunned)
+			thisRB.velocity = pushForwardVel;
+
 		// Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);
         // Temporary velocity for enemy main cell when being pushed
-		velocityTemp = pushBackVel;
-		thisRB.velocity = velocityTemp;
-        // Set the push status to true
-		bPushed = true;
+		if (EMHelper.Instance ().Position.y > EMHelper.Instance ().MinY && !bStunned)
+			thisRB.velocity = pushBackVel;
         // Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);
 		// Reduce damage count by 1
@@ -221,10 +232,14 @@ public class EMController : MonoBehaviour
         // Reset velocity if the enemy main cell is not stunned
 		if (!bStunned)
 			ResetVelocity ();
-        // Wait for 0.5 second
-		yield return new WaitForSeconds (.5f);
-        // Set back the push status
+
 		bPushed = false;
+        // Wait for 3 second
+		yield return new WaitForSeconds (3f);
+        // Set back the push status
+		bCanPush = true;
+		if (!bStunned)
+			nDamageNum = 0;
 	}
 
 	// Stun the enemy main cell after receiving certain amount of hits within certain period of time
@@ -233,12 +248,18 @@ public class EMController : MonoBehaviour
         // When already stunned cannot call this function
 		bStunned = true;
 		bCanStun = false;
-        // Wait(being stunned) for seconds
-		yield return new WaitForSeconds (fCurrentStunTime);
+		// Not force back when stunned
+		ResetVelocity ();
+        // Wait(being stunned)pushBackVel for seconds
+		yield return new WaitForSeconds ((float)nDamageNum);
+		Debug.Log (thisRB.velocity);
         // Set back the stunned status
 		bStunned = false;
+		float stunCoolDown = (float)nDamageNum * 1.5f;
+		nDamageNum = 0;
+		ResetVelocity ();
         // Cannot be stunned within seconds
-		yield return new WaitForSeconds (fCurrentStunTime);
+		yield return new WaitForSeconds (stunCoolDown);
 		bCanStun = true;
 	}
 	#endregion
@@ -248,13 +269,18 @@ public class EMController : MonoBehaviour
 	void ResetVelocity ()
 	{
         // When in Defend state, the default velocity for resetting is different
-		if (bIsDefend)
-        {
+		if (bIsDefend && !bStunned)
+		{
 			velocity = new Vector2 (fHoriSpeed, fSpeed * fSpeedFactor * fDefendFactor);
 			thisRB.velocity = velocity;
 			fSpeedTemp = fSpeed;
+		} 
+		else if (!bIsDefend && bStunned)
+		{
+			velocity = stunVel;
+			thisRB.velocity = velocity;
 		}
-        else
+		else 
         {
 			velocity = new Vector2(fHoriSpeed, fSpeed * fSpeedFactor);
 			thisRB.velocity = velocity;
@@ -265,13 +291,15 @@ public class EMController : MonoBehaviour
 	// Make sure the horizntal velocity is not lower than its minimum value
 	void HorizontalVelocityCheck ()
 	{
-		if (Mathf.Abs (thisRB.velocity.x) < fMinHoriSpeed)
-		if (thisRB.velocity.x > 0) {
-			thisRB.velocity = new Vector2 (fMinHoriSpeed, thisRB.velocity.y);
-			bMovingLeft = false;
-		} else if (thisRB.velocity.x < 0) {
-			thisRB.velocity = new Vector2 (-fMinHoriSpeed, thisRB.velocity.y);
-			bMovingLeft = true;
+		if (Mathf.Abs (thisRB.velocity.x) < fMinHoriSpeed) 
+		{
+			if (thisRB.velocity.x > 0) {
+				fHoriSpeed = fMinHoriSpeed;
+				ResetVelocity ();
+			} else if (thisRB.velocity.x < 0) {
+				fHoriSpeed = -fMinHoriSpeed;
+				ResetVelocity ();
+			}
 		}
 	}
 
@@ -280,17 +308,17 @@ public class EMController : MonoBehaviour
 	{
 		if (bMovingLeft && fHoriSpeed > 0f) {
 			fHoriSpeed *= -1f;
-			thisRB.velocity = new Vector2 (fHoriSpeed, thisRB.velocity.y);
+			ResetVelocity ();
 		} else if (!bMovingLeft && fHoriSpeed < 0f) {
 			fHoriSpeed *= -1f;
-			thisRB.velocity = new Vector2 (fHoriSpeed, thisRB.velocity.y);
+			ResetVelocity ();
 		}
 	}
 
 	// Move the enemy main cell left or right
 	IEnumerator MovingHorizontally ()
 	{
-		if (m_EMFSM.CurrentStateIndex == EMState.Production && m_EMFSM.CurrentStateIndex == EMState.Maintain) 
+		if (m_EMFSM.CurrentStateIndex == EMState.Production || m_EMFSM.CurrentStateIndex == EMState.Maintain) 
 		{
 			bCanChangeHori = false;
 			// Change direction based on the position of enemy nutrient and enemy main cell

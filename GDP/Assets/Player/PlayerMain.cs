@@ -9,6 +9,13 @@ public class PlayerMain : MonoBehaviour
 	private Animate mAnimate;
 	public Animate animate { get { return mAnimate; } }
 
+	private Vector3 m_Scale;
+	private int m_nMaxHealth;
+	private float m_fMinScale = 0.5f;
+	private float m_fMaxScale = 1.25f;
+	private float m_fShrinkSpeed = 1.0f;
+	private bool m_bNeedsResizing = false;
+
 	[SerializeField]
 	private int m_nHealth = 100;
 	public int Health { get { return m_nHealth; } }
@@ -46,14 +53,36 @@ public class PlayerMain : MonoBehaviour
 		}
 
 		m_bIsAlive = true;
+		m_bNeedsResizing = false;
 		m_nHealth = Settings.s_nPlayerInitialHealth;
+		m_nMaxHealth = m_nHealth;
 		mAnimate = new Animate(this.transform);
 		m_surroundingEnemyCells = null;
+		m_Scale = new Vector3(m_fMaxScale, m_fMaxScale, m_fMaxScale);
+		transform.localScale = m_Scale;
 	}
 
 	void Start()
 	{
 		mAnimate.Idle(0.15f, 0.25f);
+	}
+
+	void Update()
+	{
+		if (m_bIsAlive == false)
+		{
+			AnimateDie();
+		}
+
+		if (mAnimate.IsExpandContract == true)
+		{
+			m_bNeedsResizing = true;
+		}
+		else if (m_bNeedsResizing == true)
+		{
+			ResizeMainCell();
+			m_bNeedsResizing = false;
+		}
 	}
 
 	void FixedUpdate()
@@ -64,11 +93,40 @@ public class PlayerMain : MonoBehaviour
 	public void HurtPlayerMain()
 	{
 		m_nHealth--;
+		player_control.Instance.FlashPlayerHurtTint();
+		ResizeMainCell();
 
 		if (m_nHealth <= 0)
 		{
 			m_bIsAlive = false;
 		}
+	}
+
+	public void AnimateDie()
+	{
+		if (m_Scale.x == 0)
+			return;
+
+		m_Scale.x -= m_fShrinkSpeed * Time.deltaTime;
+		m_Scale.y -= m_fShrinkSpeed * Time.deltaTime;
+		m_Scale.z -= m_fShrinkSpeed * Time.deltaTime;
+
+		if (m_Scale.x < 0)
+		{
+			m_Scale = Vector3.zero;
+		}
+
+		transform.localScale = m_Scale;
+	}
+
+	public void ResizeMainCell()
+	{
+		float fScale = m_fMinScale + ((m_fMaxScale - m_fMinScale) * ((float)m_nHealth / m_nMaxHealth));
+		m_Scale.x = fScale;
+		m_Scale.y = fScale;
+		m_Scale.z = fScale;
+
+		transform.localScale = m_Scale;
 	}
 
 	void OnTriggerEnter2D(Collider2D col)
