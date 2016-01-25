@@ -42,8 +42,8 @@ public class SC_IdleState : ISCState
     private static float s_fIdleMaximumVelocity = PlayerSquadFSM.Instance.IdleMaximumVelocity;
 
     // Uneditable Fields
-    private float fAngularPosition = 0f;
-    private float fAngularVelocity = 0f;
+    private float fAngularPosition = -1f;
+    private float fAngularVelocity = -1f;
 
     // Constructor
     public SC_IdleState(SquadChildFSM m_SquadChildFSM)
@@ -58,8 +58,11 @@ public class SC_IdleState : ISCState
         list_IdleChild.Add(this);
 
         // Spawns in a random direction
-        fAngularPosition = UnityEngine.Random.value * 360.0f;
-        fAngularVelocity = UnityEngine.Random.value * s_fIdleMaximumVelocity - (s_fIdleMaximumVelocity / 2f);
+        if (fAngularPosition == -1f)
+            fAngularPosition = UnityEngine.Random.value * 360.0f;
+        if (fAngularVelocity == -1f)
+            fAngularVelocity = UnityEngine.Random.value * s_fIdleMaximumVelocity - (s_fIdleMaximumVelocity / 2f);
+
     }
 
     // Execute(): When the squad child is in this state. Runs once every frame on every instance
@@ -158,10 +161,42 @@ public class SC_ProduceState : ISCState
 // SC_FindResourceState: The find resource state of the player squad's captain FSM
 public class SC_FindResourceState : ISCState
 {
+    private Nutrients targetNutrients = null;
+
     // Constructor
     public SC_FindResourceState(SquadChildFSM m_SquadChildFSM)
     {
         m_scFSM = m_SquadChildFSM;
+    }
+
+    public override void Execute()
+    {
+        targetNutrients = m_scFSM.GetNearestResource();
+
+        // if: There is no target
+        if (targetNutrients == null)
+        {
+            m_scFSM.Advance(SCState.Idle);
+            return;
+        }
+        // else if: The target nutrient has left the screen OR the player has collected it
+        else if (targetNutrients.IsInPool || !targetNutrients.IsCollectable)
+        {
+            m_scFSM.Advance(SCState.Idle);
+            return;
+        }
+        else
+        {
+            m_scFSM.RigidBody.AddForce((targetNutrients.transform.position - m_scFSM.transform.position) * Time.deltaTime * 5f, ForceMode2D.Force);
+            m_scFSM.Draw(targetNutrients.transform.position);
+
+            // if: The distance between the two bodies is less than a certain distance
+            if (Vector3.Distance(targetNutrients.transform.position, m_scFSM.transform.position) < 0.5f)
+            {
+                m_scFSM.Advance(SCState.Dead);
+                targetNutrients = null;
+            }
+        }
     }
 }
 
@@ -211,6 +246,6 @@ public class SC_AttackState : ISCState
 
     public override void Exit()
     {
-        m_scFSM.attackTarget = null;
+
     }
 }

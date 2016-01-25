@@ -44,9 +44,6 @@ public class SquadChildFSM : MonoBehaviour
     private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
     private Vector2 mainDefenceVector;                          // mainDefenceVector: The main defence vector, this will be initilised at the start and will be use without change
 
-    private Vector3 gizmosPosition;
-
-    private static Vector3 parentPosition;                      // parentPosition: The position of the squad captain
     private static Vector3 playerPosition;                      // playerPosition: The position of the player main
 
     [HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
@@ -57,18 +54,15 @@ public class SquadChildFSM : MonoBehaviour
     public Rigidbody2D m_RigidBody;                             // m_RigidBody: It is public so that states can references it
     public Collider2D m_Collider;                            // m_Collider: It is public so that states can references it
 
+    private Vector3 gizmoVector;
+    void OnGizmosDraw()
+    {
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireSphere(gizmoVector, 0.5f);
+    }
+    public void Draw(Vector3 _position) { gizmoVector = _position; }
+
     // Private Functions
-    //void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.magenta;
-    //    Gizmos.DrawWireSphere(gizmosPosition, 1f);
-    //}
-
-    //public void gizmoo(Vector3 _position)
-    //{
-    //    gizmosPosition = _position;
-    //}
-
     void OnCollisionEnter2D(Collision2D _collision)
     {
         // Hit Enemy Child
@@ -181,9 +175,8 @@ public class SquadChildFSM : MonoBehaviour
 
         ExecuteMethod.OnceInUpdate("SquadChildFSM.StrafingVector", null, null);
         // targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
-        Vector3 targetPosition = Quaternion.Euler(0.0f, 0.0f, fStrafingOffsetAngle) * m_strafingVector + parentPosition;
+        Vector3 targetPosition = Quaternion.Euler(0.0f, 0.0f, fStrafingOffsetAngle) * m_strafingVector + PlayerSquadFSM.Instance.transform.position;
         m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * 3.0f + transform.position);
-
         return true;
     }
 
@@ -200,6 +193,7 @@ public class SquadChildFSM : MonoBehaviour
         if (toTargetPosition.magnitude > fDefenceRigidity)
             m_RigidBody.AddForce(toTargetPosition * Time.deltaTime * fDefenceSpeed);
         m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, Mathf.Max(fDefenceRigidity, toTargetPosition.magnitude));
+
 
         return true;
     }
@@ -235,6 +229,31 @@ public class SquadChildFSM : MonoBehaviour
             PlayerSquadFSM.Instance.CheckDieable();
             return true;
         }
+    }
+
+    public Nutrients GetNearestResource()
+    {
+        Nutrients[] nutrientsPool = Nutrients.playerNutrientPool;
+        Nutrients nearestNutrient = null;
+        for (int i = 0; i < nutrientsPool.Length; i++)
+        {
+            // if: The current nutrients is NOT in the pool and NOT being collected by player
+            if (!nutrientsPool[i].IsInPool && nutrientsPool[i].IsCollectable)
+            {
+                // if: There is no nearest nutrients yet
+                if (nearestNutrient == null)
+                {
+                    nearestNutrient = nutrientsPool[i];
+                }
+                // else if: The checking nutrient is nearer than the curent nearest nutrient
+                else if (nearestNutrient.transform.position.y > nutrientsPool[i].transform.position.y)
+                {
+                    nearestNutrient = nutrientsPool[i];
+                }
+            }
+        }
+
+        return nearestNutrient;
     }
 
     // Public Static Functions
@@ -277,9 +296,6 @@ public class SquadChildFSM : MonoBehaviour
     /// <returns></returns>
     public static SquadChildFSM Spawn(Vector3 _position)
     {
-        // Since there is at least one child now, sets the position for reference
-        parentPosition = _position;
-
         for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
         {
             if (s_array_SquadChildFSM[i].EnumState == SCState.Dead)
@@ -469,19 +485,23 @@ public class SquadChildFSM : MonoBehaviour
         List<EnemyChildFSM> list_enemyChild = EnemyMainFSM.Instance().ECList;
         // if: There is no enemy
         if (list_enemyChild.Count == 0)
+        {
             return false;
+        }
 
         int attackCount = SquadChildFSM.StateCount(SCState.Attack);
         // if: There are no attacking squad children
         if (attackCount == 0)
+        {
             return false;
+        }
 
         // if: There are more aggressive squad child cells than enemies to attack
         if (attackCount > list_enemyChild.Count)
         {
             attackCount = list_enemyChild.Count;
 
-            int toCheck = attackCount;
+            int toCheck = 0;
             // for: Send the extra amount of aggressive squad child cells back to idle (Since there are more squad child than enemy child)
             for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
             {
@@ -499,22 +519,19 @@ public class SquadChildFSM : MonoBehaviour
         EnemyChildFSM[] array_nearestEnemyChild = new EnemyChildFSM[attackCount];
 
         // for: Checks through all enemy child and creates a list of closest enemy child cells to Squad Captain
-        for (int i = 0; i < list_enemyChild.Count; i++)
+        for (int i = 0; i < array_nearestEnemyChild.Length; i++)
         {
-            for (int j = 0; j < array_nearestEnemyChild.Length; j++)
+            if (array_nearestEnemyChild[i] == null)
             {
-                if (array_nearestEnemyChild[j] == null)
-                {
-                    array_nearestEnemyChild[j] = list_enemyChild[i];
-                    break;
-                }
-                // else if: The current enemy child is closer than the enemy child that are in the "TOP CLOSEST TO SQUAD CAPTAIN" list
-                // it will add the current enemy child into the list
-                else if (Vector3.Distance(parentPosition, list_enemyChild[i].transform.position) < Vector3.Distance(parentPosition, array_nearestEnemyChild[j].transform.position))
-                {
-                    array_nearestEnemyChild[j] = list_enemyChild[i];
-                    break;
-                }
+                array_nearestEnemyChild[i] = list_enemyChild[i];
+                break;
+            }
+            // else if: The current enemy child is closer than the enemy child that are in the "TOP CLOSEST TO SQUAD CAPTAIN" list
+            // it will add the current enemy child into the list
+            else if (list_enemyChild[i].transform.position.y < array_nearestEnemyChild[i].transform.position.y)
+            {
+                array_nearestEnemyChild[i] = list_enemyChild[i];
+                break;
             }
         }
 
@@ -550,5 +567,6 @@ public class SquadChildFSM : MonoBehaviour
     public SCState EnumState { get { return m_currentEnumState; } }
     public ISCState State { get { return m_currentState; } }
     public bool IsAlive { get { return bIsAlive; } }
+    public Rigidbody2D RigidBody { get { return m_RigidBody; } }
 
 }

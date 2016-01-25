@@ -23,6 +23,12 @@ public class PS_Logicaliser : MonoBehaviour
 	[Tooltip("The maximum amount of aggressive cells at any one point")]
 	[SerializeField] private int nMaximumChildDefence = 10;
 
+	[Header("Conditions: Find Resource")]
+	[Tooltip("This amount of resources in player will determines that the player is low on resources")]
+	[SerializeField] private int nNeedNutrients = 500;
+	[Tooltip("The number of child must be idling before the squad captain thinks it is good to allocate some for finding resources")]
+	[SerializeField] private int nAmountIdleBeforeConsider = 10;
+
 	// Uneditable Fields
 	private PlayerSquadFSM m_PlayerSquadFSM;    // m_SquadCaptain: The instance of the squad captain
 	private float fCurrentThinkCooldown = 0f;   // fCurrentThinkCooldown: The current think cooldown of the brain - restricts the brain from thinking too much
@@ -77,7 +83,7 @@ public class PS_Logicaliser : MonoBehaviour
 				//     and is NOT the maximum number of child cells that can be in defence squad
 				if (SquadChildFSM.StateCount(SCState.Defend) < nMaximumChildDefence)
 				{
-					SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 1f);
+					SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 0.5f);
 				}
 			}
 		}
@@ -86,6 +92,11 @@ public class PS_Logicaliser : MonoBehaviour
 		{
 			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 0.2f);
 		}
+		//// if: There is extra child in Idle and the player have relatively low amount of resource
+		//if (SquadChildFSM.StateCount(SCState.Idle) >= nAmountIdleBeforeConsider && player_control.Instance.s_nResources <= nNeedNutrients)
+		//{
+		//    SquadChildFSM.AdvanceSquadPercentage(SCState.FindResource, 0.75f);
+		//}
 	}
 }
 
