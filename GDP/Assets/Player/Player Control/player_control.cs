@@ -300,7 +300,7 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)
 	{
-		if (PlayerChildFSM.GetActiveChildCount() > Settings.s_nPlayerMaxChildCount)
+		if (PlayerChildFSM.GetActiveChildCount() >= Settings.s_nPlayerMaxChildCount)
 		{
 			infoText.text = "Reached\nMaximum\nChild Cell\nCount";
 			PresentInfoPanel();
