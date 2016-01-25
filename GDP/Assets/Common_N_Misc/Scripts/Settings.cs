@@ -8,7 +8,7 @@ public class Settings : MonoBehaviour
 	public const int s_nPlayerMaxNutrientCount = 10;
 
 	public const int s_nPlayerInitialResourceCount = 1000;
-	public const int s_nPlayerInitialHealth = 100;
+	public const int s_nPlayerInitialHealth = 50;
 
 	public const int s_nPlayerNutrientPerBlock = 10;
 	public const int s_nPlayerChildSpawnCost = 5;
