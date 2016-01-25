@@ -55,6 +55,8 @@ public class ECChargeCState : IECState {
 
 	public override void Enter()
 	{
+		if(m_ecFSM.m_AttackTarget != null){CheckIfEnoughCells();}
+		
 		//Set the charge target to be one of the player child cell
 		m_ecFSM.Target = FindTargetChild();
 		bReachTarget = false;
@@ -379,6 +381,22 @@ public class ECChargeCState : IECState {
 		}
 
 		return Neighbours;
+	}
+
+	private void CheckIfEnoughCells()
+	{
+		if(m_ecFSM.m_AttackTarget.name.Contains("LeftNode") && ECTracker.s_Instance.ChargeChildCells.Count >= GameObject.Find("UI_Player_LeftNode").GetComponent<Node_Manager>().activeChildCount)
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+		else if(m_ecFSM.m_AttackTarget.name.Contains("RightNode") && ECTracker.s_Instance.ChargeChildCells.Count >= GameObject.Find("UI_Player_RightNode").GetComponent<Node_Manager>().activeChildCount)
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+		else if(m_ecFSM.m_AttackTarget.name.Contains("Squad") && ECTracker.Instance.ChargeChildCells.Count >= GameObject.Find("Squad_Captain_Cell").GetComponent<PlayerSquadFSM>().AliveChildCount())
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
 	}
 
 	private Style GetChargeChildStyle()

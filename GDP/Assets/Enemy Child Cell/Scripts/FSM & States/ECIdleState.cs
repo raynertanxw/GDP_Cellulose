@@ -75,6 +75,8 @@ public class ECIdleState : IECState
 
 	public override void Enter()
 	{
+		m_Child.transform.localScale = Vector3.one;
+	
 		//If there is no idle status specified, start the idle status being the seperate status and set the previous status time being the current time in-game
 		if(CurrentIdleState == IdleStatus.None)
 		{

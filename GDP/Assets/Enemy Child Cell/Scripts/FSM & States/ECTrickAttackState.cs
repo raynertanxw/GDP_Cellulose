@@ -66,6 +66,8 @@ public class ECTrickAttackState : IECState {
 		m_AttackTarget = m_ecFSM.m_AttackTarget;
 		bReachStart = false;
 		bReachTarget = false;
+		
+		if(m_ecFSM.m_AttackTarget != null){CheckIfEnoughCells();};
 
 		List<Vector2> m_Positions = CalculateKeyPositions();
 		m_StartTelePos = m_Positions[0];
@@ -339,6 +341,22 @@ public class ECTrickAttackState : IECState {
 		}
 
 		return Neighbours;
+	}
+	
+	private void CheckIfEnoughCells()
+	{
+		if(m_ecFSM.m_AttackTarget.name.Contains("LeftNode") && ECTracker.s_Instance.TrickAttackCells.Count >= GameObject.Find("UI_Player_LeftNode").GetComponent<Node_Manager>().activeChildCount)
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+		else if(m_ecFSM.m_AttackTarget.name.Contains("RightNode") && ECTracker.s_Instance.TrickAttackCells.Count >= GameObject.Find("UI_Player_RightNode").GetComponent<Node_Manager>().activeChildCount)
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+		else if(m_ecFSM.m_AttackTarget.name.Contains("Squad") && ECTracker.Instance.TrickAttackCells.Count >= GameObject.Find("Squad_Captain_Cell").GetComponent<PlayerSquadFSM>().AliveChildCount())
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
 	}
 
 	private IEnumerator SqueezeBeforeCharge(Vector2 _TargetPos)

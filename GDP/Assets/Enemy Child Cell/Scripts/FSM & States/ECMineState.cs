@@ -45,6 +45,9 @@ public class ECMineState : IECState {
 	private bool ExpandContractStart;
 	private Animate Animator;
 
+	private Point CurrentTargetPoint;
+	private int CurrentTargetIndex;
+
 	private enum Spread{Empty,Tight, Wide};
 
 	//Constructor
@@ -69,12 +72,17 @@ public class ECMineState : IECState {
 		CurrentPositionType = PositionType.Empty;
 		PathToTarget = new List<Point>();
 
+		CurrentTargetPoint = null;
+		
+
 		ExpandContractStart = false;
 		Animator = new Animate(m_Child.transform);
 	}
 
 	public override void Enter()
 	{
+		if(m_ecFSM.m_AttackTarget != null){CheckIfEnoughCells();};
+	
 		GatherTogether = false;
 		bExploding = false;
 		bReachTarget = false;
@@ -83,6 +91,7 @@ public class ECMineState : IECState {
 		CurrentSpreadness = Spread.Empty;
 
 		m_Main.GetComponent<Rigidbody2D>().drag = 2.4f;
+		ECTracker.Instance.LandmineCells.Add(m_ecFSM);
 	}
 
 	public override void Execute()
@@ -103,8 +112,8 @@ public class ECMineState : IECState {
 				TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),CurrentPositionType,m_Child);
 				PathQuery.Instance.AStarSearch(m_Child.transform.position,TargetLandminePos,false);
 				PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(Target));
-				GeneralTargetIndex = 0;
-				GeneralTargetPoint = PathToTarget[GeneralTargetIndex];
+				CurrentTargetIndex = 0;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 
 				ReachSpreadPoint = false;
 				SpreadPoint = PathQuery.Instance.ReturnVertSequenceStartPoint(PathToTarget);
@@ -113,10 +122,6 @@ public class ECMineState : IECState {
 				GatherTogether = true;
 				//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 			}
-		}
-		else if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),SpreadPoint.Position))
-		{
-			ReachSpreadPoint = true;
 		}
 
 		if(!bExploding && !bExplodeCorountineStart && IsMineReachingPlayer(Target))
@@ -133,7 +138,7 @@ public class ECMineState : IECState {
 			m_ecFSM.rigidbody2D.velocity = new Vector2(0f,m_ecFSM.rigidbody2D.velocity.y);
 		}
 
-		if(GatherTogether && HasCenterReachTarget(GetCenterOfMines(GetLandmines()),PathToTarget[PathToTarget.Count - 1].Position))
+		if(GatherTogether && HasCellReachTarget(PathToTarget[PathToTarget.Count - 1].Position))
 		{
 			bReachTarget = true;
 			m_ecFSM.StopChildCorountine(ExplodeCorountine());
@@ -175,16 +180,22 @@ public class ECMineState : IECState {
 		{
 			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
 
-			if(!HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) )
+			if(CurrentTargetPoint == null)
+			{
+				CurrentTargetIndex = 0;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			}
+			
+			if(!HasCellReachTarget(CurrentTargetPoint.Position))
 			{
 				m_ecFSM.rigidbody2D.drag = 3f;
-				Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,9f);
-				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Tight)) * 5f;
+				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,9f);
+				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 5f;
 			}
-			else if(HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) && GeneralTargetIndex + 1 < PathToTarget.Count)
+			else if(HasCellReachTarget(CurrentTargetPoint.Position) && CurrentTargetIndex + 1 < PathToTarget.Count)
 			{
-				GeneralTargetIndex++;
-				GeneralTargetPoint = PathToTarget[GeneralTargetIndex];
+				CurrentTargetIndex++;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 			}
 		}
 		else if(GatherTogether && !bExploding && CurrentPositionType == PositionType.Neutral && bReachTarget == false)
@@ -199,28 +210,23 @@ public class ECMineState : IECState {
 			{
 				m_ecFSM.RandomRotation(0.75f);
 			}
-
-			if(!HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position))
+			
+			if(CurrentTargetPoint == null)
 			{
-				if(CurrentSpreadness == Spread.Tight)
-				{
-					m_ecFSM.rigidbody2D.drag = 5f;
-					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
-					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Tight)) * 7.5f;
-					Utility.DrawCross(GeneralTargetPoint.Position,Color.white,0.75f);
-				}
-				else if(CurrentSpreadness == Spread.Wide)
-				{
-					m_ecFSM.rigidbody2D.drag = 5f;
-					Acceleration += SteeringBehavior.CrowdAlignment(CrowdCenter,GeneralTargetPoint,12f);
-					Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
-					Utility.DrawCross(GeneralTargetPoint.Position,Color.white,0.75f);
-				}
+				CurrentTargetIndex = 0;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 			}
-			else if(HasCenterReachTarget(CrowdCenter,GeneralTargetPoint.Position) && GeneralTargetIndex + 1 < PathToTarget.Count)
+
+			if(!HasCellReachTarget(CurrentTargetPoint.Position))
 			{
-				GeneralTargetIndex++;
-				GeneralTargetPoint = PathToTarget[GeneralTargetIndex];
+				m_ecFSM.rigidbody2D.drag = 5f;
+				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,12f);
+				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
+			}
+			else if(HasCellReachTarget(CurrentTargetPoint.Position) && CurrentTargetIndex + 1 < PathToTarget.Count)
+			{
+				CurrentTargetIndex++;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 			}
 		}
 
@@ -251,6 +257,7 @@ public class ECMineState : IECState {
 		}
 
 		m_Child.transform.localScale = Vector3.one;
+		ECTracker.Instance.LandmineCells.Remove(m_ecFSM);
 	}
 
 	private List<GameObject> GetLandmines()
@@ -445,7 +452,7 @@ public class ECMineState : IECState {
 		}
 		else if(_Spreadness == Spread.Wide)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 2.75f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 20f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
@@ -546,7 +553,24 @@ public class ECMineState : IECState {
 		return Vector2.zero;
 	}
 
-
+	private void CheckIfEnoughCells()
+	{
+		if(m_ecFSM.m_AttackTarget.name.Contains("LeftNode") && ECTracker.s_Instance.LandmineCells.Count >= GameObject.Find("UI_Player_LeftNode").GetComponent<Node_Manager>().activeChildCount)
+		{
+			m_Child.transform.localScale = Vector3.one;
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+		else if(m_ecFSM.m_AttackTarget.name.Contains("RightNode") && ECTracker.s_Instance.LandmineCells.Count >= GameObject.Find("UI_Player_RightNode").GetComponent<Node_Manager>().activeChildCount)
+		{
+			m_Child.transform.localScale = Vector3.one;
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+		else if(m_ecFSM.m_AttackTarget.name.Contains("Squad") && ECTracker.Instance.LandmineCells.Count >= GameObject.Find("Squad_Captain_Cell").GetComponent<PlayerSquadFSM>().AliveChildCount())
+		{
+			m_Child.transform.localScale = Vector3.one;
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+		}
+	}
 
 	private Vector2 GetBlastAwayForce(float _Distance)
 	{

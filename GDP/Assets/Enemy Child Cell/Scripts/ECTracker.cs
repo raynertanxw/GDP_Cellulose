@@ -7,6 +7,7 @@ public class ECTracker
 	public static ECTracker s_Instance;
 
 	public List<EnemyChildFSM> IdleCells;
+	public List<EnemyChildFSM> AttackingCells;
 	public List<EnemyChildFSM> ChargeChildCells;
 	public List<EnemyChildFSM> ChargeMainCells;
 	public List<EnemyChildFSM> LandmineCells;
@@ -29,6 +30,7 @@ public class ECTracker
 	public ECTracker()
 	{
 		IdleCells = new List<EnemyChildFSM>();
+		AttackingCells = new List<EnemyChildFSM>();
 		ChargeChildCells = new List<EnemyChildFSM>();
 		ChargeMainCells = new List<EnemyChildFSM>();
 		LandmineCells = new List<EnemyChildFSM>();
