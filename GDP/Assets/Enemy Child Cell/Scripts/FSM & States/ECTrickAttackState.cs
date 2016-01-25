@@ -94,6 +94,11 @@ public class ECTrickAttackState : IECState {
 				bSqueezeToggle = true;
 			}
 		}
+		else if(bSqueezeDone && m_ecFSM.HitBottomOfScreen())
+		{
+			m_ecFSM.StopChildCorountine(m_ecFSM.PassThroughDeath(1f));
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
+		}
 		else if(bSqueezeDone && HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported && bReachStart)
 		{
 			bReachTarget = true;
