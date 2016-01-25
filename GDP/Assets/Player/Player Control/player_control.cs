@@ -13,6 +13,7 @@ public class player_control : MonoBehaviour
 	
 	private Node m_nActiveNode = Node.RightNode;
 
+	private GameObject spwnCptBtnGO;
 	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp;
 	private RectTransform[] btnRectTransform;
 	private Text leftNodeChildText, rightNodeChildText, nutrientText;
@@ -34,6 +35,7 @@ public class player_control : MonoBehaviour
 		s_nResources = Settings.s_nPlayerInitialResourceCount;
 
 		m_SquadCaptainNode = GameObject.Find("Node_Captain").transform;
+		spwnCptBtnGO = transform.GetChild(3).GetChild(1).gameObject;
 		spawnCtrlCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
 		leftNodeCanvasGrp = transform.GetChild(4).GetComponent<CanvasGroup>();
 		rightNodeCanavsGrp = transform.GetChild(5).GetComponent<CanvasGroup>();
@@ -73,6 +75,17 @@ public class player_control : MonoBehaviour
 
 	void Update()
 	{
+		if (PlayerSquadFSM.Instance.bIsAlive == true)
+		{
+			if (spwnCptBtnGO.activeSelf == true)
+				spwnCptBtnGO.SetActive(false);
+		}
+		else
+		{
+			if (spwnCptBtnGO.activeSelf == false)
+				spwnCptBtnGO.SetActive(true);
+		}
+
 		playerHurtTintCanvasGrp.alpha -= s_UIHurtTintFadeSpeed * Time.deltaTime;
 	}
 
