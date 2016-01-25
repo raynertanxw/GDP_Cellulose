@@ -170,7 +170,7 @@ public class EMController : MonoBehaviour
 			StartCoroutine(Stun ());
 		}
 		// Keep updating velocity when stunned
-		if (bStunned && velocity ！= stunVel)
+		if (bStunned && velocity != stunVel)
 			ResetVelocity ();
 		// Update Aggresiveness
 		UpdateAggressiveness ();
