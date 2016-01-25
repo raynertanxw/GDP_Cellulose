@@ -67,6 +67,8 @@ public class EnemyMainFSM : MonoBehaviour
 	[Tooltip("Health of the Enemy Main Cell")]
 	[SerializeField] private int nHealth;
 	public int Health { get { return nHealth; } set { nHealth = value; } }
+	private int nMaxHealth;
+	public int MaxHealth { get { return nMaxHealth; } }
 	#endregion
 	#region Aggressiveness
 	[Header("Aggressiveness")]
@@ -116,7 +118,7 @@ public class EnemyMainFSM : MonoBehaviour
 
 		nAvailableChildNum = 0;
 		// Initialise num of health and aggressiveness
-		nHealth = 50;
+		nMaxHealth = nHealth = 50;
 		nInitialAggressiveness = 5;
 		nCurrentAggressiveness = nInitialAggressiveness;
 		nAggressivenessSquadCap = 0;
