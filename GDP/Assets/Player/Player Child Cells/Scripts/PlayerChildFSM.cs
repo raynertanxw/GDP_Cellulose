@@ -124,6 +124,7 @@ public class PlayerChildFSM : MonoBehaviour
 			s_playerChildFSMPool = new PlayerChildFSM[Settings.s_nPlayerMaxChildCount];
 			s_playerChildStatus = new pcStatus[Settings.s_nPlayerMaxChildCount];
 			s_nPoolPointerIndex = 0;
+			s_nActiveChildCount = 0;
 		}
 		// add myself
 		s_playerChildFSMPool[s_nPoolPointerIndex] = this;

@@ -244,7 +244,7 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)
 	{
-		if (s_nResources > Settings.s_nPlayerChildSpawnCost && PlayerChildFSM.GetActiveChildCount() < Settings.s_nPlayerMaxChildCount)
+		if (s_nResources >= Settings.s_nPlayerChildSpawnCost && PlayerChildFSM.GetActiveChildCount() < Settings.s_nPlayerMaxChildCount)
 		{
 			Node _selectedNode = (Node) _nodeIndex;
 
@@ -262,7 +262,7 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
-			Debug.Log("Not enough resources " + s_nResources + "\nOr not enough child in pool");
+			Debug.Log("Not enough resources " + s_nResources);
 		}
 
 		RestartSpawnCtrlFadeOut();
