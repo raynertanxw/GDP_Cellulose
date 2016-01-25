@@ -73,7 +73,7 @@ public class EMProductionState : IEMState
 				// Transition to Landmine
 				if (nPlayerChildFactor > 1.5f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       (helper.Pow (nPlayerChildFactor, 3f) * 2.5f + m_EMFSM.CurrentAggressiveness * 3f + 
+					                       (helper.Pow (nPlayerChildFactor, 3f) * 2.5f + m_EMFSM.CurrentAggressiveness * 2f + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)), 
 					                       EMState.Landmine);
 				}
@@ -118,7 +118,7 @@ public class EMProductionState : IEMState
 				// Transition to Landmine
 				if (nPlayerChildFactor > 1f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 2f + m_EMFSM.CurrentAggressiveness * 1f) + 
+					                       ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1.5f + m_EMFSM.CurrentAggressiveness * 1f) + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)), 
 					                       EMState.Landmine);
 				}
@@ -155,7 +155,7 @@ public class EMProductionState : IEMState
 				// Transition to Landmine
 				if (nPlayerChildFactor > 1f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1.5f) + 
+					                       ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)), 
 					                       EMState.Landmine);
 				}
