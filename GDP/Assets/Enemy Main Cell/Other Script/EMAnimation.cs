@@ -106,6 +106,7 @@ public class EMAnimation : MonoBehaviour
 		aggressiveColor = new Vector4 (1f, 0.25f, 0.25f, 1f);
 		cautiousColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 		landmineColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
+		defendColor = Color.yellow;
 	}
 
 	void Update () 
