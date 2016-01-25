@@ -88,6 +88,10 @@ public class WallRenderer : MonoBehaviour
     // FixedUpdate(): is called 20 times every second. Used for physics handling
     void Update()
     {
+		// if: This needed so to prevent error during reset
+		if (Wall.Instance == null)
+			return;
+
         if (this.enabled)
         {
             transform.position -= new Vector3(0f, fMovementSpeed, 0f) * Time.deltaTime;

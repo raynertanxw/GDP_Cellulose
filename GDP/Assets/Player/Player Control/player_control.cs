@@ -75,6 +75,11 @@ public class player_control : MonoBehaviour
 
 	void Update()
 	{
+		playerHurtTintCanvasGrp.alpha -= s_UIHurtTintFadeSpeed * Time.deltaTime;
+
+		if (PlayerSquadFSM.Instance == null)
+			return;
+
 		if (PlayerSquadFSM.Instance.bIsAlive == true)
 		{
 			if (spwnCptBtnGO.activeSelf == true)
@@ -85,8 +90,6 @@ public class player_control : MonoBehaviour
 			if (spwnCptBtnGO.activeSelf == false)
 				spwnCptBtnGO.SetActive(true);
 		}
-
-		playerHurtTintCanvasGrp.alpha -= s_UIHurtTintFadeSpeed * Time.deltaTime;
 	}
 
 	#region UI HUD update functions
