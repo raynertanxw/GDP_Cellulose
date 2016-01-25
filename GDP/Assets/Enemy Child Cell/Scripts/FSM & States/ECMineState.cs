@@ -42,6 +42,9 @@ public class ECMineState : IECState {
 	private static PositionType CurrentPositionType;
 	private static List<Point> PathToTarget;
 
+	private bool ExpandContractStart;
+	private Animate Animator;
+
 	private enum Spread{Empty,Tight, Wide};
 
 	//Constructor
@@ -65,6 +68,9 @@ public class ECMineState : IECState {
 		Target = null;
 		CurrentPositionType = PositionType.Empty;
 		PathToTarget = new List<Point>();
+
+		ExpandContractStart = false;
+		Animator = new Animate(m_Child.transform);
 	}
 
 	public override void Enter()
@@ -135,9 +141,10 @@ public class ECMineState : IECState {
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 
-		if(GatherTogether)
+		if(GatherTogether && !ExpandContractStart)
 		{
-			ExplodingGrowShrink();
+			Animator.ExpandContract(15f,60,1.9f);//ExplodingGrowShrink();
+			ExpandContractStart = true;
 		}
 	}
 
@@ -226,16 +233,16 @@ public class ECMineState : IECState {
 	public override void Exit()
 	{
 		bExplodeCorountineStart = false;
-		m_Child.transform.localScale = Vector3.one;
 		m_ecFSM.rigidbody2D.drag = 0f;
 		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 
 		//if the landmine has not exploded and its going to die, it self-destruct instantly
 		if(!bExploded)
 		{
-			ExplodeDestroy();
+			m_ecFSM.StartChildCorountine(ExplodeCorountine());//ExplodeDestroy();
 		}
 
+		m_Child.transform.localScale = Vector3.one;
 	}
 
 	private List<GameObject> GetLandmines()
@@ -470,7 +477,17 @@ public class ECMineState : IECState {
 
 		Collider2D[] NearbyObjects = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.82f);
 
-		if(_PlayerCell.name.Contains("Node"))
+		for(int i = 0; i < NearbyObjects.Length; i++)
+		{
+			if(NearbyObjects[i].tag == Constants.s_strPlayerChildTag || NearbyObjects[i].tag == Constants.s_strPlayerTag || NearbyObjects[i].name.Contains("Squad"))
+			{
+				return true;
+			}
+		}
+
+		return false;
+
+		/*if(_PlayerCell.name.Contains("Node"))
 		{
 			PlayerChildFSM PCFSM = null;
 			for(int i = 0; i < NearbyObjects.Length; i++)
@@ -494,7 +511,18 @@ public class ECMineState : IECState {
 			}
 			return false;
 		}
-		return false;
+		else if(_PlayerCell.name.Contains("Squad"))
+		{
+			for(int i = 0; i < NearbyObjects.Length; i++)
+			{
+				if(NearbyObjects[i].name.Contains("Squad"))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		return false;*/
 	}
 
 	//A function that activate the "PassThroughDeath" corountine on all landmines whereby they will continue to travel in their velocity for a short period of time before exploding and die
@@ -588,11 +616,14 @@ public class ECMineState : IECState {
 		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 		bExploding = false;
 		m_Child.transform.localScale = Vector3.one;
+		Animator.ExpandContract(0.0f,0,0.0f,true,0.0f);
 	}
 
 	//Go through all the surround cells, destroy any player child cells and damaing the player main cell if in range
 	private void ExplodeDestroy()
 	{
+		MainCamera.CameraShake();
+
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		float DistanceFromCenterOfBlast = 0f;
 		
