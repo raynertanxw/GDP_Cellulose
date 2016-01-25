@@ -318,7 +318,7 @@ public class EMController : MonoBehaviour
 	// Move the enemy main cell left or right
 	IEnumerator MovingHorizontally ()
 	{
-		if (m_EMFSM.CurrentStateIndex == EMState.Production && m_EMFSM.CurrentStateIndex == EMState.Maintain) 
+		if (m_EMFSM.CurrentStateIndex == EMState.Production || m_EMFSM.CurrentStateIndex == EMState.Maintain) 
 		{
 			bCanChangeHori = false;
 			// Change direction based on the position of enemy nutrient and enemy main cell
