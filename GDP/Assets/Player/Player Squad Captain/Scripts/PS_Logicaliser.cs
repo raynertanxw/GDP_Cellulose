@@ -92,11 +92,10 @@ public class PS_Logicaliser : MonoBehaviour
 		{
 			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 0.2f);
 		}
-		//// if: There is extra child in Idle and the player have relatively low amount of resource
-		//if (SquadChildFSM.StateCount(SCState.Idle) >= nAmountIdleBeforeConsider && player_control.Instance.s_nResources <= nNeedNutrients)
-		//{
-		//    SquadChildFSM.AdvanceSquadPercentage(SCState.FindResource, 0.75f);
-		//}
+		// if: There is extra child in Idle and the player have relatively low amount of resource
+		if (SquadChildFSM.StateCount(SCState.Idle) >= nAmountIdleBeforeConsider && player_control.Instance.s_nResources <= nNeedNutrients)
+		{
+			SquadChildFSM.AdvanceSquadPercentage(SCState.FindResource, 0.75f);
+		}
 	}
 }
-
