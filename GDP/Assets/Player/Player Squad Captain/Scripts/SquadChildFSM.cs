@@ -569,4 +569,16 @@ public class SquadChildFSM : MonoBehaviour
     public bool IsAlive { get { return bIsAlive; } }
     public Rigidbody2D RigidBody { get { return m_RigidBody; } }
 
+
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_array_SquadChildFSM = null;
+	}
 }

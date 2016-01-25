@@ -87,7 +87,7 @@ public class PC_DefendState : IPCState
 
 	private bool IsTargetWithinDangerRange()
 	{
-		if (m_pcFSM.m_currentEnemyCellTarget == null)
+		if (m_pcFSM.m_currentEnemyCellTarget == null || PlayerMain.Instance == null)
 			return false;
 
 		if (Vector2.Distance(PlayerMain.Instance.transform.position, m_pcFSM.m_currentEnemyCellTarget.transform.position) > PlayerMain.Instance.m_fDetectionRadius)

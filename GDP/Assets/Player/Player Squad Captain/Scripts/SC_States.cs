@@ -131,6 +131,17 @@ public class SC_IdleState : ISCState
         }
         return true;
     }
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		list_IdleChild = new List<SC_IdleState>();
+	}
 }
 
 // SC_ProduceState: The produce state of the player squad's captain FSM

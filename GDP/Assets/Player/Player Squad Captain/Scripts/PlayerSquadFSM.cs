@@ -244,4 +244,15 @@ public class PlayerSquadFSM : MonoBehaviour
     public float AttackSpeed { get { return fAttackSpeed; } }
 
     public bool IsAlive { get { return bIsAlive; } }
+
+
+
+
+
+
+
+	public static void ResetStatics()
+	{
+		s_m_Instance = null;
+	}
 }

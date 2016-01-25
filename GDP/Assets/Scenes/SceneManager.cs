@@ -14,6 +14,10 @@ public class SceneManager : MonoBehaviour
 		GameManager.ResetStatics();
 		EndGamePanel.ResetStatics();
 
+		PlayerSquadFSM.ResetStatics();
+		SquadChildFSM.ResetStatics();
+		SC_IdleState.ResetStatics();
+
 		Wall.ResetStatics();
 		WallRenderer.ResetStatics();
 		Nutrients.ResetStatics();
@@ -42,6 +46,10 @@ public class SceneManager : MonoBehaviour
 		player_control.ResetStatics();
 		GameManager.ResetStatics();
 		EndGamePanel.ResetStatics();
+
+		PlayerSquadFSM.ResetStatics();
+		SquadChildFSM.ResetStatics();
+		SC_IdleState.ResetStatics();
 		
 		Wall.ResetStatics();
 		WallRenderer.ResetStatics();
