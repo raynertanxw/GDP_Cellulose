@@ -65,6 +65,7 @@ public class Nutrients : MonoBehaviour
 			// If not, lazy initiliase it
 			s_playerNutrientPool = new Nutrients[Settings.s_nPlayerMaxNutrientCount];
 			s_nPoolPointerIndex = 0;
+			s_nNutrients = Settings.s_nPlayerNutrientPerBlock;
 		}
 		// Add myself
 		s_playerNutrientPool[s_nPoolPointerIndex] = this;
