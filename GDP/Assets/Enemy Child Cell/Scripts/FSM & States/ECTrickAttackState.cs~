@@ -43,6 +43,9 @@ public class ECTrickAttackState : IECState {
 	private bool bSqueezeDone;
 
 	private static Vector3 ShrinkRate;
+	
+	private static BoxCollider2D LeftWall;
+	private static BoxCollider2D RightWall;
 
 	//constructor
 	public ECTrickAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -58,11 +61,26 @@ public class ECTrickAttackState : IECState {
 		m_Nodes[1] = Node_Manager.GetNode(Node.RightNode).gameObject;
 		m_SquadCaptain = PlayerSquadFSM.Instance.gameObject;
 		ShrinkRate = new Vector3(-0.225f, 0.225f, 0.0f);
+		
+		BoxCollider2D[] Walls = GameObject.Find("Wall").GetComponents<BoxCollider2D>();
+		for(int i = 0 ; i < Walls.Length; i++)
+		{
+			if(Walls[i].offset.y > 39f && Walls[i].offset.x > 7f)
+			{
+				RightWall = Walls[i];
+			}
+			else if(Walls[i].offset.y > 39f && Walls[i].offset.x < -7f)
+			{
+				LeftWall = Walls[i];
+			}
+		}
 	}
 
 	//initialize the array and various variables for the trick attack
 	public override void Enter()
 	{
+		if(m_ecFSM.m_AttackTarget == null){m_ecFSM.m_AttackTarget = m_ecFSM.m_PMain;}
+	
 		m_AttackTarget = m_ecFSM.m_AttackTarget;
 		bReachStart = false;
 		bReachTarget = false;
@@ -93,6 +111,7 @@ public class ECTrickAttackState : IECState {
 			if(!bSqueezeToggle)
 			{
 				m_ecFSM.StartChildCorountine(SqueezeBeforeCharge(m_Main.transform.position));
+				m_ecFSM.GetComponent<BoxCollider2D>().isTrigger = true;
 				bSqueezeToggle = true;
 			}
 		}
@@ -255,11 +274,11 @@ public class ECTrickAttackState : IECState {
 		int i = Random.Range(0,2);
 		if(i == 0)
 		{
-			m_NextWall = new Vector2(4.7f,m_Child.transform.position.y);
+			m_NextWall = new Vector2(5.0f,m_Child.transform.position.y);
 		}
 		else if(i == 1)
 		{
-			m_NextWall =new Vector2(-4.7f,m_Child.transform.position.y);
+			m_NextWall =new Vector2(-5.0f,m_Child.transform.position.y);
 		}
 
 		//Generate the appropriate position to appear from the teleport
@@ -274,8 +293,8 @@ public class ECTrickAttackState : IECState {
 
 	private Vector2 GetWallPos()
 	{
-		Vector2 LeftSide = new Vector2(-4.7f,m_Child.transform.position.y);
-		Vector2 RightSide = new Vector2(4.7f,m_Child.transform.position.y);
+		Vector2 LeftSide = new Vector2(-5.0f,m_Child.transform.position.y);
+		Vector2 RightSide = new Vector2(5.0f,m_Child.transform.position.y);
 		int random = Random.Range(0,2);
 		if(random == 0)
 		{
@@ -319,7 +338,12 @@ public class ECTrickAttackState : IECState {
 		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
 		CurrentTargetIndex = 0;
 		CurrentTargetPoint = PathToTarget[0];
+		
+		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),LeftWall);
+		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),RightWall);
 		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
+
+		m_ecFSM.GetComponent<BoxCollider2D>().isTrigger = false;
 
 		bReachStart = true;
 	}

@@ -57,13 +57,13 @@ public class ECMineState : IECState {
 		m_ecFSM = _ecFSM;
 		m_Main = m_ecFSM.m_EMain;
 
-		fMaxAcceleration = 30f;
+		fMaxAcceleration = 40f;
 		ExpansionLimit = new Vector2(1.7f,1.7f);
 		ShrinkLimit = new Vector2(0.8f,0.8f);
 		fExpansionSpeed = 0.1f;
 		bExpanding = true;
 
-		fExplosiveRange = 3.5f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
+		fExplosiveRange = 4f * m_Child.GetComponent<SpriteRenderer>().bounds.size.x;
 		fKillRange = 0.75f * fExplosiveRange;
 		GeneralTargetIndex = 0;
 		SpreadPoint = null;
@@ -190,9 +190,9 @@ public class ECMineState : IECState {
 			{
 				m_ecFSM.rigidbody2D.drag = 3f;
 				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,9f);
-				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 5f;
+				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;
 			}
-			else if(HasCellReachTarget(CurrentTargetPoint.Position) && CurrentTargetIndex + 1 < PathToTarget.Count)
+			else if((HasCellReachTarget(CurrentTargetPoint.Position)|| m_Child.transform.position.y < CurrentTargetPoint.Position.y) && CurrentTargetIndex + 1 < PathToTarget.Count)
 			{
 				CurrentTargetIndex++;
 				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
@@ -223,7 +223,7 @@ public class ECMineState : IECState {
 				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,12f);
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
 			}
-			else if(HasCellReachTarget(CurrentTargetPoint.Position) && CurrentTargetIndex + 1 < PathToTarget.Count)
+			else if((HasCellReachTarget(CurrentTargetPoint.Position) || (m_Child.transform.position.y < CurrentTargetPoint.Position.y)) && CurrentTargetIndex + 1 < PathToTarget.Count)
 			{
 				CurrentTargetIndex++;
 				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
@@ -253,6 +253,8 @@ public class ECMineState : IECState {
 		if(!bExploded)
 		{
 			MainCamera.CameraShake();
+			Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
+			Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());//ExplodeDestroy();
 		}
 
@@ -440,7 +442,7 @@ public class ECMineState : IECState {
 
 		if(_Spreadness == Spread.Tight)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 20f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
@@ -452,7 +454,7 @@ public class ECMineState : IECState {
 		}
 		else if(_Spreadness == Spread.Wide)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 20f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 40f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
@@ -622,7 +624,10 @@ public class ECMineState : IECState {
 
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		float DistanceFromCenterOfBlast = 0f;
-		
+
+		Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
+		Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
+			
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
 			//if the player child cell is within the exploding range, kill the player child
