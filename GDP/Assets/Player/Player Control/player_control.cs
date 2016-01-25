@@ -25,7 +25,11 @@ public class player_control : MonoBehaviour
 	private const float s_UIInfoPanelFadeSpeed = 1.25f;
 	private const float s_UIPopInSpeed = 3.5f;
 	private const float s_UIPopOutSpeed = 5.0f;
+
 	private const float s_UIHurtTintFadeSpeed = 2.0f;
+	private const float s_UITintFlickerSpeed = 1.0f;
+	private float s_UITintFlickerAlpha = 0f;
+	private bool m_bUITintFlickerIncreasingAlpha = false;
 	
 	void Awake()
 	{
@@ -83,6 +87,16 @@ public class player_control : MonoBehaviour
 	{
 		playerHurtTintCanvasGrp.alpha -= s_UIHurtTintFadeSpeed * Time.deltaTime;
 
+		if (EMHelper.Instance().MinToMaxYRatio > 0.85f)
+			FlickerWarningTint(0.5f, 2 * s_UITintFlickerSpeed);
+		else if (EMHelper.Instance().MinToMaxYRatio > 0.7f)
+			FlickerWarningTint(0f, s_UITintFlickerSpeed);
+		else
+		{
+			enemyWarningTintCanvasGrp.alpha -= s_UIHurtTintFadeSpeed * Time.deltaTime;
+			s_UITintFlickerAlpha = enemyWarningTintCanvasGrp.alpha;
+		}
+
 		if (PlayerSquadFSM.Instance == null)
 			return;
 
@@ -113,6 +127,29 @@ public class player_control : MonoBehaviour
 	public void FlashPlayerHurtTint()
 	{
 		playerHurtTintCanvasGrp.alpha = 1f;
+	}
+
+	private void FlickerWarningTint(float _fMinAlpha, float _fFlickerSpeed)
+	{
+		if (s_UITintFlickerAlpha > 1f)
+		{
+			m_bUITintFlickerIncreasingAlpha = false;
+			s_UITintFlickerAlpha -= Time.deltaTime * _fFlickerSpeed;
+		}
+		else if (s_UITintFlickerAlpha < _fMinAlpha)
+		{
+			m_bUITintFlickerIncreasingAlpha = true;
+			s_UITintFlickerAlpha += Time.deltaTime * _fFlickerSpeed;
+		}
+		else
+		{
+			if (m_bUITintFlickerIncreasingAlpha)
+				s_UITintFlickerAlpha += Time.deltaTime * _fFlickerSpeed;
+			else
+				s_UITintFlickerAlpha -= Time.deltaTime * _fFlickerSpeed;
+		}
+
+		enemyWarningTintCanvasGrp.alpha = s_UITintFlickerAlpha;
 	}
 	#endregion
 
