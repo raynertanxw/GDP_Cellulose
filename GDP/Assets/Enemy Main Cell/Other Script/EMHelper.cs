@@ -24,12 +24,17 @@ public class EMHelper : MonoBehaviour
 	public static float topLimit;
 	public static float bottomLimit;
 
-	// Properties of the enemy main cell
+	#region Properties of the enemy main cell
 	private Vector2 position;
 	public Vector2 Position { get { return position; } set { position = value; } }
+	private float fMaxY;
+	public float MaxY { get { return fMaxY; } }
+	private float fMinY;
+	public float MinY { get { return fMinY; } }
 	private float fRadius;
 	public float Radius { get { return fRadius; } }
 	private float width;
+	#endregion
 
 	[SerializeField]
 	private bool bIsEnemyVisible;
@@ -63,6 +68,10 @@ public class EMHelper : MonoBehaviour
 		width = GetComponent<CircleCollider2D> ().bounds.size.x;
 		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		position = transform.position;
+
+		// Position limitation
+		fMaxY = 9.6f;
+		fMinY = -2.0f;
 
 		// Find gameObject
 		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
@@ -153,6 +162,9 @@ public class EMHelper : MonoBehaviour
 
 			EMController.Instance ().ChangeDirection ();
 		}
+
+		if (transform.position.y < fMinY)
+			transform.position = new Vector2 (transform.position.x, fMinY);
 	}
     // Update width of enemy main cell
 	void WidthUpdate ()
