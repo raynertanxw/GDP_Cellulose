@@ -55,10 +55,10 @@ public class SquadChildFSM : MonoBehaviour
     public Collider2D m_Collider;                            // m_Collider: It is public so that states can references it
 
     private Vector3 gizmoVector;
-    void OnGizmosDraw()
+    void OnDrawGizmos()
     {
         Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(gizmoVector, 0.5f);
+        Gizmos.DrawWireSphere(gizmoVector, 1f);
     }
     public void Draw(Vector3 _position) { gizmoVector = _position; }
 

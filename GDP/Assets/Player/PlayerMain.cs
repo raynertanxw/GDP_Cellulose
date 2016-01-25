@@ -64,6 +64,7 @@ public class PlayerMain : MonoBehaviour
 	public void HurtPlayerMain()
 	{
 		m_nHealth--;
+		player_control.Instance.FlashPlayerHurtTint();
 
 		if (m_nHealth <= 0)
 		{

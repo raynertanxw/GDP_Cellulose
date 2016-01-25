@@ -40,15 +40,22 @@ public class Nutrients : MonoBehaviour
 	[Tooltip("The time taken for the resource to travel from the start to end IF THERE IS NO DECELERATION")]
 	[SerializeField] private float fTimeTaken = 0.5f;
 	[Tooltip("The ending speed a.k.a the minimum speed it can move")]
-	[SerializeField] private float fMinimumSpeed = 0.5f;	// fMinimumSpeed: This to prevent the resource from moving to a complete hault when reaching the endng point
+	[SerializeField] private float fMinimumSpeed = 0.5f;	        // fMinimumSpeed: This to prevent the resource from moving to a complete hault when reaching the endng point
 	[Tooltip("The amount of horizontal offset of the resources when instantiated (The greater the number, the higher the offset)")]
 	[SerializeField] private float fMaximumOffset = 0.5f;
+	[Tooltip("The amount of nutrients it needs before it spawns another one")]
+	[SerializeField] private int nSquadChildToSpawn = 5;
+	[Tooltip("The maximum size increase to when doing duplications")]
+	[SerializeField] private float fMaximumSizeIncrease = 1.5f; 
 
 	// Uneditable Variables
 	private bool bIsCollectable = true;     // isCollected: Determines if the current resource can be collected by the player
 	private bool bIsInPool = true;
-	private Vector3 endPosition;
+	private Vector3 endPosition;            // endPosition: The end position of the squad child cell
 	private float fClickMagnitude;          // fClickMagnitude: The distance between the resource AT THE POINT OF CLICKING and the player's position
+	private float fSizeExpandPerSpawn;      // fSizeExpandPerSpawn: The constant number to determine how much the nutrients increase in size when squad child cells adds
+	private int nCurrentSquadChildCount;    // nCurrentSquadChildCount: The current amount of squad child cells stored in that particular nutrient
+	private Animate mAnimate;               // mAnimate: The animation controller
 
 	// GameObject and Component References
 	private Transform playerMainTransform;  // playerMainTransform: The transform of the player
@@ -80,6 +87,9 @@ public class Nutrients : MonoBehaviour
 	{
 		// Definition of variables
 		playerMainTransform = PlayerMain.Instance.transform;
+		nCurrentSquadChildCount = 0;
+		fSizeExpandPerSpawn = (fMaximumSizeIncrease - transform.localScale.x) / (float)nSquadChildToSpawn;
+		mAnimate = new Animate(transform);
 	}
 	
 	// Update(): is called once per frame
@@ -111,13 +121,6 @@ public class Nutrients : MonoBehaviour
 		}
 	}
 
-	void SendBackToPool()
-	{
-		spriteRen.enabled = false;
-		transform.localScale = Vector3.one;
-		bIsInPool = true;
-	}
-
 	// OnMouseDown(): Detects when the object is clicked
 	void OnMouseDown()
 	{
@@ -130,20 +133,43 @@ public class Nutrients : MonoBehaviour
 		}
 	}
 
+	// SendsBackToPool(): The setting of the nutrients cells when it is sending back to pool
+	void SendBackToPool()
+	{
+		spriteRen.enabled = false;
+		transform.localScale = Vector3.one;
+		bIsInPool = true;
+		nCurrentSquadChildCount = 0;
+	}
+
+	// Public Fuunctions
+	// AddSquadChildCount(): This function is called when a squad child "collides" with a nutrient
+	public void AddSquadChildCount()
+	{
+		nCurrentSquadChildCount++;
+		transform.localScale += Vector3.one * fSizeExpandPerSpawn;
+
+		// if: The current number of squad child cells is the required spawn amount
+		if (nCurrentSquadChildCount >= nSquadChildToSpawn)
+		{
+			nCurrentSquadChildCount = 0;
+
+			Nutrients spawnNutrient = Spawn(transform.position);
+			spawnNutrient.endPosition = 
+				new Vector2(
+					-endPosition.x, 
+					transform.position.y + Random.Range (-5f, 5f) * fMaximumOffset);
+
+			mAnimate.ExpandContract(0.5f, 1, 1.3f);
+		}
+	}
+
 	// Public Static Functions
 	public static int Nutrient { get { return s_nNutrients; } }
 
 	// Getter-Setter Functions
 	public bool IsInPool { get { return bIsInPool; } }
 	public bool IsCollectable { get { return bIsCollectable; } }
-
-
-
-
-
-
-
-
 
 	public static void ResetStatics()
 	{

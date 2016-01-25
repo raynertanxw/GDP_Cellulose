@@ -217,11 +217,11 @@ public class EMHelper : MonoBehaviour
 			mAnimate.ExpandContract (0.1f, 1, 1.1f);
 			
 			EMController.Instance().ReduceNutrient ();
-			// Randomize the interval time between spawns of child cells in terms of num of available child cells and current difficulty
+			// Randomize the interval time between spawns of child cells in terms of current difficulty
 			yield return new WaitForSeconds (
 				UnityEngine.Random.Range (
-				Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)m_EMFSM.AvailableChildNum))) * 1f / EMDifficulty.Instance().CurrentDiff, 
-				Mathf.Sqrt(Mathf.Sqrt ((float)m_EMFSM.AvailableChildNum)) * 1f / EMDifficulty.Instance().CurrentDiff)
+				1.0f / EMDifficulty.Instance().CurrentDiff, 
+				1.5f / EMDifficulty.Instance().CurrentDiff)
 				);
 			
 			if (m_EMFSM.AvailableChildNum < 100)

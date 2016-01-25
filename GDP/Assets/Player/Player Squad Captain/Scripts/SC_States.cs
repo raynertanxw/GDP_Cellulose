@@ -187,13 +187,17 @@ public class SC_FindResourceState : ISCState
         }
         else
         {
-            m_scFSM.RigidBody.AddForce((targetNutrients.transform.position - m_scFSM.transform.position) * Time.deltaTime * 5f, ForceMode2D.Force);
-            m_scFSM.Draw(targetNutrients.transform.position);
+            // toTargetVector: The vector between the target nutrients and the current squad child cells
+            Vector3 toTargetVector = targetNutrients.transform.position - m_scFSM.transform.position;
+            // Apply vector to velocity
+            m_scFSM.RigidBody.AddForce(toTargetVector * Time.deltaTime * 1000f, ForceMode2D.Force);
+            m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, 5f);
 
             // if: The distance between the two bodies is less than a certain distance
             if (Vector3.Distance(targetNutrients.transform.position, m_scFSM.transform.position) < 0.5f)
             {
                 m_scFSM.Advance(SCState.Dead);
+                targetNutrients.AddSquadChildCount();
                 targetNutrients = null;
             }
         }
