@@ -51,7 +51,7 @@ public class EMAggressiveAttackState : IEMState
 			
 			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25)
 			{
-				for (int nAmount = 0; nAmount < Random.Range (1, 3 + (int)nEnemyChildFactor); nAmount++)
+				for (int nAmount = 0; nAmount < Random.Range (1, 2 + (int)nEnemyChildFactor); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
@@ -84,8 +84,7 @@ public class EMAggressiveAttackState : IEMState
 			}
 			
 			// Pause commanding enemy mini cells to Attack state
-			// Pause duration depends only on the number of enemy mini cells
-			float fPauseTime = 1.5f - nEnemyChildFactor / 10f / EMDifficulty.Instance().CurrentDiff;
+			float fPauseTime = 1.5f / EMDifficulty.Instance().CurrentDiff;
 			if (fPauseTime > 0f)
 				helper.StartPauseAddAttack (fPauseTime);
 		}

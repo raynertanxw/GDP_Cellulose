@@ -95,7 +95,7 @@ public class EMLandmineState : IEMState
 			
 			// Pause commanding enemy mini cells to Attack state
 			// Pause duration depends only on the number of enemy mini cell commanded
-			helper.StartPauseAddLandmine ((float)nCommandNum);
+			helper.StartPauseAddLandmine ((float)nCommandNum * 2f);
 		}
 		#endregion
 
