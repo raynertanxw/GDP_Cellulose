@@ -14,13 +14,15 @@ public class player_control : MonoBehaviour
 	private Node m_nActiveNode = Node.RightNode;
 
 	private GameObject spwnCptBtnGO;
-	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp;
+	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp, infoPanelCanvasGrp;
 	private RectTransform[] btnRectTransform;
-	private Text leftNodeChildText, rightNodeChildText, nutrientText;
+	private Text leftNodeChildText, rightNodeChildText, nutrientText, infoText;
 	private Vector3 mainCellPos;
 	private Vector3[] btnPos;
 	private const float s_UIFadeOutDelay = 1.5f;
 	private const float s_UIFadeOutSpeed = 0.8f;
+	private const float s_UIInfoPanelFadeDelay = 0.75f;
+	private const float s_UIInfoPanelFadeSpeed = 1.25f;
 	private const float s_UIPopInSpeed = 3.5f;
 	private const float s_UIPopOutSpeed = 5.0f;
 	private const float s_UIHurtTintFadeSpeed = 2.0f;
@@ -52,6 +54,8 @@ public class player_control : MonoBehaviour
 		leftNodeChildText = transform.GetChild(7).GetChild(2).GetChild(0).GetComponent<Text>();
 		rightNodeChildText = transform.GetChild(7).GetChild(2).GetChild(1).GetComponent<Text>();
 		nutrientText = transform.GetChild(7).GetChild(3).GetComponent<Text>();
+		infoPanelCanvasGrp = transform.GetChild(7).GetChild(4).GetComponent<CanvasGroup>();
+		infoText = transform.GetChild(7).GetChild(4).GetChild(0).GetComponent<Text>();
 
 		// Hide both left and right node.
 		leftNodeCanvasGrp.alpha = 0f;
@@ -64,6 +68,8 @@ public class player_control : MonoBehaviour
 		// Hide tints
 		playerHurtTintCanvasGrp.alpha = 0f;
 		enemyWarningTintCanvasGrp.alpha = 0f;
+
+		infoPanelCanvasGrp.alpha = 0f;
 	}
 
 	void Start()
@@ -218,6 +224,23 @@ public class player_control : MonoBehaviour
 		cgrp.blocksRaycasts = false;
 	}
 
+	private IEnumerator FadeOutInfoPanel()
+	{
+		yield return new WaitForSeconds(s_UIInfoPanelFadeDelay);
+		while (infoPanelCanvasGrp.alpha > 0)
+		{
+			infoPanelCanvasGrp.alpha -= s_UIInfoPanelFadeSpeed * Time.deltaTime;
+			yield return null;
+		}
+	}
+
+	private void PresentInfoPanel()
+	{
+		infoPanelCanvasGrp.alpha = 1f;
+		StopCoroutine(Constants.s_strFadeOutInfoPanel);
+		StartCoroutine(Constants.s_strFadeOutInfoPanel);
+	}
+
 	private void RestartFadeOut(Node _selectedNode)
 	{
 		switch (_selectedNode)
@@ -277,25 +300,31 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)
 	{
-		if (s_nResources >= Settings.s_nPlayerChildSpawnCost && PlayerChildFSM.GetActiveChildCount() < Settings.s_nPlayerMaxChildCount)
+		if (PlayerChildFSM.GetActiveChildCount() > Settings.s_nPlayerMaxChildCount)
+		{
+			infoText.text = "Reached\nMaximum\nChild Cell\nCount";
+			PresentInfoPanel();
+		}
+		else if (s_nResources >= Settings.s_nPlayerChildSpawnCost)
 		{
 			Node _selectedNode = (Node) _nodeIndex;
-
+			
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
 			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(PlayerMain.Instance.transform.position + (Vector3)Random.insideUnitCircle*0.25f);
 			currentChild.m_assignedNode = Node_Manager.GetNode(_selectedNode);
 			currentChild.m_bIsDefending = Node_Manager.GetNode(_selectedNode).m_bIsDefending;
-            currentChild.m_assignedNode.AddChildToNode(currentChild.poolIndex);
-
+			currentChild.m_assignedNode.AddChildToNode(currentChild.poolIndex);
+			
 			s_nResources -= Settings.s_nPlayerChildSpawnCost;
 			UpdateUI_nutrients();
 			UpdateUI_nodeChildCountText();
-
+			
 			PlayerMain.Instance.animate.ExpandContract(0.5f, 1, 1.2f, true, 0.2f);
 		}
 		else
 		{
-			Debug.Log("Not enough resources " + s_nResources);
+			infoText.text = "Not enough\nnutrients\n\nNeeded:\n" + Settings.s_nPlayerChildSpawnCost + " units";
+			PresentInfoPanel();
 		}
 
 		RestartSpawnCtrlFadeOut();
@@ -316,7 +345,8 @@ public class player_control : MonoBehaviour
 
 		if (selectedNode.activeChildCount < Settings.s_nPlayerActionBurstShotChildCost)
 		{
-			Debug.Log("Not enough child cells for Burst Shot in this node");
+			infoText.text = "Not enough\nchild cells\n\nNeeded:\n" + Settings.s_nPlayerActionBurstShotChildCost + " cells";
+			PresentInfoPanel();
 		}
 		else
 		{
@@ -340,6 +370,9 @@ public class player_control : MonoBehaviour
 						break;
 				}
 			}
+
+			infoText.text = "BurstShot";
+			PresentInfoPanel();
 		}
 
 		RestartFadeOut(_selectedNode);
@@ -353,7 +386,8 @@ public class player_control : MonoBehaviour
 
         if (selectedNode.activeChildCount < Settings.s_nPlayerActionSwarmTargetChildCost)
         {
-            Debug.Log("Not enough child cells for Swarm Target in this node");
+			infoText.text = "Not enough\nchild cells\n\nNeeded:\n" + Settings.s_nPlayerActionSwarmTargetChildCost +  " cells";
+			PresentInfoPanel();
         }
         else
         {
@@ -374,6 +408,9 @@ public class player_control : MonoBehaviour
 						break;
 				}
 			}
+
+			infoText.text = "SwarmTarget";
+			PresentInfoPanel();
         }
 
 		RestartFadeOut(_selectedNode);
@@ -387,7 +424,8 @@ public class player_control : MonoBehaviour
 
 		if (selectedNode.activeChildCount < Settings.s_nPlayerActionScatterShotChildCost)
 		{
-			Debug.Log("Not enough child cells for ScatterShot in this node");
+			infoText.text = "Not enough\nchild cells\n\nNeeded:\n" + Settings.s_nPlayerActionScatterShotChildCost + " cells";
+			PresentInfoPanel();
 		}
 		else
 		{
@@ -408,6 +446,9 @@ public class player_control : MonoBehaviour
 						break;
 				}
 			}
+
+			infoText.text = "ScatterShot";
+			PresentInfoPanel();
 		}
 
 		RestartFadeOut(_selectedNode);
@@ -519,7 +560,8 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
-			Debug.Log("Not enough child at node to convert");
+			infoText.text = "Not enough\nchild cells\n\nNeeded:\n" + Settings.s_nPlayerSqaudCaptainChildCost + " cells";
+			PresentInfoPanel();
 		}
 
 		RestartSpawnCtrlFadeOut();
