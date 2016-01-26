@@ -204,25 +204,25 @@ public class Animate
 			// if: It is not currently idling, which means that this is a new animation and not an overriden one
 			if (!bIsIdling)
 			{
+				vIdle_InitialPosition = mTransform.position;
 				// if: This animation cannot be passed to AnimateHandler.cs (cache is probably full)
 				if (!AnimateHandler.ActivateIdle(this))
 				{
 					return false;
 				}
-
-				//Initialisation of Idling Fields
-				fIdle_Speed = _fSpeed;
-				fIdle_Radius = _fRadius;
-				bIdle_IsOverridable = _bIsOverridable;
-				vIdle_InitialPosition = mTransform.position;
-				vIdle_TargetPosition = mTransform.position; // Sets this to its current position so that that it can be set in update
-				bIdle_RestrictXAxis = _bIsRestrictXAxis;
-				bIdle_RestrictYAxis = _bIsRestrictYAxis;
-				bIdle_IsComingToAHalt = false;
-
-				bIsIdling = true;
-				return true;
 			}
+
+			//Initialisation of Idling Fields
+			fIdle_Speed = _fSpeed;
+			fIdle_Radius = _fRadius;
+			bIdle_IsOverridable = _bIsOverridable;
+			vIdle_TargetPosition = mTransform.position; // Sets this to its current position so that that it can be set in update
+			bIdle_RestrictXAxis = _bIsRestrictXAxis;
+			bIdle_RestrictYAxis = _bIsRestrictYAxis;
+			bIdle_IsComingToAHalt = false;
+
+			bIsIdling = true;
+			return true;
 		}
 		return false;
 	}

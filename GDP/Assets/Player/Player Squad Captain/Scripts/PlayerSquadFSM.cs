@@ -85,7 +85,7 @@ public class PlayerSquadFSM : MonoBehaviour
 
 	private float fNextCooldown = 0.0f;                 // fNextCooldown: Stores the time of the cooldown
 
-	private Animate mAnimate;
+	[HideInInspector] public Animate mAnimate;
 
 	// Co-Routines
 	IEnumerator SpawnRoutine()
@@ -135,9 +135,6 @@ public class PlayerSquadFSM : MonoBehaviour
 		m_CurrentEnumState = PSState.Dead;
 		m_CurrentState = dict_States[m_CurrentEnumState];
 		m_CurrentState.Enter();
-
-		mAnimate.Idle(0.1f, 0.2f);
-		mAnimate.IdleRotation(360f, 540f, 1f, 5f, true, false);
 	}
 
 	// Update(): is called once every frame
@@ -218,7 +215,6 @@ public class PlayerSquadFSM : MonoBehaviour
 		{
 			Advance(PSState.Dead);
 			MainCamera.CameraShake(5, 0.7f);
-			mAnimate.StopIdleRotation(false);
 			return true;
 		}
 		else
@@ -248,12 +244,6 @@ public class PlayerSquadFSM : MonoBehaviour
 	public float AttackSpeed { get { return fAttackSpeed; } }
 
 	public bool IsAlive { get { return bIsAlive; } }
-
-
-
-
-
-
 
 	public static void ResetStatics()
 	{

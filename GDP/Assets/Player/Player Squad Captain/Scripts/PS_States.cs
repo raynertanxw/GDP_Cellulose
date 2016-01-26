@@ -6,14 +6,18 @@ public class PS_IdleState : IPSState
 {
     // Uneditable Fields
     private PS_Logicaliser m_Brain;
-    private Animate mAnimate;
 
     // Constructor
     public PS_IdleState(PlayerSquadFSM para_playerSquadFSM, PS_Logicaliser para_Brain)
     {
         m_psFSM = para_playerSquadFSM;
         m_Brain = para_Brain;
-        mAnimate = new Animate(m_psFSM.transform);
+    }
+
+    public override void Enter()
+    {
+       m_psFSM.mAnimate.Idle(0.1f, 0.2f);
+       m_psFSM.mAnimate.IdleRotation(360f, 540f, 1f, 5f, true, false);
     }
 
     public override void Execute()
