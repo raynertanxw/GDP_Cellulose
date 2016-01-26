@@ -65,6 +65,7 @@ public class PlayerMain : MonoBehaviour
 	void Start()
 	{
 		mAnimate.Idle(0.15f, 0.25f);
+		mAnimate.IdleRotation(20f, 1080f, 1f, 10f, true, false);
 	}
 
 	void Update()
