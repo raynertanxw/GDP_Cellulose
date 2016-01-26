@@ -16,11 +16,6 @@ public class PS_IdleState : IPSState
         mAnimate = new Animate(m_psFSM.transform);
     }
 
-    public override void Enter()
-    {
-        mAnimate.Idle(0.1f, 0.2f);
-    }
-
     public override void Execute()
     {
         m_Brain.Think();

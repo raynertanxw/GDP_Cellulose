@@ -5,20 +5,33 @@ using System.Collections;
 public class Animate
 {
 	// Animation Definition Fields
-	private float fExpandContract_Timer = 0f;           // fExpandContract_Timer: The time taken to complete the expand-contract sequence
-	private int nExpandContract_Frequency = 0;          // nExpandContract_Frequency: The number of times the object pulses throughout the entire sequence
-	private float fExpandContract_Size = 0f;            // fExpandContract_Size: The biggest size the object can get when it expands
-	private Vector3 vExpandContract_InitialScale;       // vExpandContract_InitialScale: The initial scale of object
-	private bool bExpandContract_IsOverridable = true;  // bExpandContract_IsOverridable: Determies if the current animation can be overriden
+	private float fExpandContract_Timer = 0f;               // fExpandContract_Timer: The time taken to complete the expand-contract sequence
+	private int nExpandContract_Frequency = 0;              // nExpandContract_Frequency: The number of times the object pulses throughout the entire sequence
+	private float fExpandContract_Size = 0f;                // fExpandContract_Size: The biggest size the object can get when it expands
+	private Vector3 vExpandContract_InitialScale;           // vExpandContract_InitialScale: The initial scale of object
+	private bool bExpandContract_IsOverridable = true;      // bExpandContract_IsOverridable: Determies if the current animation can be overriden
 
-	private float fIdle_Speed = 0f;                     // fIdle_Speed: The speed at which the object is idling
-	private float fIdle_Radius = 0f;                    // fIdle_Radius: The furthest distance at which the object can idle
-	private Vector3 vIdle_InitialPosition;              // vIdle_InitialPosition: The initial position of the when the method is called
-	private Vector3 vIdle_TargetPosition;               // vIdle_TargetPosition: The target position at which it is going to travel to
-	private bool bIdle_IsOverridable = true;            // bIdle_IsOverridable: Determines if the current animation can be overriden
-	private bool bIdle_RestrictXAxis = false;           // bIdle_RestrictXAxis: Set if the idling will not travel in the x-direction
-	private bool bIdle_RestrictYAxis = false;           // bIdle_RestrictYAxis: Set if the idling will not travel in the y-direction
-	private bool bIdle_IsComingToAHalt = false;         // bIdle_IsComingToAHalt: If this is true, the animation will be running for 'StopIdle' instead of 'Idle'
+	private float fIdle_Speed = 0f;                         // fIdle_Speed: The speed at which the object is idling
+	private float fIdle_Radius = 0f;                        // fIdle_Radius: The furthest distance at which the object can idle
+	private Vector3 vIdle_InitialPosition;                  // vIdle_InitialPosition: The initial position of the when the method is called
+	private Vector3 vIdle_TargetPosition;                   // vIdle_TargetPosition: The target position at which it is going to travel to
+	private bool bIdle_IsOverridable = true;                // bIdle_IsOverridable: Determines if the current animation can be overriden
+	private bool bIdle_RestrictXAxis = false;               // bIdle_RestrictXAxis: Set if the idling will not travel in the x-direction
+	private bool bIdle_RestrictYAxis = false;               // bIdle_RestrictYAxis: Set if the idling will not travel in the y-direction
+	private bool bIdle_IsComingToAHalt = false;             // bIdle_IsComingToAHalt: If this is true, the animation will be running for 'StopIdle' instead of 'Idle'
+
+	private float fIdleRotation_MinRotation = 0f;           // fIdleRotation_MinRotation: The minimum amount of rotation to be applied in one turn
+	private float fIdleRotation_RotationRange = 0f;         // fIdleRotation_RotationRange: The range of rotation between the minimum and the maximum of the rotation range
+	private float fIdleRotation_MinTime = 0f;               // fIdleRotation_MinTime: The minimum amount of time to complete one turn
+	private float fIdleRotation_TimeRange = 0f;             // fIdleRotation_TimeRange: The range of rotation between the minimum and maximum time of one turn
+	private bool bIdleRotation_IsOverridable = true;        // bIdleRotation_IsOverridable: Determines if the current animation can be overriden
+	private float fIdleRotation_CurrentTime = 0f;           // fIdleRotation_CurrentTime: The current time of the current turn, time will reset to 0 if its a new turn
+	private float fIdleRotation_CurrentTotalTime = 0f;      // fIdleRotation_CurrentTotalTime: The current total time in that turn
+	private float fIdleRotation_CurrentTotalRotation = 0f;  // fIdleRotation_CurrentTotalRotation: The current total rotation in that turn
+	private bool bIdleRotation_SmoothTransition = false;    // bIdleRotation_SmoothTransition: Determines if the switching between turns transits nicely
+	private float fIdleRotation_CurrentTorque = 0f;         // fIdleRotation_Torque: The current angular velocity of the object
+	private Quaternion qIdleRotation_InitialQuaternion;     // qIdleRotation_InitialQuaternion: The initial rotation of the first animation
+	private bool bIdleRotation_IsComingToAHalt = false;     // bIdleRotation_IsComingToAHalt: If this is true, the animation will be running for 'StopIdleRotation' instead of ''
 
 	// Timing Fields
 	private float fExpandContract_CurrentTimer = 0f;    // fExpandContract_CurrentTimer: The current time for the expand-contract sequence
@@ -29,6 +42,7 @@ public class Animate
 	// Boolean Fields
 	private bool bIsExpandContract = false;             // bIsExpandContract: Returns if the object is performing an expand-contract sequence
 	private bool bIsIdling = false;                     // bIsIdling: Returns if the object is performing an idling animation;
+	private bool bIsIdlingRotation = false;             // bIsIdlingRotation: Returns if the object is performing an idling rotation animation
 
 	// Constructor
 	/// <summary>
@@ -204,6 +218,7 @@ public class Animate
 				vIdle_TargetPosition = mTransform.position; // Sets this to its current position so that that it can be set in update
 				bIdle_RestrictXAxis = _bIsRestrictXAxis;
 				bIdle_RestrictYAxis = _bIsRestrictYAxis;
+				bIdle_IsComingToAHalt = false;
 
 				bIsIdling = true;
 				return true;
@@ -290,6 +305,149 @@ public class Animate
 			vIdle_TargetPosition.y = 0.0f;
 
 		return true;
+	}
+	#endregion
+
+	#region Idle-Rotation Animation
+	/// <summary>
+	/// Perform the animation of idling-rotation
+	/// </summary>
+	/// <param name="_fMinRotation"> The minimum amount of angular rotation in a turn </param>
+	/// <param name="_fMaxRotation"> The maximum amount of angular rotation in a turn </param>
+	/// <param name="_fMinTime"> The minimum amount of time to execute a turn </param>
+	/// <param name="_fMaxTime"> The maximum amount of time to execute a turn </param>
+	/// <param name="_bIsSmoothTransition"> Determines if the transition between turns in smooth. NOTE: By enabling this the angles keyed are no longer accurate and will be used as torque </param>
+	/// <param name="_bIsOverridable"> Determines if this function call can be overiden by another function call </param>
+	/// <returns> Returns if the function is executed </returns>
+	public bool IdleRotation(float _fMinRotation, float _fMaxRotation, float _fMinTime, float _fMaxTime, bool _bIsSmoothTransition, bool _bIsOverridable)
+	{
+		// if: The animation is overridable
+		if (bIdleRotation_IsOverridable)
+		{
+			// if: It is not currently idling, which means that this is a new animation and not an overriden one
+			if (!bIsIdlingRotation)
+			{
+				qIdleRotation_InitialQuaternion = mTransform.rotation;
+				// if: Tries to push to cache and fails
+				if (!AnimateHandler.ActivateIdleRotation(this))
+				{
+					return false;
+				}
+			}
+
+			// Initialisation of variables
+			fIdleRotation_MinRotation = _fMinRotation;
+			fIdleRotation_RotationRange = Mathf.Abs(_fMaxRotation - _fMinRotation);
+			fIdleRotation_MinTime = _fMinTime;
+			fIdleRotation_TimeRange = Mathf.Abs(_fMaxTime - _fMinTime);
+			bIdleRotation_IsOverridable = _bIsOverridable;
+			fIdleRotation_CurrentTime = 0f;
+			bIdleRotation_SmoothTransition = _bIsSmoothTransition;
+
+			bIdle_IsComingToAHalt = false;
+			bIsIdlingRotation = true;
+
+			// Generates random values for rotation and time
+			fIdleRotation_CurrentTotalRotation = fIdleRotation_MinRotation + (UnityEngine.Random.value * fIdleRotation_RotationRange);
+			fIdleRotation_CurrentTotalTime = fIdleRotation_MinTime + (UnityEngine.Random.value * fIdleRotation_TimeRange);
+
+			return true;
+		}
+		return false;
+	}
+
+	// __upI(): The update call for idling rotation animation sequence.
+	//          Returns true when sequence is not complete, false for otherwise
+	public bool __upIR(float _fDeltaTime)
+	{
+		// if: The object is not roational idling
+		if (!bIsIdlingRotation)
+			return false;
+
+		fIdleRotation_CurrentTime += _fDeltaTime;
+
+		// if: The current time have exceed the time taken for that turn
+		if (fIdleRotation_CurrentTime >= fIdleRotation_CurrentTotalTime)
+		{
+			// if: THe current animation turn is running for 'StopIdleRotation' instead of 'IdleRotation'
+			if (bIdleRotation_IsComingToAHalt)
+			{
+				// This where the stopping of the animation happens
+				fIdleRotation_MinRotation = 0f;
+				fIdleRotation_RotationRange = 0f;
+				fIdleRotation_MinTime = 0f;
+				fIdleRotation_TimeRange = 0f;
+				bIdleRotation_IsOverridable = true;
+				fIdleRotation_CurrentTime = 0f;
+				bIdleRotation_SmoothTransition = false;
+				bIdle_IsComingToAHalt = false;
+				bIsIdlingRotation = false;
+
+				Debug.Log(mTransform.rotation.eulerAngles);
+				mTransform.rotation = qIdleRotation_InitialQuaternion;
+				return false;
+			}
+			else
+			{
+				// Generates random values for rotation and time
+				fIdleRotation_CurrentTotalRotation = fIdleRotation_MinRotation + (UnityEngine.Random.value * fIdleRotation_RotationRange);
+				// Randomise between turning left or right
+				fIdleRotation_CurrentTotalRotation *= Mathf.RoundToInt(UnityEngine.Random.value) == 0 ? -1f : 1f;
+
+				fIdleRotation_CurrentTotalTime = fIdleRotation_MinTime + (UnityEngine.Random.value * fIdleRotation_TimeRange);
+				fIdleRotation_CurrentTime -= fIdleRotation_CurrentTotalTime;
+			}
+		}
+		// else: when the time has not exceed the time taken
+		else
+		{
+			// fDeltaRotation: The fraction of rotation to be rotated in that current frame
+			float fDeltaRotation = _fDeltaTime / fIdleRotation_CurrentTotalTime * fIdleRotation_CurrentTotalRotation;
+
+			// if: Smooth transition is enabled, transit smoothly
+			if (bIdleRotation_SmoothTransition)
+			{
+				fIdleRotation_CurrentTorque += _fDeltaTime / fIdleRotation_CurrentTotalTime * fIdleRotation_CurrentTotalRotation;
+				fIdleRotation_CurrentTorque = Mathf.Min(Mathf.Abs(fIdleRotation_CurrentTorque), fDeltaRotation);
+				mTransform.rotation = Quaternion.Euler(0f, 0f, fIdleRotation_CurrentTorque + mTransform.rotation.eulerAngles.z);
+			}
+			else
+			{
+				// Update the rotation of the transform
+				mTransform.rotation = Quaternion.Euler(0f, 0f, fDeltaRotation + mTransform.rotation.eulerAngles.z);
+			}
+			
+		}
+
+		return true;
+
+	}
+
+	/// <summary>
+	/// Stops the current rotationa idling animation 
+	/// </summary>
+	/// <param name="_bIsReturnToInitial"> Set if the object will rotate back to its original position before it stops </param>
+	/// <returns> Returns if the function is executed </returns>
+	public bool StopIdleRotation(bool _bIsReturnToInitial)
+	{
+		// if: The object is not rotational idling
+		if (!bIsIdlingRotation)
+			return false;
+
+		if (_bIsReturnToInitial)
+		{
+			fIdleRotation_CurrentTotalRotation = Mathf.DeltaAngle(mTransform.rotation.eulerAngles.z, 0f);
+			fIdleRotation_CurrentTime = 0f;
+			bIdleRotation_IsComingToAHalt = true;
+			bIdleRotation_SmoothTransition = false;
+			//Debug.Log("mTransform.rotation.eulerAngles: " + mTransform.rotation.eulerAngles + ", fIdleRotation_CurrentTotalRotation: " + fIdleRotation_CurrentTotalRotation);
+			return true;
+		}
+		else 
+		{
+			fIdleRotation_CurrentTime = fIdleRotation_CurrentTotalTime;
+			return true;
+		}
 	}
 	#endregion
 
