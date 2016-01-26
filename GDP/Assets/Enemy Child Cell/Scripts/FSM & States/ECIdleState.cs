@@ -38,6 +38,8 @@ public class ECIdleState : IECState
 	private float fDirectionalWeight;
 	private float fSeperationalWeight;
 	private static float fTimerLimit;
+	
+	private static Vector3 ShrinkRate;
 
 	//An enumeration for the type of idling the enemy child cell is having
 	private enum IdleStatus {None, Seperate, Cohesion};
@@ -71,6 +73,8 @@ public class ECIdleState : IECState
 		m_ecFSM.rigidbody2D.drag = 0f;
 		IdleCount = 0;
 		CurrentIdleState = IdleStatus.None;
+		
+		ShrinkRate = new Vector3(0.025f,-0.025f,0f);
 	}
 
 	public override void Enter()
@@ -116,6 +120,16 @@ public class ECIdleState : IECState
 			ResetAllHitWall();
 			CurrentIdleState = IdleStatus.Cohesion;
 			fPreviousStatusTime = Time.time;
+		}
+		
+		if(CurrentIdleState == IdleStatus.Seperate && Time.time - fPreviousStatusTime > 0.75f * fTimerLimit && m_Child.transform.localScale.y > 0.5f)
+		{
+			m_Child.transform.localScale += ShrinkRate;
+		}
+		
+		if(CurrentIdleState == IdleStatus.Cohesion && m_Child.transform.localScale != Vector3.one && m_Child.transform.localScale.y < 1f)
+		{
+			m_Child.transform.localScale -= ShrinkRate;
 		}
 	}
 	
