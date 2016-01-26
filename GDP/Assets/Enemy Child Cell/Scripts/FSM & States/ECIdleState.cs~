@@ -181,6 +181,7 @@ public class ECIdleState : IECState
 	public override void Exit()
 	{
 		//Return that specific seperation direction back to the direction database so it can be used for another child cell
+		m_Child.transform.localScale = Vector3.one;
 		DirectionDatabase.Instance.Return(SeperateDirection);
 		IdleCount--;
 		ECTracker.s_Instance.IdleCells.Remove(m_ecFSM);

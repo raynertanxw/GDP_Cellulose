@@ -292,10 +292,10 @@ public class PositionQuery
 	public Formation GetDefensiveFormation()
 	{
 		// Factors - Types of Attack, Amount of Defenders, Attack Source
-		int QCDesirability = 0;
-		int RCDesirability = 0;
-		int TurtleDesirability = 0;
-		int LadderDesirability = 0;
+		float QCDesirability = 0;
+		float RCDesirability = 0;
+		float TurtleDesirability = 0;
+		float LadderDesirability = 0;
 		
 		PlayerAttackMode AttackToDefendAgainst = GetMostSignificantAttack();
 		int DefendingCellsCount = ECTracker.Instance.DefendCells.Count;
@@ -381,7 +381,12 @@ public class PositionQuery
 			}
 		}
 		
-		int HighestDesirability = Mathf.Max(QCDesirability,Mathf.Max(RCDesirability,Mathf.Max(TurtleDesirability,LadderDesirability)));
+		QCDesirability *= Settings.s_fEnemyDefendQCWeight;
+		RCDesirability *= Settings.s_fEnemyDefendRCWeight;
+		TurtleDesirability *= Settings.s_fEnemyDefendTurtleWeight;
+		LadderDesirability *= Settings.s_fEnemyDefendLadderWeight;
+		
+		float HighestDesirability = Mathf.Max(QCDesirability,Mathf.Max(RCDesirability,Mathf.Max(TurtleDesirability,LadderDesirability)));
 		if(HighestDesirability == QCDesirability){return Formation.QuickCircle;}
 		if(HighestDesirability == RCDesirability){return Formation.ReverseCircular;}
 		if(HighestDesirability == TurtleDesirability){return Formation.Turtle;}
@@ -392,9 +397,9 @@ public class PositionQuery
 
 	private PlayerAttackMode GetMostSignificantAttack()
 	{
-		int BurstCount = 0;
-		int SwarmCount = 0;
-		int ScatterCount = 0;
+		float BurstCount = 0;
+		float SwarmCount = 0;
+		float ScatterCount = 0;
 		
 		for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
 		{
@@ -415,7 +420,11 @@ public class PositionQuery
 			}
 		}
 		
-		int HighestCount = Mathf.Max(BurstCount, Mathf.Max(SwarmCount,ScatterCount));
+		BurstCount *= Settings.s_fEnemyDefendBurstSignificancy;
+		SwarmCount *= Settings.s_fEnemyDefendSwarmSignificancy;
+		ScatterCount *= Settings.s_fEnemyDefendScatterSignificancy;
+		
+		float HighestCount = Mathf.Max(BurstCount, Mathf.Max(SwarmCount,ScatterCount));
 		if(HighestCount == BurstCount){return PlayerAttackMode.BurstShot;}
 		if(HighestCount == SwarmCount){return PlayerAttackMode.SwarmTarget;}
 		if(HighestCount == ScatterCount){return PlayerAttackMode.ScatterShot;}
