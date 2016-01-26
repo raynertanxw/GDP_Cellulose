@@ -78,8 +78,8 @@ public class PC_IdleState : IPCState
     #if UNITY_EDITOR    
     public override void ExecuteOnDrawGizmos()
     {
-        m_pcFSM.fGizmoCohesionRadius = s_fCohesionRadius;
-        m_pcFSM.fGizmoSeparationRadius = s_fSeparationRadius;
+//        m_pcFSM.fGizmoCohesionRadius = s_fCohesionRadius;
+//        m_pcFSM.fGizmoSeparationRadius = s_fSeparationRadius;
     }
     #endif
 

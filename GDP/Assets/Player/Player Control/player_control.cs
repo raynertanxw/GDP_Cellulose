@@ -397,8 +397,6 @@ public class player_control : MonoBehaviour
 					formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
 					formationCells[fcIndex].attackMode = PlayerAttackMode.BurstShot;
 
-					// TEMP FORCED PLACEMENT OF LEADER.
-					formationCells[0].rigidbody2D.MovePosition(selectedNode.transform.position + new Vector3(0f, 3f, 0f));
 					formationCells[fcIndex].m_assignedNode.SendChildToAttack(i);
 					formationCells[fcIndex].DeferredChangeState(PCState.ChargeMain);
 
