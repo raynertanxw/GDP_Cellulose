@@ -139,12 +139,12 @@ public class EMAnimation : MonoBehaviour
 	{
 		if (EnemyMainFSM.Instance() != null)
 		{
-			if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health))) && 
+			if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)EnemyMainFSM.Instance().Health, 1.5f)))) && 
 			    !bIsExpanding &&
 			    !bIsShrinking &&
 			    EnemyMainFSM.Instance().CurrentStateIndex != EMState.Die)
 			{
-				currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
+				currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)EnemyMainFSM.Instance().Health, 1.5f))));
 				transform.localScale = (Vector3)currentScale;
 			}
 		}
