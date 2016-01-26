@@ -217,13 +217,13 @@ public class EMController : MonoBehaviour
 		bPushed = true;
 
 		// Push forward first
-		if (EMHelper.Instance ().Position.y > EMHelper.Instance ().MinY && !bStunned)
+		if (EMHelper.Instance ().Position.y > Settings.fEnemyMainMinY && !bStunned)
 			thisRB.velocity = pushForwardVel;
 
 		// Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);
         // Temporary velocity for enemy main cell when being pushed
-		if (EMHelper.Instance ().Position.y > EMHelper.Instance ().MinY && !bStunned)
+		if (EMHelper.Instance ().Position.y > Settings.fEnemyMainMinY && !bStunned)
 			thisRB.velocity = pushBackVel;
         // Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);
@@ -436,24 +436,42 @@ public class EMController : MonoBehaviour
 	#region Change aggressiveness due to the existence of squad captain and its child cells
 	void UpdateAggressiveness ()
 	{
-		// Reset Aggressiveness factor (Captain)
-        if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0) {
+		// Update Aggressiveness factor (Distance)
+		m_EMFSM.AggressivenessDistance = -5f * EMHelper.Instance().MinToMaxYRatio;
+		// Reset Aggressiveness factor (Enemy Child)
+		if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AggressivenessEnemyChild == 0f) {
+			float fAggressivenessEnemyChild = 10f / Mathf.Sqrt((float)m_EMFSM.AvailableChildNum);
+			if (fAggressivenessEnemyChild > 4f)
+				fAggressivenessEnemyChild = 4f;
+			m_EMFSM.AggressivenessEnemyChild = fAggressivenessEnemyChild;
+		}
+		else if (m_EMFSM.AvailableChildNum == 0 && m_EMFSM.AggressivenessEnemyChild > 0f) {
+			m_EMFSM.AggressivenessEnemyChild = 0f;
+		}
+		// Reset Aggressiveness factor (Squad Captain)
+        if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0f) {
 			m_EMFSM.AggressivenessSquadCap = Random.Range (1f, 3f);
         }
-        else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > m_EMFSM.InitialAggressiveness) {
+        else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > 0f) {
 			m_EMFSM.AggressivenessSquadCap = 0f;
 		}
-		// Reset Aggressiveness factor (Child)
-        if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != 10f / Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount())) {
-            float fAggressivenessSquadChild = 10f / Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount());
+		// Reset Aggressiveness factor (Squad Child)
+		if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != Mathf.Sqrt(Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount())) * 2.0f) {
+			float fAggressivenessSquadChild = Mathf.Sqrt(Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount())) * 2.0f;
 			if (fAggressivenessSquadChild > 4f)
 				fAggressivenessSquadChild = 4f;
 			m_EMFSM.AggressivenessSquadChild = fAggressivenessSquadChild;
 		}
+		else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild > 0f)
+			m_EMFSM.AggressivenessSquadChild = 0f;
 
 		// Update Aggressiveness
-		if (m_EMFSM.CurrentAggressiveness != m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild)
-			m_EMFSM.CurrentAggressiveness = m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild;
+		if (m_EMFSM.CurrentAggressiveness != m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessDistance + m_EMFSM.AggressivenessEnemyChild + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild)
+			m_EMFSM.CurrentAggressiveness = m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessDistance + m_EMFSM.AggressivenessEnemyChild + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild;
+
+		// Make sure aggressiveness is not below 1
+		if (m_EMFSM.CurrentAggressiveness < 1.0f)
+			m_EMFSM.CurrentAggressiveness = 1.0f;
 	}
 	#endregion
 

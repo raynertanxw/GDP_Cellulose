@@ -27,10 +27,6 @@ public class EMHelper : MonoBehaviour
 	#region Properties of the enemy main cell
 	private Vector2 position;
 	public Vector2 Position { get { return position; } set { position = value; } }
-	private float fMaxY;
-	public float MaxY { get { return fMaxY; } }
-	private float fMinY;
-	public float MinY { get { return fMinY; } }
 	private float fMinToMaxYRatio;
 	public float MinToMaxYRatio { get { return fMinToMaxYRatio; } }
 	private float fRadius;
@@ -71,10 +67,6 @@ public class EMHelper : MonoBehaviour
 		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		position = transform.position;
 
-		// Position limitation
-		fMaxY = 9.6f;
-		fMinY = -1.5f;
-
 		// Find gameObject
 		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();
 
@@ -107,8 +99,8 @@ public class EMHelper : MonoBehaviour
 		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
 			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Update the ratio of y distance
-		if (fMinToMaxYRatio != (transform.position.y - fMinY) / (fMaxY - fMinY))
-			fMinToMaxYRatio = (transform.position.y - fMinY) / (fMaxY - fMinY);
+		if (fMinToMaxYRatio != (transform.position.y - Settings.fEnemyMainMinY) / (Settings.fEnemyMainMaxY - Settings.fEnemyMainMinY))
+			fMinToMaxYRatio = (transform.position.y - Settings.fEnemyMainMinY) / (Settings.fEnemyMainMaxY - Settings.fEnemyMainMinY);
 		// Update camera border
 		CameraLimit ();
 		// Make sure the enemy main cell do not go outside the screen
@@ -168,8 +160,8 @@ public class EMHelper : MonoBehaviour
 			EMController.Instance ().ChangeDirection ();
 		}
 
-		if (transform.position.y < fMinY)
-			transform.position = new Vector2 (transform.position.x, fMinY);
+		if (transform.position.y < Settings.fEnemyMainMinY)
+			transform.position = new Vector2 (transform.position.x, Settings.fEnemyMainMinY);
 	}
     // Update width of enemy main cell
 	void WidthUpdate ()

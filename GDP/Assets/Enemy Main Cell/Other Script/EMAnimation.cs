@@ -330,7 +330,7 @@ public class EMAnimation : MonoBehaviour
 			fBlinkElapsedTime += Time.deltaTime;
 			if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.AggressiveAttack)
 			{
-				if(fBlinkElapsedTime >= 1.25f / Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness))
+				if(fBlinkElapsedTime >= 0.8f / Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness)))
 				{
 					if (thisRend.material.color != aggressiveColor)
 					{
@@ -344,7 +344,7 @@ public class EMAnimation : MonoBehaviour
 			}
 			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.CautiousAttack)
 			{
-				if(fBlinkElapsedTime >= 2f / Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness))
+				if(fBlinkElapsedTime >= 1.2f / Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness)))
 				{
 					if (thisRend.material.color != cautiousColor)
 					{
@@ -358,7 +358,7 @@ public class EMAnimation : MonoBehaviour
 			}
 			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Landmine)
 			{
-				if(fBlinkElapsedTime >= 2f / Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness))
+				if(fBlinkElapsedTime >= 1.2f / Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().CurrentAggressiveness)))
 				{
 					if (thisRend.material.color != landmineColor)
 					{

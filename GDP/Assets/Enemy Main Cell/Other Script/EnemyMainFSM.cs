@@ -78,6 +78,12 @@ public class EnemyMainFSM : MonoBehaviour
 	[Tooltip("Current Aggressiveness of the Enemy Main Cell")]
 	[SerializeField] private float nCurrentAggressiveness;
 	public float CurrentAggressiveness { get { return nCurrentAggressiveness; } set { nCurrentAggressiveness = value; } }
+	[Tooltip("Current Distance Aggressiveness of the Enemy Main Cell")]
+	[SerializeField] private float nAggressivenessDistance;
+	public float AggressivenessDistance { get { return nAggressivenessDistance; } set { nAggressivenessDistance = value; } }
+	[Tooltip("Current Enemy Child Aggressiveness of the Enemy Main Cell")]
+	[SerializeField] private float nAggressivenessEnemyChild;
+	public float AggressivenessEnemyChild { get { return nAggressivenessEnemyChild; } set { nAggressivenessEnemyChild = value; } }
 	[Tooltip("Current Squad Captain Aggressiveness of the Enemy Main Cell")]
 	[SerializeField] private float nAggressivenessSquadCap;
 	public float AggressivenessSquadCap { get { return nAggressivenessSquadCap; } set { nAggressivenessSquadCap = value; } }
