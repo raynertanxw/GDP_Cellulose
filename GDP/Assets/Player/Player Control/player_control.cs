@@ -40,7 +40,7 @@ public class player_control : MonoBehaviour
 
 		s_nResources = Settings.s_nPlayerInitialResourceCount;
 
-		m_SquadCaptainNode = GameObject.Find("Node_Captain").transform;
+		m_SquadCaptainNode = GameObject.Find("Node_Captain_SpawnPos").transform;
 		spwnCptBtnGO = transform.GetChild(3).GetChild(1).gameObject;
 		spawnCtrlCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
 		leftNodeCanvasGrp = transform.GetChild(4).GetComponent<CanvasGroup>();
