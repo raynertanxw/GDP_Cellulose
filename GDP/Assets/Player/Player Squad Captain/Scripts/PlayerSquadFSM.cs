@@ -218,7 +218,7 @@ public class PlayerSquadFSM : MonoBehaviour
 		{
 			Advance(PSState.Dead);
 			MainCamera.CameraShake(5, 0.7f);
-			mAnimate.StopIdleRotation(false)
+			mAnimate.StopIdleRotation(false);
 			return true;
 		}
 		else
