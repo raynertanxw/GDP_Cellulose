@@ -87,7 +87,7 @@ public class FormationDatabase
 			int CircleCount = 1;
 			
 			float AngleInterval = 360f/CellsPerCircle;
-			float CurrentAngle = 0f;
+			float CurrentAngle = 180f;
 			float GapBetweenCircle = 2.5f;
 			
 			Vector2 TargetDirection = new Vector2(Mathf.Cos(CurrentAngle * Mathf.Deg2Rad), Mathf.Sin(CurrentAngle * Mathf.Deg2Rad));
@@ -104,6 +104,8 @@ public class FormationDatabase
 				//ebug.Log("Position " + FIndex + ": " + CurrentFormationPosition);
 				
 				CurrentAngle += AngleInterval;
+				if(CurrentAngle >= 360f){CurrentAngle -= 360.0f;}
+				
 				CircleCellCount++;
 				
 				if(CircleCellCount > 20)

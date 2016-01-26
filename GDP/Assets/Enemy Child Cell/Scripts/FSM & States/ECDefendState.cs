@@ -131,10 +131,18 @@ public class ECDefendState : IECState {
 		//If there are attackers to the enemy main cell, seek to the closest attacking player child cells
 		if(!bKillClosestAttacker && !IsThereNoAttackers() && IsPlayerChildPassingBy())
 		{
-			bKillClosestAttacker = true;
+			m_ecFSM.m_ChargeTarget = GetClosestAttacker();
+			/*if(HasTargetGoOffRange(m_ecFSM.m_ChargeTarget))
+			{
+				bKillClosestAttacker = false;
+				m_ecFSM.m_ChargeTarget = null;
+				return;
+			}*/
+		
 			m_ecFSM.rigidbody2D.drag = 2.3f;
 			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
-			m_ecFSM.m_ChargeTarget = GetClosestAttacker();
+			
+			bKillClosestAttacker = true;
 			//Utility.CheckEmpty<GameObject>(m_ecFSM.m_ChargeTarget);
 			if(m_ecFSM.m_ChargeTarget == null)
 			{
@@ -150,7 +158,10 @@ public class ECDefendState : IECState {
 				m_ecFSM.m_ChargeTarget = null;
 				return;
 			}
+			
 			Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.m_ChargeTarget,26f);
+			
+			m_ecFSM.RotateToHeading();
 		}
 		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
 		else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
@@ -334,15 +345,14 @@ public class ECDefendState : IECState {
 			}
 		}
 		return true;
+	}
 	
-		/*List<EnemyChildFSM> DefendingCells = ECTracker.s_Instance.DefendCells;
-		for(int i = 0; i < DefendingCells.Count; i++)
+	private bool HasTargetGoOffRange(GameObject _Target)
+	{
+		if(_Target.transform.position.y - m_Main.transform.position.y > 3f)
 		{
-			if(!HasCellReachTargetPos(m_Child.transform.position,m_Main.transform.position))
-			{
-				return false;
-			}
+			return true;
 		}
-		return true;*/
+		return false;
 	}
 }

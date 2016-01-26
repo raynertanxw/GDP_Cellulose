@@ -25,7 +25,7 @@ public static class SteeringBehavior
 		}
 		
 		//If the target is not directly ahead of the agent, the agent will need to predict the direction to move towards based of the target's velocity
-		float LookAheadTime = 0.45f;//0.5f;
+		float LookAheadTime = 0.5f;//0.55f;//0.5f;
 		
 		Vector2 Adjustment = (_Target.GetComponent<Rigidbody2D>().velocity * LookAheadTime);
 		Vector2 TargetPos = new Vector2(_Target.transform.position.x + Adjustment.x, _Target.transform.position.y + Adjustment.y);

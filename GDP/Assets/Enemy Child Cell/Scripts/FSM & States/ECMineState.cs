@@ -253,8 +253,8 @@ public class ECMineState : IECState {
 		if(!bExploded)
 		{
 			MainCamera.CameraShake();
-			Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
-			Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
+			//Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
+			//Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());//ExplodeDestroy();
 		}
 
