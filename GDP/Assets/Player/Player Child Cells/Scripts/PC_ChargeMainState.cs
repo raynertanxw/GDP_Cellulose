@@ -22,6 +22,7 @@ public class PC_ChargeMainState : IPCState
 		}
 
 		m_bIsLeaderAlive = true;
+		m_pcFSM.m_bIsInFormation = false;
 	}
 	
 	public override void Execute()
@@ -40,6 +41,7 @@ public class PC_ChargeMainState : IPCState
 	{
 		m_bIsLeader = false;
 		m_bIsLeaderAlive = false;
+		m_pcFSM.m_bIsInFormation = false;
 		m_nFormationPos = -1;
 		m_pcFSM.m_formationCells = null;
 	}
@@ -48,6 +50,20 @@ public class PC_ChargeMainState : IPCState
     {
 		if (m_bIsLeader == true)
 		{
+			if (m_pcFSM.m_bIsInFormation == false)
+			{
+				LeaderMoveToFormationPos();
+
+				if ((LeaderFormationPos() - m_pcFSM.rigidbody2D.position).sqrMagnitude < s_fSqrFormationTolerence)
+					m_pcFSM.m_bIsInFormation = true;
+				return;
+			}
+			else if (AllOtherCellsInFormation() == false)
+			{
+				LeaderMoveToFormationPos();
+				return;
+			}
+
 			// Get the cohesion, alignment, and separation components of the flocking.
 			Vector2 acceleration = TargetPull() * targetPullWeight;
 			acceleration += Avoidance() * avoidanceWeight;
@@ -56,7 +72,10 @@ public class PC_ChargeMainState : IPCState
 			
 			// Add the force to all the cell rigidbodies in formation.
 			for (int i = 0; i < m_pcFSM.m_formationCells.Length; i++)
+			{
 				m_pcFSM.m_formationCells[i].rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+				m_pcFSM.m_formationCells[i].rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.m_formationCells[i].rigidbody2D.velocity, maxVelocity);
+			}
 		}
 		else if (m_bIsLeaderAlive == false)
 		{
@@ -67,14 +86,18 @@ public class PC_ChargeMainState : IPCState
 			acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
 
 			m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+			m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, maxVelocity);
 		}
 		else if (m_pcFSM.m_formationCells[0].GetCurrentState() == PCState.Dead)
 		{
 			m_bIsLeaderAlive = false;
 		}
-		else
+		else if (m_pcFSM.m_bIsInFormation == false)
 		{
-			m_pcFSM.rigidbody2D.MovePosition(PosBehindLeader());
+			MoveToFormationPos();
+
+			if ((PosBehindLeader() - m_pcFSM.rigidbody2D.position).sqrMagnitude < sqrFormationTolerence)
+				m_pcFSM.m_bIsInFormation = true;
 		}
 
 		FaceTowardsHeading();
@@ -83,7 +106,8 @@ public class PC_ChargeMainState : IPCState
     #if UNITY_EDITOR
     public override void ExecuteOnDrawGizmos()
     {
-        
+//		Gizmos.color = Color.cyan;
+//		Gizmos.DrawLine(m_pcFSM.transform.position, m_pcFSM.transform.position + (Vector3)FormationPosPull());
     }
     #endif
 
@@ -102,16 +126,27 @@ public class PC_ChargeMainState : IPCState
 	#region Movement and Physics
 	private static float s_fAvoidRadius = 5.0f;
 	private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
-	private static float s_fMaxAcceleration = 1000f;
+	private static float s_fMaxAcceleration = 50000f;
+	private static float s_fMaxVelocity = 0.5f;
+	private static float s_fFormationAcceleration = 10000f;
+	private static float s_fFormationVelocity = 0.5f;
 	private static float s_fFormationDist = 0.5f;
+	private static float s_fFormationTolerence = 0.05f;
+	private static float s_fSqrFormationTolerence = Mathf.Pow(s_fFormationTolerence, 2);
 	// Weights
 	private static float s_fTargetPullWeight = 5000;
+	private static float s_fFormationPullWeight = 5000;
 	private static float s_fAvoidanceWeight = 10;
 
 	// Getters for the various values.
 	public static float sqrAvoidRadius { get { return s_fSqrAvoidRadius; } }
 	public static float maxAcceleration { get { return s_fMaxAcceleration; } }
+	public static float maxVelocity { get { return s_fMaxVelocity; } }
+	public static float formationAcceleration { get { return s_fFormationAcceleration; } }
+	public static float formationVelocity { get { return s_fFormationVelocity; } }
+	public static float sqrFormationTolerence { get { return s_fSqrFormationTolerence; } }
 	public static float targetPullWeight { get { return s_fTargetPullWeight; } }
+	public static float formationPullWeight { get { return s_fFormationPullWeight; } }
 	public static float avoidanceWeight { get { return s_fAvoidanceWeight; } }
 
 	// Flocking related Helper functions
@@ -176,6 +211,44 @@ public class PC_ChargeMainState : IPCState
 
 		return posVector;
 	}
+
+	private Vector2 FormationPosPull()
+	{
+		Vector2 sumVector = PosBehindLeader();
+		sumVector -= m_pcFSM.rigidbody2D.position;
+
+		return sumVector;
+	}
+
+	private void MoveToFormationPos()
+	{
+		Vector2 acceleration = FormationPosPull() * targetPullWeight;
+		acceleration = Vector2.ClampMagnitude(acceleration, formationAcceleration);
+		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.deltaTime);
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, formationVelocity);
+	}
+
+	private Vector2 LeaderFormationPos()
+	{
+		Vector2 posVector = m_pcFSM.m_assignedNode.transform.position + new Vector3(0f, 1.5f, 0f);
+		return posVector;
+	}
+
+	private Vector2 LeaderFormationPosPull()
+	{
+		Vector2 sumVector = LeaderFormationPos();
+		sumVector -= m_pcFSM.rigidbody2D.position;
+
+		return sumVector;
+	}
+
+	private void LeaderMoveToFormationPos()
+	{
+		Vector2 acceleration = LeaderFormationPosPull() * targetPullWeight;
+		acceleration = Vector2.ClampMagnitude(acceleration, formationAcceleration);
+		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, formationVelocity);
+	}
 	#endregion
 
 	
@@ -186,6 +259,20 @@ public class PC_ChargeMainState : IPCState
 			return true;
 		else
 			return false;
+	}
+
+	private bool AllOtherCellsInFormation()
+	{
+		for (int i = 1; i < m_pcFSM.m_formationCells.Length; i++)
+		{
+			if (m_pcFSM.m_formationCells[i].GetCurrentState() != PCState.Dead)
+			{
+				if (m_pcFSM.m_bIsInFormation == false)
+					return false;
+			}
+		}
+
+		return true;
 	}
 	#endregion
 }

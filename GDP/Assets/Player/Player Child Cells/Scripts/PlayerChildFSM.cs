@@ -47,6 +47,7 @@ public class PlayerChildFSM : MonoBehaviour
 	public bool m_bHasAwaitingDeferredStateChange = false;
 	public bool m_bSacrificeToSquadCpt = false;
 	public PlayerChildFSM[] m_formationCells;
+	public bool m_bIsInFormation;
     public PlayerAttackMode attackMode;
 	private PCState m_deferredState;
 	public EnemyChildFSM m_currentEnemyCellTarget;
@@ -199,15 +200,15 @@ public class PlayerChildFSM : MonoBehaviour
     public float fGizmoCohesionRadius = 0f;
     public float fGizmoSeparationRadius = 0f;
 
-//    void OnDrawGizmos()
-//    {
+    void OnDrawGizmos()
+    {
 //        m_currentState.ExecuteOnDrawGizmos();
 //
 //        Gizmos.color = Color.green;
 //        Gizmos.DrawWireSphere(transform.position, fGizmoCohesionRadius);
 //        Gizmos.color = Color.red;
 //        Gizmos.DrawWireSphere(transform.position, fGizmoSeparationRadius);
-//    }
+    }
     #endif
 
 
