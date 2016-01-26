@@ -131,7 +131,7 @@ public class EMController : MonoBehaviour
 		thisRB.velocity = velocity;
 		pushBackVel = new Vector2 (0.0f, -5.0f);
 		pushForwardVel = new Vector2 (0.0f, 1.0f);
-		stunVel = new Vector2 (0.0f, -2.0f);
+		stunVel = new Vector2 (0.0f, -0.5f);
 		// Damage
 		nDamageNum = 0;
 		// State
@@ -170,7 +170,7 @@ public class EMController : MonoBehaviour
 			StartCoroutine(Stun ());
 		}
 		// Keep updating velocity when stunned
-		if (bStunned && velocity != stunVel)
+		if (bStunned)
 			ResetVelocity ();
 		// Update Aggresiveness
 		UpdateAggressiveness ();
@@ -252,7 +252,6 @@ public class EMController : MonoBehaviour
 		ResetVelocity ();
         // Wait(being stunned)pushBackVel for seconds
 		yield return new WaitForSeconds ((float)nDamageNum);
-		Debug.Log (thisRB.velocity);
         // Set back the stunned status
 		bStunned = false;
 		float stunCoolDown = (float)nDamageNum * 1.5f;

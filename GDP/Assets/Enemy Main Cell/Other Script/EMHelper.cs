@@ -73,7 +73,7 @@ public class EMHelper : MonoBehaviour
 
 		// Position limitation
 		fMaxY = 9.6f;
-		fMinY = -2.0f;
+		fMinY = -1.5f;
 
 		// Find gameObject
 		ECPool = GameObject.Find("Enemy Child Cell Pool").GetComponent<ECPoolManager>();

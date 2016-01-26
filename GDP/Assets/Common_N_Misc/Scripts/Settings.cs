@@ -18,4 +18,11 @@ public class Settings : MonoBehaviour
 	public const int s_nPlayerActionSwarmTargetChildCost = 10;
 	public const int s_nPlayerActionScatterShotChildCost = 20;
 	#endregion
+
+	#region Enemy Main Level Variables
+	public const float fEnemyMainMaxY = 9.6f;
+	public const float fEnemyMainMinY = -1.5f;
+
+	public const int nEnemyMainInitialHealthLV1 = 50;
+	#endregion
 }
