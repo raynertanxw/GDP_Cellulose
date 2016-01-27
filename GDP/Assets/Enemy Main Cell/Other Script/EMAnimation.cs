@@ -72,6 +72,8 @@ public class EMAnimation : MonoBehaviour
 	public Color LandmineColor { get { return landmineColor; } }
 	private Color defendColor;
 	public Color DefendColor { get { return defendColor; } }
+	private Color stunColor;
+	public Color StunColor { get { return stunColor; } }
 	#endregion
 
 	void Start () 
@@ -108,6 +110,7 @@ public class EMAnimation : MonoBehaviour
 		cautiousColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 		landmineColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 		defendColor = Color.yellow;
+		stunColor = new Vector4 (0.5f, 0.5f, 0.5f, 1f);
 	}
 
 	void Update () 
@@ -328,6 +331,7 @@ public class EMAnimation : MonoBehaviour
 		if (!bCanBlink && fBlinkElapsedTime != 0.0f)
 			fBlinkElapsedTime = 0.0f;
 
+		// Update blink animation
 		if (bCanBlink) 
 		{
 			fBlinkElapsedTime += Time.deltaTime;
@@ -375,23 +379,25 @@ public class EMAnimation : MonoBehaviour
 			}
 			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Defend)
 			{
-				// When there are more player cells than enemy cells
-				if (EnemyMainFSM.Instance().AvailableChildNum < PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount ())
+				if(fBlinkElapsedTime >= 2.5f / 
+				   (Mathf.Sqrt ((PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount () - EnemyMainFSM.Instance().AvailableChildNum) / 2.0f) / 10.0f))
 				{
-					if(fBlinkElapsedTime >= 2.5f / 
-					   (Mathf.Sqrt ((PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount () - EnemyMainFSM.Instance().AvailableChildNum) / 2.0f) / 10.0f))
+					if (thisRend.material.color != defendColor)
 					{
-						if (thisRend.material.color != defendColor)
-						{
-							thisRend.material.color = defendColor;
-						}
-						else 
-							thisRend.material.color = defaultColor;
-
-						fBlinkElapsedTime = 0.0f;
+						thisRend.material.color = defendColor;
 					}
+					else 
+						thisRend.material.color = defaultColor;
+				
+					fBlinkElapsedTime = 0.0f;
 				}
 			}
+		}
+		// Update color in stun state
+		else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Stunned)
+		{
+			if (thisRend.material.color != stunColor)
+				thisRend.material.color = stunColor;
 		}
 		else
 			thisRend.material.color = defaultColor;
@@ -408,6 +414,8 @@ public class EMAnimation : MonoBehaviour
 				halo.GetComponent<Renderer> ().material.color = Color.red;
 			else if (thisRend.material.color == cautiousColor || thisRend.material.color == landmineColor)
 				halo.GetComponent<Renderer> ().material.color = Color.red * 0.8f;
+			else if (thisRend.material.color == stunColor)
+				halo.GetComponent<Renderer> ().material.color = stunColor;
 		}
 		else
 			halo.GetComponent<Renderer> ().enabled = false;

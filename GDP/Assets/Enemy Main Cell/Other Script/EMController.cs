@@ -404,7 +404,7 @@ public class EMController : MonoBehaviour
 			yield return new WaitForSeconds (time);
 			bCanChangeHori = true;
 		}
-		else 
+		else if (m_EMFSM.CurrentStateIndex == EMState.Landmine)
 		{
 			bCanChangeHori = false;
 			int direction = Random.Range (0, 2);
@@ -437,10 +437,10 @@ public class EMController : MonoBehaviour
 	void UpdateAggressiveness ()
 	{
 		// Update Aggressiveness factor (Distance)
-		m_EMFSM.AggressivenessDistance = -5f * EMHelper.Instance().MinToMaxYRatio;
+		m_EMFSM.AggressivenessDistance = EMHelper.Instance().MinToMaxYRatio + 1.0f;
 		// Reset Aggressiveness factor (Enemy Child)
-		if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AggressivenessEnemyChild == 0f) {
-			float fAggressivenessEnemyChild = 10f / Mathf.Sqrt((float)m_EMFSM.AvailableChildNum);
+		if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AggressivenessEnemyChild != Mathf.Sqrt(Mathf.Sqrt((float)m_EMFSM.AvailableChildNum))) {
+			float fAggressivenessEnemyChild = Mathf.Sqrt(Mathf.Sqrt((float)m_EMFSM.AvailableChildNum));
 			if (fAggressivenessEnemyChild > 4f)
 				fAggressivenessEnemyChild = 4f;
 			m_EMFSM.AggressivenessEnemyChild = fAggressivenessEnemyChild;
@@ -466,8 +466,8 @@ public class EMController : MonoBehaviour
 			m_EMFSM.AggressivenessSquadChild = 0f;
 
 		// Update Aggressiveness
-		if (m_EMFSM.CurrentAggressiveness != m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessDistance + m_EMFSM.AggressivenessEnemyChild + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild)
-			m_EMFSM.CurrentAggressiveness = m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessDistance + m_EMFSM.AggressivenessEnemyChild + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild;
+		if (m_EMFSM.CurrentAggressiveness != (m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessEnemyChild + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild) / m_EMFSM.AggressivenessDistance)
+			m_EMFSM.CurrentAggressiveness = (m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessEnemyChild + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild) / m_EMFSM.AggressivenessDistance;
 
 		// Make sure aggressiveness is not below 1
 		if (m_EMFSM.CurrentAggressiveness < 1.0f)
