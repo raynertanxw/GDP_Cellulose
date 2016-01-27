@@ -16,6 +16,7 @@ public class EMAnimation : MonoBehaviour
 
 	private Rigidbody2D thisRB;
 	private Renderer thisRend;
+	public GameObject halo;
 
 	[SerializeField]
 	private bool bIsExpanding;
@@ -128,6 +129,8 @@ public class EMAnimation : MonoBehaviour
 		ExpandAnimation ();
 		// Color blink animation of enemy main cell
 		ColorBlink ();
+		//
+		HaloColorUpdate ();
 		// Die animation called in the Die state
 		DieAnimation ();
 		// Expand animation in Landmine state
@@ -392,6 +395,20 @@ public class EMAnimation : MonoBehaviour
 		}
 		else
 			thisRend.material.color = defaultColor;
+	}
+	private void HaloColorUpdate ()
+	{
+		if (thisRend.material.color != defaultColor) 
+		{
+			if (!halo.GetComponent<Renderer> ().enabled)
+				halo.GetComponent<Renderer> ().enabled = true;
+			if (thisRend.material.color == defendColor)
+				halo.GetComponent<Renderer> ().material.color = Color.yellow;
+			else
+				halo.GetComponent<Renderer> ().material.color = Color.red;
+		}
+		else
+			halo.GetComponent<Renderer> ().enabled = false;
 	}
 	// Rotate faster in AggresiveAttack and CautiousAttack states
 	private void FasterRotation ()
