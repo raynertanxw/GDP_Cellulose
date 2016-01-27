@@ -404,8 +404,10 @@ public class EMAnimation : MonoBehaviour
 				halo.GetComponent<Renderer> ().enabled = true;
 			if (thisRend.material.color == defendColor)
 				halo.GetComponent<Renderer> ().material.color = Color.yellow;
-			else
+			else if (thisRend.material.color == aggressiveColor)
 				halo.GetComponent<Renderer> ().material.color = Color.red;
+			else if (thisRend.material.color == cautiousColor || thisRend.material.color == landmineColor)
+				halo.GetComponent<Renderer> ().material.color = Color.red * 0.8f;
 		}
 		else
 			halo.GetComponent<Renderer> ().enabled = false;
