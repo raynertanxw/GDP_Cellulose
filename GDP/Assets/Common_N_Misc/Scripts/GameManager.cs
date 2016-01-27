@@ -16,6 +16,9 @@ public class GameManager : MonoBehaviour
 		else
 			Destroy(this.gameObject);
 
+		// Load the level data.
+		Level_Manager.LoadLevel(0); // Test Level
+
 		bPlayerWon = false;
 		bGameIsOver = false;
 	}
@@ -60,7 +63,9 @@ public class GameManager : MonoBehaviour
 		EndGamePanel.Instance.SetEndGamePanelVisibility(true);
 	}
 
+	#region XML Readeer
 
+	#endregion
 
 
 
