@@ -74,6 +74,8 @@ public class EMAnimation : MonoBehaviour
 	public Color DefendColor { get { return defendColor; } }
 	private Color stunColor;
 	public Color StunColor { get { return stunColor; } }
+	private Color dieColor;
+	public Color DieColor { get { return dieColor; } }
 	#endregion
 
 	void Start () 
@@ -110,7 +112,8 @@ public class EMAnimation : MonoBehaviour
 		cautiousColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 		landmineColor = new Vector4 (1f, 0.5f, 0.5f, 1f);
 		defendColor = Color.yellow;
-		stunColor = new Vector4 (0.5f, 0.5f, 0.5f, 1f);
+		stunColor = new Vector4 (0.6f, 0.6f, 0.6f, 1f);
+		dieColor = new Vector4 (0.6f, 0.6f, 0.6f, 1f);
 	}
 
 	void Update () 
@@ -231,62 +234,58 @@ public class EMAnimation : MonoBehaviour
 	{
 		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Die) {
 
-			if (nDieAniPhase == 1 && transform.localScale.x > initialScale.x / 2f)
-			{
+			if (nDieAniPhase == 1 && transform.localScale.x > initialScale.x / 2f) {
 				bIsExpanding = false;
 				bIsShrinking = true;
 				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2f));
 				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2f));
-			}
-			else if (nDieAniPhase == 1)
+			} else if (nDieAniPhase == 1)
 				nDieAniPhase = 2;
 
-			if (nDieAniPhase == 2 && transform.localScale.x <= initialScale.x)
-			{
+			if (nDieAniPhase == 2 && transform.localScale.x <= initialScale.x) {
 				bIsExpanding = true;
 				bIsShrinking = false;
 				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x));
 				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y));
-			}
-			else if (nDieAniPhase == 2)
+			} else if (nDieAniPhase == 2)
 				nDieAniPhase = 3;
 
-			if (nDieAniPhase == 3 && transform.localScale.x > initialScale.x / 2.5f)
-			{
+			if (nDieAniPhase == 3 && transform.localScale.x > initialScale.x / 2.5f) {
 				bIsExpanding = false;
 				bIsShrinking = true;
 				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2f));
 				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2f));
-			}
-			else if (nDieAniPhase == 3)
+			} else if (nDieAniPhase == 3)
 				nDieAniPhase = 4;
 
-			if (nDieAniPhase == 4 && transform.localScale.x <= initialScale.x / 1.25f)
-			{
+			if (nDieAniPhase == 4 && transform.localScale.x <= initialScale.x / 1.25f) {
 				bIsExpanding = true;
 				bIsShrinking = false;
 				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x / 1.25f - currentScale.x));
 				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y / 1.25f - currentScale.y));
-			}
-			else if (nDieAniPhase == 4)
+			} else if (nDieAniPhase == 4)
 				nDieAniPhase = 5;
 
-			if (nDieAniPhase == 5 && transform.localScale.x > initialScale.x / 20f)
-			{
+			if (nDieAniPhase == 5 && transform.localScale.x > initialScale.x / 20f) {
 				bIsExpanding = false;
 				bIsShrinking = true;
 				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x / 3f));
 				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y / 3f));
-			}
-			else if (nDieAniPhase == 5)
-			{
+			} else if (nDieAniPhase == 5) {
 				nDieAniPhase = 0;							// Prevent the animation from showing again before the next death
 				EMHelper.Instance ().Visibility (false); 	// Make the enemy main cell invisible
 			}
 
 			transform.localScale = (Vector3)currentScale;
-		} else
-			nDieAniPhase = 1;								// Reset the animation phase after exit Die state
+		} else {
+			if (nDieAniPhase != 1)
+				nDieAniPhase = 1;								// Reset the animation phase after exit Die state
+		}
+
+		// Another set of code for color change
+		if (EnemyMainFSM.Instance ().CurrentStateIndex == EMState.Die) {
+			thisRend.material.color = dieColor * currentScale.x;
+		}
 	}
 	// Expand animation in Landmine state
 	private void LandmineAnimation ()
