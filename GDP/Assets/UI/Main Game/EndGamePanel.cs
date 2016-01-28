@@ -8,6 +8,8 @@ public class EndGamePanel : MonoBehaviour
 	public static EndGamePanel Instance { get { return s_Instance; } }
 
 	private CanvasGroup winCanvasGrp, loseCanvasGrp;
+	private Button winNextLevelBtn, winMenuBtn, loseRetryBtn, loseMenuBtn;
+	private float fButtonDisableTiming = 2.0f;
 
 	void Awake()
 	{
@@ -17,9 +19,14 @@ public class EndGamePanel : MonoBehaviour
 			Destroy(this.gameObject);
 
 		winCanvasGrp = transform.GetChild(0).GetComponent<CanvasGroup>();
+		winNextLevelBtn = transform.GetChild(0).GetChild(2).GetComponent<Button>();
+		winMenuBtn = transform.GetChild(0).GetChild(3).GetComponent<Button>();
 		loseCanvasGrp = transform.GetChild(1).GetComponent<CanvasGroup>();
+		loseRetryBtn = transform.GetChild(1).GetChild(3).GetComponent<Button>();
+		loseMenuBtn = transform.GetChild(1).GetChild(4).GetComponent<Button>();
 
 		SetEndGamePanelVisibility(false);
+		SetEndGameButtonsInteractable(false);
 	}
 
 	public void SetEndGamePanelVisibility(bool _visible)
@@ -38,6 +45,7 @@ public class EndGamePanel : MonoBehaviour
 			}
 
 			player_control.Instance.DeselectAllCtrls();
+			Invoke("EnableEndGameButtons", fButtonDisableTiming);
 		}
 		else
 		{
@@ -76,6 +84,19 @@ public class EndGamePanel : MonoBehaviour
 			loseCanvasGrp.blocksRaycasts = false;
 			loseCanvasGrp.alpha = 0f;
 		}
+	}
+
+	private void SetEndGameButtonsInteractable(bool _interactable)
+	{
+		winNextLevelBtn.interactable = _interactable;
+		winMenuBtn.interactable = _interactable;
+		loseRetryBtn.interactable = _interactable;
+		loseMenuBtn.interactable = _interactable;
+	}
+
+	private void EnableEndGameButtons()
+	{
+		SetEndGameButtonsInteractable(true);
 	}
 
 
