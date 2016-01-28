@@ -107,10 +107,10 @@ public class EMController : MonoBehaviour
 		PMain = GameObject.Find("Player_Cell").GetComponent<PlayerMain>();
 
 		// Size
-		nInitialNutrientNum = 100;
+		nInitialNutrientNum = Settings.s_nEnemyMainInitialNutrientNum;
 		nCurrentNutrientNum = nInitialNutrientNum;
 		// Speed
-		fSpeed = .05f;
+		fSpeed = Settings.s_fEnemyMainInitialVertSpeed;
 		fSpeedFactor = 1f;
 		fSpeedTemp = fSpeed;
 		bIsDefend = false;
@@ -123,7 +123,7 @@ public class EMController : MonoBehaviour
 		else 
 			bMovingLeft = false;
 		// Horizontal speed
-		fMinHoriSpeed = 0.05f;
+		fMinHoriSpeed = Settings.s_fEnemyMainMinHiriSpeed;
 		fHoriSpeed = Random.Range (fMinHoriSpeed, fMinHoriSpeed * 2f);
 		bCanChangeHori = true;
 		// Velocity
@@ -149,7 +149,7 @@ public class EMController : MonoBehaviour
 
 		bIsMainBeingAttacked = false;
 		bIsAllChildWithinMain = false;
-		fNumOfDefaultCells = 5f;
+		fNumOfDefaultCells = Settings.s_nEnemyMainInitialChildCellNum;
 	}
 
 	void Start ()

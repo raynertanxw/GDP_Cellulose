@@ -20,10 +20,16 @@ public class Settings : MonoBehaviour
 	#endregion
 
 	#region Enemy Main Level Variables
-	public static float fEnemyMainMaxY = 9.6f;
-	public static float fEnemyMainMinY = -1.5f;
+	public static float s_fEnemyMainMaxY = 9.6f;
+	public static float s_fEnemyMainMinY = -1.5f;
 
-	public static int nEnemyMainInitialHealthLV1 = 50;
+	public static int s_nEnemyMainInitialHealth = 50;
+	public static int s_nEnemyMainInitialNutrientNum = 50;
+	public static int s_nEnemyMainInitialChildCellNum = 5;
+	public static int s_nEnemyMainInitialAggressiveness = 3;
+
+	public static float s_fEnemyMainInitialVertSpeed = 0.05f;
+	public static float s_fEnemyMainMinHiriSpeed = 0.05f;
 	#endregion
 	
 	#region Enemy Child Level Variables
