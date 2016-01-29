@@ -124,19 +124,19 @@ public class PC_ChargeMainState : IPCState
 	
 
 	#region Movement and Physics
-	private static float s_fAvoidRadius = 5.0f;
+	private const float s_fAvoidRadius = 5.0f;
 	private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
-	private static float s_fMaxAcceleration = 50000f;
-	private static float s_fMaxVelocity = 0.5f;
-	private static float s_fFormationAcceleration = 10000f;
-	private static float s_fFormationVelocity = 0.5f;
-	private static float s_fFormationDist = 0.5f;
-	private static float s_fFormationTolerence = 0.05f;
+	private const float s_fMaxAcceleration = 50000f;
+	private const float s_fMaxVelocity = 0.5f;
+	private const float s_fFormationAcceleration = 10000f;
+	private const float s_fFormationVelocity = 0.5f;
+	private const float s_fFormationDist = 0.5f;
+	private const float s_fFormationTolerence = 0.05f;
 	private static float s_fSqrFormationTolerence = Mathf.Pow(s_fFormationTolerence, 2);
 	// Weights
-	private static float s_fTargetPullWeight = 5000;
-	private static float s_fFormationPullWeight = 5000;
-	private static float s_fAvoidanceWeight = 10;
+	private const float s_fTargetPullWeight = 5000;
+	private const float s_fFormationPullWeight = 5000;
+	private const float s_fAvoidanceWeight = 10;
 
 	// Getters for the various values.
 	public static float sqrAvoidRadius { get { return s_fSqrAvoidRadius; } }

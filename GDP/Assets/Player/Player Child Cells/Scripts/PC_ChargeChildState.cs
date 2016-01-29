@@ -18,17 +18,8 @@ public class PC_ChargeChildState : IPCState
         m_nLeaderIndex = 0;
         m_targetPos = m_pcFSM.transform; // In case leader doesn't process first.
 
-		if (m_pcFSM.attackMode == PlayerAttackMode.SwarmTarget)
-		{
-			s_fMaxAcceleration = 200000f;
-			s_fMaxVelocity = 3.5f;
-		}
-		else if (m_pcFSM.attackMode == PlayerAttackMode.ScatterShot)
-		{
+		if (m_pcFSM.attackMode == PlayerAttackMode.ScatterShot)
 			m_targetPos = EnemyMainFSM.Instance().transform;
-			s_fMaxAcceleration = 2000f;
-			s_fMaxVelocity = 10f;
-		}
     }
 	
 	public override void Execute()
@@ -147,22 +138,26 @@ public class PC_ChargeChildState : IPCState
 
 
     #region Movement and Physics
-    private static float s_fAvoidRadius = 1.0f;
+    private const float s_fAvoidRadius = 1.0f;
     private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
-	private static float s_fSeparationRadius = 0.5f;
+	private const float s_fSeparationRadius = 0.5f;
 	private static float s_fSqrSeparationRadius = Mathf.Pow(s_fSeparationRadius, 2);
-    private static float s_fMaxAcceleration = 200000f;
-	private static float s_fMaxVelocity = 3.5f;
+    private const float s_fSwarmTargetMaxAcceleration = 200000f;
+	private const float s_fSwarmTargetMaxVelocity = 3.5f;
+	private const float s_fScatterShotMaxAcceleration = 2000f;
+	private const float s_fScatterShotMaxVelocity = 10f;
     // Weights
-    private static float s_fTargetPullWeight = 100;
-    private static float s_fAvoidanceWeight = 2500;
-	private static float s_fSeparationWeight = 1000;
+    private const float s_fTargetPullWeight = 100;
+    private const float s_fAvoidanceWeight = 2500;
+	private const float s_fSeparationWeight = 1000;
 
     // Getters for the various values.
     public static float sqrAvoidRadius { get { return s_fSqrAvoidRadius; } }
 	public static float sqrSeparationRadius { get { return s_fSqrSeparationRadius; } }
-    public static float maxAcceleration { get { return s_fMaxAcceleration; } }
-	public static float maxVelocity { get { return s_fMaxVelocity; } }
+    public static float swarmTargetMaxAcceleration { get { return s_fSwarmTargetMaxAcceleration; } }
+	public static float swarmTargetMaxVelocity { get { return s_fSwarmTargetMaxVelocity; } }
+	public static float scatterShotMaxAcceleration { get { return s_fScatterShotMaxAcceleration; } }
+	public static float scatterShotMaxVelocity { get { return s_fScatterShotMaxVelocity; } }
     public static float targetPullWeight { get { return s_fTargetPullWeight; } }
     public static float avoidanceWeight { get { return s_fAvoidanceWeight; } }
 	public static float separationWeight { get { return s_fSeparationWeight; } }
@@ -173,10 +168,10 @@ public class PC_ChargeChildState : IPCState
         Vector2 acceleration = TargetPull() * targetPullWeight;
         acceleration += Avoidance() * avoidanceWeight;
         // Clamp the acceleration to a maximum value
-        acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
+        acceleration = Vector2.ClampMagnitude(acceleration, swarmTargetMaxAcceleration);
 
         m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
-		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, maxVelocity);
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, swarmTargetMaxVelocity);
         FaceTowardsHeading();
     }
 
@@ -187,10 +182,10 @@ public class PC_ChargeChildState : IPCState
 		acceleration += Avoidance() * avoidanceWeight;
 		acceleration += Separation() * separationWeight;
 		// Clamp the acceleration to a maximum value
-		acceleration = Vector2.ClampMagnitude(acceleration, maxAcceleration);
+		acceleration = Vector2.ClampMagnitude(acceleration, scatterShotMaxAcceleration);
 
 		m_pcFSM.rigidbody2D.AddForce(acceleration * Time.fixedDeltaTime);
-		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, maxVelocity);
+		m_pcFSM.rigidbody2D.velocity = Vector2.ClampMagnitude(m_pcFSM.rigidbody2D.velocity, scatterShotMaxVelocity);
         FaceTowardsHeading();
     }
 

@@ -160,17 +160,17 @@ public class PC_DefendState : IPCState
 
 	#region Flocking
 	// Flocking related variables
-	private static float s_fCohesionRadius = 2.0f;
+	private const float s_fCohesionRadius = 2.0f;
 	private static float s_fSqrCohesionRadius = Mathf.Pow(s_fCohesionRadius, 2);
-	private static float s_fSeparationRadius = 0.5f;
+	private const float s_fSeparationRadius = 0.5f;
 	private static float s_fSqrSeperationRadius = Mathf.Pow(s_fSeparationRadius, 2);
-	private static float s_fMaxAcceleration = 1000f;
-	private static float s_fMacVelocity = 2.5f;
+	private const float s_fMaxAcceleration = 1000f;
+	private const float s_fMacVelocity = 2.5f;
 	// Weights
-	private static float s_fCohesionWeight = 30;
-	private static float s_fAlignmentWeight = 10;
-	private static float s_fSeparationWeight = 5000;
-	private static float s_fTargetPullWeight = 5000;
+	private const float s_fCohesionWeight = 30;
+	private const float s_fAlignmentWeight = 10;
+	private const float s_fSeparationWeight = 5000;
+	private const float s_fTargetPullWeight = 5000;
 	
 	
 	// Getters for the various values.

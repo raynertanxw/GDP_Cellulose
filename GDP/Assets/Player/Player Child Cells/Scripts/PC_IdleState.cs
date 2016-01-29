@@ -11,8 +11,6 @@ public class PC_IdleState : IPCState
 		if (m_pcFSM.m_bSacrificeToSquadCpt == true)
 		{
 			m_nodeOrigin = (Vector2) PlayerMain.Instance.transform.position;
-			s_fMaxVelocity = 5f;
-			s_fMaxAcceleration = 1000f;
 		}
         else if (m_pcFSM.m_assignedNode != null)
 		{
@@ -56,8 +54,7 @@ public class PC_IdleState : IPCState
 	
 	public override void Exit()
 	{
-		s_fMaxVelocity = 2f;
-		s_fMaxAcceleration = 250f;
+
 	}
 
     public override void FixedExecute()
@@ -118,16 +115,16 @@ public class PC_IdleState : IPCState
 
     #region Flocking
     // Flocking related variables
-    private static float s_fCohesionRadius = 0.75f;
+    private const float s_fCohesionRadius = 0.75f;
 	private static float s_fSqrCohesionRadius = Mathf.Pow(s_fCohesionRadius, 2);
-    private static float s_fSeparationRadius = 0.25f;
+    private const float s_fSeparationRadius = 0.25f;
 	private static float s_fSqrSeperationRadius = Mathf.Pow(s_fSeparationRadius, 2);
-    private static float s_fMaxAcceleration = 250f;
-	private static float s_fMaxVelocity = 2f;
+    private const float s_fMaxAcceleration = 250f;
+	private const float s_fMaxVelocity = 2f;
     // Weights
-    private static float s_fCohesionWeight = 300;
-    private static float s_fSeparationWeight = 1000;
-    private static float s_fOriginPullWeight = 1500;
+    private const float s_fCohesionWeight = 300;
+    private const float s_fSeparationWeight = 1000;
+    private const float s_fOriginPullWeight = 1500;
 
 
     // Getters for the various values.

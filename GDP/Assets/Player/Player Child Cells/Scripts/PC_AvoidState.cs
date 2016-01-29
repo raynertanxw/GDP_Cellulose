@@ -89,19 +89,19 @@ public class PC_AvoidState : IPCState
 
     #region Flocking
     // Flocking related variables
-    private static float s_fCohesionRadius = 2.0f;
+    private const float s_fCohesionRadius = 2.0f;
 	private static float s_fSqrCohesionRadius = Mathf.Pow(s_fCohesionRadius, 2);
-	private static float s_fSeparationRadius = 0.25f;
+	private const float s_fSeparationRadius = 0.25f;
 	private static float s_fSqrSeperationRadius = Mathf.Pow(s_fSeparationRadius, 2);
-    private static float s_fAvoidRadius = 5.0f;
+    private const float s_fAvoidRadius = 5.0f;
 	private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
-    private static float s_fMaxAcceleration = 500f;
+    private const float s_fMaxAcceleration = 500f;
 	// Weights
-	private static float s_fCohesionWeight = 0;
-	private static float s_fAlignmentWeight = 0;
-	private static float s_fSeparationWeight = 100;
-	private static float s_fOriginPullWeight = 5;
-    private static float s_fAvoidanceWeight = 1500;
+	private const float s_fCohesionWeight = 0;
+	private const float s_fAlignmentWeight = 0;
+	private const float s_fSeparationWeight = 100;
+	private const float s_fOriginPullWeight = 5;
+    private const float s_fAvoidanceWeight = 1500;
 	
 	
 	// Getters for the various values.
