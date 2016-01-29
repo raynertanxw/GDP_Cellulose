@@ -3,6 +3,7 @@ using System.Collections;
 
 [RequireComponent (typeof (Rigidbody2D))]
 [RequireComponent (typeof (CircleCollider2D))]
+[RequireComponent (typeof (EMMainMenuAnimation))]
 public class EMMainMenuController : MonoBehaviour 
 {
 	private Rigidbody2D thisRB;

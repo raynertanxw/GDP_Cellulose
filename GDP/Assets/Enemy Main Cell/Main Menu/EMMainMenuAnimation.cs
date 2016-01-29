@@ -1,15 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EMMainMenuAnimation : MonoBehaviour {
+[RequireComponent (typeof (Renderer))]
+[RequireComponent (typeof (EMMainMenuController))]
+public class EMMainMenuAnimation : MonoBehaviour 
+{
+	private Rigidbody2D thisRB;
+	private Renderer thisRend;
+	public GameObject halo;
 
-	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
 	
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+	void Update () 
+	{
 	
 	}
 }
