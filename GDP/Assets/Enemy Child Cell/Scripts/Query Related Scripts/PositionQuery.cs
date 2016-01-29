@@ -307,32 +307,28 @@ public class PositionQuery
 		{
 			if(EnemyToAttackSourceXDifference >= 1.5f || EnemyToAttackSourceXDifference <= -1.5f)
 			{
-				if(DefendingCellsCount <= 10)
+				if(DefendingCellsCount <= 20)
 				{
-					RCDesirability += 1;
-				}
-				else if(DefendingCellsCount <= 20 && DefendingCellsCount > 10)
-				{
-					LadderDesirability += 1;
+					TurtleDesirability += 1;
 				}
 				else
 				{
-					TurtleDesirability += 1;
+					RCDesirability += 1;
 				}
 			}
 			else
 			{
-				if(DefendingCellsCount <= 10)
-				{
-					RCDesirability += 1;
-				}
-				else if(DefendingCellsCount <= 20 && DefendingCellsCount > 10)
+				if(DefendingCellsCount <= 20)
 				{
 					TurtleDesirability += 1;
 				}
+				else if(DefendingCellsCount <= 20 && DefendingCellsCount > 10)
+				{
+					RCDesirability += 1;
+				}
 				else
 				{
-					LadderDesirability += 1;
+					QCDesirability += 1;
 				}
 			}
 		}
