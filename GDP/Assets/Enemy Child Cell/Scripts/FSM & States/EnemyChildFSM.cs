@@ -84,7 +84,10 @@ public class EnemyChildFSM : MonoBehaviour
 			ReinforceDefence();
 		}
 		
-		//Debug.Log(rigidbody2D.name);
+		if(EMFSM.CurrentStateIndex == EMState.Die && CurrentStateEnum != ECState.TrickAttack && CurrentStateEnum != ECState.Dead)
+		{
+			MessageDispatcher.Instance.DispatchMessage(gameObject,gameObject,MessageType.TrickAttack,0f);
+		}
 	}
 
 	void FixedUpdate()
@@ -214,7 +217,7 @@ public class EnemyChildFSM : MonoBehaviour
 		int AttackerAmount = 0;
 		int DefenderAmount = ECTracker.s_Instance.DefendCells.Count;
 
-		for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+		for (int i = 0; i < Settings.s_nEnemyChildCountCap; i++)
 		{
 			if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
 			{

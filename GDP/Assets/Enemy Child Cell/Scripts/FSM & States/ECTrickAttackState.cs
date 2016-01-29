@@ -46,6 +46,8 @@ public class ECTrickAttackState : IECState {
 	
 	private static BoxCollider2D LeftWall;
 	private static BoxCollider2D RightWall;
+	
+	private static EnemyMainFSM EMFSM;
 
 	//constructor
 	public ECTrickAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -60,6 +62,7 @@ public class ECTrickAttackState : IECState {
 		m_Nodes[0] = Node_Manager.GetNode(Node.LeftNode).gameObject;
 		m_Nodes[1] = Node_Manager.GetNode(Node.RightNode).gameObject;
 		m_SquadCaptain = PlayerSquadFSM.Instance.gameObject;
+		EMFSM = m_Main.GetComponent<EnemyMainFSM>();
 		ShrinkRate = new Vector3(-0.225f, 0.225f, 0.0f);
 		
 		BoxCollider2D[] Walls = GameObject.Find("Wall").GetComponents<BoxCollider2D>();
@@ -323,6 +326,12 @@ public class ECTrickAttackState : IECState {
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
 		m_ecFSM.rigidbody2D.isKinematic = true;
 
+		if(EMFSM.CurrentStateIndex == EMState.Die)
+		{
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0f);
+			yield break;
+		}
+		
 		//wait for 1 second
 		yield return new WaitForSeconds(2.5f);
 
