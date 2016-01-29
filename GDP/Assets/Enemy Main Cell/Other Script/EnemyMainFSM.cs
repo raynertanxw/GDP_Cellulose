@@ -144,6 +144,7 @@ public class EnemyMainFSM : MonoBehaviour
 		m_statesDictionary.Add (EMState.Landmine, new EMLandmineState (this));
 		m_statesDictionary.Add (EMState.Stunned, new EMStunnedState (this));
 		m_statesDictionary.Add (EMState.Die, new EMDieState (this));
+		m_statesDictionary.Add (EMState.Win, new EMWinState (this));
 		#endregion
 
 		#region Initialize the Learning Element dictionary
@@ -156,6 +157,7 @@ public class EnemyMainFSM : MonoBehaviour
 		m_learningDictionary.Add (EMState.Landmine, 0f);
 		m_learningDictionary.Add (EMState.Stunned, 0f);
 		m_learningDictionary.Add (EMState.Die, 0f);
+		m_learningDictionary.Add (EMState.Win, 0f);
 		#endregion
 
 		// Initialize the default to Production
@@ -199,12 +201,16 @@ public class EnemyMainFSM : MonoBehaviour
 	// Change current state, perform exit and enter functions
 	public void ChangeState (EMState newState)
 	{
-		if (m_CurrentState != null)
-			m_CurrentState.Exit ();
+		// Make sure the state we are transitioning to is not the current state
+		if (newState != CurrentStateIndex) 
+		{
+			if (m_CurrentState != null)
+				m_CurrentState.Exit ();
 
-		m_currentStateIndex = newState;
-		m_CurrentState = m_statesDictionary [newState];
-		m_CurrentState.Enter ();
+			m_currentStateIndex = newState;
+			m_CurrentState = m_statesDictionary [newState];
+			m_CurrentState.Enter ();
+		}
 	}
 
 	// Update the score on the inspector

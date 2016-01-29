@@ -7,7 +7,7 @@ public enum PSState {Idle, Attack, Defend, Produce, FindResource, Dead };
 
 public enum SCState {Idle, Attack, Defend, Produce, FindResource, Dead };
 
-public enum EMState {Production, Maintain, Defend, AggressiveAttack, CautiousAttack, Landmine, Stunned, Die};
+public enum EMState {Production, Maintain, Defend, AggressiveAttack, CautiousAttack, Landmine, Stunned, Die, Win};
 
 public enum ECState {Idle, Attack, ChargeMain, ChargeChild, TrickAttack, Defend, Avoid, Landmine, Dead};
 
