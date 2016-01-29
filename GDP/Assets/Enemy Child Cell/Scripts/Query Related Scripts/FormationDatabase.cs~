@@ -17,6 +17,7 @@ public class FormationDatabase
 	private float fCurrentMainScale;
 	
 	private GameObject EMain;
+	private GameObject PMain;
 
 	public FormationDatabase()
 	{
@@ -24,6 +25,7 @@ public class FormationDatabase
 		List<EnemyChildFSM> ECList = GameObject.Find("Enemy_Cell").GetComponent<EnemyMainFSM>().ECList;
 		RefreshDatabases(ECList);
 		EMain = GameObject.Find("Enemy_Cell");
+		PMain = GameObject.Find("Player_Cell");
 	}
 
 	//Singleton and Get function
@@ -339,6 +341,32 @@ public class FormationDatabase
 			}
 		}
     }
+    
+    public void CheckOverlapPlayerADRange()
+    {
+		float YLimit = PMain.transform.position.y + PlayerMain.Instance.m_fDetectionRadius;
+		List<int> Keys = new List<int>(FPositionDatabase.Keys);
+		
+		float YAdjustment = 0f;
+		
+		foreach(int FIndex in Keys)
+		{
+			if(FPositionDatabase[FIndex].y < YLimit && YLimit - FPositionDatabase[FIndex].y > YAdjustment)
+			{
+				YAdjustment = YLimit - FPositionDatabase[FIndex].y;
+			}
+		}
+		
+		if(YAdjustment == 0f){return;}
+
+		Vector2 UpdatedPosition = Vector2.zero;
+		foreach(int FIndex in Keys)
+		{
+			UpdatedPosition = FPositionDatabase[FIndex];
+			UpdatedPosition.y += YAdjustment/2;
+			FPositionDatabase[FIndex] = UpdatedPosition;
+		}
+    }
 
 	public void AddNewDefenderToCurrentFormation(GameObject _NewDefender)
 	{
@@ -381,6 +409,7 @@ public class FormationDatabase
 			//Update the database to recalculate the position for all indexes
 			UpdateDatabaseFormation(CurrentFormation,fCurrentMainScale);
 		}
+		CheckOverlapPlayerADRange();
 	}
 	
 	public void ReturnFormationPos(GameObject _ObjectReturn)
@@ -418,17 +447,17 @@ public class FormationDatabase
 
     public Vector2 GetTargetFormationPosition(Formation _Formation, GameObject _EnemyCell)
     {
-		if(!FIndexDatabase.ContainsKey(_EnemyCell.name))
+		string CellName = _EnemyCell.name;
+		if(!FIndexDatabase.ContainsKey(CellName))
 		{
 			MessageDispatcher.Instance.DispatchMessage(_EnemyCell,_EnemyCell,MessageType.Idle,0);
 			return Vector2.zero;
 		}
     
-		int TargetFIndex = FIndexDatabase[_EnemyCell.name];
+		int TargetFIndex = FIndexDatabase[CellName];
 
-		//Debug.Log(TargetFIndex);
 		Vector2 PosDifference = FPositionDatabase[TargetFIndex];
-		Vector2 EMPosition = GameObject.Find("Enemy_Cell").transform.position;
+		Vector2 EMPosition = EMain.transform.position;
 		Vector2 TargetPosition = Vector2.zero;
 		
 		if(_Formation == Formation.Ladder)

@@ -89,6 +89,7 @@ public class ECDefendState : IECState {
 			CurrentFormation = PositionQuery.Instance.GetDefensiveFormation();
 			FormationDatabase.Instance.RefreshDatabases(m_Main.GetComponent<EnemyMainFSM>().ECList);
 			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,fMainScale);
+			FormationDatabase.Instance.CheckOverlapPlayerADRange();
 		}
 
 		//Based on the current formation, get a specific target position within that formation
