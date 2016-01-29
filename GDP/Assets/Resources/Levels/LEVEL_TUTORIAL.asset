@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6530f6b77c04b4837b0c35effb66cb97, type: 3}
+  m_Name: LEVEL_TUTORIAL
+  m_EditorClassIdentifier: 
+  PlayerInitialResourceCount: 0
+  PlayerInitialHealth: 0
+  SquadCaptainAggressiveNDefensiveSlider: 0
+  SquadCaptainProductionSpeed: 0
+  EnemyInitialResourceCount: 0
+  EnemyInitialHealth: 0
+  EnemyInitialChildCount: 0
+  EnemyProductionSpeed: 0
+  EnemyMovementSpeed: 0
+  EnemyKnockbackSpeed: 0
+  EnemyMainAggression: 0
+  EnemyDifficulty: 0
+  EnemyColor: {r: 0, g: 0, b: 0, a: 0}
+  EnvironmentColor: {r: 0, g: 0, b: 0, a: 0}
+  SideWallSpeed: 0
+  BackgroundSpeed: 0

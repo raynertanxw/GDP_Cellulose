@@ -7,8 +7,19 @@ public class Level_Manager
 	{
 		string path = "Levels/LEVEL_" + _level.ToString();
 		LevelTemplate levelData = Resources.Load(path) as LevelTemplate;
+		SetSettings(levelData);
+	}
 
-		Settings.s_nPlayerInitialHealth = levelData.PlayerInitialHealth;
-		Settings.s_nPlayerInitialResourceCount = levelData.PlayerInitialResourceCount;
+	public static void LoadTutorial()
+	{
+		string path = "Levels/LEVEL_TUTORIAL";
+		LevelTemplate tutorialData = Resources.Load(path) as LevelTemplate;
+		SetSettings(tutorialData);
+	}
+
+	private static void SetSettings(LevelTemplate _data)
+	{
+		Settings.s_nPlayerInitialHealth = _data.PlayerInitialHealth;
+		Settings.s_nPlayerInitialResourceCount = _data.PlayerInitialResourceCount;
 	}
 }
