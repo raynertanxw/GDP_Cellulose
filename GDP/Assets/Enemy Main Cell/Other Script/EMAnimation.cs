@@ -136,7 +136,7 @@ public class EMAnimation : MonoBehaviour
 		ExpandAnimation ();
 		// Color blink animation of enemy main cell
 		ColorBlink ();
-		//
+		// Update the color of halo effect
 		HaloColorUpdate ();
 		// Die animation called in the Die state
 		DieAnimation ();
@@ -402,6 +402,7 @@ public class EMAnimation : MonoBehaviour
 		else
 			thisRend.material.color = defaultColor;
 	}
+	// Update the color of halo effect
 	private void HaloColorUpdate ()
 	{
 		if (thisRend.material.color != defaultColor) 
