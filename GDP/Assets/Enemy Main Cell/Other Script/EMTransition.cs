@@ -39,6 +39,7 @@ public class EMTransition : MonoBehaviour
 		ProductionTransition ();
 		StunnedTransition ();
 		DieTransition ();
+		WinTransition ();
 	}
 
 	/// <summary>
@@ -106,12 +107,20 @@ public class EMTransition : MonoBehaviour
 			m_EMFSM.ChangeState (EMState.Stunned);
 		}
 	}
-	// Transition to DieState
+	// Immediate transition to DieState
 	void DieTransition ()
 	{
 		if (m_EMFSM.Health <= 0 && m_EMFSM.CurrentStateIndex != EMState.Die) 
 		{
 			m_EMFSM.ChangeState (EMState.Die);
+		}
+	}
+	// Immediate transition to WinState
+	void WinTransition ()
+	{
+		if (EMHelper.Instance().IsEnemyWin && m_EMFSM.CurrentStateIndex != EMState.Win) 
+		{
+			m_EMFSM.ChangeState (EMState.Win);
 		}
 	}
 	#endregion

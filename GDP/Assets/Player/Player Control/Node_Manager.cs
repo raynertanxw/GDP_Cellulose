@@ -63,7 +63,7 @@ public class Node_Manager : MonoBehaviour
 		// Change to avoid.
 		if (m_bIsDefending == true)
 		{
-			for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 			{
 				if (PlayerChildFSM.s_playerChildStatus[i] == nodePCStatus)
 				{
@@ -79,7 +79,7 @@ public class Node_Manager : MonoBehaviour
 		// Change to defend.
 		else
 		{
-			for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 			{
 				if (PlayerChildFSM.s_playerChildStatus[i] == nodePCStatus)
 				{
@@ -128,7 +128,7 @@ public class Node_Manager : MonoBehaviour
 		int childCountInNode = 0;
 		pcStatus node = (pcStatus) ((int)m_NodeEnum + 1);
 
-		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+		for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 		{
 			if (PlayerChildFSM.s_playerChildStatus[i] == node)
 				childCountInNode++;

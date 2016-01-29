@@ -5,8 +5,16 @@ public class Constants : MonoBehaviour
 {
 	public static Vector3 s_farfarAwayVector = new Vector3(0f, 1000f, 0f);
 
-	#region Layer Masks
-	public static LayerMask s_onlyEnemeyChildLayer = 1 << LayerMask.NameToLayer("EnemyChild");
+    #region Game Related
+    public const int s_nPlayerMaxChildCount = 100;
+    public const int s_nPlayerMaxNutrientCount = 10;
+    public const float s_fEnemyMainMaxY = 9.6f;
+    public const float s_fEnemyMainMinY = -1.5f;
+    public const int s_nEnemyMaxChildCount = 100;
+    #endregion
+
+    #region Layer Masks
+    public static LayerMask s_onlyEnemeyChildLayer = 1 << LayerMask.NameToLayer("EnemyChild");
     public static LayerMask s_onlyEnemyMainLayer = 1 << LayerMask.NameToLayer("EnemyMain");
 	public static LayerMask s_onlyPlayerChildLayer = 1 << LayerMask.NameToLayer("PlayerChild");
     public static LayerMask s_onlyPlayerMainLayer = 1 << LayerMask.NameToLayer("PlayerMain");

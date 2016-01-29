@@ -217,13 +217,13 @@ public class EMController : MonoBehaviour
 		bPushed = true;
 
 		// Push forward first
-		if (EMHelper.Instance ().Position.y > Settings.s_fEnemyMainMinY && !bStunned)
+		if (EMHelper.Instance ().Position.y > Constants.s_fEnemyMainMinY && !bStunned)
 			thisRB.velocity = pushForwardVel;
 
 		// Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);
         // Temporary velocity for enemy main cell when being pushed
-		if (EMHelper.Instance ().Position.y > Settings.s_fEnemyMainMinY && !bStunned)
+		if (EMHelper.Instance ().Position.y > Constants.s_fEnemyMainMinY && !bStunned)
 			thisRB.velocity = pushBackVel;
         // Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);
@@ -528,7 +528,7 @@ public class EMController : MonoBehaviour
 	{
 		if (PlayerChildFSM.s_playerChildStatus != null) {
 			int PCCount = 0;
-			for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++) {
+			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++) {
 				if (PlayerChildFSM.s_playerChildStatus [i] == pcStatus.InLeftNode || PlayerChildFSM.s_playerChildStatus [i] == pcStatus.InRightNode) {
 					PCCount++;
 				}

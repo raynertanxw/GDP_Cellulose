@@ -199,7 +199,7 @@ public class ECChargeCState : IECState {
 			List<PlayerChildFSM> m_PotentialTargets = new List<PlayerChildFSM>();
 			if(TargetSource.name.Contains("Left"))
 			{
-				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 				{
 					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
 					{
@@ -210,7 +210,7 @@ public class ECChargeCState : IECState {
 			}
 			else if(TargetSource.name.Contains("Right"))
 			{
-				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 				{
 					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
 					{

@@ -16,7 +16,7 @@ public class PlayerChildFSM : MonoBehaviour
 	
 	static public PlayerChildFSM Spawn(Vector3 spawnPoint)
 	{
-		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+		for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 		{
 			// If disabled, thn it's available.
 			if (s_playerChildFSMPool[i].m_currentEnumState == PCState.Dead)
@@ -124,8 +124,8 @@ public class PlayerChildFSM : MonoBehaviour
 		if (s_playerChildFSMPool == null)
 		{
 			// lazy initialize it
-			s_playerChildFSMPool = new PlayerChildFSM[Settings.s_nPlayerMaxChildCount];
-			s_playerChildStatus = new pcStatus[Settings.s_nPlayerMaxChildCount];
+			s_playerChildFSMPool = new PlayerChildFSM[Constants.s_nPlayerMaxChildCount];
+			s_playerChildStatus = new pcStatus[Constants.s_nPlayerMaxChildCount];
 			s_nPoolPointerIndex = 0;
 			s_nActiveChildCount = 0;
 		}

@@ -214,7 +214,7 @@ public class EnemyChildFSM : MonoBehaviour
 		int AttackerAmount = 0;
 		int DefenderAmount = ECTracker.s_Instance.DefendCells.Count;
 
-		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+		for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 		{
 			if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
 			{
