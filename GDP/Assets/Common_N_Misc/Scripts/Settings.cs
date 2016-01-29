@@ -31,7 +31,7 @@ public class Settings : MonoBehaviour
 	public static float s_fEnemyMainInitialVertSpeed = 0.05f;
 	public static float s_fEnemyMainMinHiriSpeed = 0.05f;
 
-	public static float fDefaultStunTime = 5f;
+	public static float s_fDefaultStunTime = 5f;
 	public static float s_fDefaultStunTolerance = 5f;
 	#endregion
 	
