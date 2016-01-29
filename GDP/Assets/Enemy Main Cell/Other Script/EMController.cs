@@ -217,13 +217,13 @@ public class EMController : MonoBehaviour
 		bPushed = true;
 
 		// Push forward first
-		if (EMHelper.Instance ().Position.y > Settings.fEnemyMainMinY && !bStunned)
+		if (EMHelper.Instance ().Position.y > Settings.s_fEnemyMainMinY && !bStunned)
 			thisRB.velocity = pushForwardVel;
 
 		// Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);
         // Temporary velocity for enemy main cell when being pushed
-		if (EMHelper.Instance ().Position.y > Settings.fEnemyMainMinY && !bStunned)
+		if (EMHelper.Instance ().Position.y > Settings.s_fEnemyMainMinY && !bStunned)
 			thisRB.velocity = pushBackVel;
         // Wait for 0.1 second
 		yield return new WaitForSeconds (.1f);

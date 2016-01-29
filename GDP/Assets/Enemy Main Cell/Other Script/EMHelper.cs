@@ -99,8 +99,8 @@ public class EMHelper : MonoBehaviour
 		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x)
 			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
 		// Update the ratio of y distance
-		if (fMinToMaxYRatio != (transform.position.y - Settings.fEnemyMainMinY) / (Settings.fEnemyMainMaxY - Settings.fEnemyMainMinY))
-			fMinToMaxYRatio = (transform.position.y - Settings.fEnemyMainMinY) / (Settings.fEnemyMainMaxY - Settings.fEnemyMainMinY);
+		if (fMinToMaxYRatio != (transform.position.y - Settings.s_fEnemyMainMinY) / (Settings.s_fEnemyMainMaxY - Settings.s_fEnemyMainMinY))
+			fMinToMaxYRatio = (transform.position.y - Settings.s_fEnemyMainMinY) / (Settings.s_fEnemyMainMaxY - Settings.s_fEnemyMainMinY);
 		// Update camera border
 		CameraLimit ();
 		// Make sure the enemy main cell do not go outside the screen
@@ -160,8 +160,8 @@ public class EMHelper : MonoBehaviour
 			EMController.Instance ().ChangeDirection ();
 		}
 
-		if (transform.position.y < Settings.fEnemyMainMinY)
-			transform.position = new Vector2 (transform.position.x, Settings.fEnemyMainMinY);
+		if (transform.position.y < Settings.s_fEnemyMainMinY)
+			transform.position = new Vector2 (transform.position.x, Settings.s_fEnemyMainMinY);
 	}
     // Update width of enemy main cell
 	void WidthUpdate ()
