@@ -106,10 +106,14 @@ public class ECDefendState : IECState {
 	{
 		Vector2 Acceleration = Vector2.zero;
 
-		if(!bReachPos && !bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos))
+		if(!bReachPos && !bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos) && !m_ecFSM.IsHittingSideWalls())
 		{
 			m_ecFSM.rigidbody2D.drag = 9.5f;//5f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,300f);//27
+		}
+		else if(!bReachPos && !bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos) && m_ecFSM.IsHittingSideWalls())
+		{
+			m_ecFSM.rigidbody2D.velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
 		}
 		else if(!bReachPos && !bReturnToMain && HasCellReachTargetPos(ECTransform.position,m_TargetPos))
 		{
@@ -122,7 +126,7 @@ public class ECDefendState : IECState {
 			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);
 			
 			//If at any point of time, the child cell got too far away from the given position, see back to the target position in the formation
-			if(!HasCellReachTargetPos(m_Child.transform.position,m_TargetPos) && !bKillClosestAttacker)
+			if(!HasCellReachTargetPos(m_Child.transform.position,m_TargetPos) && !bKillClosestAttacker && !m_ecFSM.IsHittingSideWalls())
 			{
 				m_ecFSM.rigidbody2D.drag = 5f;
 				Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,24f);
@@ -133,12 +137,6 @@ public class ECDefendState : IECState {
 		if(!bKillClosestAttacker && !IsThereNoAttackers() && IsPlayerChildPassingBy())
 		{
 			m_ecFSM.m_ChargeTarget = GetClosestAttacker();
-			/*if(HasTargetGoOffRange(m_ecFSM.m_ChargeTarget))
-			{
-				bKillClosestAttacker = false;
-				m_ecFSM.m_ChargeTarget = null;
-				return;
-			}*/
 		
 			m_ecFSM.rigidbody2D.drag = 2.3f;
 			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
@@ -165,14 +163,14 @@ public class ECDefendState : IECState {
 			m_ecFSM.RotateToHeading();
 		}
 		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
-		else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
+		/*else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
 		{
 			fDefendTime += Time.deltaTime;
 			if(fDefendTime >= 20f)
 			{
 				bReturnToMain = true;
 			}
-		}
+		}*/
 
 		//If the enemy child cells is return back to the enemy main cell but has not reach the position, continue seek back to the main cell
 		if(!bReachedMain && bReturnToMain && !HasCellReachTargetPos(ECTransform.position,EMTransform.position))
