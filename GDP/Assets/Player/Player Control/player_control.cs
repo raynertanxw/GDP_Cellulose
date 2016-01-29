@@ -261,6 +261,7 @@ public class player_control : MonoBehaviour
 		{
 			infoText.text = "Reached\nMaximum\nChild Cell\nCount";
 			PresentInfoPanel();
+			Node_Manager.GetNode(_selectedNode).CalculateChildCount(); // Force calcualtion check.
 			return;
 		}
 
@@ -590,7 +591,6 @@ public class player_control : MonoBehaviour
 	public void NodeEndDrag(BaseEventData _data)
 	{
 		PointerEventData pointerData = _data as PointerEventData;
-		Debug.Log(pointerData.pointerPressRaycast.gameObject.name + " --> " + pointerData.pointerCurrentRaycast.gameObject.name);
 
 		switch (activeDraggedNode)
 		{

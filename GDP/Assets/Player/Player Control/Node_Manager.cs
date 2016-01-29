@@ -106,7 +106,7 @@ public class Node_Manager : MonoBehaviour
 			break;
 		}
 
-		nChildrenInNode++;
+		CalculateChildCount();
 	}
 
 	public void SendChildToAttack(int _poolIndex)
@@ -119,6 +119,22 @@ public class Node_Manager : MonoBehaviour
 	{
 		PlayerChildFSM.s_playerChildStatus[_poolIndex] = pcStatus.DeadState;
 		nChildrenInNode--;
+	}
+
+	// Todo: remove the need for this function
+	// Currently used to solve bug when spawning too fast on a mobile with both buttons.
+	public void CalculateChildCount()
+	{
+		int childCountInNode = 0;
+		pcStatus node = (pcStatus) ((int)m_NodeEnum + 1);
+
+		for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+		{
+			if (PlayerChildFSM.s_playerChildStatus[i] == node)
+				childCountInNode++;
+		}
+
+		nChildrenInNode = childCountInNode;
 	}
 
 	#region Getter and Setters
