@@ -87,6 +87,10 @@ public class ECAvoidState : IECState {
 			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
 		}
+		else 
+		{
+			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);
+		}
 
 		//Clamp the velocity to a maximum value, so the speed will reach a constant value
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
