@@ -4,7 +4,6 @@ using System.Collections;
 public class PC_IdleState : IPCState
 {
 	private Vector2 m_nodeOrigin;
-	private static float s_fDetectionRangeRadius = 1.0f;
 
 	public override void Enter()
 	{

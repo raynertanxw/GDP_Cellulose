@@ -41,8 +41,4 @@ public abstract class IPSState : IState
 public abstract class IEMState : IState
 {
 	protected EnemyMainFSM m_EMFSM = null;
-	
-	public virtual void Enter () {}
-	public virtual void Execute () {}
-	public virtual void Exit () {}
 }

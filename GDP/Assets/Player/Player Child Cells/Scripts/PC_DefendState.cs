@@ -3,7 +3,6 @@ using System.Collections;
 
 public class PC_DefendState : IPCState
 {
-	private static float s_fPlayerChildDefendSpeed = 4.0f;
 	private static float s_fNearDetectionRange = 1.0f;
 
 	public override void Enter()

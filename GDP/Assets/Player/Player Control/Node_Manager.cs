@@ -138,10 +138,8 @@ public class Node_Manager : MonoBehaviour
 		{
 		case Node.LeftNode:
 			return Node_Manager.nodeLeft;
-			break;
 		case Node.RightNode:
 			return Node_Manager.nodeRight;
-			break;
 		default:
 			Debug.Log("Error: No such node index");
             return null;
