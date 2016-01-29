@@ -56,8 +56,8 @@ public class PlayerChildFSM : MonoBehaviour
 
 
 	// Component Cache.
-	public Rigidbody2D rigidbody2D;
-	public CircleCollider2D collider2D;
+	public new Rigidbody2D rigidbody2D;
+	public new CircleCollider2D collider2D;
 	public SpriteRenderer spriteRen;
 
 	#region Getter functions
