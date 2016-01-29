@@ -8,7 +8,6 @@ public class Node_Manager : MonoBehaviour
 	private static Node_Manager nodeLeft, nodeRight;
 
 	private Image m_defendAvoidButtonImage;
-	private player_control m_playerCtrl;
 	private RectTransform m_rectTransform;
 	private Vector3 m_rotationVec;
 	private float m_fNodeRotationSpeed = 100.0f;
@@ -23,7 +22,6 @@ public class Node_Manager : MonoBehaviour
 	{
 		nChildrenInNode = 0;
 
-		m_playerCtrl = transform.parent.GetComponent<player_control>();
 		m_rectTransform = GetComponent<RectTransform>();
 		m_rotationVec = Vector3.zero;
 		
@@ -58,11 +56,6 @@ public class Node_Manager : MonoBehaviour
 			m_rotationVec.z += m_fNodeRotationSpeed * Time.deltaTime;
 			m_rectTransform.localRotation = Quaternion.Euler(m_rotationVec);
 		}
-	}
-	
-	public void SelectNode()
-	{
-		m_playerCtrl.ChangeActiveNode(m_NodeEnum);
 	}
 
 	public void ToggleDefenseAvoid()

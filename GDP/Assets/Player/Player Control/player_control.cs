@@ -10,25 +10,37 @@ public class player_control : MonoBehaviour
 	public static player_control Instance { get { return s_Instance; } }
 
 	public int s_nResources;
-	private Transform m_SquadCaptainNode;
 
+	private Transform m_SquadCaptainNode;
 	private GameObject spwnCptBtnGO;
 	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp, infoPanelCanvasGrp;
-	private RectTransform[] btnRectTransform;
+	private RectTransform spwnCptBtnRectTransform;
 	private Text leftNodeChildText, rightNodeChildText, nutrientText, infoText;
 	private Vector3 mainCellPos;
-	private Vector3[] btnPos;
-	private const float s_UIFadeOutDelay = 1.5f;
-	private const float s_UIFadeOutSpeed = 0.8f;
+	private Vector3 spwnCptBtnPos;
+
 	private const float s_UIInfoPanelFadeDelay = 0.75f;
 	private const float s_UIInfoPanelFadeSpeed = 1.25f;
-	private const float s_UIPopInSpeed = 3.5f;
-	private const float s_UIPopOutSpeed = 5.0f;
-
+	private const float s_UIPopInSpeed = 5f;
 	private const float s_UIHurtTintFadeSpeed = 2.0f;
 	private const float s_UITintFlickerSpeed = 1.0f;
 	private float s_UITintFlickerAlpha = 0f;
 	private bool m_bUITintFlickerIncreasingAlpha = false;
+
+	private const string GOname_LeftNode = "UI_Player_LeftNode";
+	private const string GOname_RightNode = "UI_Player_RightNode";
+	private Node activeNode = Node.None;
+	private Node activeDraggedNode = Node.None;
+	private const string GOname_SpawnCptButton = "UI_Player_SpawnCptButton";
+	private const string GOname_OtherScreenAreaButton = "OtherScreenArea_Button";
+	private const string GOname_LeftNode_DefendAvoid = "UI_Player_LeftNode_DefendAvoid";
+	private const string GOname_LeftNode_ScatterShot = "UI_Player_LeftNode_ScatterShot";
+	private const string GOname_LeftNode_SwamTarget = "UI_Player_LeftNode_SwamTarget";
+	private const string GOname_LeftNode_BurstShot = "UI_Player_LeftNode_BurstShot";
+	private const string GOname_RightNode_DefendAvoid = "UI_Player_RightNode_DefendAvoid";
+	private const string GOname_RightNode_ScatterShot = "UI_Player_RightNode_ScatterShot";
+	private const string GOname_RightNode_SwamTarget = "UI_Player_RightNode_SwamTarget";
+	private const string GOname_RightNode_BurstShot = "UI_Player_RightNode_BurstShot";
 	
 	void Awake()
 	{
@@ -40,18 +52,13 @@ public class player_control : MonoBehaviour
 		s_nResources = Settings.s_nPlayerInitialResourceCount;
 
 		m_SquadCaptainNode = GameObject.Find("Node_Captain_SpawnPos").transform;
-		spwnCptBtnGO = transform.GetChild(3).GetChild(1).gameObject;
+		spwnCptBtnGO = transform.GetChild(3).GetChild(0).gameObject;
 		spawnCtrlCanvasGrp = transform.GetChild(3).GetComponent<CanvasGroup>();
 		leftNodeCanvasGrp = transform.GetChild(4).GetComponent<CanvasGroup>();
 		rightNodeCanavsGrp = transform.GetChild(5).GetComponent<CanvasGroup>();
 		mainCellPos = transform.GetChild(6).GetComponent<RectTransform>().localPosition;
-		btnRectTransform = new RectTransform[3];
-		btnRectTransform[0] = spawnCtrlCanvasGrp.transform.GetChild(0).GetComponent<RectTransform>();
-		btnRectTransform[1] = spawnCtrlCanvasGrp.transform.GetChild(1).GetComponent<RectTransform>();
-		btnRectTransform[2] = spawnCtrlCanvasGrp.transform.GetChild(2).GetComponent<RectTransform>();
-		btnPos = new Vector3[3];
-		for (int i = 0; i < btnRectTransform.Length; i++)
-			btnPos[i] = btnRectTransform[i].localPosition;
+		spwnCptBtnRectTransform = spawnCtrlCanvasGrp.transform.GetChild(0).GetComponent<RectTransform>();
+		spwnCptBtnPos = spwnCptBtnRectTransform.localPosition;
 		playerHurtTintCanvasGrp = transform.GetChild(7).GetChild(0).GetComponent<CanvasGroup>();
 		enemyWarningTintCanvasGrp = transform.GetChild(7).GetChild(1).GetComponent<CanvasGroup>();
 		leftNodeChildText = transform.GetChild(7).GetChild(2).GetChild(0).GetComponent<Text>();
@@ -60,18 +67,10 @@ public class player_control : MonoBehaviour
 		infoPanelCanvasGrp = transform.GetChild(7).GetChild(4).GetComponent<CanvasGroup>();
 		infoText = transform.GetChild(7).GetChild(4).GetChild(0).GetComponent<Text>();
 
-		// Hide both left and right node.
-		leftNodeCanvasGrp.alpha = 0f;
-		rightNodeCanavsGrp.alpha = 0f;
-		spawnCtrlCanvasGrp.alpha = 0f;
-		SetLeftNodeControlVisibility(false);
-		SetRightNodeControlVisibility(false);
-		SetSpawnCtrlVisibility(false);
-
-		// Hide tints
+		// Hide controls, tints, and info panel.
+		DeselectAllCtrls();
 		playerHurtTintCanvasGrp.alpha = 0f;
 		enemyWarningTintCanvasGrp.alpha = 0f;
-
 		infoPanelCanvasGrp.alpha = 0f;
 	}
 
@@ -153,77 +152,28 @@ public class player_control : MonoBehaviour
 	#endregion
 
 	#region Bringing up and hiding control sets
-	public void ChangeActiveNode(Node nNewNode)
-	{
-		switch (nNewNode)
-		{
-		case Node.LeftNode:
-			SetLeftNodeControlVisibility(true);
-			SetRightNodeControlVisibility(false);
-			SetSpawnCtrlVisibility(false);
-			break;
-		case Node.RightNode:
-			SetRightNodeControlVisibility(true);
-			SetLeftNodeControlVisibility(false);
-			SetSpawnCtrlVisibility(false);
-			break;
-		}
-	}
-
 	private void SetLeftNodeControlVisibility(bool _visible)
 	{
-		if (_visible)
-		{
-			leftNodeCanvasGrp.interactable = true;
-			leftNodeCanvasGrp.blocksRaycasts = true;
-			RestartFadeOut(Node.LeftNode);
-		}
-		else
-		{
-			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
-			StartCoroutine(QuickFadeOutCanvasGroup(leftNodeCanvasGrp));
-		}
+		SetCanvasGroupVisible(leftNodeCanvasGrp, _visible);
 	}
 
 	private void SetRightNodeControlVisibility(bool _visible)
 	{
-		if (_visible)
-		{
-			rightNodeCanavsGrp.interactable = true;
-			rightNodeCanavsGrp.blocksRaycasts = true;
-			RestartFadeOut(Node.RightNode);
-		}
-		else
-		{
-			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
-			StartCoroutine(QuickFadeOutCanvasGroup(rightNodeCanavsGrp));
-		}
-	}
-
-	public void PresentSpawnCtrl()
-	{
-		SetSpawnCtrlVisibility(true);
-		SetRightNodeControlVisibility(false);
-		SetLeftNodeControlVisibility(false);
+		SetCanvasGroupVisible(rightNodeCanavsGrp, _visible);
 	}
 
 	private void SetSpawnCtrlVisibility(bool _visible)
 	{
-		if (_visible)
-		{
-			// Only pop in if spawn control has completely faded.
-			if (spawnCtrlCanvasGrp.alpha == 0f)
-				StartCoroutine(Constants.s_strAnimateInSpawnCtrl);
-
-			RestartSpawnCtrlFadeOut();
-		}
-		else
-		{
-			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
-			StartCoroutine(QuickFadeOutCanvasGroup(spawnCtrlCanvasGrp));
-		}
+		if (_visible == false)
+			StopCoroutine(Constants.s_strAnimateInSpawnCtrl);
+		SetCanvasGroupVisible(spawnCtrlCanvasGrp, _visible);
 	}
 
+	public void PresentSpawnCtrl()
+	{
+		StartCoroutine(Constants.s_strAnimateInSpawnCtrl);
+	}
+	
 	public void DeselectAllCtrls()
 	{
 		SetSpawnCtrlVisibility(false);
@@ -234,28 +184,20 @@ public class player_control : MonoBehaviour
 
 
 	#region Animation Helper functions
-	private IEnumerator FadeOutCanvasGroup(CanvasGroup cgrp)
+	private void SetCanvasGroupVisible(CanvasGroup _cgrp, bool _visible)
 	{
-		yield return new WaitForSeconds(s_UIFadeOutDelay);
-		while (cgrp.alpha > 0)
+		if (_visible)
 		{
-			cgrp.alpha -= s_UIFadeOutSpeed * Time.deltaTime;
-			yield return null;
+			_cgrp.alpha = 1f;
+			_cgrp.interactable = true;
+			_cgrp.blocksRaycasts = true;
 		}
-		cgrp.interactable = false;
-		cgrp.blocksRaycasts = false;
-	}
-
-	private IEnumerator QuickFadeOutCanvasGroup(CanvasGroup cgrp)
-	{
-		while (cgrp.alpha > 0)
+		else
 		{
-			cgrp.alpha -= s_UIPopOutSpeed * Time.deltaTime;
-			yield return null;
+			_cgrp.alpha = 0f;
+			_cgrp.interactable = false;
+			_cgrp.blocksRaycasts = false;
 		}
-
-		cgrp.interactable = false;
-		cgrp.blocksRaycasts = false;
 	}
 
 	private IEnumerator FadeOutInfoPanel()
@@ -267,7 +209,7 @@ public class player_control : MonoBehaviour
 			yield return null;
 		}
 	}
-
+	
 	private void PresentInfoPanel()
 	{
 		infoPanelCanvasGrp.alpha = 1f;
@@ -275,40 +217,20 @@ public class player_control : MonoBehaviour
 		StartCoroutine(Constants.s_strFadeOutInfoPanel);
 	}
 
-	private void RestartFadeOut(Node _selectedNode)
-	{
-		switch (_selectedNode)
-		{
-		case Node.LeftNode:
-			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
-			leftNodeCanvasGrp.alpha = 1.0f;
-			StartCoroutine(Constants.s_strFadeOutCanvasGroup, leftNodeCanvasGrp);
-			break;
-		case Node.RightNode:
-			StopCoroutine(Constants.s_strFadeOutCanvasGroup);
-			rightNodeCanavsGrp.alpha = 1.0f;
-			StartCoroutine(Constants.s_strFadeOutCanvasGroup, rightNodeCanavsGrp);
-			break;
-		}
-	}
 
-	private void RestartSpawnCtrlFadeOut()
-	{
-		StopCoroutine(Constants.s_strFadeOutCanvasGroup);
-		spawnCtrlCanvasGrp.alpha = 1f;
-		StartCoroutine(Constants.s_strFadeOutCanvasGroup, spawnCtrlCanvasGrp);
-	}
+
+
+
+
+	
 
 	private IEnumerator AnimateInSpawnCtrl()
 	{
 		float t = 0f;
 		while (t < 1.0f)
 		{
-			for (int i = 0; i < btnRectTransform.Length; i++)
-			{
-				btnRectTransform[i].localPosition = Vector3.Lerp(mainCellPos, btnPos[i], t);
-				btnRectTransform[i].localScale = Vector3.Lerp(Vector3.zero, Vector3.one, t);
-			}
+			spwnCptBtnRectTransform.localPosition = Vector3.Lerp(mainCellPos, spwnCptBtnPos, t);
+			spwnCptBtnRectTransform.localScale = Vector3.Lerp(Vector3.zero, Vector3.one, t);
 			spawnCtrlCanvasGrp.alpha = t;
 			t += s_UIPopInSpeed * Time.deltaTime;
 
@@ -316,11 +238,8 @@ public class player_control : MonoBehaviour
 		}
 
 		// Ensure it's snapped to final position.
-		for (int i = 0; i < btnRectTransform.Length; i++)
-		{
-			btnRectTransform[i].localPosition = btnPos[i];
-			btnRectTransform[i].localScale = Vector3.one;
-		}
+		spwnCptBtnRectTransform.localPosition = spwnCptBtnPos;
+		spwnCptBtnRectTransform.localScale = Vector3.one;
 		spawnCtrlCanvasGrp.alpha = 1f;
 
 		spawnCtrlCanvasGrp.interactable = true;
@@ -334,15 +253,19 @@ public class player_control : MonoBehaviour
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)
 	{
+		Node _selectedNode = (Node) _nodeIndex;
+		if (activeNode != Node.None)
+			return;
+
 		if (PlayerChildFSM.GetActiveChildCount() >= Settings.s_nPlayerMaxChildCount)
 		{
 			infoText.text = "Reached\nMaximum\nChild Cell\nCount";
 			PresentInfoPanel();
+			return;
 		}
-		else if (s_nResources >= Settings.s_nPlayerChildSpawnCost)
-		{
-			Node _selectedNode = (Node) _nodeIndex;
-			
+
+		if (s_nResources >= Settings.s_nPlayerChildSpawnCost)
+		{	
 			// Call a child cell from object pool and set its m_assignedNode to assigned node.
 			PlayerChildFSM currentChild = PlayerChildFSM.Spawn(PlayerMain.Instance.transform.position + (Vector3)Random.insideUnitCircle*0.25f);
 			currentChild.m_assignedNode = Node_Manager.GetNode(_selectedNode);
@@ -360,21 +283,15 @@ public class player_control : MonoBehaviour
 			infoText.text = "Not enough\nnutrients\n\nNeeded:\n" + Settings.s_nPlayerChildSpawnCost + " units";
 			PresentInfoPanel();
 		}
-
-		RestartSpawnCtrlFadeOut();
 	}
 
-	public void ActionDefendAvoid(int _nodeIndex)
+	public void ActionDefendAvoid(Node _selectedNode)
 	{
-		Node _selectedNode = (Node) _nodeIndex;
 		Node_Manager.GetNode(_selectedNode).ToggleDefenseAvoid();
-
-		RestartFadeOut(_selectedNode);
 	}
 
-	public void ActionBurstShot(int _nodeIndex)
+	public void ActionBurstShot(Node _selectedNode)
 	{
-		Node _selectedNode = (Node) _nodeIndex;
 		Node_Manager selectedNode = Node_Manager.GetNode(_selectedNode);
 
 		if (selectedNode.activeChildCount < Settings.s_nPlayerActionBurstShotChildCost)
@@ -407,13 +324,11 @@ public class player_control : MonoBehaviour
 			PresentInfoPanel();
 		}
 
-		RestartFadeOut(_selectedNode);
 		UpdateUI_nodeChildCountText();
 	}
 
-	public void ActionSwarmTarget(int _nodeIndex)
+	public void ActionSwarmTarget(Node _selectedNode)
 	{
-		Node _selectedNode = (Node) _nodeIndex;
         Node_Manager selectedNode = Node_Manager.GetNode(_selectedNode);
 
         if (selectedNode.activeChildCount < Settings.s_nPlayerActionSwarmTargetChildCost)
@@ -445,13 +360,11 @@ public class player_control : MonoBehaviour
 			PresentInfoPanel();
         }
 
-		RestartFadeOut(_selectedNode);
 		UpdateUI_nodeChildCountText();
 	}
 
-	public void ActionScatterShot(int _nodeIndex)
+	public void ActionScatterShot(Node _selectedNode)
 	{
-		Node _selectedNode = (Node) _nodeIndex;
 		Node_Manager selectedNode = Node_Manager.GetNode(_selectedNode);
 
 		if (selectedNode.activeChildCount < Settings.s_nPlayerActionScatterShotChildCost)
@@ -483,7 +396,6 @@ public class player_control : MonoBehaviour
 			PresentInfoPanel();
 		}
 
-		RestartFadeOut(_selectedNode);
 		UpdateUI_nodeChildCountText();
 	}
 
@@ -594,9 +506,9 @@ public class player_control : MonoBehaviour
 		{
 			infoText.text = "Not enough\nchild cells\n\nNeeded:\n" + Settings.s_nPlayerSqaudCaptainChildCost + " cells";
 			PresentInfoPanel();
+			SetSpawnCtrlVisibility(false);
 		}
 
-		RestartSpawnCtrlFadeOut();
 		UpdateUI_nodeChildCountText();
 	}
 	#endregion
@@ -604,22 +516,150 @@ public class player_control : MonoBehaviour
 	#region Event Trigger Functions
 	public void SpawnBtnDown(int _nodeIndex)
 	{
-		Node _selectedNode = (Node) _nodeIndex;
+		if (activeNode != Node.None)
+			return;
 
-//		Debug.Log(_selectedNode.ToString() + " spwnBtn down");
+		Node _selectedNode = (Node) _nodeIndex;
+		switch (_selectedNode)
+		{
+		case Node.LeftNode:
+			SetRightNodeControlVisibility(false);
+			activeNode = Node.LeftNode;
+			break;
+
+		case Node.RightNode:
+			SetLeftNodeControlVisibility(false);
+			activeNode = Node.RightNode;
+			break;
+		}
 	}
 
 	public void SpawnBtnUp(int _nodeIndex)
 	{
 		Node _selectedNode = (Node) _nodeIndex;
 
-//		Debug.Log(_selectedNode.ToString() + " spwnBtn up");
+		if (_selectedNode == activeNode)
+			activeNode = Node.None;
 	}
 
-	public void Drag(BaseEventData data)
+	public void NodeBeginDrag(BaseEventData _data)
+	{
+		if (activeDraggedNode != Node.None)
+			return;
+
+		PointerEventData pointerData = _data as PointerEventData;
+		switch (pointerData.pointerPressRaycast.gameObject.name)
+		{
+		case GOname_LeftNode:
+			activeDraggedNode = Node.LeftNode;
+			break;
+		case GOname_RightNode:
+			activeDraggedNode = Node.RightNode;
+			break;
+		}
+	}
+
+	public void NodeDrag(BaseEventData _data)
+	{
+		PointerEventData pointerData = _data as PointerEventData;
+
+		switch (activeDraggedNode)
+		{
+		case Node.LeftNode:
+			if (pointerData.pointerPressRaycast.gameObject.name != GOname_LeftNode)
+				break;
+
+			if (pointerData.pointerCurrentRaycast.gameObject.name != GOname_LeftNode)
+				SetLeftNodeControlVisibility(true);
+			else
+				SetLeftNodeControlVisibility(false);
+			break;
+
+		case Node.RightNode:
+			if (pointerData.pointerPressRaycast.gameObject.name != GOname_RightNode)
+				break;
+
+			if (pointerData.pointerCurrentRaycast.gameObject.name != GOname_RightNode)
+				SetRightNodeControlVisibility(true);
+			else
+				SetRightNodeControlVisibility(false);
+			break;
+		}
+	}
+
+	public void NodeEndDrag(BaseEventData _data)
+	{
+		PointerEventData pointerData = _data as PointerEventData;
+		Debug.Log(pointerData.pointerPressRaycast.gameObject.name + " --> " + pointerData.pointerCurrentRaycast.gameObject.name);
+
+		switch (activeDraggedNode)
+		{
+		case Node.LeftNode:
+			switch (pointerData.pointerCurrentRaycast.gameObject.name)
+			{
+			case GOname_LeftNode_BurstShot:
+				ActionBurstShot(Node.LeftNode);
+				SetLeftNodeControlVisibility(false);
+				break;
+			case GOname_LeftNode_SwamTarget:
+				ActionSwarmTarget(Node.LeftNode);
+				SetLeftNodeControlVisibility(false);
+				break;
+			case GOname_LeftNode_ScatterShot:
+				ActionScatterShot(Node.LeftNode);
+				SetLeftNodeControlVisibility(false);
+				break;
+			case GOname_LeftNode_DefendAvoid:
+				ActionDefendAvoid(Node.LeftNode);
+				SetLeftNodeControlVisibility(false);
+				break;
+			default:
+				SetLeftNodeControlVisibility(false);
+				break;
+			}
+			break;
+
+		case Node.RightNode:
+			switch (pointerData.pointerCurrentRaycast.gameObject.name)
+			{
+			case GOname_RightNode_BurstShot:
+				ActionBurstShot(Node.RightNode);
+				SetRightNodeControlVisibility(false);
+				break;
+			case GOname_RightNode_SwamTarget:
+				ActionSwarmTarget(Node.RightNode);
+				SetRightNodeControlVisibility(false);
+				break;
+			case GOname_RightNode_ScatterShot:
+				ActionScatterShot(Node.RightNode);
+				SetRightNodeControlVisibility(false);
+				break;
+			case GOname_RightNode_DefendAvoid:
+				ActionDefendAvoid(Node.RightNode);
+				SetRightNodeControlVisibility(false);
+				break;
+			default:
+				SetRightNodeControlVisibility(false);
+				break;
+			}
+			break;
+		}
+
+		activeDraggedNode = Node.None;
+	}
+	
+	public void MainEndDrag(BaseEventData data)
 	{
 		PointerEventData pointerData = data as PointerEventData;
-//		Debug.Log (pointerData.pointerCurrentRaycast.gameObject.name);
+		switch (pointerData.pointerCurrentRaycast.gameObject.name)
+		{
+		case GOname_SpawnCptButton:
+			ActionSpawnCaptain();
+			break;
+		default:
+			SetSpawnCtrlVisibility(false);
+			break;
+		}
 	}
 	#endregion
 

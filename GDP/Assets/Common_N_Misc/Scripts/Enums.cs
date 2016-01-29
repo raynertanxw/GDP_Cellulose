@@ -28,8 +28,11 @@ public enum Directness  {Low, Mid, High};
 
 public enum Formation {Empty, QuickCircle, Ladder, ReverseCircular, Turtle};
 
+
+
+
 public enum PlayerAttackMode {BurstShot, SwarmTarget, ScatterShot};
 
-public enum Node {LeftNode, RightNode};
+public enum Node {LeftNode, RightNode, None};
 
 public enum pcStatus {DeadState, InLeftNode, InRightNode, Attacking};
