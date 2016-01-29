@@ -68,12 +68,14 @@ public class PlayerChildFSM : MonoBehaviour
 	#endregion
 
 	#region Setter functions
-	public static void SetActiveChildCount(bool increase)
+	public static void IncrementActiveChildCount()
 	{
-		if (increase)
-			s_nActiveChildCount++;
-		else
-			s_nActiveChildCount--;
+		++s_nActiveChildCount;
+	}
+
+	public static void DecrementActiveChildCount()
+	{
+		--s_nActiveChildCount;
 	}
 	#endregion
 
@@ -149,8 +151,8 @@ public class PlayerChildFSM : MonoBehaviour
 		m_statesDictionary.Add(PCState.Idle, new PC_IdleState(this));
 
 
-		PlayerChildFSM.SetActiveChildCount(true);
-		// Default Start currentState is dead state.
+		PlayerChildFSM.IncrementActiveChildCount();
+		// Change to dead state.
 		m_currentState = m_statesDictionary[PCState.Dead];
 		m_currentState.Enter();
 		m_currentEnumState = PCState.Dead;

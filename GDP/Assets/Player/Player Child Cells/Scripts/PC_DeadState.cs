@@ -8,6 +8,9 @@ public class PC_DeadState : IPCState
 
 	public override void Enter()
 	{
+		// Update active Child Count.
+		PlayerChildFSM.DecrementActiveChildCount();
+
 		// Hide the object and reset all variables.
 		m_pcFSM.rigidbody2D.isKinematic = true;
 		m_pcFSM.collider2D.enabled = false;
@@ -31,9 +34,6 @@ public class PC_DeadState : IPCState
 
 			player_control.Instance.UpdateUI_nodeChildCountText();
 		}
-
-		// Update active Child Count.
-		PlayerChildFSM.SetActiveChildCount(false);
 	}
 
 	public override void Execute()
@@ -47,6 +47,9 @@ public class PC_DeadState : IPCState
 
 	public override void Exit()
 	{
+		// Update active Child Count.
+		PlayerChildFSM.IncrementActiveChildCount();
+
 		// Unhide the object, enabling the sprite and colliders, etc.
 		m_pcFSM.rigidbody2D.isKinematic = false;
 		m_pcFSM.collider2D.enabled = true;
@@ -54,9 +57,6 @@ public class PC_DeadState : IPCState
 
 		// Reset State.
 		m_bIsCalledFromPool = false;
-
-		// Update active Child Count.
-		PlayerChildFSM.SetActiveChildCount(true);
 	}
 
     public override void FixedExecute()
