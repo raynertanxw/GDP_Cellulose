@@ -12,7 +12,7 @@ public class Nutrients : MonoBehaviour
 	
 	static public Nutrients Spawn(Vector3 spawnPoint)
 	{
-		for (int i = 0; i < Settings.s_nPlayerMaxNutrientCount; i++)
+		for (int i = 0; i < Constants.s_nPlayerMaxNutrientCount; i++)
 		{
 			if (s_playerNutrientPool[i].bIsInPool == true)
 			{
@@ -70,7 +70,7 @@ public class Nutrients : MonoBehaviour
 		if (s_playerNutrientPool == null)
 		{
 			// If not, lazy initiliase it
-			s_playerNutrientPool = new Nutrients[Settings.s_nPlayerMaxNutrientCount];
+			s_playerNutrientPool = new Nutrients[Constants.s_nPlayerMaxNutrientCount];
 			s_nPoolPointerIndex = 0;
 			s_nNutrients = Settings.s_nPlayerNutrientPerBlock;
 		}

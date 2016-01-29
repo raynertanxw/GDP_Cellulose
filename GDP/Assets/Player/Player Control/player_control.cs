@@ -257,7 +257,7 @@ public class player_control : MonoBehaviour
 		if (activeNode != Node.None)
 			return;
 
-		if (PlayerChildFSM.GetActiveChildCount() >= Settings.s_nPlayerMaxChildCount)
+		if (PlayerChildFSM.GetActiveChildCount() >= Constants.s_nPlayerMaxChildCount)
 		{
 			infoText.text = "Reached\nMaximum\nChild Cell\nCount";
 			PresentInfoPanel();
@@ -304,7 +304,7 @@ public class player_control : MonoBehaviour
 		{
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionBurstShotChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 			{
 				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
 				{
@@ -341,7 +341,7 @@ public class player_control : MonoBehaviour
         {
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionSwarmTargetChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 			{
 				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
 				{
@@ -377,7 +377,7 @@ public class player_control : MonoBehaviour
 		{
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionScatterShotChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 			{
 				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
 				{
@@ -416,7 +416,7 @@ public class player_control : MonoBehaviour
 			if (leftNode.activeChildCount > rightNode.activeChildCount)
 			{
 				// Use up cells in smaller node, OR till half of spawn cost.
-				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 				{
 					// Move to center.
 
@@ -435,7 +435,7 @@ public class player_control : MonoBehaviour
 				}
 
 				// Consume the remaining needed children.
-				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 				{
 					// Move to center.
 					
@@ -458,7 +458,7 @@ public class player_control : MonoBehaviour
 			else
 			{
 				// Use up cells in smaller node, OR till half of spawn cost.
-				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 				{
 					// Move to center.
 					
@@ -477,7 +477,7 @@ public class player_control : MonoBehaviour
 				}
 				
 				// Consume the remaining needed children.
-				for (int i = 0; i < Settings.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 				{
 					// Move to center.
 					
