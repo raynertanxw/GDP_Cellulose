@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -10,8 +11,6 @@ public class player_control : MonoBehaviour
 
 	public int s_nResources;
 	private Transform m_SquadCaptainNode;
-	
-	private Node m_nActiveNode = Node.RightNode;
 
 	private GameObject spwnCptBtnGO;
 	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp, infoPanelCanvasGrp;
@@ -156,8 +155,6 @@ public class player_control : MonoBehaviour
 	#region Bringing up and hiding control sets
 	public void ChangeActiveNode(Node nNewNode)
 	{
-		m_nActiveNode = nNewNode;
-
 		switch (nNewNode)
 		{
 		case Node.LeftNode:
@@ -604,6 +601,34 @@ public class player_control : MonoBehaviour
 	}
 	#endregion
 
+	#region Event Trigger Functions
+	public void SpawnBtnDown(int _nodeIndex)
+	{
+		Node _selectedNode = (Node) _nodeIndex;
+
+//		Debug.Log(_selectedNode.ToString() + " spwnBtn down");
+	}
+
+	public void SpawnBtnUp(int _nodeIndex)
+	{
+		Node _selectedNode = (Node) _nodeIndex;
+
+//		Debug.Log(_selectedNode.ToString() + " spwnBtn up");
+	}
+
+	public void Drag(BaseEventData data)
+	{
+		PointerEventData pointerData = data as PointerEventData;
+//		Debug.Log (pointerData.pointerCurrentRaycast.gameObject.name);
+	}
+	#endregion
+
+
+
+
+
+
+
 
 
 
@@ -623,15 +648,7 @@ public class player_control : MonoBehaviour
 	#endregion
 
 
-
-
-
-
-
-
-
-
-
+	
 
 
 
