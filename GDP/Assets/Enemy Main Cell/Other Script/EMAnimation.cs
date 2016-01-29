@@ -24,7 +24,7 @@ public class EMAnimation : MonoBehaviour
 	[SerializeField]
 	private bool bIsShrinking;
 	[SerializeField]
-	private float fExpandScale = 1.25f;
+	private float fExpandScale;
 	[SerializeField]
 	private float fDefaultExpandRate = .05f;
 	private float fTargetSize;
@@ -86,6 +86,7 @@ public class EMAnimation : MonoBehaviour
 		thisRB = GetComponent<Rigidbody2D> ();
 		thisRend = GetComponent<Renderer> ();
 		// Initialization of state status
+		fExpandScale = 1.25f;
 		fLandmineExpandFactor = 3f;
 		nDieAniPhase = 0;
 		// Initialization of status

@@ -141,10 +141,10 @@ public class EMController : MonoBehaviour
 		bCanStun = true;
 		bJustAttacked = false;
 		fAttackElapsedTime = 0.1f;
-		fDefaultStunTime = 5f;
+		fDefaultStunTime = Settings.s_fDefaultStunTime;
 		fCurrentStunTime = fDefaultStunTime;
 		fStunCoolDown = fDefaultStunTime * 2.0f;
-		fDefaultStunTolerance = 5f;
+		fDefaultStunTolerance = Settings.s_fDefaultStunTolerance;
 		fCurrentStunTolerance = fDefaultStunTolerance;
 
 		bIsMainBeingAttacked = false;
