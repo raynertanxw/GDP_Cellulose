@@ -92,6 +92,7 @@ public class ECIdleState : IECState
 		m_ecFSM.bHitWall = false;
 		SeperateDirection = DirectionDatabase.Instance.Extract();
 		fIdleScale = m_Main.transform.localScale.x * 0.85f;
+		m_ecFSM.rigidbody2D.drag = 0f;
 		IdleCount++;
 		ECTracker.s_Instance.IdleCells.Add(m_ecFSM);
 	}
@@ -207,7 +208,7 @@ public class ECIdleState : IECState
 	//A function that return a boolean on whether that specific child cell had entered the enemy main cell
 	public static bool HasChildEnterMain(GameObject _Child)
 	{
-		return (Utility.Distance(_Child.transform.position,EMTransform.position) <= EMBounds.size.x/8f) ? true : false;
+		return (Utility.Distance(_Child.transform.position,EMTransform.position) <= EMBounds.size.x/7f) ? true : false;
 	}
 	
 	//A function that reset all enemy child cell velocity to the main cell velocity

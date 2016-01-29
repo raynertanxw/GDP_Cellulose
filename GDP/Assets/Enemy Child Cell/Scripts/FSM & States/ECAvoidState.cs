@@ -13,6 +13,8 @@ public class ECAvoidState : IECState {
 	//Two floats to dictate how long the enemy child cell had waited to avoid any player cells and once over the limit, return the cell back to idle state
 	private float fAvoidTimer;
 	private float fTimerLimit;
+	
+	private static bool bReturnToMain;
 
 	//A GameObject reference to the closest attacking player cell nearby
 	private GameObject ClosestAttacker;
@@ -30,14 +32,15 @@ public class ECAvoidState : IECState {
 		fMaxAcceleration = 4f;
 		fTimerLimit = 1.5f;
 		fDetectRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 10;
-		
 		AttackersNearby = new List<GameObject>();
 	}
     
 	public override void Enter()
 	{
 		fAvoidTimer = 0f;
+		fMaxAcceleration = 4f;
 		m_ecFSM.rigidbody2D.drag = 2.6f;
+		bReturnToMain = false;
 		ECTracker.s_Instance.AvoidCells.Add(m_ecFSM);
 	}
 	
@@ -55,7 +58,8 @@ public class ECAvoidState : IECState {
 		
 		if(fAvoidTimer >= fTimerLimit)
 		{
-			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
+			bReturnToMain = true;
+			//MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
 		}
     }
 
@@ -67,9 +71,21 @@ public class ECAvoidState : IECState {
 		Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity ;
 
 		//if there is any attacking player cell nearby and there is a closest attacker, add the velocity for the enemy child cell to evade that closest attacker
-		if(AttackersNearby.Count > 0 && ClosestAttacker != null)
+		if(!bReturnToMain && AttackersNearby.Count > 0 && ClosestAttacker != null)
 		{
-			Acceleration += SteeringBehavior.Evade(m_Child,ClosestAttacker,24f);
+			Acceleration += LimitMaxAccelBasedOnHeight(SteeringBehavior.Evade(m_Child,ClosestAttacker,24f));
+		}
+		else if(bReturnToMain && !ECIdleState.HasChildEnterMain(m_Child))
+		{
+			//Debug.Log("going back to main");
+			m_ecFSM.rigidbody2D.drag = 1.4f;
+			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,10f);
+		}
+		else if(bReturnToMain && ECIdleState.HasChildEnterMain(m_Child))
+		{
+			//Debug.Log("reach main");
+			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
+			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
 		}
 
 		//Clamp the velocity to a maximum value, so the speed will reach a constant value
@@ -91,7 +107,7 @@ public class ECAvoidState : IECState {
 
     public override void Exit()
     {
-		m_ecFSM.rigidbody2D.drag = 0f;
+		//m_ecFSM.rigidbody2D.drag = 0f;
 		ECTracker.s_Instance.AvoidCells.Remove(m_ecFSM);
     }
 
@@ -134,5 +150,19 @@ public class ECAvoidState : IECState {
 		}
 
 		return ClosestAttacker;
+	}
+	
+	private Vector2 LimitMaxAccelBasedOnHeight(Vector2 _Accel)
+	{
+		float MaxEvadeRange = 4.0f;//3.5f;
+		float DifferenceYFromChildToMain = Mathf.Abs(m_Child.transform.position.y - m_Main.transform.position.y);
+		
+		if(DifferenceYFromChildToMain > MaxEvadeRange)
+		{
+			return new Vector2(_Accel.x, 0.5f * _Accel.y);
+		}
+		
+		float Ratio = 1f - (DifferenceYFromChildToMain/MaxEvadeRange);
+		return new Vector2(_Accel.x, Ratio * _Accel.y);
 	}
 }
