@@ -23,7 +23,9 @@ public class EMMainMenuAnimation : MonoBehaviour
 	#region Status
 	private float fLandmineExpandFactor;
 	private int nDieAniPhase;
-	
+
+	private bool bCanTransition;
+
 	[SerializeField]
 	private bool bCanRotate;
 	[SerializeField]
@@ -69,6 +71,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 	/// 6 - Stun
 	/// 7 - Die
 	/// </summary>
+	[SerializeField]
 	private int nCurrentStateNo;
 	// No of previous state
 	private int nPreviousStateNo;
@@ -84,6 +87,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 		fLandmineExpandFactor = 3f;
 		nDieAniPhase = 0;
 		// Initialization of status
+		bCanTransition = true;
 		bCanRotate = true;
 		bCanBlink = false;
 		bIsExpanding = false;
@@ -99,7 +103,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 			bIsRotatingLeft = true;
 		// Initialization of scale
 		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
+		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)Settings.s_nEnemyMainInitialHealth / 2f)));
 		transform.localScale = (Vector3)currentScale;
 		// Initialization of color
 		defaultColor = thisRend.material.color;
@@ -118,6 +122,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 	void Update () 
 	{
 		SizeUpdate ();
+		if (bCanTransition) 
+			StartCoroutine (StateTransitionPause ());
+		if (nCurrentStateNo == 2 || nCurrentStateNo == 3 || nCurrentStateNo == 4 || nCurrentStateNo == 5)
+			bCanBlink = true;
+		else
+			bCanBlink = false;
 	}
 	
 	void FixedUpdate ()
@@ -148,6 +158,27 @@ public class EMMainMenuAnimation : MonoBehaviour
 		{
 			nCurrentStateNo = Random.Range (1, 8);
 		} while (nCurrentStateNo == nPreviousStateNo);
+
+		nPreviousStateNo = nCurrentStateNo;
+
+		// Reset color
+		thisRend.material.color = defaultColor;
+
+		// Enable expansion if transition to Landmine state
+		if (nCurrentStateNo == 5)
+			bIsExpanding = true;
+	}
+
+	private IEnumerator StateTransitionPause ()
+	{
+		// Pause transition
+		bCanTransition = false;
+		// Call change state
+		StateUpdate ();
+		yield return new WaitForSeconds (Random.Range (5f, 8f));
+		// Enable transition if current state is not DIe
+		if (nCurrentStateNo != 7)
+			bCanTransition = true;
 	}
 
 	// Update the size of enemy main cell according to current health
@@ -155,12 +186,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 	{
 		if (EnemyMainFSM.Instance() != null)
 		{
-			if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow(Settings.s_nEnemyMainInitialHealth, 1.5f)))) && 
+			if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))) && 
 			    !bIsExpanding &&
 			    !bIsShrinking &&
 			    nCurrentStateNo != 7)
 			{
-				currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow(Settings.s_nEnemyMainInitialHealth, 1.5f))));
+				currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f))));
 				transform.localScale = (Vector3)currentScale;
 			}
 		}
@@ -221,12 +252,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 				}
 			} else if (!bIsExpanding && 
 			           bIsShrinking &&
-			           currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Settings.s_nEnemyMainInitialHealth)))) {
+			           currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt ((float)Settings.s_nEnemyMainInitialHealth / 2f)))) {
 				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			} else if (!bIsExpanding && 
 			           bIsShrinking &&
-			           currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Settings.s_nEnemyMainInitialHealth)))) {
+			           currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt ((float)Settings.s_nEnemyMainInitialHealth / 2f)))) {
 				bIsShrinking = false;
 			}
 			
@@ -280,6 +311,17 @@ public class EMMainMenuAnimation : MonoBehaviour
 			} else if (nDieAniPhase == 5) {
 				nDieAniPhase = 0;							// Prevent the animation from showing again before the next death
 			}
+
+			if (nDieAniPhase == 0)
+			{
+				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x)) / 2f;
+				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y)) / 2f;
+				
+				if (currentScale.x >= initialScale.x)
+				{
+					StateUpdate ();
+				}
+			}
 			
 			transform.localScale = (Vector3)currentScale;
 		} else {
@@ -312,14 +354,14 @@ public class EMMainMenuAnimation : MonoBehaviour
 			} 
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Settings.s_nEnemyMainInitialHealth)))) 
+			         currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt ((float)Settings.s_nEnemyMainInitialHealth / 2f)))) 
 			{
 				currentScale.x -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			}
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Settings.s_nEnemyMainInitialHealth)))) 
+			         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt ((float)Settings.s_nEnemyMainInitialHealth / 2f)))) 
 			{
 				bIsShrinking = false;
 				bIsExpanding = true;
@@ -341,7 +383,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 			fBlinkElapsedTime += Time.deltaTime;
 			if (nCurrentStateNo == 3)
 			{
-				if(fBlinkElapsedTime >= 0.8f / Mathf.Sqrt(Mathf.Sqrt(Settings.s_nEnemyMainInitialAggressiveness)))
+				if(fBlinkElapsedTime >= 0.8f / Mathf.Sqrt(Mathf.Sqrt((float)Settings.s_nEnemyMainInitialAggressiveness * 2f)))
 				{
 					if (thisRend.material.color != aggressiveColor)
 					{
@@ -355,7 +397,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 			}
 			else if (nCurrentStateNo == 4)
 			{
-				if(fBlinkElapsedTime >= 1.2f / Mathf.Sqrt(Mathf.Sqrt(Settings.s_nEnemyMainInitialAggressiveness)))
+				if(fBlinkElapsedTime >= 1.2f / Mathf.Sqrt(Mathf.Sqrt((float)Settings.s_nEnemyMainInitialAggressiveness * 2f)))
 				{
 					if (thisRend.material.color != cautiousColor)
 					{
@@ -369,7 +411,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 			}
 			else if (nCurrentStateNo == 5)
 			{
-				if(fBlinkElapsedTime >= 1.2f / Mathf.Sqrt(Mathf.Sqrt(Settings.s_nEnemyMainInitialAggressiveness)))
+				if(fBlinkElapsedTime >= 1.2f / Mathf.Sqrt(Mathf.Sqrt((float)Settings.s_nEnemyMainInitialAggressiveness * 2f)))
 				{
 					if (thisRend.material.color != landmineColor)
 					{
@@ -403,7 +445,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 			if (thisRend.material.color != stunColor)
 				thisRend.material.color = stunColor;
 		}
-		else
+		else 
 			thisRend.material.color = defaultColor;
 	}
 	// Update the color of halo effect
