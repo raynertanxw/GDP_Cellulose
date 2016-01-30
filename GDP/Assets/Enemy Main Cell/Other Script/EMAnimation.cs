@@ -379,8 +379,8 @@ public class EMAnimation : MonoBehaviour
 			}
 			else if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Defend)
 			{
-				if(fBlinkElapsedTime >= 2.5f / 
-				   (Mathf.Sqrt ((PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount () - EnemyMainFSM.Instance().AvailableChildNum) / 2.0f) / 10.0f))
+				if(fBlinkElapsedTime >= 1.2f / 
+				   (Mathf.Sqrt ((PlayerChildFSM.GetActiveChildCount () + PlayerSquadFSM.Instance.AliveChildCount () - EnemyMainFSM.Instance().AvailableChildNum) / 2.0f)))
 				{
 					if (thisRend.material.color != defendColor)
 					{

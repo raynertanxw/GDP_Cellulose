@@ -274,40 +274,40 @@ public class EMMainMenuAnimation : MonoBehaviour
 			if (nDieAniPhase == 1 && transform.localScale.x > initialScale.x / 2f) {
 				bIsExpanding = false;
 				bIsShrinking = true;
-				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2f));
-				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2f));
+				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2f)) / 1.5f;
+				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2f)) / 1.5f;
 			} else if (nDieAniPhase == 1)
 				nDieAniPhase = 2;
 			
 			if (nDieAniPhase == 2 && transform.localScale.x <= initialScale.x) {
 				bIsExpanding = true;
 				bIsShrinking = false;
-				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x));
-				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y));
+				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x)) / 1.5f;
+				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y)) / 1.5f;
 			} else if (nDieAniPhase == 2)
 				nDieAniPhase = 3;
 			
 			if (nDieAniPhase == 3 && transform.localScale.x > initialScale.x / 2.5f) {
 				bIsExpanding = false;
 				bIsShrinking = true;
-				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2f));
-				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2f));
+				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x - initialScale.x / 2.5f)) / 1.5f;
+				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y - initialScale.y / 2.5f)) / 1.5f;
 			} else if (nDieAniPhase == 3)
 				nDieAniPhase = 4;
 			
 			if (nDieAniPhase == 4 && transform.localScale.x <= initialScale.x / 1.25f) {
 				bIsExpanding = true;
 				bIsShrinking = false;
-				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x / 1.25f - currentScale.x));
-				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y / 1.25f - currentScale.y));
+				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x)) / 3f;
+				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y)) / 3f;
 			} else if (nDieAniPhase == 4)
 				nDieAniPhase = 5;
 			
 			if (nDieAniPhase == 5 && transform.localScale.x > initialScale.x / 20f) {
 				bIsExpanding = false;
 				bIsShrinking = true;
-				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x / 3f));
-				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y / 3f));
+				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.x / 5f));
+				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (currentScale.y / 5f));
 			} else if (nDieAniPhase == 5) {
 				nDieAniPhase = 0;							// Prevent the animation from showing again before the next death
 			}
@@ -317,7 +317,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x)) / 2f;
 				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y)) / 2f;
 				
-				if (currentScale.x >= initialScale.x)
+				if (currentScale.x >= initialScale.x * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)Settings.s_nEnemyMainInitialHealth / 2f))))
 				{
 					StateUpdate ();
 				}
@@ -425,8 +425,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 			}
 			else if (nCurrentStateNo == 2)
 			{
-				if(fBlinkElapsedTime >= 2.5f / 
-				   (Mathf.Sqrt ((Settings.s_nEnemyMainInitialChildCellNum) / 2.0f) / 10.0f))
+				if(fBlinkElapsedTime >= 1.2f / (Mathf.Sqrt ((Settings.s_nEnemyMainInitialChildCellNum) / 2.0f)))
 				{
 					if (thisRend.material.color != defendColor)
 					{
