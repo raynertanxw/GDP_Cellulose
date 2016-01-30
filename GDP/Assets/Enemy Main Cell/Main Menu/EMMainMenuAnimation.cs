@@ -45,26 +45,17 @@ public class EMMainMenuAnimation : MonoBehaviour
 	
 	#region Scale
 	private Vector2 initialScale;
-	public Vector2 InitialScale { get { return initialScale; } }
 	private Vector2 currentScale;
-	public Vector2 CurrentScale { get { return currentScale; } }
 	#endregion
 	
 	#region Color
 	private Color defaultColor;
-	public Color DefaultColor { get { return defaultColor; } }
 	private Color aggressiveColor;
-	public Color AggressiveColor { get { return aggressiveColor; } }
 	private Color cautiousColor;
-	public Color CautiousColor { get { return cautiousColor; } }
 	private Color landmineColor;
-	public Color LandmineColor { get { return landmineColor; } }
 	private Color defendColor;
-	public Color DefendColor { get { return defendColor; } }
 	private Color stunColor;
-	public Color StunColor { get { return stunColor; } }
 	private Color dieColor;
-	public Color DieColor { get { return dieColor; } }
 	#endregion
 
 	#region State Emulator
