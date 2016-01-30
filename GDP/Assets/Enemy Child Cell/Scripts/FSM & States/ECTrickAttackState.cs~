@@ -152,7 +152,8 @@ public class ECTrickAttackState : IECState {
 		//If the cell has not reached the current target position, continue seek towards that target position and remain seperate from rest of the enemy child cells
 		else if(bSqueezeDone && !HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
 		{
-			Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
+			Acceleration += SteeringBehavior.Arrive(m_Child,CurrentTargetPoint.Position, 0.03f);
+			//Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
 			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
 		}
