@@ -197,6 +197,12 @@ public class ECMineState : IECState {
 				CurrentTargetIndex++;
 				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 			}
+			
+			if(m_Child.transform.position.y < CurrentTargetPoint.Position.y && CurrentTargetIndex + 1 < PathToTarget.Count)
+			{
+				CurrentTargetIndex++;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			}
 		}
 		else if(GatherTogether && !bExploding && CurrentPositionType == PositionType.Neutral && bReachTarget == false)
 		{
@@ -224,6 +230,12 @@ public class ECMineState : IECState {
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
 			}
 			else if((HasCellReachTarget(CurrentTargetPoint.Position) || (m_Child.transform.position.y < CurrentTargetPoint.Position.y)) && CurrentTargetIndex + 1 < PathToTarget.Count)
+			{
+				CurrentTargetIndex++;
+				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			}
+			
+			if(m_Child.transform.position.y < CurrentTargetPoint.Position.y && CurrentTargetIndex + 1 < PathToTarget.Count)
 			{
 				CurrentTargetIndex++;
 				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
@@ -256,6 +268,7 @@ public class ECMineState : IECState {
 			//Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
 			//Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());//ExplodeDestroy();
+			ExplodeDestroy();
 		}
 
 		m_Child.transform.localScale = Vector3.one;
@@ -625,8 +638,8 @@ public class ECMineState : IECState {
 		Collider2D[] m_SurroundingObjects = Physics2D.OverlapCircleAll(m_Child.transform.position,fExplosiveRange);
 		float DistanceFromCenterOfBlast = 0f;
 
-		Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
-		Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
+		//Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
+		//Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
 			
 		for(int i = 0; i < m_SurroundingObjects.Length; i++)
 		{
