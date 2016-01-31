@@ -167,6 +167,8 @@ public class EMMainMenuAnimation : MonoBehaviour
 		// Enable expansion if transition to Landmine state
 		if (nCurrentStateNo == 5)
 			bIsExpanding = true;
+		else
+			bIsExpanding = false;
 	}
 
 	private IEnumerator StateTransitionPause ()

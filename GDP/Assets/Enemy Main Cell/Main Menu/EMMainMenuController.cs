@@ -79,8 +79,8 @@ public class EMMainMenuController : MonoBehaviour
 				velocity.y *= -1f;
 				thisRB.velocity = velocity;
 			}
-		} else if (transform.position.y < 0f) {
-			transform.position = new Vector2 (transform.position.x, 0f);
+		} else if (transform.position.y < bottomLimit) {
+			transform.position = new Vector2 (transform.position.x, bottomLimit);
 			if (velocity.y < 0f) {
 				velocity.y *= -1f;
 				thisRB.velocity = velocity;
@@ -97,8 +97,8 @@ public class EMMainMenuController : MonoBehaviour
 		// Randomize velocity
 		int bXPositive = Random.Range (0, 2);
 		int bYPositive = Random.Range (0, 2);
-		velocity.x = Random.Range (Settings.s_fEnemyMainMinHiriSpeed, Settings.s_fEnemyMainMinHiriSpeed * 2f);
-		velocity.y = Random.Range (Settings.s_fEnemyMainMinHiriSpeed, Settings.s_fEnemyMainMinHiriSpeed * 2f);
+		velocity.x = Random.Range (Settings.s_fEnemyMainMinHiriSpeed * 2f, Settings.s_fEnemyMainMinHiriSpeed * 5f);
+		velocity.y = Random.Range (Settings.s_fEnemyMainMinHiriSpeed * 2f, Settings.s_fEnemyMainMinHiriSpeed * 5f);
 		if (bXPositive == 0)
 			velocity.x *= -1f;
 		if (bYPositive == 0)
