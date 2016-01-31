@@ -50,9 +50,9 @@ public class EMLandmineState : IEMState
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 			
-			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25)
+			if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AvailableChildNum <= 15)
 			{
-				nCommandNum = Random.Range (1, 3 + (int)nEnemyChildFactor);
+				nCommandNum = Random.Range (1, 2 + (int)nEnemyChildFactor);
 				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
@@ -63,9 +63,9 @@ public class EMLandmineState : IEMState
 					}
 				}
 			}
-			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50)
+			else if (m_EMFSM.AvailableChildNum > 15 && m_EMFSM.AvailableChildNum <= 30)
 			{
-				nCommandNum = Random.Range (2, 4 + (int)nEnemyChildFactor);
+				nCommandNum = Random.Range (2, 3 + (int)nEnemyChildFactor);
 				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
@@ -76,9 +76,9 @@ public class EMLandmineState : IEMState
 					}
 				}
 			}
-			else if (m_EMFSM.AvailableChildNum > 50)
+			else if (m_EMFSM.AvailableChildNum > 30)
 			{
-				nCommandNum = Random.Range (3, 5 + (int)nEnemyChildFactor);
+				nCommandNum = Random.Range (3, 4 + (int)nEnemyChildFactor);
 				for (int nAmount = 0; nAmount < nCommandNum; nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
