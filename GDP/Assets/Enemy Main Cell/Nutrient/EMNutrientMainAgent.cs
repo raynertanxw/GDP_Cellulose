@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+[RequireComponent (typeof (Rigidbody2D))]
 [RequireComponent (typeof (CircleCollider2D))]
 public class EMNutrientMainAgent : MonoBehaviour 
 {
@@ -98,17 +99,17 @@ public class EMNutrientMainAgent : MonoBehaviour
 			currentVelocity += acceleration / Mathf.Sqrt (Mathf.Pow(fMass, 3));
 			// Reduce based on the friction
 			currentVelocity *= (1f - fFriction);
-			
-			if (currentVelocity.magnitude > fMaxVelocity)
-				currentVelocity = currentVelocity.normalized * fMaxVelocity;
-			if (currentVelocity.magnitude > 0f)
-				transform.position = transform.position + (Vector3)currentVelocity * Time.deltaTime;
 
 			if (currentVelocity.magnitude > 0f) {
 				float angle = Mathf.Atan2 (currentVelocity.y, currentVelocity.x) * Mathf.Rad2Deg;
 				
 				transform.eulerAngles = new Vector3 (transform.eulerAngles.x, transform.eulerAngles.y, angle);
 			}
+
+			if (currentVelocity.magnitude > fMaxVelocity)
+				currentVelocity = currentVelocity.normalized * fMaxVelocity;
+			if (currentVelocity.magnitude > 0f)
+				GetComponent<Rigidbody2D> ().velocity = currentVelocity;
 		}
 
 		// Instantiate mini nutrient
