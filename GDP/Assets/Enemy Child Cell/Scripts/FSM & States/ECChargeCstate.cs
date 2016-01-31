@@ -398,63 +398,6 @@ public class ECChargeCState : IECState {
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
 		}
 	}
-
-	private Style GetChargeChildStyle()
-	{
-		float PlayerHP = m_ecFSM.m_PMain.GetComponent<PlayerMain>().Health;
-		float EnemyHP = m_Main.GetComponent<EnemyMainFSM>().Health;
-
-		float EnemyChildAmt = m_Main.GetComponent<EnemyMainFSM>().ECList.Count;
-		float PlayerChildAmt = Node_Manager.GetNode(Node.LeftNode).activeChildCount + Node_Manager.GetNode(Node.RightNode).activeChildCount;
-
-		int Score = 0;
-
-		//Score will be added and reduced for every if condition passed
-		if(EnemyHP >= PlayerHP)
-		{
-			Score += 1;
-
-			//Enemy HP is 1.5 time of Player HP
-			if(EnemyHP > 1.5f * PlayerHP)
-			{
-				Score += 2;
-			}
-
-			//Enemy child count >= player child count
-			if(EnemyChildAmt > PlayerChildAmt)
-			{
-				Score += 1;
-				if(EnemyChildAmt > 1.5f * PlayerChildAmt)
-				{
-					Score += 2;
-				}
-			}
-
-			//Enemy Child count < player child count
-			Score -= 1;
-
-			//A squad exist
-			Score -= 1;
-
-			//A squad have a large amount of squad child
-			Score -= 2;
-		}
-		else if(EnemyHP < PlayerHP)
-		{
-			//Player HP is 1.5 time of Enemy HP
-
-			//Enemy child count >= player child count
-
-			//Enemy Child count < player child count
-
-			//A squad exist
-
-			//A squad have a large amount of squad child
-
-		}
-
-		return Style.Defensive;
-	}
 	
 	private IEnumerator SqueezeBeforeCharge(GameObject _Target)
 	{
@@ -476,5 +419,6 @@ public class ECChargeCState : IECState {
 		}
 		
 		bSqueezeDone = true;
+		AudioManager.PlayEnemySoundEffect(EnemySFX.CellChargeTowards);
 	}
 }

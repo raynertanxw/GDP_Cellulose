@@ -83,10 +83,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e2d2d48c14bfd845813353be39cf341, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fSpeed: 0
   m_PMain: {fileID: 0}
   m_EMain: {fileID: 0}
   m_ChargeTarget: {fileID: 0}
+  m_AttackTarget: {fileID: 0}
+  bHitWall: 0
 --- !u!212 &21292564
 SpriteRenderer:
   m_ObjectHideFlags: 1

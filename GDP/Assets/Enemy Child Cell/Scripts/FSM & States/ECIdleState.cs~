@@ -108,6 +108,7 @@ public class ECIdleState : IECState
 				ChildRB.velocity = MainRB.velocity;
 				if(EMControl.bIsAllChildWithinMain)
 				{
+					AudioManager.PlayEnemySoundEffect(EnemySFX.IdleExpand);
 					ResetAllChildVelocity();
 					ResetAllHitWall();
 					CurrentIdleState = IdleStatus.Seperate;
@@ -118,6 +119,7 @@ public class ECIdleState : IECState
 		//If the current idle status is seperating, all the child cells are being spread out fully and it has been 1.5s since the previous change of state or the time passed had been 1.75s, change the idle status to cohesion and record the time
 		else if(CurrentIdleState == IdleStatus.Seperate && Time.time - fPreviousStatusTime > fTimerLimit)
 		{
+			AudioManager.PlayEnemySoundEffect(EnemySFX.IdleContract);
 			ResetAllHitWall();
 			CurrentIdleState = IdleStatus.Cohesion;
 			fPreviousStatusTime = Time.time;

@@ -1,0 +1,66 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class AudioManager : MonoBehaviour {
+
+	//private AudioSource BackgroundAudioSource;
+	//private List<AudioSource> SFXAudioSources;
+	//public AudioClip[] BackgroundTracks;
+	
+	//private SceneType CurrentSceneType;
+	
+	//private enum SceneType{Menu,Gameplay,Null};
+
+	// Use this for initialization
+	void Start () 
+	{
+		/*DontDestroyOnLoad(gameObject);
+	
+		BackgroundAudioSource = GetComponent<AudioSource>();
+		SFXAudioSources = new List<AudioSource>();
+		BackgroundTracks = new AudioClip[7];*/
+		
+		//LoadRandomBackgroundTrack();
+	}
+	
+	// Update is called once per frame
+	void Update () 
+	{
+		
+	}
+	
+/*	private SceneType DetermineCurrentSceneType()
+	{
+		if(Application.loadedLevelName.Contains("Menu"))
+		{
+			return SceneType.Menu;
+		}
+		else if(Application.loadedLevelName.Contains("Level"))
+		{
+			return SceneType.Gameplay;
+		}
+		return SceneType.Null;
+	}
+	
+	public void LoadRandomBackgroundTrack()
+	{
+		CurrentSceneType = DetermineCurrentSceneType();
+		
+		if(CurrentSceneType == SceneType.Null){return;}
+		
+		int RandomTrackIndex = 0;
+		
+		if(CurrentSceneType == SceneType.Menu){RandomTrackIndex = Random.Range(0,3);}
+		if(CurrentSceneType == SceneType.Menu){RandomTrackIndex = Random.Range(3,8);}
+		
+		LoadAndPlayBackgroundTrack(BackgroundTracks[RandomTrackIndex]);
+	}
+	
+	public void LoadAndPlayBackgroundTrack(AudioClip _Clip)
+	{
+		BackgroundAudioSource.Stop();
+		BackgroundAudioSource.clip = _Clip;
+		BackgroundAudioSource.Play();
+	}*/
+}
