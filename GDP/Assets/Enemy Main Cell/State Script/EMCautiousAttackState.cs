@@ -14,8 +14,6 @@ public class EMCautiousAttackState : IEMState
 
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMCautiousAttackState");
-
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 
@@ -97,8 +95,6 @@ public class EMCautiousAttackState : IEMState
 
 	public override void Exit ()
 	{
-		Debug.Log ("Exit EMCautiousAttackState");
-
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 

@@ -14,8 +14,6 @@ public class EMDefendState : IEMState
 
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMDefendState");
-
 		transition = m_EMFSM.emTransition;
 		controller = m_EMFSM.emController;
 		helper = m_EMFSM.emHelper;
@@ -106,8 +104,6 @@ public class EMDefendState : IEMState
 
 	public override void Exit ()
 	{
-		Debug.Log ("Exit EMDefendState");
-
 		transition = m_EMFSM.emTransition;
 		controller = m_EMFSM.emController;
 		helper = m_EMFSM.emHelper;

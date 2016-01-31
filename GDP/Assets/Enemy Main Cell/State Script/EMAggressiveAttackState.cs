@@ -17,8 +17,6 @@ public class EMAggressiveAttackState : IEMState
 
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMAggressiveAttackState");
-
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 
@@ -100,8 +98,6 @@ public class EMAggressiveAttackState : IEMState
 
 	public override void Exit ()
 	{
-		Debug.Log ("Exit EMAggressiveAttackState");
-
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 

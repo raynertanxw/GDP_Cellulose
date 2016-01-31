@@ -14,8 +14,6 @@ public class EMLandmineState : IEMState
 
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMLandmineState");
-
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 
@@ -61,7 +59,6 @@ public class EMLandmineState : IEMState
 					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
 					{
 						MessageDispatcher.Instance.DispatchMessage(m_EMFSM.EnemyMainObject,m_EMFSM.ECList[nIndex].gameObject,MessageType.Landmine,0.0);
-						Debug.Log ("Lanmine Message Sent.");
 						helper.CanAddLandmine = false;
 					}
 				}
@@ -109,8 +106,6 @@ public class EMLandmineState : IEMState
 
 	public override void Exit ()
 	{
-		Debug.Log ("Exit EMLandmineState");
-
 		transition = m_EMFSM.emTransition;
 
 		// Reset animation status

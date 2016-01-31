@@ -14,8 +14,6 @@ public class EMDieState : IEMState
 
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMDieState");
-
 		transition = m_EMFSM.emTransition;
 		
 		// Reset transition availability

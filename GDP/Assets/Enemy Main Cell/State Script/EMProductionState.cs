@@ -14,8 +14,6 @@ public class EMProductionState : IEMState
 
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMProductionState");
-		
 		// Reset transition availability
 		EMTransition.Instance().CanTransit = true;
 		// Reset spawn availability
@@ -182,8 +180,6 @@ public class EMProductionState : IEMState
 
 	public override void Exit ()
 	{
-		Debug.Log ("Exit EMProductionState");
-		
 		// Reset transition availability
 		EMTransition.Instance().CanTransit = true;
 	}

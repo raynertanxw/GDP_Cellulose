@@ -14,8 +14,6 @@ public class EMWinState : IEMState
 	
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMWinState");
-		
 		transition = m_EMFSM.emTransition;
 		
 		// Reset transition availability
@@ -29,6 +27,9 @@ public class EMWinState : IEMState
 	
 	public override void Exit ()
 	{
+		transition = m_EMFSM.emTransition;
 		
+		// Reset transition availability
+		transition.CanTransit = true;
 	}
 }
