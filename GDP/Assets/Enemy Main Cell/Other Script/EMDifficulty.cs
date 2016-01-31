@@ -16,13 +16,13 @@ public class EMDifficulty : MonoBehaviour
 	[SerializeField]
 	private float fHealthWeight;
 	private float fMaxHealthInfluence;
-	private int nPrecedingHealth;
+	private int nCurrentHealth;
 	[SerializeField]
 	private float fNutrientDiff;				// Difficulty factor affected by the current num of nutrient of the enemy main cell
 	[SerializeField]
 	private float fNutrientWeight;
 	private float fMaxNutrientInfluence;
-	private int nPrecedingNutrient;
+	private int nCurrentNutrient;
 	[SerializeField]
 	private float fLevelDiff;					// Difficulty factor affected by the current level
 	[SerializeField]
@@ -37,16 +37,19 @@ public class EMDifficulty : MonoBehaviour
 			instance = this;
 		// Initialization of difficulty and factors
 		fHealthDiff = 1f;
+		fHealthWeight = 1f;
 		fNutrientDiff = 1f;
+		fNutrientWeight = 1f;
 		fLevelDiff = 3f;
+		fLevelWeight = 1f;
 		fCurrentDiff = 1f;
 		fMaxHealthInfluence = .5f;
 		fMaxNutrientInfluence = .5f;
 		// Initialization of current health and num of nutrient
 		if (EnemyMainFSM.Instance ().Health != 0)
-			nPrecedingHealth = EnemyMainFSM.Instance ().Health;
+			nCurrentHealth = EnemyMainFSM.Instance ().Health;
 		if (EMController.Instance ().NutrientNum != 0)
-			nPrecedingNutrient = EMController.Instance ().NutrientNum;
+			nCurrentNutrient = EMController.Instance ().NutrientNum;
 	}
 
 	void Update () 
@@ -55,21 +58,23 @@ public class EMDifficulty : MonoBehaviour
 		if (EnemyMainFSM.Instance () != null)
 		{
 			// Health Update
-			if (nPrecedingHealth != EnemyMainFSM.Instance ().Health)
+			if (nCurrentHealth != EnemyMainFSM.Instance ().Health)
 			{
-				nPrecedingHealth = EnemyMainFSM.Instance ().Health;
-				HealthDiffUpdate ();
+				nCurrentHealth = EnemyMainFSM.Instance ().Health;
 			}
 			// Nutrient Update
-			if (nPrecedingNutrient != EMController.Instance ().NutrientNum)
+			if (nCurrentNutrient != EMController.Instance ().NutrientNum)
 			{
-				nPrecedingNutrient = EMController.Instance ().NutrientNum;
-				NutrientDiffUpdate ();
+				nCurrentNutrient = EMController.Instance ().NutrientNum;
 			}
+			HealthDiffUpdate ();
+			NutrientDiffUpdate ();
 		}
 		#endregion
+		// Update current difficulty
+		CurrentDiffUpdate ();
 	}
-
+	// Update current difficulty
 	void CurrentDiffUpdate ()
 	{
 		fCurrentDiff = (fHealthDiff * fHealthWeight + fNutrientDiff * fNutrientWeight + fLevelDiff * fLevelWeight) / 3f;
@@ -79,14 +84,14 @@ public class EMDifficulty : MonoBehaviour
 	{
 		// Max fHealthDiff = 1f + fMaxHealthInfluence
 		if (EnemyMainFSM.Instance ().Health != 0)
-			fHealthDiff = 1f + fMaxHealthInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nPrecedingHealth));
+			fHealthDiff = 1f + fMaxHealthInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nCurrentHealth));
 	}
 
 	void NutrientDiffUpdate ()
 	{
 		// Max fNutrientDiff = 1f + fMaxNutrientInfluence
 		if (EMController.Instance().NutrientNum != 0)
-			fNutrientDiff = 1f + fMaxNutrientInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nPrecedingNutrient) * 2f) / Mathf.Sqrt (Mathf.Sqrt ((2f)));
+			fNutrientDiff = 1f + fMaxNutrientInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nCurrentNutrient) * 2f) / Mathf.Sqrt (Mathf.Sqrt ((2f)));
 	}
 
 	void LevelDiffUpdate ()
