@@ -30,6 +30,8 @@ public class EnemyChildFSM : MonoBehaviour
 	private float fRotationTarget;
 	private bool bRotateCW;
 	private bool bRotateACW;
+	
+	private AudioSource m_AudioSource;
 
 	void Start()
 	{
@@ -47,6 +49,8 @@ public class EnemyChildFSM : MonoBehaviour
 		
 		m_ChargeTarget = null;
 		m_StatesDictionary = new Dictionary<ECState,IECState>();
+		
+		m_AudioSource = GetComponent<AudioSource>();
 
 		//Initialize the various states for the enemy child cell and added them into the dictionary
 		m_StatesDictionary.Add(ECState.Idle, new ECIdleState(this.gameObject,this));
@@ -127,6 +131,11 @@ public class EnemyChildFSM : MonoBehaviour
 	public Rigidbody2D rigidbody2D
 	{
 		get{ return m_Rigidbody2D;}
+	}
+	
+	public AudioSource Audio
+	{
+		get{ return m_AudioSource;}
 	}
 
 	//a function to change the enemy child state and make the appropriate changes to the enemy child cell
