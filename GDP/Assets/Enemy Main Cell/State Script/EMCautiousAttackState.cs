@@ -44,7 +44,7 @@ public class EMCautiousAttackState : IEMState
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 
-			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25)
+			if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AvailableChildNum <= 15)
 			{
 				for (int nAmount = 0; nAmount < Random.Range (1, 2 + (int)(nEnemyChildFactor - nPlayerChildFactor)); nAmount++)
 				{
@@ -55,7 +55,7 @@ public class EMCautiousAttackState : IEMState
 					}
 				}
 			}
-			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50)
+			else if (m_EMFSM.AvailableChildNum > 15 && m_EMFSM.AvailableChildNum <= 30)
 			{
 				for (int nAmount = 0; nAmount < Random.Range (2, 3 + (int)(nEnemyChildFactor - nPlayerChildFactor)); nAmount++)
 				{
@@ -66,7 +66,7 @@ public class EMCautiousAttackState : IEMState
 					}
 				}
 			}
-			else if (m_EMFSM.AvailableChildNum > 50)
+			else if (m_EMFSM.AvailableChildNum > 30)
 			{
 				for (int nAmount = 0; nAmount < Random.Range (3, 4 + (int)(nEnemyChildFactor - nPlayerChildFactor)); nAmount++)
 				{

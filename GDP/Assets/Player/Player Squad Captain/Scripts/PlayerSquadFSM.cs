@@ -90,20 +90,26 @@ public class PlayerSquadFSM : MonoBehaviour
 	// Co-Routines
 	IEnumerator SpawnRoutine()
 	{
+		bIsProduce = true;
 		this.CalculateCooldown();
 		while (bIsProduce)
 		{
 			yield return new WaitForSeconds(fNextCooldown);
 
-			if (!this.CalculateCooldown() || SquadChildFSM.StateCount(SCState.Produce) == 0)
+			if (SquadChildFSM.StateCount(SCState.Produce) != 0)
 			{
-				bIsProduce = false;
+				if (!this.CalculateCooldown())
+				{
+					bIsProduce = false;
+				}
+				else
+				{
+					SquadChildFSM.Spawn(transform.position);
+					mAnimate.ExpandContract(0.1f, 1, 1.1f);
+				}
 			}
 			else
-			{
-				SquadChildFSM.Spawn(transform.position);
-				mAnimate.ExpandContract(0.1f, 1, 1.1f);
-			}
+				bIsProduce = false;
 		}
 	}
 
@@ -141,6 +147,11 @@ public class PlayerSquadFSM : MonoBehaviour
 	void Update()
 	{
 		// Pre-Execution
+		if (SquadChildFSM.StateCount(SCState.Produce) > 0)
+		{
+			if (!bIsProduce)
+				StartCoroutine("SpawnRoutine");
+		}
 
 		// Execution
 		m_CurrentState.Execute();
@@ -203,7 +214,6 @@ public class PlayerSquadFSM : MonoBehaviour
 	{
 		if (!bIsProduce)
 		{
-			bIsProduce = true;
 			StartCoroutine(SpawnRoutine());
 		}
 	}

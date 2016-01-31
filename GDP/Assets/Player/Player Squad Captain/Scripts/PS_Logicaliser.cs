@@ -53,49 +53,51 @@ public class PS_Logicaliser : MonoBehaviour
 			return;
 		}
 
-		// Production State Check
-		// if: The number of alive squad child is less than fMininumChildCount <--------------------------------------------- DEPERATE TIMES
-		if (PlayerSquadFSM.Instance.AliveChildCount() < nMinimumChildProducing)
-		{
-			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 1f);
-			m_PlayerSquadFSM.Advance(PSState.Produce);
-		}
-		// else if: There is more than enough child cells producing, moves to idle <----------------------------------------- RECOVERY
-		else if (SquadChildFSM.StateCount(SCState.Produce) > nMaximumChildProducing)
-		{
-			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 0.75f);
-		}
+        // Squad Child Cells Count Check
 
-		// if: There is child idling, assign them to defence <-------------------------------------------------------------- ASSIGN JOB
-		if (SquadChildFSM.StateCount(SCState.Idle) > 0)
-		{
-			// Runs a randomiser to determine whether if the cell will be assign to aggesive or defensive
-			// if: The cells will become aggressive
-			float value = UnityEngine.Random.value;
-			if (UnityEngine.Random.value > fAggressiveToDefensive)
-			{
-				SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Attack, 1f);
-			}
-			// else: The cells will become defensive
-			else
-			{
-				// if: This will check if the current condition still have room to move squad childs to defence state,
-				//     and is NOT the maximum number of child cells that can be in defence squad
-				if (SquadChildFSM.StateCount(SCState.Defend) < nMaximumChildDefence)
-				{
-					SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 0.5f);
-				}
-			}
-		}
-		// if: There is no child cells producing but it is still important to do it <-------------------------------------- ASSIGN JOB
-		if (SquadChildFSM.StateCount(SCState.Produce) == 0 && SquadChildFSM.AliveCount() < nOptionalToProduceAt)
-		{
-			SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 0.2f);
-		}
-		// if: There is extra child in Idle and the player have relatively low amount of resource
-		if (SquadChildFSM.StateCount(SCState.Idle) >= nAmountIdleBeforeConsider && player_control.Instance.s_nResources <= nNeedNutrients)
-		{
-			SquadChildFSM.AdvanceSquadPercentage(SCState.FindResource, 0.75f);
-		}
+        //// Production State Check
+        //// if: The number of alive squad child is less than fMininumChildCount <--------------------------------------------- DEPERATE TIMES
+        //if (PlayerSquadFSM.Instance.AliveChildCount() < nMinimumChildProducing)
+        //{
+        //    SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 1f);
+        //    m_PlayerSquadFSM.Advance(PSState.Produce);
+        //}
+        //// else if: There is more than enough child cells producing, moves to idle <----------------------------------------- RECOVERY
+        //else if (SquadChildFSM.StateCount(SCState.Produce) > nMaximumChildProducing)
+        //{
+        //    SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, SCState.Idle, 0.75f);
+        //}
+
+        //// if: There is child idling, assign them to defence <-------------------------------------------------------------- ASSIGN JOB
+        //if (SquadChildFSM.StateCount(SCState.Idle) > 0)
+        //{
+        //    // Runs a randomiser to determine whether if the cell will be assign to aggesive or defensive
+        //    // if: The cells will become aggressive
+        //    float value = UnityEngine.Random.value;
+        //    if (UnityEngine.Random.value > fAggressiveToDefensive)
+        //    {
+        //        SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Attack, 1f);
+        //    }
+        //    // else: The cells will become defensive
+        //    else
+        //    {
+        //        // if: This will check if the current condition still have room to move squad childs to defence state,
+        //        //     and is NOT the maximum number of child cells that can be in defence squad
+        //        if (SquadChildFSM.StateCount(SCState.Defend) < nMaximumChildDefence)
+        //        {
+        //            SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 0.5f);
+        //        }
+        //    }
+        //}
+        //// if: There is no child cells producing but it is still important to do it <-------------------------------------- ASSIGN JOB
+        //if (SquadChildFSM.StateCount(SCState.Produce) == 0 && SquadChildFSM.AliveCount() < nOptionalToProduceAt)
+        //{
+        //    SquadChildFSM.AdvanceSquadPercentage(SCState.Produce, 0.2f);
+        //}
+        //// if: There is extra child in Idle and the player have relatively low amount of resource
+        //if (SquadChildFSM.StateCount(SCState.Idle) >= nAmountIdleBeforeConsider && player_control.Instance.s_nResources <= nNeedNutrients)
+        //{
+        //    SquadChildFSM.AdvanceSquadPercentage(SCState.FindResource, 0.75f);
+        //}
 	}
 }
