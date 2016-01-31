@@ -144,18 +144,24 @@ public class AudioManager : MonoBehaviour {
 	
 	public static void PlayMenuSoundEffect(MenuSFX _sfx)
 	{
+		if (MenuTracks == null)
+			return;
 		MenuTracks[(int) _sfx].Stop();
 		MenuTracks[(int) _sfx].Play();
 	}
 	
 	public static void PlayPMSoundEffect(PlayerMainSFX _sfx)
 	{
+		if (PlayerTracks == null)
+			return;
 		PlayerTracks[(int) _sfx].Stop();
 		PlayerTracks[(int) _sfx].Play();
 	}
 	
 	public static void PlayEMSoundEffect(EnemyMainSFX _sfx)
 	{
+		if (EnemyTracks == null)
+			return;
 		EnemyTracks[(int) _sfx].Stop();
 		EnemyTracks[(int) _sfx].Play();
 	}
