@@ -14,8 +14,6 @@ public class EMMaintainState : IEMState
 
 	public override void Enter ()
 	{
-		Debug.Log ("Enter EMMaintainState");
-
 		transition = m_EMFSM.emTransition;
 		helper = m_EMFSM.emHelper;
 		
@@ -174,8 +172,6 @@ public class EMMaintainState : IEMState
 
 	public override void Exit ()
 	{
-		Debug.Log ("Exit EMMaintainState");
-
 		transition = m_EMFSM.emTransition;
 		
 		// Reset transition availability

@@ -28,7 +28,7 @@ public class EMNutrientMainFlock : MonoBehaviour
 	{
 		// Initialization
 		fFlockWeight = 1f;
-		fSeekWeight = .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)));
+		fSeekWeight = .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)EMController.Instance().NutrientNum + 4f)));
 		fNeighbourRadius = 1f;
 		fAlignmentWeight = .6f;
 		fCohesionWeigth = .6f;
@@ -44,8 +44,8 @@ public class EMNutrientMainFlock : MonoBehaviour
 		if (EMHelper.Instance () != null)
 			targetPosition = EMHelper.Instance ().Position;
 		// Update seek weight
-		if (fSeekWeight != .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum))))
-			fSeekWeight = .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum)));
+		if (fSeekWeight != .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum + 4f))))
+			fSeekWeight = .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum + 4f)));
 	}
 
 	#region Behaviour

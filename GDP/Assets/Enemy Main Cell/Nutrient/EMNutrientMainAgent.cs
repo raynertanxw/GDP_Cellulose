@@ -96,9 +96,13 @@ public class EMNutrientMainAgent : MonoBehaviour
 				}
 			}
 			// Lower acceleratin for heavier agent
-			currentVelocity += acceleration / Mathf.Sqrt (Mathf.Pow(fMass, 3));
+			if (fMass != 0f)
+				currentVelocity += acceleration / Mathf.Sqrt (Mathf.Pow(fMass, 3));
 			// Reduce based on the friction
 			currentVelocity *= (1f - fFriction);
+
+			if (currentVelocity.magnitude > fMaxVelocity)
+				currentVelocity = currentVelocity.normalized * fMaxVelocity;
 
 			if (currentVelocity.magnitude > 0f) {
 				float angle = Mathf.Atan2 (currentVelocity.y, currentVelocity.x) * Mathf.Rad2Deg;
@@ -106,8 +110,6 @@ public class EMNutrientMainAgent : MonoBehaviour
 				transform.eulerAngles = new Vector3 (transform.eulerAngles.x, transform.eulerAngles.y, angle);
 			}
 
-			if (currentVelocity.magnitude > fMaxVelocity)
-				currentVelocity = currentVelocity.normalized * fMaxVelocity;
 			if (currentVelocity.magnitude > 0f)
 				GetComponent<Rigidbody2D> ().velocity = currentVelocity;
 		}
@@ -124,8 +126,10 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Update the current position of the agent
 		position = this.gameObject.transform.position;
 		// Update mass of the agent
-		if (fMass != nSize * 2f)
-			fMass = nSize * 2f;
+		if (fMass != (float)nSize * 2f && nSize != 0)
+			fMass = (float)nSize * 2f;
+		if (fMass == 0f)
+			fMass = 4f;
 		// Update localScale of the agent
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 			transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
