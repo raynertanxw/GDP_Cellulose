@@ -160,7 +160,34 @@ public class SC_ProduceState : ISCState
 
 	public override void Execute()
 	{
+		ExecuteMethod.OnceInUpdate("SquadChildFSM.UpdateLandmineList", null, null);
+
 		m_scFSM.Strafing();
+
+		// if: There is more landmine than the production child count
+		if (SquadChildFSM.ListLandmine.Count >= SquadChildFSM.StateCount(SCState.Produce))
+		{
+			for (int i = 0; i < SquadChildFSM.ListLandmine.Count; i++)
+			{
+				if (Vector3.Distance(SquadChildFSM.ListLandmine[i].transform.position, m_scFSM.transform.position) < 2f)
+				{
+					m_scFSM.Advance(SCState.Avoid);
+					return;
+				}
+			}
+		}
+		// else if: There is lesser landmine state BUT not 0
+		else if (SquadChildFSM.ListLandmine.Count != 0)
+		{
+			for (int i = 0; i < SquadChildFSM.ListLandmine.Count; i++)
+			{
+				if (Vector3.Distance(SquadChildFSM.ListLandmine[i].transform.position, m_scFSM.transform.position) < 2f)
+				{
+					m_scFSM.Advance(SCState.Attack);
+					return;
+				}
+			}
+		}
 	}
 
 	public override void Exit()
@@ -263,4 +290,51 @@ public class SC_AttackState : ISCState
 	{
 
 	}
+}
+
+// SC_AvoidState: The avoid state of the player squad's captain
+public class SC_AvoidState : ISCState
+{
+	public SC_AvoidState(SquadChildFSM para_SquadChildFSM)
+	{
+		m_scFSM = para_SquadChildFSM;
+	}
+
+	public override void Execute()
+	{
+		// Re-initialisation of variables
+		ExecuteMethod.OnceInUpdate("SquadChildFSM.UpdateLandmineList", null, null);
+		Vector3 finalMovement = Vector3.zero; // finalMovement: The final movement in which will be used for that current frame
+
+		// if: There is no landmine, return the squad child to idle
+		if (SquadChildFSM.ListLandmine.Count == 0)
+		{
+			Debug.Log("List count is 0");
+			m_scFSM.Advance(SCState.Produce);
+			return;
+		}
+
+		// vectorApart: The distance between the current squad child cells and the current enemy child cells
+		Vector3 smallestVectorApart = Vector3.one * 3f;
+		Vector3 currentVectorApart;
+		// for: Check every landmine and determines the closest landmine to avoid
+		for (int i = 0; i < SquadChildFSM.ListLandmine.Count; i++)
+		{
+			currentVectorApart = m_scFSM.transform.position - SquadChildFSM.ListLandmine[i].transform.position;
+
+			// if: The current distance between the enemy and child cells is smaller than the current smallest
+			//     then use this new vector as the smallest
+			if (currentVectorApart.magnitude < smallestVectorApart.magnitude)
+				smallestVectorApart = currentVectorApart;
+		}
+		// finalMovement: The final vector to travel to avoid other cells
+		finalMovement = smallestVectorApart.normalized * (1f - smallestVectorApart.magnitude / 3f);
+
+		//Debug.Log(m_scFSM.gameObject.name + "::Rigibody->velocity(): " + m_scFSM.RigidBody.velocity + ", finalMovment: " + finalMovement);
+
+		m_scFSM.RigidBody.AddForce(finalMovement * 50.0f);
+		m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, finalMovement.magnitude);
+	}
+
+	// Public Static Functions
 }

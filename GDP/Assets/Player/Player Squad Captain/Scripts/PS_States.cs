@@ -98,3 +98,12 @@ public class PS_DeadState : IPSState
         m_psFSM.bIsAlive = true;
     }
 }
+
+// PS_AvoidState: The avoid state of the squad captain
+public class PS_AvoidState : IPSState
+{
+    public PS_AvoidState(PlayerSquadFSM para_PlayerSquadFSM)
+    {
+        m_psFSM = para_PlayerSquadFSM;
+    }
+}

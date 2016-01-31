@@ -35,6 +35,10 @@ public class SquadChildFSM : MonoBehaviour
 	private static float fDefenceRigidity;
 	private static float fAttackSpeed;
 
+	private static Vector3 playerPosition;                      // playerPosition: The position of the player main
+	private static List<EnemyChildFSM> s_list_EnemyLandmine;    // s_list_EnemyLandmine: The list of enemy landmine, use to detect landmine
+																//                     Used in Produce and Avoid state
+
 	// Uneditable Fields
 	private float fStrafingOffsetAngle = 0f;                    // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
 	private float fDefenceOffsetAngle = 0f;                     // fDefenceOffsetAngle: Stores the angular distances away from the leftmost angle 
@@ -43,8 +47,6 @@ public class SquadChildFSM : MonoBehaviour
 	private SCState m_currentEnumState;                         // m_currentEnumState: The current enum state of the FSM
 	private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
 	private Vector2 mainDefenceVector;                          // mainDefenceVector: The main defence vector, this will be initilised at the start and will be use without change
-
-	private static Vector3 playerPosition;                      // playerPosition: The position of the player main
 
 	[HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
 	[HideInInspector] public EnemyChildFSM attackTarget;        // attackTarget: The target to attack
@@ -113,6 +115,7 @@ public class SquadChildFSM : MonoBehaviour
 		dict_States.Add(SCState.Defend, new SC_DefendState(this));
 		dict_States.Add(SCState.Produce, new SC_ProduceState(this));
 		dict_States.Add(SCState.FindResource, new SC_FindResourceState(this));
+		dict_States.Add(SCState.Avoid, new SC_AvoidState(this));
 
 		// Initialisation
 		playerPosition = PlayerMain.Instance.transform.position;
@@ -128,6 +131,9 @@ public class SquadChildFSM : MonoBehaviour
 
 		mainDefenceVector = Quaternion.Euler(0f, 0f, (fDefenceAngle / 2.0f)) * Vector2.up * fDefenceRadius;
 
+		if (s_list_EnemyLandmine == null)
+			s_list_EnemyLandmine = ECTracker.Instance.LandmineCells;
+
 		// Initialisation of first state
 		m_currentEnumState = SCState.Dead;
 		m_currentState = dict_States[m_currentEnumState];
@@ -137,6 +143,8 @@ public class SquadChildFSM : MonoBehaviour
 	// Private Functions
 	void Update()
 	{
+		if (attackTarget != null)
+			this.Draw(attackTarget.transform.position);
 
 		// Excution of the current state
 		m_currentState.Execute();
@@ -561,7 +569,14 @@ public class SquadChildFSM : MonoBehaviour
 		return m_strafingVector;
 	}
 
+	// UpdateLandmineList(): Updates the landmine list
+	public static void UpdateLandmineList()
+	{
+		s_list_EnemyLandmine = ECTracker.Instance.LandmineCells;
+	}
+
 	public static SquadChildFSM[] SquadChildArray { get { return s_array_SquadChildFSM; } }
+	public static List<EnemyChildFSM> ListLandmine { get { return s_list_EnemyLandmine; } }
 
 	// Getter-Setter Functions
 	public SCState EnumState { get { return m_currentEnumState; } }
@@ -569,16 +584,9 @@ public class SquadChildFSM : MonoBehaviour
 	public bool IsAlive { get { return bIsAlive; } }
 	public Rigidbody2D RigidBody { get { return m_RigidBody; } }
 
-
-
-
-
-
-
-
-
 	public static void ResetStatics()
 	{
 		s_array_SquadChildFSM = null;
+		s_list_EnemyLandmine = null;
 	}
 }

@@ -3,9 +3,9 @@ using System.Collections;
 
 public enum PCState {Idle, Defend, ChargeMain, ChargeChild, Avoid, Dead};
 
-public enum PSState {Idle, Attack, Defend, Produce, FindResource, Dead };
+public enum PSState {Idle, Attack, Defend, Produce, FindResource, Dead, Avoid };
 
-public enum SCState {Idle, Attack, Defend, Produce, FindResource, Dead };
+public enum SCState {Idle, Attack, Defend, Produce, FindResource, Dead, Avoid };
 
 public enum EMState {Production, Maintain, Defend, AggressiveAttack, CautiousAttack, Landmine, Stunned, Die, Win};
 
