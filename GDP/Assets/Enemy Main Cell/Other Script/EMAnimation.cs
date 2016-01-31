@@ -105,7 +105,7 @@ public class EMAnimation : MonoBehaviour
 			bIsRotatingLeft = true;
 		// Initialization of scale
 		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EnemyMainFSM.Instance().Health)));
+		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)EnemyMainFSM.Instance().Health, 1.5f))));
 		transform.localScale = (Vector3)currentScale;
 		// Initialization of color
 		defaultColor = thisRend.material.color;
@@ -216,12 +216,12 @@ public class EMAnimation : MonoBehaviour
 				}
 			} else if (!bIsExpanding && 
 				bIsShrinking &&
-				currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) {
+				currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Pow((float)EnemyMainFSM.Instance().Health, 1.5f))))) {
 				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			} else if (!bIsExpanding && 
 				bIsShrinking &&
-				currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) {
+				currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Pow((float)EnemyMainFSM.Instance().Health, 1.5f))))) {
 				bIsShrinking = false;
 			}
 
@@ -308,14 +308,14 @@ public class EMAnimation : MonoBehaviour
 			} 
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
+					 currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Pow((float)EnemyMainFSM.Instance().Health, 1.5f))))) 
 			{
 				currentScale.x -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			}
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (EnemyMainFSM.Instance ().Health)))) 
+					 currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Pow((float)EnemyMainFSM.Instance().Health, 1.5f))))) 
 			{
 				bIsShrinking = false;
 				bIsExpanding = true;
