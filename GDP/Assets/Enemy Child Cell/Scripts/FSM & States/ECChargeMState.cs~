@@ -79,7 +79,7 @@ public class ECChargeMState : IECState {
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 		
-		if(CurrentTargetPoint != null && m_Child.transform.position.y < CurrentTargetPoint.Position.y)
+		if(CurrentTargetPoint != null && m_Child.transform.position.y < CurrentTargetPoint.Position.y && CurrentTargetIndex + 1 < PathToTarget.Count)
 		{
 			CurrentTargetIndex++;
 			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
@@ -226,6 +226,7 @@ public class ECChargeMState : IECState {
 		}
 
 		bSqueezeDone = true;
+		//AudioManager.PlayEnemySoundEffect(EnemySFX.CellChargeTowards);
 	}
 }
 

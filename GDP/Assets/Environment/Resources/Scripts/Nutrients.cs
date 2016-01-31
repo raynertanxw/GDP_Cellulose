@@ -126,6 +126,7 @@ public class Nutrients : MonoBehaviour
 	{
 		if (bIsCollectable)
 		{
+			AudioManager.PlayPMSoundEffect(PlayerMainSFX.AbsorbNutrient);
 			player_control.Instance.s_nResources += s_nNutrients;
 			player_control.Instance.UpdateUI_nutrients();
 			fClickMagnitude = (transform.position - playerMainTransform.position).magnitude;

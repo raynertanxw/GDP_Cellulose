@@ -148,13 +148,13 @@ public class AudioManager : MonoBehaviour {
 		MenuTracks[(int) _sfx].Play();
 	}
 	
-	public static void PlayPlayerSoundEffect(PlayerSFX _sfx)
+	public static void PlayPMSoundEffect(PlayerMainSFX _sfx)
 	{
 		PlayerTracks[(int) _sfx].Stop();
 		PlayerTracks[(int) _sfx].Play();
 	}
 	
-	public static void PlayEnemySoundEffect(EnemySFX _sfx)
+	public static void PlayEMSoundEffect(EnemyMainSFX _sfx)
 	{
 		EnemyTracks[(int) _sfx].Stop();
 		EnemyTracks[(int) _sfx].Play();

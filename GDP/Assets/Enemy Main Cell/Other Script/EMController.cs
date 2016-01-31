@@ -51,7 +51,7 @@ public class EMController : MonoBehaviour
 	[SerializeField] 
 	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
 	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
-	public void CauseDamageOne () { nDamageNum++; m_EMFSM.Health--; fAttackElapsedTime = 0.1f; }
+	public void CauseDamageOne () { nDamageNum++; m_EMFSM.Health--; fAttackElapsedTime = 0.1f; AudioManager.PlayEMSoundEffect(EnemyMainSFX.MainBeingHit);}
 	private bool bPushed; 
 	public bool Pushed { get { return bPushed; } }
 	private bool bStunned;

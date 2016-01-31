@@ -419,6 +419,6 @@ public class ECChargeCState : IECState {
 		}
 		
 		bSqueezeDone = true;
-		AudioManager.PlayEnemySoundEffect(EnemySFX.CellChargeTowards);
+		//AudioManager.playe(EnemySFX.CellChargeTowards);
 	}
 }

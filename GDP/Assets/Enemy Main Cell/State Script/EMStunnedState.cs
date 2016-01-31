@@ -20,6 +20,8 @@ public class EMStunnedState : IEMState
 
 		// Reset transition availability
 		transition.CanTransit = false;
+		
+		AudioManager.PlayEMSoundEffect(EnemyMainSFX.Stunned);
 	}
 
 	public override void Execute ()

@@ -39,8 +39,12 @@ public enum pcStatus {DeadState, InLeftNode, InRightNode, Attacking};
 
 public enum MenuSFX {PressSelection, PressCancel};
 
-public enum EnemySFX {AbsorbNutrient,CellChargeTowards,Defend,DeployLandmine,IdleContract,IdleExpand,LandmineBeeping,LandmineExplode,Stunned,MainBeingHit,MainDeath};
+public enum EnemyMainSFX {AbsorbNutrient,IdleContract,IdleExpand,Stunned,MainBeingHit,MainDeath};
 
-public enum PlayerSFX {AbsorbNutrient, ActionSelectAppear, ActionSelectDissapear, ActionSelecteSelected, BurstShot, ScatterShot, Swarm, SpawnCell, TapNutrient, Win, Lose, MainBeingHit, MainDeath};
+public enum EnemyChildSFX {CellChargeTowards,Defend,DeployLandmine,LandmineBeeping,LandmineExplode};
+
+public enum PlayerMainSFX {AbsorbNutrient, ActionSelectAppear, ActionSelectDissapear, ActionSelecteSelected, TapNutrient, Win, Lose, MainBeingHit, MainDeath, SpawnCell};
+
+public enum PlayerChildSFX {BurstShot, ScatterShot, Swarm};
 
 public enum SquadSFX {SpawnCell, ChildAttack};

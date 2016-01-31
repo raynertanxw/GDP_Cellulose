@@ -122,5 +122,6 @@ public class EMNutrientMiniController : MonoBehaviour
 	void OnTriggerEnter2D (Collider2D collision)
 	{
 		bIsAbsorbed = true;
+		AudioManager.PlayEMSoundEffect(EnemyMainSFX.AbsorbNutrient);
 	}
 }

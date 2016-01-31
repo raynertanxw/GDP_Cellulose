@@ -18,6 +18,8 @@ public class EMDieState : IEMState
 		
 		// Reset transition availability
 		transition.CanTransit = false;
+		
+		AudioManager.PlayEMSoundEffect(EnemyMainSFX.MainDeath);
 	}
 	
 	public override void Execute ()
