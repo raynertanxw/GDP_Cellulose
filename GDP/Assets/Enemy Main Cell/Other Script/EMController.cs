@@ -169,6 +169,9 @@ public class EMController : MonoBehaviour
 		{
 			StartCoroutine(Stun ());
 		}
+		// Update speed factor
+		if (fSpeedFactor != EMDifficulty.Instance ().CurrentDiff)
+			fSpeedFactor = EMDifficulty.Instance ().CurrentDiff;
 		// Keep updating velocity when stunned
 		if (bStunned && thisRB.velocity != velocity)
 			ResetVelocity ();

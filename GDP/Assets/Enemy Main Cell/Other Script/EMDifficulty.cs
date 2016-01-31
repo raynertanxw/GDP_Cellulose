@@ -40,7 +40,7 @@ public class EMDifficulty : MonoBehaviour
 		fHealthWeight = 1f;
 		fNutrientDiff = 1f;
 		fNutrientWeight = 1f;
-		fLevelDiff = 3f;
+		fLevelDiff = 1f;
 		fLevelWeight = 1f;
 		fCurrentDiff = 1f;
 		fMaxHealthInfluence = .5f;

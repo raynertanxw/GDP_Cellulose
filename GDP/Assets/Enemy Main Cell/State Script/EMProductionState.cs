@@ -39,7 +39,7 @@ public class EMProductionState : IEMState
 		if (m_EMFSM.AvailableChildNum > 10 && EMTransition.Instance().CanTransit && controller.NutrientNum > 0) 
 		{
 			// If there are more than 10  and less than 25 available enemy mini cells
-			if (m_EMFSM.AvailableChildNum > 10 && m_EMFSM.AvailableChildNum <= 25) 
+			if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AvailableChildNum <= 15) 
 			{
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
@@ -47,8 +47,8 @@ public class EMProductionState : IEMState
 				// Transition to Defend
 				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       ((helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 10f) + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Defend)),
+					                                    (nPlayerChildFactor * 2.5f + 
+					 EMLeraningAgent.Instance().RealScore(EMState.Defend)) * (1f + EMHelper.Instance().MinToMaxYRatio),
 					                       EMState.Defend);
 				}
 
@@ -85,7 +85,7 @@ public class EMProductionState : IEMState
 					                       EMState.Maintain);
 				}
 			} 
-			else if (m_EMFSM.AvailableChildNum > 25 && m_EMFSM.AvailableChildNum <= 50) 
+			else if (m_EMFSM.AvailableChildNum > 15 && m_EMFSM.AvailableChildNum <= 30) 
 			{
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
@@ -93,8 +93,8 @@ public class EMProductionState : IEMState
 				// Transition to Defend
 				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 8f && (nPlayerChildFactor - nEnemyChildFactor) > 2f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       ((helper.Pow (nPlayerChildFactor - nEnemyChildFactor, 2f) * 5f) + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Defend)),
+					                                    (nPlayerChildFactor * 1.5f + 
+					 EMLeraningAgent.Instance().RealScore(EMState.Defend)) * (1f + EMHelper.Instance().MinToMaxYRatio),
 					                       EMState.Defend);
 				}
 				
@@ -131,7 +131,7 @@ public class EMProductionState : IEMState
 					                       EMState.Maintain);
 				}
 			}
-			else if (m_EMFSM.AvailableChildNum > 50)
+			else if (m_EMFSM.AvailableChildNum > 30)
 			{
 				float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
