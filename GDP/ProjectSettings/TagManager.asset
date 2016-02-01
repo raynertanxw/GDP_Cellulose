@@ -10,6 +10,7 @@ TagManager:
   - Wall
   - EnemyMainNutrient
   - EnemyMiniNutrient
+  - AudioController
   layers:
   - Default
   - TransparentFX
