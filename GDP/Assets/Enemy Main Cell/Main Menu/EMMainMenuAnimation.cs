@@ -11,6 +11,8 @@ public class EMMainMenuAnimation : MonoBehaviour
 	public GameObject halo;
 
 	[SerializeField]
+	private float fSizeFactor = 1f;
+	[SerializeField]
 	private bool bIsExpanding;
 	[SerializeField]
 	private bool bIsShrinking;
@@ -103,7 +105,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 			bIsRotatingLeft = true;
 		// Initialization of scale
 		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f))));
+		currentScale = initialScale * fSizeFactor;
 		transform.localScale = (Vector3)currentScale;
 		// Initialization of color
 		defaultColor = thisRend.material.color;
@@ -188,12 +190,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 	{
 		if (EnemyMainFSM.Instance() != null)
 		{
-			if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))) && 
+			if (currentScale != initialScale * fSizeFactor && 
 			    !bIsExpanding &&
 			    !bIsShrinking &&
 			    nCurrentStateNo != 7)
 			{
-				currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f))));
+				currentScale = initialScale * fSizeFactor;
 				transform.localScale = (Vector3)currentScale;
 			}
 		}
@@ -254,12 +256,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 				}
 			} else if (!bIsExpanding && 
 			           bIsShrinking &&
-			           currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) {
+			           currentScale.x >= initialScale.x * fSizeFactor) {
 				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			} else if (!bIsExpanding && 
 			           bIsShrinking &&
-			           currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) {
+			           currentScale.x < initialScale.x * fSizeFactor) {
 				bIsShrinking = false;
 			}
 			
@@ -316,12 +318,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 
 			if (nDieAniPhase == 0)
 			{
-				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x)) / 2f;
-				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y)) / 2f;
+				currentScale.x += fDefaultExpandRate * (initialScale.x * fSizeFactor - currentScale.x / 1.5f) / 2f;
+				currentScale.y += fDefaultExpandRate * (initialScale.y * fSizeFactor - currentScale.y / 1.5f) / 2f;
 				
-				if (currentScale.x >= initialScale.x * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f))))))
+				if (currentScale.x >= initialScale.x * fSizeFactor)
 				{
-					StateUpdate ();
+					bCanTransition = true;
 				}
 			}
 			
@@ -356,14 +358,14 @@ public class EMMainMenuAnimation : MonoBehaviour
 			} 
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) 
+			         currentScale.x >= initialScale.x * fSizeFactor) 
 			{
 				currentScale.x -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			}
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) 
+			         currentScale.x < initialScale.x * fSizeFactor) 
 			{
 				bIsShrinking = false;
 				bIsExpanding = true;
