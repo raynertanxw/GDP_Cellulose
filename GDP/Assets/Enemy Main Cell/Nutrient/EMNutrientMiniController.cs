@@ -112,7 +112,7 @@ public class EMNutrientMiniController : MonoBehaviour
 							   Random.Range (.5f, 1f);
 		if (Vector2.Distance ((Vector2)transform.position, EMHelper.Instance().Position) < .1f || transform.localScale.x < .1f) 
 		{
-			EMController.Instance().AddNutrient ();
+			EMController.Instance().AddFewNutrient (Random.Range (2, 6));
 			if (!EMAnimation.Instance().IsExpanding)
 				EMAnimation.Instance().IsExpanding = true;
 			Destroy (this.gameObject);

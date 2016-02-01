@@ -88,6 +88,7 @@ public class EMController : MonoBehaviour
 	public int NutrientNum { get { return nCurrentNutrientNum; } }
 	public void ReduceNutrient () { nCurrentNutrientNum--; }
 	public void AddNutrient () { nCurrentNutrientNum++; }
+	public void AddFewNutrient (int num) { nCurrentNutrientNum += num; }
 	#endregion
 
 	private Rigidbody2D thisRB;
@@ -170,7 +171,7 @@ public class EMController : MonoBehaviour
 			StartCoroutine(Stun ());
 		}
 		// Update speed factor
-		if (fSpeedFactor != EMDifficulty.Instance ().CurrentDiff)
+		if (fSpeedFactor != EMDifficulty.Instance ().CurrentDiff && EMDifficulty.Instance ().CurrentDiff != null)
 			fSpeedFactor = EMDifficulty.Instance ().CurrentDiff;
 		// Keep updating velocity when stunned
 		if (bStunned && thisRB.velocity != velocity)
