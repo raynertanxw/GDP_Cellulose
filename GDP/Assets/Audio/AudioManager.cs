@@ -5,19 +5,18 @@ using System.Collections.Generic;
 public class AudioManager : MonoBehaviour {
 
 	private AudioSource BackgroundAudioSource;
-	private List<AudioSource> SFXAudioSources;
 	public AudioClip[] BackgroundTracks;
 	
 	private float BackgroundClipLength;
 	private string CurrentSceneName;
 	
-	private static List<AudioSource> MenuTracks;
-	private static List<AudioSource> PlayerMainTracks;
-	private static List<AudioSource> EnemyMainTracks;
+	private static AudioSource[] MenuTracks;
+	private static AudioSource[] PlayerMainTracks;
+	private static AudioSource[] EnemyMainTracks;
 	
-	private static List<AudioClip> PlayerChildTracks;
-	private static List<AudioClip> EnemyChildTracks;
-	private static List<AudioClip> SquadChildTracks;
+	private static AudioClip[] PlayerChildTracks;
+	private static AudioClip[] EnemyChildTracks;
+	private static AudioClip[] SquadChildTracks;
 	
 	private SceneType CurrentSceneType;
 	private enum SceneType{Menu,Gameplay,Null};
@@ -28,15 +27,14 @@ public class AudioManager : MonoBehaviour {
 		DontDestroyOnLoad(gameObject);
 	
 		BackgroundAudioSource = GetComponent<AudioSource>();
-		SFXAudioSources = new List<AudioSource>();
+
+		MenuTracks = new AudioSource[2];
+		PlayerMainTracks = new AudioSource[10];
+		EnemyMainTracks = new AudioSource[6];
 		
-		MenuTracks = new List<AudioSource>();
-		PlayerMainTracks = new List<AudioSource>();
-		EnemyMainTracks = new List<AudioSource>();
-		
-		PlayerChildTracks = new List<AudioClip>();
-		EnemyChildTracks = new List<AudioClip>();
-		SquadChildTracks = new List<AudioClip>();
+		PlayerChildTracks = new AudioClip[3];
+		EnemyChildTracks = new AudioClip[5];
+		SquadChildTracks = new AudioClip[2];
 		
 		CurrentSceneName = Application.loadedLevelName;
 		
@@ -69,40 +67,47 @@ public class AudioManager : MonoBehaviour {
 	
 	private void LoadTracksToLists()
 	{
+		int MenuTrackCount = 0;
+		int PlayerMainTrackCount = 0;
+		int EnemyMainTrackCount = 0;
+		
 		for(int i = 0; i < transform.childCount; i++)
 		{
 			GameObject Child = transform.GetChild(i).gameObject;
 			
 			if(Child.name.Contains("Menu"))
 			{
-				MenuTracks.Add(Child.GetComponent<AudioSource>());
+				MenuTracks[MenuTrackCount] = Child.GetComponent<AudioSource>();
+				MenuTrackCount++;
 			}
 			else if(Child.name.Contains("Player"))
 			{
-				PlayerMainTracks.Add(Child.GetComponent<AudioSource>());
+				PlayerMainTracks[PlayerMainTrackCount] = Child.GetComponent<AudioSource>();
+				PlayerMainTrackCount++;
 			}
 			else if(Child.name.Contains("Enemy"))
 			{
-				EnemyMainTracks.Add(Child.GetComponent<AudioSource>());
+				EnemyMainTracks[EnemyMainTrackCount] = Child.GetComponent<AudioSource>();
+				EnemyMainTrackCount++;
 			}
 		}
 		
-		PlayerChildTracks.Add(Resources.Load("Audio/Sound Effects/Player_BurstShotv2") as AudioClip);
-		PlayerChildTracks.Add(Resources.Load("Audio/Sound Effects/Player_Scattershotv2") as AudioClip);
-		PlayerChildTracks.Add(Resources.Load("Audio/Sound Effects/Player_Swarm") as AudioClip);
+		PlayerChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player_BurstShotv2") as AudioClip);
+		PlayerChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player_Scattershotv2") as AudioClip);
+		PlayerChildTracks[2] = (Resources.Load("Audio/Sound Effects/Player_Swarm") as AudioClip);
 		
-		EnemyChildTracks.Add(Resources.Load("Audio/Sound Effects/Enemy_CellChargeTowards") as AudioClip);
-		EnemyChildTracks.Add(Resources.Load("Audio/Sound Effects/Enemy_Defend") as AudioClip);
-		EnemyChildTracks.Add(Resources.Load("Audio/Sound Effects/Enemy_DeployLandmine") as AudioClip);
-		EnemyChildTracks.Add(Resources.Load("Audio/Sound Effects/Enemy_LandmineBeeping") as AudioClip);
-		EnemyChildTracks.Add(Resources.Load("Audio/Sound Effects/Enemy_LandmineExplode") as AudioClip);
+		EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy_CellChargeTowards") as AudioClip);
+		EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy_Defend") as AudioClip);
+		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy_DeployLandmine") as AudioClip);
+		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy_LandmineBeeping") as AudioClip);
+		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy_LandmineExplode") as AudioClip);
 		
-		SquadChildTracks.Add(Resources.Load("Audio/Sound Effects/Squad_SpawnCell") as AudioClip);
-		SquadChildTracks.Add(Resources.Load("Audio/Sound Effects/Squad_ChildAttack") as AudioClip);
+		SquadChildTracks[0] = (Resources.Load("Audio/Sound Effects/Squad_SpawnCell") as AudioClip);
+		SquadChildTracks[1] = (Resources.Load("Audio/Sound Effects/Squad_ChildAttack") as AudioClip);
 		
-		Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Count);
-		Debug.Log("EnemyChildTracks count: " + EnemyChildTracks.Count);
-		Debug.Log("SquadChildTracks count: " + SquadChildTracks.Count);
+		Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
+		Debug.Log("EnemyChildTracks count: " + EnemyChildTracks.Length);
+		Debug.Log("SquadChildTracks count: " + SquadChildTracks.Length);
 	}
 	
 	private SceneType DetermineCurrentSceneType()
