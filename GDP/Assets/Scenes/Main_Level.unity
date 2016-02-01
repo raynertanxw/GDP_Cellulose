@@ -15918,8 +15918,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fNutrientsChance: .5
   fNutrientsDelay: 1
-  fSpawnYRange: 14.1999998
-  fSpawnYOffset: 5
+  fSpawnYRange: 12
+  fSpawnYOffset: 3
   array_WallSidesGO:
   - {fileID: 647463703}
   - {fileID: 1147798510}

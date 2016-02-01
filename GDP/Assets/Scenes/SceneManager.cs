@@ -16,7 +16,7 @@ public class SceneManager : MonoBehaviour
 
 		PlayerSquadFSM.ResetStatics();
 		SquadChildFSM.ResetStatics();
-		SC_IdleState.ResetStatics();
+//		SC_IdleState.ResetStatics();
 
 		Wall.ResetStatics();
 		WallRenderer.ResetStatics();
@@ -49,7 +49,7 @@ public class SceneManager : MonoBehaviour
 
 		PlayerSquadFSM.ResetStatics();
 		SquadChildFSM.ResetStatics();
-		SC_IdleState.ResetStatics();
+//		SC_IdleState.ResetStatics();
 		
 		Wall.ResetStatics();
 		WallRenderer.ResetStatics();
