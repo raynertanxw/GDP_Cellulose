@@ -138,17 +138,17 @@ public class PC_ChargeChildState : IPCState
 
 
     #region Movement and Physics
-    private const float s_fAvoidRadius = 1.0f;
+    private const float s_fAvoidRadius = 1.5f;
     private static float s_fSqrAvoidRadius = Mathf.Pow(s_fAvoidRadius, 2);
 	private const float s_fSeparationRadius = 0.5f;
 	private static float s_fSqrSeparationRadius = Mathf.Pow(s_fSeparationRadius, 2);
     private const float s_fSwarmTargetMaxAcceleration = 200000f;
 	private const float s_fSwarmTargetMaxVelocity = 3.5f;
-	private const float s_fScatterShotMaxAcceleration = 2000f;
-	private const float s_fScatterShotMaxVelocity = 10f;
+	private const float s_fScatterShotMaxAcceleration = 10000f;
+	private const float s_fScatterShotMaxVelocity = 7.5f;
     // Weights
     private const float s_fTargetPullWeight = 100;
-    private const float s_fAvoidanceWeight = 2500;
+    private const float s_fAvoidanceWeight = 5500;
 	private const float s_fSeparationWeight = 1000;
 
     // Getters for the various values.

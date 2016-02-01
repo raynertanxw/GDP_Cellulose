@@ -19,6 +19,7 @@ public class player_control : MonoBehaviour
 	private Vector3 mainCellPos;
 	private Vector3 spwnCptBtnPos;
 
+	private const float s_UIFadeOutSpeed = 5.0f;
 	private const float s_UIInfoPanelFadeDelay = 0.75f;
 	private const float s_UIInfoPanelFadeSpeed = 1.25f;
 	private const float s_UIPopInSpeed = 5f;
@@ -68,6 +69,9 @@ public class player_control : MonoBehaviour
 		infoText = transform.GetChild(7).GetChild(4).GetChild(0).GetComponent<Text>();
 
 		// Hide controls, tints, and info panel.
+		spawnCtrlCanvasGrp.alpha = 0f;
+		leftNodeCanvasGrp.alpha = 0f;
+		rightNodeCanavsGrp.alpha = 0f;
 		DeselectAllCtrls();
 		playerHurtTintCanvasGrp.alpha = 0f;
 		enemyWarningTintCanvasGrp.alpha = 0f;
@@ -196,10 +200,26 @@ public class player_control : MonoBehaviour
 		else
 		{
 			if(_cgrp.alpha == 1f){AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectDissapear);}
-			_cgrp.alpha = 0f;
+			StartCoroutine(Constants.s_FadeOutCanvasGroup, _cgrp);
 			_cgrp.interactable = false;
 			_cgrp.blocksRaycasts = false;
 		}
+	}
+
+	private IEnumerator FadeOutCanvasGroup(CanvasGroup _cgrp)
+	{
+		while (_cgrp.alpha > 0f)
+		{
+			_cgrp.alpha -= s_UIFadeOutSpeed * Time.deltaTime;
+			yield return null;
+		}
+	}
+
+	private void PresentInfoPanel()
+	{
+		infoPanelCanvasGrp.alpha = 1f;
+		StopCoroutine(Constants.s_strFadeOutInfoPanel);
+		StartCoroutine(Constants.s_strFadeOutInfoPanel);
 	}
 
 	private IEnumerator FadeOutInfoPanel()
@@ -211,20 +231,6 @@ public class player_control : MonoBehaviour
 			yield return null;
 		}
 	}
-	
-	private void PresentInfoPanel()
-	{
-		infoPanelCanvasGrp.alpha = 1f;
-		StopCoroutine(Constants.s_strFadeOutInfoPanel);
-		StartCoroutine(Constants.s_strFadeOutInfoPanel);
-	}
-
-
-
-
-
-
-	
 
 	private IEnumerator AnimateInSpawnCtrl()
 	{
@@ -669,7 +675,12 @@ public class player_control : MonoBehaviour
 
 		activeDraggedNode = Node.None;
 	}
-	
+
+	public void MainBtnUp()
+	{
+		SetSpawnCtrlVisibility(false);
+	}
+
 	public void MainEndDrag(BaseEventData data)
 	{
 		PointerEventData pointerData = data as PointerEventData;
