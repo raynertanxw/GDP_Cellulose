@@ -47,10 +47,7 @@ public class AudioManager : MonoBehaviour {
 		//if the scene had been change, reload a random background track
 		if(CurrentSceneName != Application.loadedLevelName)
 		{
-			LoadRandomBackgroundTrack();
-			CurrentSceneName = Application.loadedLevelName;
-			BackgroundAudioSource.volume = 0f;
-			StartCoroutine(FadeInBackgroundMusic());
+			StartCoroutine(SceneTransition());
 		}
 	
 		//Fading in/Fading out of BGM
@@ -218,5 +215,24 @@ public class AudioManager : MonoBehaviour {
 		_Source.Stop();
 		_Source.clip = SquadChildTracks[(int) _sfx];
 		_Source.Play();
+	}
+	
+	private IEnumerator SceneTransition()
+	{		
+		while(BackgroundAudioSource.volume > 0.0f)
+		{
+			BackgroundAudioSource.volume -= 0.0075f;
+			yield return new WaitForSeconds(0.05f);
+		}
+		
+		LoadRandomBackgroundTrack();
+		
+		CurrentSceneName = Application.loadedLevelName;
+		
+		while(BackgroundAudioSource.volume < 1.0f)
+		{
+			BackgroundAudioSource.volume += 0.0075f;
+			yield return new WaitForSeconds(0.05f);
+		}
 	}
 }
