@@ -262,25 +262,14 @@ public class ECDefendState : IECState {
 	//A function that return if there is no attacking player child cells
 	private bool IsThereNoAttackers()
 	{
-		for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
+		for(int i = 0; i < PlayerChildFSM.childrenInAttack.Length - 1; i++)
 		{
-			if(PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
-			{
-				return false;
-			}
+			if(PlayerChildFSM.childrenInAttack[i] == -1){break;}
+			
+			if(PlayerChildFSM.childrenInAttack[i] != null){return false;}
 		}
+
 		return true;
-		
-		/*GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
-		for(int i = 0; i < PlayerChilds.Length; i++)
-		{
-			PCState CurrentState = PlayerChilds[i].GetComponent<PlayerChildFSM>().GetCurrentState();
-			if(CurrentState == PCState.ChargeChild || CurrentState == PCState.ChargeMain)
-			{
-				return false;
-			}
-		}
-		return true;*/
 	}
 
 	//A function that return a GameObject variable on the closest attacking player child cell

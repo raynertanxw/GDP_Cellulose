@@ -300,6 +300,9 @@ public class PositionQuery
 		PlayerAttackMode AttackToDefendAgainst = GetMostSignificantAttack();
 		int DefendingCellsCount = ECTracker.Instance.DefendCells.Count;
 		GameObject AttackSource = GetAttackSource(AttackToDefendAgainst);
+
+		if(AttackSource == null){return Formation.ReverseCircular;}
+		
 		float EnemyToAttackSourceXDifference = GameObject.Find("Enemy_Cell").transform.position.x - AttackSource.transform.position.x;
 		//Player left node x - -3f Player Right Node - 3f
 		
@@ -397,7 +400,25 @@ public class PositionQuery
 		float SwarmCount = 0;
 		float ScatterCount = 0;
 		
-		for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
+		for(int i = 0; i < PlayerChildFSM.childrenInAttack.Length - 1; i++)
+		{
+			if(PlayerChildFSM.childrenInAttack[i] == -1){break;}
+			
+			if(PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInAttack[i]].attackMode == PlayerAttackMode.BurstShot)
+			{
+				BurstCount++;
+			}
+			else if(PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInAttack[i]].attackMode == PlayerAttackMode.SwarmTarget)
+			{
+				SwarmCount++;
+			}
+			else if(PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInAttack[i]].attackMode == PlayerAttackMode.ScatterShot)
+			{
+				ScatterCount++;
+			}
+		}
+		
+		/*for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
 		{
 			if(PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
 			{
@@ -414,7 +435,7 @@ public class PositionQuery
 					ScatterCount++;
 				}
 			}
-		}
+		}*/
 		
 		BurstCount *= Settings.s_fEnemyDefendBurstSignificancy;
 		SwarmCount *= Settings.s_fEnemyDefendSwarmSignificancy;
@@ -430,13 +451,23 @@ public class PositionQuery
 	
 	private GameObject GetAttackSource(PlayerAttackMode _Attack)
 	{
-		for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
+		for(int i = 0; i < PlayerChildFSM.childrenInAttack.Length - 1; i++)
+		{
+			if(PlayerChildFSM.childrenInAttack[i] == -1){break;}
+			
+			if(PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInAttack[i]].attackMode == _Attack)
+			{
+				return PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInAttack[i]].gameObject;
+			}
+		}
+	
+		/*for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
 		{
 			if(PlayerChildFSM.playerChildPool[i].attackMode == _Attack)
 			{
 				return PlayerChildFSM.playerChildPool[i].gameObject;
 			}
-		}
+		}*/
 		return null;
 	}
 

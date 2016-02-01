@@ -199,23 +199,20 @@ public class ECChargeCState : IECState {
 			List<PlayerChildFSM> m_PotentialTargets = new List<PlayerChildFSM>();
 			if(TargetSource.name.Contains("Left"))
 			{
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for(int i = 0; i < PlayerChildFSM.childrenInLeftNode.Length - 1; i++)
 				{
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
-					{
-						m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[i]);
-					}
+					if(PlayerChildFSM.childrenInLeftNode[i] == -1){break;}
+					
+					m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInLeftNode[i]]);
 				}
-				
 			}
 			else if(TargetSource.name.Contains("Right"))
 			{
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for(int i = 0; i < PlayerChildFSM.childrenInRightNode.Length - 1; i++)
 				{
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
-					{
-						m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[i]);
-					}
+					if(PlayerChildFSM.childrenInRightNode[i] == -1){break;}
+				
+					m_PotentialTargets.Add(PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInRightNode[i]]);
 				}
 			}
 

@@ -25,7 +25,8 @@ public class ECDefendState : IECState {
 	private static float fDefendTime;
 
 	//A float to store the maximum amount of acceleration that can be enforced on the enemy child cell
-	private static float fMaxAcceleration;
+	private static float fMaxFormingAcceleration;
+	private static float fMaxChaseAcceleration;
 
 	//A float that scale the values used in the defend state by the local state of the enemy main cell
 	private static float fMainScale;
@@ -41,6 +42,8 @@ public class ECDefendState : IECState {
 	
 	private Transform ECTransform;
 	private static Transform EMTransform;
+
+	private static PlayerAttackMode AttackType;
 	
 	public static bool ReturningToMain
 	{
@@ -57,8 +60,9 @@ public class ECDefendState : IECState {
 		ECTransform = m_Child.transform;
 		EMTransform = m_Main.transform;
 
-		fMaxAcceleration = 150f;
-		fAutoDefendRange = 6f;//25f;//20f;//12f//9f;//4f;//5.5f;
+		fMaxFormingAcceleration = 150f;
+		fMaxChaseAcceleration = 500f;
+		fAutoDefendRange = 7f;//6f;//25f;//20f;//12f//9f;//4f;//5.5f;
 		fDefendTime = 0f;
 		bReturnToMain = false;
 		bReachedMain = false;
@@ -86,6 +90,7 @@ public class ECDefendState : IECState {
 		//If there is no formation for the enemy child cell to take, query the postionQuery to get which formation to get for the specific situation
 		if(CurrentFormation == Formation.Empty)
 		{
+			AttackType = PositionQuery.Instance.GetMostSignificantAttack();
 			CurrentFormation = PositionQuery.Instance.GetDefensiveFormation();
 			FormationDatabase.Instance.RefreshDatabases(m_Main.GetComponent<EnemyMainFSM>().ECList);
 			FormationDatabase.Instance.UpdateDatabaseFormation(CurrentFormation,fMainScale);
@@ -94,12 +99,6 @@ public class ECDefendState : IECState {
 
 		//Based on the current formation, get a specific target position within that formation
 		m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(CurrentFormation, m_Child);
-
-		//If all enemy child cells have gathered, start transition them to the idle state
-		/*if(HasAllCellsGathered())
-		{
-			bGathered = true;
-		}*/
 	}
 
 	public override void FixedExecute()
@@ -108,7 +107,7 @@ public class ECDefendState : IECState {
 
 		if(!bReachPos && !bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos) && !m_ecFSM.IsHittingSideWalls())
 		{
-			m_ecFSM.rigidbody2D.drag = 9.5f;//5f;
+			m_ecFSM.rigidbody2D.drag = 15f;//5f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,300f);//27
 		}
 		else if(!bReachPos && !bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos) && m_ecFSM.IsHittingSideWalls())
@@ -138,7 +137,7 @@ public class ECDefendState : IECState {
 		{
 			m_ecFSM.m_ChargeTarget = GetClosestAttacker();
 		
-			m_ecFSM.rigidbody2D.drag = 2.3f;
+			m_ecFSM.rigidbody2D.drag = 2.0f;
 			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 			
 			bKillClosestAttacker = true;
@@ -158,8 +157,10 @@ public class ECDefendState : IECState {
 				return;
 			}
 			//Debug.Log("pursuit");
-			Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.m_ChargeTarget,26f);
-			
+			if(AttackType != PlayerAttackMode.BurstShot){ Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.m_ChargeTarget,24f);}
+			else if(AttackType == PlayerAttackMode.BurstShot){ Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.m_ChargeTarget,70f);}
+			//Debug.Log("magnitude: " + Acceleration.magnitude);
+
 			m_ecFSM.RotateToHeading();
 		}
 		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
@@ -190,7 +191,10 @@ public class ECDefendState : IECState {
 		}
 
 		//Clamp the acceleration velocity to a specific value and add that acceleration as a force to the enemy child cell
-		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+		if(!bReachPos){Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxFormingAcceleration);}
+		else if(bReachPos && AttackType != PlayerAttackMode.BurstShot){ Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxFormingAcceleration);}
+		else if(bReachPos && AttackType == PlayerAttackMode.BurstShot){ Acceleration = Vector2.ClampMagnitude(Acceleration, fMaxChaseAcceleration);}
+
 		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 
 		//if the enemy child cell had reached the targeted position in the formation, rotate the enemy child cell randomly. Else, rotate it based on the direction of force applied
@@ -258,25 +262,14 @@ public class ECDefendState : IECState {
 	//A function that return if there is no attacking player child cells
 	private bool IsThereNoAttackers()
 	{
-		for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
+		for(int i = 0; i < PlayerChildFSM.childrenInAttack.Length - 1; i++)
 		{
-			if(PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
-			{
-				return false;
-			}
+			if(PlayerChildFSM.childrenInAttack[i] == -1){break;}
+			
+			if(PlayerChildFSM.childrenInAttack[i] != null){return false;}
 		}
+
 		return true;
-		
-		/*GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
-		for(int i = 0; i < PlayerChilds.Length; i++)
-		{
-			PCState CurrentState = PlayerChilds[i].GetComponent<PlayerChildFSM>().GetCurrentState();
-			if(CurrentState == PCState.ChargeChild || CurrentState == PCState.ChargeMain)
-			{
-				return false;
-			}
-		}
-		return true;*/
 	}
 
 	//A function that return a GameObject variable on the closest attacking player child cell
