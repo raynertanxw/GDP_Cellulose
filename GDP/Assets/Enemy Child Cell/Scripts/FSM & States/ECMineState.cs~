@@ -120,6 +120,8 @@ public class ECMineState : IECState {
 
 				fSeperateInterval = CalculateSpreadRate(GetCenterOfMines(GetLandmines()),Target);
 				GatherTogether = true;
+				
+				AudioManager.PlayECSoundEffect(EnemyChildSFX.DeployLandmine,m_ecFSM.Audio);
 				//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 			}
 		}
@@ -191,6 +193,7 @@ public class ECMineState : IECState {
 				m_ecFSM.rigidbody2D.drag = 3f;
 				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,9f);
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;
+				AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
 			}
 			else if((HasCellReachTarget(CurrentTargetPoint.Position)|| m_Child.transform.position.y < CurrentTargetPoint.Position.y) && CurrentTargetIndex + 1 < PathToTarget.Count)
 			{
@@ -228,6 +231,7 @@ public class ECMineState : IECState {
 				m_ecFSM.rigidbody2D.drag = 5f;
 				Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,12f);
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
+				AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
 			}
 			else if((HasCellReachTarget(CurrentTargetPoint.Position) || (m_Child.transform.position.y < CurrentTargetPoint.Position.y)) && CurrentTargetIndex + 1 < PathToTarget.Count)
 			{
@@ -628,6 +632,8 @@ public class ECMineState : IECState {
 		bExploding = false;
 		m_Child.transform.localScale = Vector3.one;
 		Animator.ExpandContract(0.0f,0,0.0f,true,0.0f);
+	
+		AudioManager.PlayECSoundEffect(EnemyChildSFX.LandmineExplode,m_ecFSM.Audio);
 	}
 
 	//Go through all the surround cells, destroy any player child cells and damaing the player main cell if in range
@@ -687,7 +693,7 @@ public class ECMineState : IECState {
 	{
 		//play explode sound/animation whatever
 		ExplodeSetup();
-
+		
 		Vector3 ExpandScale = new Vector3(0.75f,0.75f,0.75f);
 
 		while(m_Child.transform.localScale.x < 7f)

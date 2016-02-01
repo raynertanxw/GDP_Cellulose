@@ -83,6 +83,8 @@ public class ECDefendState : IECState {
 
 		m_ecFSM.rigidbody2D.drag = 3f;
 		ECTracker.s_Instance.DefendCells.Add(m_ecFSM);
+		
+		AudioManager.PlayECSoundEffect(EnemyChildSFX.Defend,m_ecFSM.Audio);
 	}
 
 	public override void Execute()

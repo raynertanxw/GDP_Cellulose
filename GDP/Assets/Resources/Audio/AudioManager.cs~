@@ -33,7 +33,7 @@ public class AudioManager : MonoBehaviour {
 
 		MenuTracks = new AudioSource[2];
 		PlayerMainTracks = new AudioSource[10];
-		EnemyMainTracks = new AudioSource[6];
+		EnemyMainTracks = new AudioSource[7];
 		
 		PlayerChildTracks = new AudioClip[3];
 		EnemyChildTracks = new AudioClip[5];
@@ -201,6 +201,17 @@ public class AudioManager : MonoBehaviour {
 		EnemyMainTracks[(int) _sfx].Play();
 	}
 	
+	public static void PlayEMSoundEffectNoOverlap(EnemyMainSFX _sfx)
+	{
+		if (EnemyMainTracks == null)
+			return;
+		if(!EnemyMainTracks[(int) _sfx].isPlaying)
+		{
+			EnemyMainTracks[(int) _sfx].Stop();
+			EnemyMainTracks[(int) _sfx].Play();
+		}
+	}
+	
 	public static void PlayPCSoundEffect(PlayerChildSFX _sfx, AudioSource _Source)
 	{
 		if (PlayerChildTracks == null)
@@ -218,7 +229,7 @@ public class AudioManager : MonoBehaviour {
 
 		_Source.Stop();
 		_Source.clip = EnemyChildTracks[(int) _sfx];
-		Debug.Log(EnemyChildTracks[(int) _sfx].name);
+		//Debug.Log(EnemyChildTracks[(int) _sfx].name);
 		_Source.Play();
 	}
 	
@@ -235,22 +246,22 @@ public class AudioManager : MonoBehaviour {
 	private IEnumerator SceneTransition()
 	{		
 		SceneTransitionInProgress = true;
-		Debug.Log("start transition");
+		//Debug.Log("start transition");
 	
 		while(BackgroundAudioSource.volume > 0.0f)
 		{
-			Debug.Log(BackgroundAudioSource.volume);
+			//Debug.Log(BackgroundAudioSource.volume);
 			BackgroundAudioSource.volume -= 0.03f;
 			yield return new WaitForSeconds(0.0025f);
 		}
 		
-		Debug.Log("fade out done");
+		//Debug.Log("fade out done");
 		
 		LoadRandomBackgroundTrack();
 		
 		CurrentSceneName = Application.loadedLevelName;
 		
-		Debug.Log("track loaded");
+		//Debug.Log("track loaded");
 		
 		while(BackgroundAudioSource.volume < 1.0f)
 		{
@@ -259,7 +270,7 @@ public class AudioManager : MonoBehaviour {
 		}
 		
 		SceneTransitionInProgress = false;
-		Debug.Log("fade in done");
+		//Debug.Log("fade in done");
 	}
 	
 	public void ReloadForSceneChange()

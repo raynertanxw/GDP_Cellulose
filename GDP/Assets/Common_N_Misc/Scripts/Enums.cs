@@ -39,7 +39,7 @@ public enum pcStatus {DeadState, InLeftNode, InRightNode, Attacking};
 
 public enum MenuSFX {PressSelection, PressCancel};
 
-public enum EnemyMainSFX {AbsorbNutrient,IdleContract,IdleExpand,Stunned,MainBeingHit,MainDeath};
+public enum EnemyMainSFX {AbsorbNutrient,IdleContract,IdleExpand,Stunned,MainBeingHit,MainDeath,LandmineBeeping};
 
 public enum EnemyChildSFX {CellChargeTowards,Defend,DeployLandmine,LandmineBeeping,LandmineExplode};
 
