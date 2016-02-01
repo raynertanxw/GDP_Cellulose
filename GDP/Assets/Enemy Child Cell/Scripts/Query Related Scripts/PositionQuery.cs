@@ -338,15 +338,15 @@ public class PositionQuery
 			{
 				if(DefendingCellsCount <= 10)
 				{
-					LadderDesirability += 1;
+					QCDesirability += 1;
 				}
 				else if(DefendingCellsCount <= 20 && DefendingCellsCount > 10)
 				{
-					RCDesirability += 1;
+					QCDesirability += 1;
 				}
 				else
 				{
-					QCDesirability += 1;
+					RCDesirability += 1;
 				}
 			}
 			else
@@ -360,15 +360,15 @@ public class PositionQuery
 			{
 				if(DefendingCellsCount <= 10)
 				{
-					QCDesirability += 1;
+					LadderDesirability += 1;
 				}
 				else if(DefendingCellsCount <= 20 && DefendingCellsCount > 10)
 				{
-					LadderDesirability += 1;
+					TurtleDesirability += 1;
 				}
 				else
 				{
-					LadderDesirability += 1;
+					QCDesirability += 1;
 				}
 			}
 			else
