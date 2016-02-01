@@ -66,9 +66,9 @@ public class MessageDispatcher {
         }
     }
 
-    public void Discharge(GameObject receiver, Telegram msg)
+    public void Discharge(GameObject _receiver, Telegram _msg)
     {
-        if (receiver.HandleMessage(msg) == false)
+		if (_receiver.HandleMessage(_msg) == false)
         {
             Debug.Log("Message cannot be send due to error !");
         }

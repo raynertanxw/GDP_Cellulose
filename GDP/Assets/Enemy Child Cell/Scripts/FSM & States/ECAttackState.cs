@@ -10,17 +10,17 @@ public class ECAttackState : IECState {
 	private static Node_Manager m_LeftNode;
 	private static Node_Manager m_RightNode;
 	
-	private static int EnemyMaxHP;
-	private static float EnemyAggressiveness;
+	private static int m_nEnemyMaxHP;
+	private static float m_fEnemyAggressiveness;
 	
-	private static int PlayerTotalCellCount;
-	private static int LeftNodeCellCount;
-	private static int RightNodeCellCount;
-	private static int SquadCaptCount;
-	private static int EnemyTotalCellCount;
+	private static int m_nPlayerTotalCellCount;
+	private static int m_nLeftNodeCellCount;
+	private static int m_nRightNodeCellCount;
+	private static int m_nSquadCaptCount;
+	private static int m_nEnemyTotalCellCount;
 	
-	private static GameObject CurrentAttackTarget;
-	private static string CurrentAttackMethod;
+	private static GameObject m_CurrentAttackTarget;
+	private static string m_strCurrentAttackMethod;
 	
 	//Constructor
 	public ECAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -37,14 +37,17 @@ public class ECAttackState : IECState {
 	public override void Enter()
 	{
 		ECTracker.Instance.AttackingCells.Add(m_ecFSM);
-		EnemyMaxHP = 50;//m_Main.GetComponent<EnemyMainFSM>().Health;
-		EnemyAggressiveness = m_Main.GetComponent<EnemyMainFSM>().CurrentAggressiveness;
 		
-		LeftNodeCellCount = m_LeftNode.activeChildCount;
-		RightNodeCellCount = m_RightNode.activeChildCount;
-		SquadCaptCount = m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
-		PlayerTotalCellCount = LeftNodeCellCount + RightNodeCellCount + SquadCaptCount;
-		EnemyTotalCellCount = m_Main.GetComponent<EnemyMainFSM>().AvailableChildNum;
+		m_nEnemyMaxHP = m_Main.GetComponent<EnemyMainFSM>().Health;
+		m_fEnemyAggressiveness = m_Main.GetComponent<EnemyMainFSM>().CurrentAggressiveness;
+		
+		m_nLeftNodeCellCount = m_LeftNode.activeChildCount;
+		m_nRightNodeCellCount = m_RightNode.activeChildCount;
+		
+		m_nSquadCaptCount = m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
+		
+		m_nPlayerTotalCellCount = m_nLeftNodeCellCount + m_nRightNodeCellCount + m_nSquadCaptCount;
+		m_nEnemyTotalCellCount = m_Main.GetComponent<EnemyMainFSM>().AvailableChildNum;
 	}
 	
 	public override void Execute()
@@ -53,22 +56,22 @@ public class ECAttackState : IECState {
 		cell it should take based on the game environment and game agents, it will then transition the enemy child
 		cell to another type of attack state*/
 		
-		if(CurrentAttackTarget == null)
+		if(m_CurrentAttackTarget == null)
 		{
-			CurrentAttackTarget = DetermineTargetToAttack();
-			CurrentAttackMethod = DecideAttackType(CurrentAttackTarget);
+			m_CurrentAttackTarget = DetermineTargetToAttack();
+			m_strCurrentAttackMethod = DecideAttackType(m_CurrentAttackTarget);
 		}
 
-		m_ecFSM.m_AttackTarget = CurrentAttackTarget;
-		if(CurrentAttackMethod == "ChargeMain"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeMain,0);}
-		if(CurrentAttackMethod == "ChargeChild"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeChild,0);}
-		if(CurrentAttackMethod == "Landmine"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0);}
-		if(CurrentAttackMethod == "TrickAttack"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0);}
+		m_ecFSM.m_AttackTarget = m_CurrentAttackTarget;
+		if(m_strCurrentAttackMethod == "ChargeMain"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeMain,0);}
+		if(m_strCurrentAttackMethod == "ChargeChild"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.ChargeChild,0);}
+		if(m_strCurrentAttackMethod == "Landmine"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Landmine,0);}
+		if(m_strCurrentAttackMethod == "TrickAttack"){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.TrickAttack,0);}
 	}
 	
 	public override void Exit()
 	{
-		if(ECTracker.Instance.AttackingCells.Count <= 1){CurrentAttackTarget = null; CurrentAttackMethod = "";}
+		if(ECTracker.Instance.AttackingCells.Count <= 1){m_CurrentAttackTarget = null; m_strCurrentAttackMethod = "";}
 		ECTracker.Instance.AttackingCells.Remove(m_ecFSM);
 	}
 	
@@ -80,16 +83,16 @@ public class ECAttackState : IECState {
 			float RightNodeThreatLevel = 0;
 			float SquadCaptThreatLevel = 0;
 			
-			LeftNodeThreatLevel += LeftNodeCellCount - Settings.s_fEnemyTargetLeftNodeRequirement * EnemyMaxHP;
-			if(EnemyAggressiveness >= 12){LeftNodeThreatLevel *= 1.15f;}
+			LeftNodeThreatLevel += m_nLeftNodeCellCount - Settings.s_fEnemyTargetLeftNodeRequirement * m_nEnemyMaxHP;
+			if(m_fEnemyAggressiveness >= 12){LeftNodeThreatLevel *= 1.15f;}
 			
-			RightNodeThreatLevel += RightNodeCellCount - Settings.s_fEnemyTargetRightNodeRequirement * EnemyMaxHP;
-			if(EnemyAggressiveness >= 12){RightNodeThreatLevel *= 1.15f;}
+			RightNodeThreatLevel += m_nRightNodeCellCount - Settings.s_fEnemyTargetRightNodeRequirement * m_nEnemyMaxHP;
+			if(m_fEnemyAggressiveness >= 12){RightNodeThreatLevel *= 1.15f;}
 			
-			SquadCaptThreatLevel += SquadCaptCount;
-			if(EnemyAggressiveness <= 6){SquadCaptThreatLevel *= 1.25f;}
+			SquadCaptThreatLevel += m_nSquadCaptCount;
+			if(m_fEnemyAggressiveness <= 6){SquadCaptThreatLevel *= 1.25f;}
 			
-			if(SquadCaptCount > EnemyMaxHP * 0.75f * Settings.s_fEnemyTargetSquadCaptRequirement){return m_SquadCaptain;}
+			if(m_nSquadCaptCount > m_nEnemyMaxHP * 0.75f * Settings.s_fEnemyTargetSquadCaptRequirement){return m_SquadCaptain;}
 			
 			float HighestThreatLevel = Mathf.Max(SquadCaptThreatLevel,Mathf.Max(LeftNodeThreatLevel,RightNodeThreatLevel));
 			if(HighestThreatLevel == LeftNodeThreatLevel){return m_LeftNode.gameObject;}
@@ -105,12 +108,12 @@ public class ECAttackState : IECState {
 	{
 		if(_Target.name == "Player_Cell")
 		{
-			if(PlayerTotalCellCount >= 5f * Settings.s_fEnemyAttackLandmineRequirement * EnemyMaxHP)
+			if(m_nPlayerTotalCellCount >= 5f * Settings.s_fEnemyAttackLandmineRequirement * m_nEnemyMaxHP)
 			{
 				return "Landmine";
 			}
 			
-			if((LeftNodeCellCount <= 4 * Settings.s_fEnemyAttackTrickAttackRequirement * EnemyMaxHP || RightNodeCellCount <= 4 * Settings.s_fEnemyAttackTrickAttackRequirement * EnemyMaxHP) && (PlayerTotalCellCount > 8 * Settings.s_fEnemyAttackTrickAttackRequirement * EnemyMaxHP))
+			if((m_nLeftNodeCellCount <= 4 * Settings.s_fEnemyAttackTrickAttackRequirement * m_nEnemyMaxHP || m_nRightNodeCellCount <= 4 * Settings.s_fEnemyAttackTrickAttackRequirement * m_nEnemyMaxHP) && (m_nPlayerTotalCellCount > 8 * Settings.s_fEnemyAttackTrickAttackRequirement * m_nEnemyMaxHP))
 			{
 				return "TrickAttack";
 			}
@@ -118,7 +121,7 @@ public class ECAttackState : IECState {
 		}
 		else if(_Target.name.Contains("Node"))
 		{
-			if(_Target.GetComponent<Node_Manager>().activeChildCount >= 4 * Settings.s_fEnemyAttackLandmineRequirement * EnemyMaxHP)
+			if(_Target.GetComponent<Node_Manager>().activeChildCount >= 4 * Settings.s_fEnemyAttackLandmineRequirement * m_nEnemyMaxHP)
 			{
 				return "Landmine";
 			}
@@ -131,7 +134,7 @@ public class ECAttackState : IECState {
 		{
 			m_ecFSM.m_AttackTarget = _Target;
 			
-			if(SquadCaptCount >= Settings.s_fEnemyAttackLandmineRequirement * EnemyMaxHP)
+			if(m_nSquadCaptCount >= Settings.s_fEnemyAttackLandmineRequirement * m_nEnemyMaxHP)
 			{
 				return "Landmine";
 			}
@@ -148,15 +151,15 @@ public class ECAttackState : IECState {
 	of total player cells and the amount of cells in each node*/
 	private bool IsThereThreatToMain()
 	{
-		if(PlayerTotalCellCount > EnemyTotalCellCount)
+		if(m_nPlayerTotalCellCount > m_nEnemyTotalCellCount)
 		{
 			return true;
 		}
-		else if(LeftNodeCellCount > EnemyMaxHP * Settings.s_fEnemyTargetLeftNodeRequirement || RightNodeCellCount> EnemyMaxHP * Settings.s_fEnemyTargetRightNodeRequirement)
+		else if(m_nLeftNodeCellCount > m_nEnemyMaxHP * Settings.s_fEnemyTargetLeftNodeRequirement || m_nRightNodeCellCount > m_nEnemyMaxHP * Settings.s_fEnemyTargetRightNodeRequirement)
 		{
 			return true;
 		}
-		else if(SquadCaptCount > EnemyMaxHP * 0.6f * Settings.s_fEnemyTargetSquadCaptRequirement)
+		else if(m_nSquadCaptCount > m_nEnemyMaxHP * 0.6f * Settings.s_fEnemyTargetSquadCaptRequirement)
 		{
 			return true;
 		}

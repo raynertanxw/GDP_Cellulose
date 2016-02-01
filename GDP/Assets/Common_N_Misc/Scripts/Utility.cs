@@ -11,14 +11,8 @@ public static class Utility
 	//respectively
     public static void CheckEmpty<varType>(varType _Variable)
     {
-		if (_Variable == null)
-        {
-            Debug.Log("EmptyTest: Variable is empty");
-        }
-        else
-        {
-            Debug.Log("EmptyTest: Variable is not empty");
-        }
+		if (_Variable == null){Debug.Log("EmptyTest: Variable is empty");}
+        else {Debug.Log("EmptyTest: Variable is not empty");}
     }
     
     //A function that is used to draw a cross on the screen based the position, color and size inputted through 
@@ -26,10 +20,7 @@ public static class Utility
 	public static void DrawCross(Vector2 _Pos, Color _Color, float _CrossSize)
 	{
 		//If there is no size given for the cross, a default size of 0.05f is given to the cross
-		if(_CrossSize == null)
-		{
-			_CrossSize = 0.05f;
-		}
+		if(_CrossSize == null){_CrossSize = 0.05f;}
 		
 		//The four corners of the cross are calculated based on the position given and the size of the cross
 		Vector2 topLeft = new Vector2(_Pos.x - _CrossSize, _Pos.y + _CrossSize);
