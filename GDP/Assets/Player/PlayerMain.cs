@@ -92,6 +92,7 @@ public class PlayerMain : MonoBehaviour
 
 	void FixedUpdate()
 	{
+		PlayerChildFSM.UpdateChildrenStatusArrays();
 		m_surroundingEnemyCells = Physics2D.OverlapCircleAll(transform.position, m_fDetectionRadius, Constants.s_onlyEnemeyChildLayer);
 	}
 

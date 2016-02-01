@@ -13,8 +13,16 @@ public class PlayerChildFSM : MonoBehaviour
 	private static PlayerChildFSM[] s_playerChildFSMPool;
 	public static PlayerChildFSM[] playerChildPool { get { return s_playerChildFSMPool; } }
 	public static pcStatus[] s_playerChildStatus;
-	
-	static public PlayerChildFSM Spawn(Vector3 spawnPoint)
+	private static int[] s_childrenInLeftNode;
+	private static int[] s_childrenInRightNode;
+	private static int[] s_childrenInAttack;
+
+	public static int GetActiveChildCount() { return s_nActiveChildCount; }
+	public static int[] childrenInLeftNode { get { return s_childrenInLeftNode; } }
+	public static int[] childrenInRightNode { get { return s_childrenInRightNode; } }
+	public static int[] childrenInAttack { get { return  s_childrenInAttack; } }
+
+	public static PlayerChildFSM Spawn(Vector3 spawnPoint)
 	{
 		for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
 		{
@@ -34,6 +42,31 @@ public class PlayerChildFSM : MonoBehaviour
 		Debug.Log("Exhausted Player Child pool --> Increase pool size");
 		
 		return null;
+	}
+
+	private static int[] ChildrenPoolIdInStatus(pcStatus _selectedStatus)
+	{
+		int[] children = new int[Constants.s_nPlayerMaxChildCount + 1];
+		int count = 0;
+		for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+		{
+			if (s_playerChildStatus[i] == _selectedStatus)
+			{
+				children[count] = i;
+				count++;
+			}
+		}
+
+		children[count] = -1;
+		return children;
+	}
+
+	// Handled by singleton PlayerMain.
+	public static void UpdateChildrenStatusArrays()
+	{
+		s_childrenInLeftNode = ChildrenPoolIdInStatus(pcStatus.InLeftNode);
+		s_childrenInRightNode = ChildrenPoolIdInStatus(pcStatus.InRightNode);
+		s_childrenInAttack = ChildrenPoolIdInStatus(pcStatus.Attacking);
 	}
 	#endregion
 	
@@ -62,8 +95,6 @@ public class PlayerChildFSM : MonoBehaviour
 
 	#region Getter functions
 	public PCState GetCurrentState() { return m_currentEnumState; }
-
-	public static int GetActiveChildCount() { return s_nActiveChildCount; }
 	public int poolIndex { get { return m_nPoolIndex; } }
 	#endregion
 
@@ -128,6 +159,10 @@ public class PlayerChildFSM : MonoBehaviour
 			s_playerChildStatus = new pcStatus[Constants.s_nPlayerMaxChildCount];
 			s_nPoolPointerIndex = 0;
 			s_nActiveChildCount = 0;
+
+			s_childrenInRightNode = new int[] {-1};
+			s_childrenInLeftNode = new int[] {-1};
+			s_childrenInAttack = new int[] {-1};
 		}
 		// add myself
 		s_playerChildFSMPool[s_nPoolPointerIndex] = this;
