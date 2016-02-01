@@ -111,14 +111,14 @@ public class EMMainMenuAnimation : MonoBehaviour
 		transform.localScale = (Vector3)currentScale;
 		// Color array initialization
 		EMMainMenuAnimation.colorArray [0] = Color.white;
-		EMMainMenuAnimation.colorArray [1] = new Color (0f, 0f, 0.75f, 1f);
-		EMMainMenuAnimation.colorArray [2] = new Color (0f, 0.75f, 0.75f, 1f);
-		EMMainMenuAnimation.colorArray [3] = new Color (0f, 0.75f, 0f, 1f);
-		EMMainMenuAnimation.colorArray [4] = new Color (0.75f, 0f, 0.75f, 1f);
-		EMMainMenuAnimation.colorArray [5] = new Color (0f, 0f, 1.5f, 1f);
-		EMMainMenuAnimation.colorArray [6] = new Color (0f, 1.5f, 1.5f, 1f);
-		EMMainMenuAnimation.colorArray [7] = new Color (0f, 1.5f, 0f, 1f);
-		EMMainMenuAnimation.colorArray [8] = new Color (1.5f, 0f, 1.5f, 1f);
+		EMMainMenuAnimation.colorArray [1] = new Color (0.80f, 1f, 1f, 1f);
+		EMMainMenuAnimation.colorArray [2] = new Color (0.85f, 1f, 1f, 1f);
+		EMMainMenuAnimation.colorArray [3] = new Color (0.90f, 1f, 1f, 1f);
+		EMMainMenuAnimation.colorArray [4] = new Color (0.95f, 1f, 1f, 1f);
+		EMMainMenuAnimation.colorArray [5] = new Color (1.05f, 1f, 1f, 1f);
+		EMMainMenuAnimation.colorArray [6] = new Color (1.10f, 1f, 1f, 1f);
+		EMMainMenuAnimation.colorArray [7] = new Color (1.15f, 1f, 1f, 1f);
+		EMMainMenuAnimation.colorArray [8] = new Color (1.20f, 1f, 1f, 1f);
 		// Assign color to sprite renderer and make sure no color is used more than once
 		int i = 0;
 		do

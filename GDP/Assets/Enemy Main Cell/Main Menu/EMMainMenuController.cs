@@ -7,11 +7,14 @@ using System.Collections;
 public class EMMainMenuController : MonoBehaviour 
 {
 	private Rigidbody2D thisRB;
+	private Camera mainCamera;
 
 	float leftLimit;
 	float rightLimit;
 	float topLimit;
 	float bottomLimit;
+
+	Vector2 previousCameraPos;
 
 	private float fRadius;
 	private float width;
@@ -25,9 +28,12 @@ public class EMMainMenuController : MonoBehaviour
 	void Start ()
 	{
 		thisRB = GetComponent<Rigidbody2D> ();
+		mainCamera = Camera.main;
 
 		width = GetComponent<CircleCollider2D> ().bounds.size.x / 2f;
 		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
+
+		previousCameraPos = mainCamera.transform.position;
 
 		bCanChangeDir = true;
 		fChangeRate = Random.Range (3f, 6f);
@@ -42,6 +48,8 @@ public class EMMainMenuController : MonoBehaviour
 	{
 		// Update camera border
 		CameraLimit ();
+		// Follow camera
+		FollowCamera ();
 		// Update Radius
 		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x / 2f)
 			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x / 2f;
@@ -92,7 +100,19 @@ public class EMMainMenuController : MonoBehaviour
 			}
 		}
 	}
+	// Follow camera
+	private void FollowCamera ()
+	{
+		//thisRB.AddForce (Vector2.one * 10f);
 
+		if (mainCamera.transform.position.x != previousCameraPos.x || mainCamera.transform.position.y != previousCameraPos.y)
+		{
+			transform.position = new Vector2 (transform.position.x - (previousCameraPos.x - mainCamera.transform.position.x),
+			                                  transform.position.y - (previousCameraPos.y - mainCamera.transform.position.y));
+
+			previousCameraPos = mainCamera.transform.position;
+		}
+	}
 	// Randomize initial position
 	void InitialPosition ()
 	{
