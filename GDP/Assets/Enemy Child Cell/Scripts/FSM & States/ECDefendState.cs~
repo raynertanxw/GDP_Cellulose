@@ -114,7 +114,23 @@ public class ECDefendState : IECState {
 		}
 		else if(!bReachPos && !bAdjustNeeded && !bReturnToMain && !HasCellReachTargetPos(ECTransform.position,m_TargetPos) && m_ecFSM.IsHittingSideWalls())
 		{
-			m_ecFSM.rigidbody2D.velocity = m_Main.GetComponent<Rigidbody2D>().velocity;
+			Vector2 SeekVelo = SteeringBehavior.Seek(m_Child,m_TargetPos,300f);
+		
+			if((m_Child.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0) || (m_Child.transform.position.x >= 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x <= 0))
+			{
+				Acceleration += SeekVelo;
+			}
+			else{Acceleration += new Vector2(0f, SeekVelo.y);}
+			
+			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);
+		
+			/*if((m_Child.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0) || (m_Child.transform.position.x >= 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x <= 0))
+			{
+				Acceleration += new Vector2(m_Main.GetComponent<Rigidbody2D>().velocity.x, m_Main.GetComponent<Rigidbody2D>().velocity.y) * 24f;
+			}
+			else{Acceleration += new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y) * 24f;}
+			
+			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);*/
 		}
 		else if(!bReachPos && !bReturnToMain && HasCellReachTargetPos(ECTransform.position,m_TargetPos))
 		{
@@ -166,14 +182,14 @@ public class ECDefendState : IECState {
 			m_ecFSM.RotateToHeading();
 		}
 		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
-		else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
+		/*else if(!bKillClosestAttacker && bReachPos && !bReturnToMain && IsThereNoAttackers())
 		{
 			fDefendTime += Time.deltaTime;
 			if(fDefendTime >= 20f)
 			{
 				bReturnToMain = true;
 			}
-		}
+		}*/
 
 		//If the enemy child cells is return back to the enemy main cell but has not reach the position, continue seek back to the main cell
 		if(!bReachedMain && bReturnToMain && !HasCellReachTargetPos(ECTransform.position,EMTransform.position))
@@ -204,7 +220,7 @@ public class ECDefendState : IECState {
 		{
 			m_ecFSM.RandomRotation(0.85f);
 		}
-		else
+		else if(!m_ecFSM.IsHittingSideWalls())
 		{
 			m_ecFSM.RotateToHeading();
 		}
