@@ -74,7 +74,7 @@ public class PS_Logicaliser : MonoBehaviour
 			// if: Aggressive is triggered
 			if (UnityEngine.Random.value > fAggressiveToDefensive)
 				SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Attack, fAggressiveToDefensive);
-			else if (SquadChildFSM.StateCount(SCState.Idle) < nMaximumChildDefence)
+			else if (SquadChildFSM.StateCount(SCState.Defend) < nMaximumChildDefence)
 			{
 				int nDefenceCapacity = nMaximumChildDefence - SquadChildFSM.StateCount(SCState.Defend);
 

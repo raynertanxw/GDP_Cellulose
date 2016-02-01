@@ -189,6 +189,8 @@ public class SC_ProduceState : ISCState
 // SC_FindResourceState: The find resource state of the player squad's captain FSM
 public class SC_FindResourceState : ISCState
 {
+	private static Vector3 vCenterPosition = Vector3.zero;
+
 	private Nutrients targetNutrients = null;
 
 	// Constructor
@@ -215,20 +217,75 @@ public class SC_FindResourceState : ISCState
 		}
 		else
 		{
+			// Seperation Factor
+			// vSeperationVector: The final vector used to space away from all the other nearby cells
+			Vector3 vSeperationVector = Vector3.zero;
+			Collider2D[] array_nearbyCollider = Physics2D.OverlapCircleAll(m_scFSM.transform.position, 0.5f, Constants.s_onlySquadChildLayer);
+
+			if (array_nearbyCollider.Length > 0)
+			{
+				for (int i = 0; i < array_nearbyCollider.Length; i++)
+				{
+					// if: The current gameObject is itself
+					if (array_nearbyCollider[i] == m_scFSM.gameObject)
+						continue;
+
+					// vDirectionVector: The vector that the current squad child should be travelling in to space away from the current neighbour
+					Vector3 vDirectionVector = (m_scFSM.transform.position - array_nearbyCollider[i].transform.position);
+
+					// if: Somehow this is triggered, which is very often...
+					if (vDirectionVector.magnitude > 0)
+						vSeperationVector += vDirectionVector.normalized / vDirectionVector.sqrMagnitude;
+				}
+
+				// Average the the final vector to use for spacing away
+				vSeperationVector = vSeperationVector / array_nearbyCollider.Length;
+			}
+
+			// Attraction Factor
+			ExecuteMethod.OnceInUpdate("SC_FindResourceState.RecalculateCenter", null, null);
+			Vector3 vAttractionVector = vCenterPosition - m_scFSM.transform.position;
+			vAttractionVector = Vector3.ClampMagnitude(vAttractionVector, vAttractionVector.magnitude * 0.5f);
+
+			// Final Velocity Vector
 			// toTargetVector: The vector between the target nutrients and the current squad child cells
 			Vector3 toTargetVector = targetNutrients.transform.position - m_scFSM.transform.position;
 			// Apply vector to velocity
-			m_scFSM.RigidBody.AddForce(toTargetVector * Time.deltaTime * 1000f, ForceMode2D.Force);
+			m_scFSM.RigidBody.AddForce(toTargetVector + vSeperationVector + vAttractionVector * Time.deltaTime * 1000f, ForceMode2D.Force);
 			m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, 5f);
 
 			// if: The distance between the two bodies is less than a certain distance
 			if (Vector3.Distance(targetNutrients.transform.position, m_scFSM.transform.position) < 0.5f)
 			{
-				m_scFSM.Advance(SCState.Dead);
-				targetNutrients.AddSquadChildCount();
-				targetNutrients = null;
+				// if: The current squad child is added to the nutrients
+				if (targetNutrients.AddSquadChildCount())
+				{
+					m_scFSM.Advance(SCState.Dead);
+					targetNutrients = null;
+				}
 			}
 		}
+	}
+
+	// Public Static Function
+	// RecalculateCenter(): Recalculates the center position for all find resource children
+	public static void RecalculateCenter()
+	{
+		vCenterPosition = Vector3.zero;
+
+		float fChildCount = 0;
+		for (int i = 0; i < SquadChildFSM.SquadChildArray.Length; i++)
+		{
+			if (SquadChildFSM.SquadChildArray[i].EnumState == SCState.FindResource)
+			{
+				vCenterPosition += SquadChildFSM.SquadChildArray[i].transform.position;
+				fChildCount++;
+			}
+		}
+
+		// if: Prevention of inifinity error
+		if (fChildCount > 0)
+			vCenterPosition = vCenterPosition / fChildCount;
 	}
 }
 
@@ -275,11 +332,6 @@ public class SC_AttackState : ISCState
 	{
 		m_scFSM.AttackTarget();
 	}
-
-	public override void Exit()
-	{
-
-	}
 }
 
 // SC_AvoidState: The avoid state of the player squad's captain
@@ -324,6 +376,4 @@ public class SC_AvoidState : ISCState
 		m_scFSM.RigidBody.AddForce(finalMovement * 50.0f);
 		m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, finalMovement.magnitude * 5.0f);
 	}
-
-	// Public Static Functions
 }

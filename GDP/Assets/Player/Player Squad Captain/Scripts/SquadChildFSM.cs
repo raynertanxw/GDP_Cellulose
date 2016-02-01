@@ -237,7 +237,25 @@ public class SquadChildFSM : MonoBehaviour
 			return false;
 		}
 
-		m_RigidBody.AddForce((attackTarget.transform.position - transform.position) * Time.deltaTime * fAttackSpeed, ForceMode2D.Force);
+		// vToTargetVector: The vector to the target from the current squad child
+		Vector3 vToTargetVector = attackTarget.transform.position - transform.position;
+
+		// if: The current attack target is not hiding in enemy main
+		if (Vector3.Distance(attackTarget.transform.position, EnemyMainFSM.Instance().transform.position) > EnemyMainFSM.Instance().transform.lossyScale.x)
+		{
+			m_RigidBody.AddForce(vToTargetVector * Time.deltaTime * fAttackSpeed);
+			m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, Mathf.Clamp(vToTargetVector.magnitude, 0.1f, 50f));
+		}
+		// else: The current target is hiding within the enemy main
+		else
+		{
+			// Recycling variables -> vToTargetVector, create a new vector to wait outside the enemy main for the target
+			vToTargetVector = vToTargetVector.normalized * (EnemyMainFSM.Instance().transform.lossyScale.x + 0.5f);
+
+			m_RigidBody.AddForce(vToTargetVector * Time.deltaTime * fAttackSpeed);
+			m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, Mathf.Clamp(vToTargetVector.magnitude, 0.1f, 50f));
+		}
+
 		return true;
 	}
 
