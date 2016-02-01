@@ -34,7 +34,7 @@ public class SC_DeadState : ISCState
 public class SC_IdleState : ISCState
 {
 	// Static Fields
-	private static List<SC_IdleState> list_IdleChild = new List<SC_IdleState>();
+	private static List<SC_IdleState> list_IdleChild;
 
 	private static float s_fIdleDistance = PlayerSquadFSM.Instance.IdleDistance;
 	private static float s_fIdleRigidity = PlayerSquadFSM.Instance.IdleRigidity;
@@ -48,6 +48,7 @@ public class SC_IdleState : ISCState
 	// Constructor
 	public SC_IdleState(SquadChildFSM m_SquadChildFSM)
 	{
+		list_IdleChild = new List<SC_IdleState>(); 
 		m_scFSM = m_SquadChildFSM;
 	}
 
@@ -130,11 +131,6 @@ public class SC_IdleState : ISCState
 			}
 		}
 		return true;
-	}
-
-	public static void ResetStatics()
-	{
-		list_IdleChild = new List<SC_IdleState>();
 	}
 }
 
