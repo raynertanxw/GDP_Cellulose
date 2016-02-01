@@ -34,5 +34,6 @@ public class Constants : MonoBehaviour
 	#region Coroutines
 	public const string s_strAnimateInSpawnCtrl = "AnimateInSpawnCtrl";
 	public const string s_strFadeOutInfoPanel = "FadeOutInfoPanel";
+	public const string s_FadeOutCanvasGroup = "FadeOutCanvasGroup";
 	#endregion
 }
