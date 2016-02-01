@@ -272,6 +272,9 @@ public class SquadChildFSM : MonoBehaviour
 	/// <returns></returns>
 	public static int StateCount(SCState _enumState)
 	{
+		if (s_array_SquadChildFSM == null)
+			return -1;
+
 		int nStateCount = 0;
 		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
 		{

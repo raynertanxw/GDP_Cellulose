@@ -187,6 +187,9 @@ public class AudioManager : MonoBehaviour {
 	
 	public static void PlayPCSoundEffect(PlayerChildSFX _sfx, AudioSource _Source)
 	{
+		if (PlayerChildTracks == null)
+			return;
+
 		_Source.Stop();
 		_Source.clip = PlayerChildTracks[(int) _sfx];
 		_Source.Play();
@@ -194,6 +197,9 @@ public class AudioManager : MonoBehaviour {
 	
 	public static void PlayECSoundEffect(EnemyChildSFX _sfx, AudioSource _Source)
 	{
+		if (EnemyChildTracks == null)
+			return;
+
 		_Source.Stop();
 		_Source.clip = EnemyChildTracks[(int) _sfx];
 		Debug.Log((int) _sfx);
@@ -202,6 +208,9 @@ public class AudioManager : MonoBehaviour {
 	
 	public static void PlaySquadSoundEffect(SquadSFX _sfx, AudioSource _Source)
 	{
+		if (SquadChildTracks == null)
+			return;
+
 		_Source.Stop();
 		_Source.clip = SquadChildTracks[(int) _sfx];
 		_Source.Play();
