@@ -452,21 +452,25 @@ public class EMController : MonoBehaviour
 			m_EMFSM.AggressivenessEnemyChild = 0f;
 		}
 		// Reset Aggressiveness factor (Squad Captain)
-        if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0f) {
-			m_EMFSM.AggressivenessSquadCap = Random.Range (1f, 3f);
-        }
-        else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > 0f) {
-			m_EMFSM.AggressivenessSquadCap = 0f;
+		if (PlayerSquadFSM.Instance != null) 
+		{
+			if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadCap == 0f) {
+				m_EMFSM.AggressivenessSquadCap = Random.Range (1f, 3f);
+			} else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.CurrentAggressiveness > 0f) {
+				m_EMFSM.AggressivenessSquadCap = 0f;
+			}
 		}
-		// Reset Aggressiveness factor (Squad Child)
-		if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != Mathf.Sqrt(Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount())) * 2.0f) {
-			float fAggressivenessSquadChild = Mathf.Sqrt(Mathf.Sqrt((float)PlayerSquadFSM.Instance.AliveChildCount())) * 2.0f;
-			if (fAggressivenessSquadChild > 4f)
-				fAggressivenessSquadChild = 4f;
-			m_EMFSM.AggressivenessSquadChild = fAggressivenessSquadChild;
+		if (PlayerSquadFSM.Instance != null) 
+		{
+			// Reset Aggressiveness factor (Squad Child)
+			if (PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild != Mathf.Sqrt (Mathf.Sqrt ((float)PlayerSquadFSM.Instance.AliveChildCount ())) * 2.0f) {
+				float fAggressivenessSquadChild = Mathf.Sqrt (Mathf.Sqrt ((float)PlayerSquadFSM.Instance.AliveChildCount ())) * 2.0f;
+				if (fAggressivenessSquadChild > 4f)
+					fAggressivenessSquadChild = 4f;
+				m_EMFSM.AggressivenessSquadChild = fAggressivenessSquadChild;
+			} else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild > 0f)
+				m_EMFSM.AggressivenessSquadChild = 0f;
 		}
-		else if (!PlayerSquadFSM.Instance.IsAlive && m_EMFSM.AggressivenessSquadChild > 0f)
-			m_EMFSM.AggressivenessSquadChild = 0f;
 
 		// Update Aggressiveness
 		if (m_EMFSM.CurrentAggressiveness != (m_EMFSM.InitialAggressiveness + m_EMFSM.AggressivenessEnemyChild + m_EMFSM.AggressivenessSquadCap + m_EMFSM.AggressivenessSquadChild) / m_EMFSM.AggressivenessDistance)
