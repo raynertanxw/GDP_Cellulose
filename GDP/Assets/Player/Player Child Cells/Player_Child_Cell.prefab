@@ -59,7 +59,7 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: .0799999982
+  m_Radius: .200000003
 --- !u!114 &11406408
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -73,6 +73,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_bIsDefending: 1
   m_bHasAwaitingDeferredStateChange: 0
+  m_bSacrificeToSquadCpt: 0
+  m_formationCells: []
+  m_bIsInFormation: 0
+  attackMode: 0
   m_currentEnemyCellTarget: {fileID: 0}
   m_assignedNode: {fileID: 0}
   rigidbody2D: {fileID: 0}
@@ -147,6 +151,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: m_LocalScale.y
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: m_Radius
+      value: .200000003
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
