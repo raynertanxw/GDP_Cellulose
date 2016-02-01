@@ -145,7 +145,7 @@ public class Nutrients : MonoBehaviour
 
 	// Public Fuunctions
 	// AddSquadChildCount(): This function is called when a squad child "collides" with a nutrient
-	public void AddSquadChildCount()
+	public bool AddSquadChildCount()
 	{
 		nCurrentSquadChildCount++;
 		transform.localScale += Vector3.one * fSizeExpandPerSpawn;
@@ -156,6 +156,11 @@ public class Nutrients : MonoBehaviour
 			nCurrentSquadChildCount = 0;
 
 			Nutrients spawnNutrient = Spawn(transform.position);
+
+			// if: There is not spawnable
+			if (spawnNutrient == null)
+				return false;
+
 			spawnNutrient.endPosition = 
 				new Vector2(
 					-endPosition.x, 
@@ -163,6 +168,8 @@ public class Nutrients : MonoBehaviour
 
 			mAnimate.ExpandContract(0.5f, 1, 1.3f);
 		}
+
+		return true;
 	}
 
 	// Public Static Functions
