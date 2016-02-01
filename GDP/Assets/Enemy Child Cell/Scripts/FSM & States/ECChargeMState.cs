@@ -226,6 +226,7 @@ public class ECChargeMState : IECState {
 		}
 
 		bSqueezeDone = true;
+
 		AudioManager.PlayECSoundEffect(EnemyChildSFX.CellChargeTowards, m_ecFSM.Audio);
 	}
 }

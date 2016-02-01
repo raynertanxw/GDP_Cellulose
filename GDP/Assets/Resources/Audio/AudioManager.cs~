@@ -98,22 +98,27 @@ public class AudioManager : MonoBehaviour {
 			}
 		}
 		
-		PlayerChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_BurstShotv2") as AudioClip);
-		PlayerChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Scattershotv2") as AudioClip);
-		PlayerChildTracks[2] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Swarm") as AudioClip);
+		PlayerChildTracks[0] = Resources.Load<AudioClip>("Audio/Sound Effects/Player SFX/ADPCM/Player_BurstShotv2");
+		PlayerChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Scattershotv2",typeof(AudioClip)) as AudioClip);
+		PlayerChildTracks[2] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Swarm",typeof(AudioClip)) as AudioClip);
 		
-		EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_CellChargeTowards") as AudioClip);
-		EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_Defend") as AudioClip);
-		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_DeployLandmine") as AudioClip);
-		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping") as AudioClip);
-		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode") as AudioClip);
+		EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_CellChargeTowards",typeof(AudioClip)) as AudioClip);
+		EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_Defend",typeof(AudioClip)) as AudioClip);
+		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_DeployLandmine",typeof(AudioClip)) as AudioClip);
+		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping",typeof(AudioClip)) as AudioClip);
+		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode",typeof(AudioClip)) as AudioClip);
 		
-		SquadChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_SpawnCell") as AudioClip);
-		SquadChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_ChildAttack") as AudioClip);
+		SquadChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_SpawnCell",typeof(AudioClip)) as AudioClip);
+		SquadChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_ChildAttack",typeof(AudioClip)) as AudioClip);
 		
-		Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
+		/*Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
+		for(int i = 0; i < PlayerChildTracks.Length; i++){Debug.Log(PlayerChildTracks[i].name);}
+		
 		Debug.Log("EnemyChildTracks count: " + EnemyChildTracks.Length);
+		for(int i = 0; i < EnemyChildTracks.Length; i++){Debug.Log(EnemyChildTracks[i].name);}
+		
 		Debug.Log("SquadChildTracks count: " + SquadChildTracks.Length);
+		for(int i = 0; i < SquadChildTracks.Length; i++){Debug.Log(SquadChildTracks[i].name);}*/
 	}
 	
 	private SceneType DetermineCurrentSceneType()
@@ -213,7 +218,7 @@ public class AudioManager : MonoBehaviour {
 
 		_Source.Stop();
 		_Source.clip = EnemyChildTracks[(int) _sfx];
-		Debug.Log((int) _sfx);
+		Debug.Log(EnemyChildTracks[(int) _sfx].name);
 		_Source.Play();
 	}
 	
