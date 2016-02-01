@@ -91,18 +91,18 @@ public class AudioManager : MonoBehaviour {
 			}
 		}
 		
-		PlayerChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player_BurstShotv2") as AudioClip);
-		PlayerChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player_Scattershotv2") as AudioClip);
-		PlayerChildTracks[2] = (Resources.Load("Audio/Sound Effects/Player_Swarm") as AudioClip);
+		PlayerChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_BurstShotv2") as AudioClip);
+		PlayerChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Scattershotv2") as AudioClip);
+		PlayerChildTracks[2] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Swarm") as AudioClip);
 		
-		EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy_CellChargeTowards") as AudioClip);
-		EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy_Defend") as AudioClip);
-		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy_DeployLandmine") as AudioClip);
-		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy_LandmineBeeping") as AudioClip);
-		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy_LandmineExplode") as AudioClip);
+		EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_CellChargeTowards") as AudioClip);
+		EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_Defend") as AudioClip);
+		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_DeployLandmine") as AudioClip);
+		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping") as AudioClip);
+		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode") as AudioClip);
 		
-		SquadChildTracks[0] = (Resources.Load("Audio/Sound Effects/Squad_SpawnCell") as AudioClip);
-		SquadChildTracks[1] = (Resources.Load("Audio/Sound Effects/Squad_ChildAttack") as AudioClip);
+		SquadChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_SpawnCell") as AudioClip);
+		SquadChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_ChildAttack") as AudioClip);
 		
 		Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
 		Debug.Log("EnemyChildTracks count: " + EnemyChildTracks.Length);
