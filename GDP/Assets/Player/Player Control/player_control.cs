@@ -305,23 +305,31 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
+			int[] childrenInNode = new int[] {-1};
+			switch (_selectedNode)
+			{
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionBurstShotChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+
+			// Assumes that there will be at least the required amount of cells
+			for (int i = 0; i < childrenInNode.Length; i++)
 			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
-				{
-					formationCells[fcIndex] = PlayerChildFSM.playerChildPool[i];
-					formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
-					formationCells[fcIndex].attackMode = PlayerAttackMode.BurstShot;
+				int poolId = childrenInNode[i];
 
-					formationCells[fcIndex].m_assignedNode.SendChildToAttack(i);
-					formationCells[fcIndex].DeferredChangeState(PCState.ChargeMain);
-
-					fcIndex++;
-					if (fcIndex == formationCells.Length)
-						break;
-				}
+				formationCells[fcIndex] = PlayerChildFSM.playerChildPool[poolId];
+				formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
+				formationCells[fcIndex].attackMode = PlayerAttackMode.BurstShot;
+				
+				formationCells[fcIndex].m_assignedNode.SendChildToAttack(poolId);
+				formationCells[fcIndex].DeferredChangeState(PCState.ChargeMain);
+				
+				fcIndex++;
+				if (fcIndex == formationCells.Length)
+					break;
 			}
 
 			infoText.text = "BurstShot";
@@ -342,22 +350,30 @@ public class player_control : MonoBehaviour
         }
         else
         {
+			int[] childrenInNode = new int[] {-1};
+			switch (_selectedNode)
+			{
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionSwarmTargetChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
-			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
-				{
-					formationCells[fcIndex] = PlayerChildFSM.playerChildPool[i];
-					formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
-					formationCells[fcIndex].attackMode = PlayerAttackMode.SwarmTarget;
-					formationCells[fcIndex].m_assignedNode.SendChildToAttack(i);
-					formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
 
-					fcIndex++;
-					if (fcIndex == formationCells.Length)
-						break;
-				}
+			// Assumes that there will be at least the required amount of cells
+			for (int i = 0; i < childrenInNode.Length; i++)
+			{
+				int poolId = childrenInNode[i];
+
+				formationCells[fcIndex] = PlayerChildFSM.playerChildPool[poolId];
+				formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
+				formationCells[fcIndex].attackMode = PlayerAttackMode.SwarmTarget;
+				formationCells[fcIndex].m_assignedNode.SendChildToAttack(poolId);
+				formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
+				
+				fcIndex++;
+				if (fcIndex == formationCells.Length)
+					break;
 			}
 
 			infoText.text = "SwarmTarget";
@@ -378,22 +394,30 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
+			int[] childrenInNode = new int[] {-1};
+			switch (_selectedNode)
+			{
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionScatterShotChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
-			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
-				{
-					formationCells[fcIndex] = PlayerChildFSM.playerChildPool[i];
-					formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
-					formationCells[fcIndex].attackMode = PlayerAttackMode.ScatterShot;
-					formationCells[fcIndex].m_assignedNode.SendChildToAttack(i);
-					formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
 
-					fcIndex++;
-					if (fcIndex == formationCells.Length)
-						break;
-				}
+			// Assumes that there will be at least the required amount of cells
+			for (int i = 0; i < childrenInNode.Length; i++)
+			{
+				int poolId = childrenInNode[i];
+
+				formationCells[fcIndex] = PlayerChildFSM.playerChildPool[poolId];
+				formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
+				formationCells[fcIndex].attackMode = PlayerAttackMode.ScatterShot;
+				formationCells[fcIndex].m_assignedNode.SendChildToAttack(poolId);
+				formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
+				
+				fcIndex++;
+				if (fcIndex == formationCells.Length)
+					break;
 			}
 
 			infoText.text = "ScatterShot";
@@ -419,41 +443,32 @@ public class player_control : MonoBehaviour
 			if (leftNode.activeChildCount > rightNode.activeChildCount)
 			{
 				// Use up cells in smaller node, OR till half of spawn cost.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost / 2; i++)
 				{
-					// Move to center.
-
-					// Converge to center.
-
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						rightNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
+					int poolId = PlayerChildFSM.childrenInRightNode[i];
+					if (poolId == -1)
+						break;
 
-						if (childrenLeftToConsume <= Settings.s_nPlayerSqaudCaptainChildCost / 2)
-							break;
-					}
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					rightNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
 				}
 
 				// Consume the remaining needed children.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost; i++)
 				{
-					// Move to center.
-					
-					// Converge to center.
-					
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						leftNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
-						
-						if (childrenLeftToConsume == 0)
-							break;
-					}
+					int poolId = PlayerChildFSM.childrenInLeftNode[i];
+					if (poolId == -1)
+						break;
+
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					leftNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
+
+					if (childrenLeftToConsume == 0)
+						break;
 				}
 			}
 
@@ -461,41 +476,32 @@ public class player_control : MonoBehaviour
 			else
 			{
 				// Use up cells in smaller node, OR till half of spawn cost.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost / 2; i++)
 				{
-					// Move to center.
-					
-					// Converge to center.
-					
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						leftNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
-						
-						if (childrenLeftToConsume <= Settings.s_nPlayerSqaudCaptainChildCost / 2)
-							break;
-					}
+					int poolId = PlayerChildFSM.childrenInLeftNode[i];
+					if (poolId == -1)
+						break;
+					
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					leftNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
 				}
 				
 				// Consume the remaining needed children.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost; i++)
 				{
-					// Move to center.
-					
-					// Converge to center.
-					
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						rightNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
-						
-						if (childrenLeftToConsume == 0)
-							break;
-					}
+					int poolId = PlayerChildFSM.childrenInRightNode[i];
+					if (poolId == -1)
+						break;
+					
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					rightNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
+					
+					if (childrenLeftToConsume == 0)
+						break;
 				}
 			}
 			
@@ -566,6 +572,9 @@ public class player_control : MonoBehaviour
 	public void NodeDrag(BaseEventData _data)
 	{
 		PointerEventData pointerData = _data as PointerEventData;
+
+		if (pointerData == null)
+			return;
 
 		switch (activeDraggedNode)
 		{

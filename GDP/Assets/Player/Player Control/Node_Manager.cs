@@ -63,14 +63,22 @@ public class Node_Manager : MonoBehaviour
 		// Change to avoid.
 		if (m_bIsDefending == true)
 		{
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+			int[] childrenInNode = new int[] {-1};
+			switch (m_NodeEnum)
 			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == nodePCStatus)
-				{
-					PlayerChildFSM.playerChildPool[i].m_bIsDefending = false;
-					if (PlayerChildFSM.playerChildPool[i].GetCurrentState() != PCState.Idle)
-						PlayerChildFSM.playerChildPool[i].DeferredChangeState(PCState.Idle); // Will auto change to avoid if detected.
-				}
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
+			for (int i = 0; i < childrenInNode.Length; i++)
+			{
+				int poolId = childrenInNode[i];
+				if (poolId == -1)
+					break;
+
+				PlayerChildFSM.playerChildPool[poolId].m_bIsDefending = false;
+				if (PlayerChildFSM.playerChildPool[poolId].GetCurrentState() != PCState.Idle)
+					PlayerChildFSM.playerChildPool[poolId].DeferredChangeState(PCState.Idle); // Will auto change to avoid if detected.
 			}
 
 			m_bIsDefending = false;
@@ -79,14 +87,22 @@ public class Node_Manager : MonoBehaviour
 		// Change to defend.
 		else
 		{
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+			int[] childrenInNode = new int[] {-1};
+			switch (m_NodeEnum)
 			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == nodePCStatus)
-				{
-					PlayerChildFSM.playerChildPool[i].m_bIsDefending = true;
-					if (PlayerChildFSM.playerChildPool[i].GetCurrentState() != PCState.Idle)
-						PlayerChildFSM.playerChildPool[i].DeferredChangeState(PCState.Idle); // Will auto change to avoid if detected.
-				}
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
+			for (int i = 0; i < childrenInNode.Length; i++)
+			{
+				int poolId = childrenInNode[i];
+				if (poolId == -1)
+					break;
+				
+				PlayerChildFSM.playerChildPool[poolId].m_bIsDefending = true;
+				if (PlayerChildFSM.playerChildPool[poolId].GetCurrentState() != PCState.Idle)
+					PlayerChildFSM.playerChildPool[poolId].DeferredChangeState(PCState.Idle); // Will auto change to defend if detected.
 			}
 			
 			m_bIsDefending = true;
