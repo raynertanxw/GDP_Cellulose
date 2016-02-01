@@ -391,7 +391,7 @@ public class PositionQuery
 		return Formation.ReverseCircular;
 	}
 
-	private PlayerAttackMode GetMostSignificantAttack()
+	public PlayerAttackMode GetMostSignificantAttack()
 	{
 		float BurstCount = 0;
 		float SwarmCount = 0;
