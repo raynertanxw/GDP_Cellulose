@@ -57,14 +57,19 @@ public class FormationDatabase
 
 		for(int i = 0; i < _EnemyChild.Count; i++)
 		{
-			if(!FIndexDatabase.ContainsKey(_EnemyChild[i].name))
+			if(!FIndexDatabase.ContainsKey(_EnemyChild[i].name)){FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);}
+			if(!FPositionDatabase.ContainsKey(FormationIndex)){FPositionDatabase.Add(FormationIndex,Vector2.zero);}
+			if(!FAvaliabilityDatabase.ContainsKey(FormationIndex)){FAvaliabilityDatabase.Add(FormationIndex,true);}
+			FormationIndex++;
+		
+			/*if(!FIndexDatabase.ContainsKey(_EnemyChild[i].name))
 			{
 				//Debug.Log("add formation index: " + FormationIndex);
 				FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);
 				FPositionDatabase.Add(FormationIndex,Vector2.zero);
 				FAvaliabilityDatabase.Add(FormationIndex,true);
 				FormationIndex++;
-			}
+			}*/
 		}
     }
 
@@ -393,7 +398,11 @@ public class FormationDatabase
 		//If not,
 		else
 		{
-			if(!FIndexDatabase.ContainsKey(_NewDefender.name))
+			if(!FIndexDatabase.ContainsKey(_NewDefender.name)){FIndexDatabase.Add(_NewDefender.name, FIndexDatabase.Count);} else{FIndexDatabase[_NewDefender.name] = FIndexDatabase.Count;}
+			if(!FPositionDatabase.ContainsKey(FIndexDatabase[_NewDefender.name])){FPositionDatabase.Add(FIndexDatabase[_NewDefender.name], Vector2.zero);} else{FPositionDatabase[FIndexDatabase[_NewDefender.name]] = Vector2.zero;}
+			if(!FAvaliabilityDatabase.ContainsKey(FIndexDatabase[_NewDefender.name])){FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);} else{FAvaliabilityDatabase[FIndexDatabase[_NewDefender.name]] = false;}
+		
+			/*if(!FIndexDatabase.ContainsKey(_NewDefender.name))
 			{
 				FIndexDatabase.Add(_NewDefender.name, FIndexDatabase.Count);
 				FPositionDatabase.Add(FIndexDatabase[_NewDefender.name], Vector2.zero);
@@ -404,7 +413,7 @@ public class FormationDatabase
 				FIndexDatabase[_NewDefender.name] = FIndexDatabase.Count;
 				FPositionDatabase[FIndexDatabase[_NewDefender.name]] = Vector2.zero;
 				FAvaliabilityDatabase[FIndexDatabase[_NewDefender.name]] = false;
-			}
+			}*/
 			
 			//Update the database to recalculate the position for all indexes
 			UpdateDatabaseFormation(CurrentFormation,fCurrentMainScale);
