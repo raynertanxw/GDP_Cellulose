@@ -161,7 +161,8 @@ public class SquadChildFSM : MonoBehaviour
 		}
 
 		// Excution of the current state
-		m_currentState.Execute();
+		if (PlayerSquadFSM.Instance != null)
+			m_currentState.Execute();
 
 		// Post-Excution
 	}
