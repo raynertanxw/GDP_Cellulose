@@ -246,11 +246,7 @@ public class MapManager : MonoBehaviour
 		{
 			DebugDrawGrid(transform.position, nNumOfRows, nNumOfColumns, fUniversalnodeSize, Color.blue);
 		}
-		
-		// Grid Start Position
-		Gizmos.color = Color.red;
-		Gizmos.DrawSphere(transform.position, 0.3f);
-		
+
 		// Draw Obstacle obstruction
 		Gizmos.color = Color.white;
 		if (bShowObstacleBlocks)
