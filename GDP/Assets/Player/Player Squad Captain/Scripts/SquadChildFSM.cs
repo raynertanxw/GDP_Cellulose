@@ -23,7 +23,12 @@ public class SquadChildFSM : MonoBehaviour
 	*/
 
 	// Static Fields
-	private static SquadChildFSM[] s_array_SquadChildFSM;     // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
+	private static SquadChildFSM[] s_array_SquadChildFSM;       // PlayerSquadFSM[]: Stores the array of all the PlayerSquadFSM (all the squad child cells)
+	private static List<EnemyChildFSM> s_list_enemyChild;         // s_list_enemyChild: The list of enemy child cells to attack
+	private static Vector3 playerPosition;                      // playerPosition: The position of the player main
+	private static List<EnemyChildFSM> s_list_EnemyLandmine;    // s_list_EnemyLandmine: The list of enemy landmine, use to detect landmine
+																//                       Used in Produce and Avoid state
+
 
 	// PlayerSquadFSM-Inherited variables
 	private static Vector3 m_strafingVector;                    // m_strafingVector: The current direction of the strafing vector
@@ -34,10 +39,6 @@ public class SquadChildFSM : MonoBehaviour
 	private static float fDefenceSpeed;
 	private static float fDefenceRigidity;
 	private static float fAttackSpeed;
-
-	private static Vector3 playerPosition;                      // playerPosition: The position of the player main
-	private static List<EnemyChildFSM> s_list_EnemyLandmine;    // s_list_EnemyLandmine: The list of enemy landmine, use to detect landmine
-																//                     Used in Produce and Avoid state
 
 	// Uneditable Fields
 	private float fStrafingOffsetAngle = 0f;                    // fStrafingOffsetAngle: Stores the angular distances away from the main rotation vector
@@ -145,6 +146,19 @@ public class SquadChildFSM : MonoBehaviour
 	{
 		if (attackTarget != null)
 			this.Draw(attackTarget.transform.position);
+
+		if (EnemyMainFSM.Instance() != null)
+		{
+			// Bouncing off EnemyMain
+			Vector3 distanceBetween = transform.position - EnemyMainFSM.Instance().transform.position;
+			// if: The enemy main is detected within its vicinity
+			if (distanceBetween.magnitude < EnemyMainFSM.Instance().transform.lossyScale.x)
+			{
+				// bounceNormal: The reflection normal for the bounce
+				Vector3 bounceNormal = Vector3.Normalize(transform.position - EnemyMainFSM.Instance().transform.position);
+				m_RigidBody.velocity = Vector3.Reflect(m_RigidBody.velocity, bounceNormal);
+			}
+		}
 
 		// Excution of the current state
 		m_currentState.Execute();
@@ -493,70 +507,57 @@ public class SquadChildFSM : MonoBehaviour
 	// GetNearestTargetPosition(): Assign a target to aggressive squad child cells.
 	public static bool GetNearestTargetPosition()
 	{
-		List<EnemyChildFSM> list_enemyChild = EnemyMainFSM.Instance().ECList;
-		// if: There is no enemy
-		if (list_enemyChild.Count == 0)
-		{
-			return false;
-		}
+		s_list_enemyChild = EnemyMainFSM.Instance().ECList;
 
-		int attackCount = SquadChildFSM.StateCount(SCState.Attack);
-		// if: There are no attacking squad children
-		if (attackCount == 0)
+		// if: There is no enemy child cells to attack
+		if (s_list_enemyChild.Count == 0)
 		{
-			return false;
-		}
-
-		// if: There are more aggressive squad child cells than enemies to attack
-		if (attackCount > list_enemyChild.Count)
-		{
-			attackCount = list_enemyChild.Count;
-
-			int toCheck = 0;
-			// for: Send the extra amount of aggressive squad child cells back to idle (Since there are more squad child than enemy child)
 			for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
 			{
 				if (s_array_SquadChildFSM[i].EnumState == SCState.Attack)
+					s_array_SquadChildFSM[i].Advance(SCState.Idle);
+			}
+			return false;
+		}
+
+		// if: There are no attacking squad children
+		if (SquadChildFSM.StateCount(SCState.Attack) == 0)
+		{
+			return false;
+		}
+
+		// for: Resets all the attackTarget of all squad children
+		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
+		{
+			s_array_SquadChildFSM[i].attackTarget = null;
+		}
+
+		// for: Every enemy child in the list...
+		for (int i = 0; i < s_list_enemyChild.Count; i++)
+		{
+			// if: The distance between the enemy child and squad captain distances is significant
+			if (Vector3.Distance(s_list_enemyChild[i].transform.position, PlayerSquadFSM.Instance.transform.position) < 6f)
+			{
+				// for: Finds a squad children in the list...
+				for (int j = 0; j < s_array_SquadChildFSM.Length; j++)
 				{
-					if (toCheck >= attackCount)
-						s_array_SquadChildFSM[i].Advance(SCState.Idle);
-					else
-						toCheck++;
+					// if: The current squad children is attacking and it has no target
+					if (s_array_SquadChildFSM[j].EnumState == SCState.Attack && s_array_SquadChildFSM[j].attackTarget == null)
+					{
+						s_array_SquadChildFSM[j].attackTarget = s_list_enemyChild[i];
+					}
 				}
 			}
 		}
 
-		// array_nearestEnemyChild: An array to store the array of closest enemy child cells to Squad Captain
-		EnemyChildFSM[] array_nearestEnemyChild = new EnemyChildFSM[attackCount];
-
-		// for: Checks through all enemy child and creates a list of closest enemy child cells to Squad Captain
-		for (int i = 0; i < array_nearestEnemyChild.Length; i++)
-		{
-			if (array_nearestEnemyChild[i] == null)
-			{
-				array_nearestEnemyChild[i] = list_enemyChild[i];
-				break;
-			}
-			// else if: The current enemy child is closer than the enemy child that are in the "TOP CLOSEST TO SQUAD CAPTAIN" list
-			// it will add the current enemy child into the list
-			else if (list_enemyChild[i].transform.position.y < array_nearestEnemyChild[i].transform.position.y)
-			{
-				array_nearestEnemyChild[i] = list_enemyChild[i];
-				break;
-			}
-		}
-
-		// for: Assigning enemy child as targets to aggressive squad child cells
-		int k = 0;
+		// for: This for loops returns all attacking squad children to idle when they have no target
 		for (int i = 0; i < s_array_SquadChildFSM.Length; i++)
 		{
-			if (s_array_SquadChildFSM[i].EnumState == SCState.Attack)
+			if (s_array_SquadChildFSM[i].EnumState == SCState.Attack && s_array_SquadChildFSM[i].attackTarget == null)
 			{
-				s_array_SquadChildFSM[i].attackTarget = array_nearestEnemyChild[k];
-				k++;
+				s_array_SquadChildFSM[i].Advance(SCState.Idle);
 			}
 		}
-
 		return true;
 	}
 

@@ -132,12 +132,6 @@ public class SC_IdleState : ISCState
 		return true;
 	}
 
-
-
-
-
-
-
 	public static void ResetStatics()
 	{
 		list_IdleChild = new List<SC_IdleState>();
@@ -309,8 +303,7 @@ public class SC_AvoidState : ISCState
 		// if: There is no landmine, return the squad child to idle
 		if (SquadChildFSM.ListLandmine.Count == 0)
 		{
-			Debug.Log("List count is 0");
-			m_scFSM.Advance(SCState.Produce);
+			m_scFSM.Advance(SCState.Idle);
 			return;
 		}
 
@@ -333,7 +326,7 @@ public class SC_AvoidState : ISCState
 		//Debug.Log(m_scFSM.gameObject.name + "::Rigibody->velocity(): " + m_scFSM.RigidBody.velocity + ", finalMovment: " + finalMovement);
 
 		m_scFSM.RigidBody.AddForce(finalMovement * 50.0f);
-		m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, finalMovement.magnitude);
+		m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, finalMovement.magnitude * 5.0f);
 	}
 
 	// Public Static Functions
