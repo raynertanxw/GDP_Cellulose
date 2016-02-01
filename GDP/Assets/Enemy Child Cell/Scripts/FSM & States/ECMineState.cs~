@@ -47,6 +47,8 @@ public class ECMineState : IECState {
 
 	private Point CurrentTargetPoint;
 	private int CurrentTargetIndex;
+	
+	private static Vector2 EndPosition;
 
 	private enum Spread{Empty,Tight, Wide};
 
@@ -143,6 +145,7 @@ public class ECMineState : IECState {
 		if(GatherTogether && HasCellReachTarget(PathToTarget[PathToTarget.Count - 1].Position))
 		{
 			bReachTarget = true;
+			EndPosition = new Vector2(m_Child.transform.position.x,-99f);
 			m_ecFSM.StopChildCorountine(ExplodeCorountine());
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
@@ -178,7 +181,7 @@ public class ECMineState : IECState {
 		}
 
 
-		if(GatherTogether && !bExploding && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive) && bReachTarget == false)
+		if(!bReachTarget && GatherTogether && !bExploding && (CurrentPositionType == PositionType.Aggressive || CurrentPositionType == PositionType.Defensive) && bReachTarget == false)
 		{
 			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
 
@@ -207,7 +210,7 @@ public class ECMineState : IECState {
 				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 			}
 		}
-		else if(GatherTogether && !bExploding && CurrentPositionType == PositionType.Neutral && bReachTarget == false)
+		else if(!bReachTarget && GatherTogether && !bExploding && CurrentPositionType == PositionType.Neutral && bReachTarget == false)
 		{
 			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
 
@@ -245,7 +248,13 @@ public class ECMineState : IECState {
 				CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
 			}
 		}
-
+		else if(bReachTarget)
+		{
+			Acceleration += SteeringBehavior.Seek(m_Child,EndPosition,12f);
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
+			AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
+		}
+		
 		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
 		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 
