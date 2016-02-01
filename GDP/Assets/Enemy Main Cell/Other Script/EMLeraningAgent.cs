@@ -183,10 +183,13 @@ public class EMLeraningAgent : MonoBehaviour
 		yield return new WaitForSeconds (checkFreq);
 
 		// If we are still in the same state then proceed
-		if (pastState == m_EMFSM.CurrentStateIndex)
-			LearningElement (pastState, pastEnemyChild, m_EMFSM.AvailableChildNum, pastPlayerChild, PlayerChildFSM.GetActiveChildCount(),
-			                 pastSquadChild, PlayerSquadFSM.Instance.AliveChildCount (), squadCaptainWasAlive, PlayerSquadFSM.Instance.IsAlive, 
-			                 pastEnemyHealth, pastPlayerHealth);
+		if (EMLeraningAgent.instance != null)
+		{
+			if (pastState == m_EMFSM.CurrentStateIndex)
+				LearningElement (pastState, pastEnemyChild, m_EMFSM.AvailableChildNum, pastPlayerChild, PlayerChildFSM.GetActiveChildCount(),
+				                 pastSquadChild, PlayerSquadFSM.Instance.AliveChildCount (), squadCaptainWasAlive, PlayerSquadFSM.Instance.IsAlive, 
+				                 pastEnemyHealth, pastPlayerHealth);
+		}
 	
 		bCanStartCheck = true;		//Reset the checking availability
 	}

@@ -31,6 +31,11 @@ public class EMMainMenuController : MonoBehaviour
 
 		bCanChangeDir = true;
 		fChangeRate = Random.Range (3f, 6f);
+
+		// Update camera border
+		CameraLimit ();
+		// Randomize initial position
+		InitialPosition ();
 	}
 
 	void Update () 
@@ -86,6 +91,13 @@ public class EMMainMenuController : MonoBehaviour
 				thisRB.velocity = velocity;
 			}
 		}
+	}
+
+	// Randomize initial position
+	void InitialPosition ()
+	{
+		Vector2 position = new Vector2 (Random.Range (leftLimit, rightLimit), Random.Range (bottomLimit, topLimit));
+		transform.position = position;
 	}
 
 	// Randomize velocity if allowed

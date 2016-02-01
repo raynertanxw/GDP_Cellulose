@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent (typeof (Renderer))]
 [RequireComponent (typeof (EMMainMenuController))]
@@ -10,6 +11,8 @@ public class EMMainMenuAnimation : MonoBehaviour
 	private Renderer thisRend;
 	public GameObject halo;
 
+	[SerializeField]
+	private float fSizeFactor = 1f;
 	[SerializeField]
 	private bool bIsExpanding;
 	[SerializeField]
@@ -51,6 +54,7 @@ public class EMMainMenuAnimation : MonoBehaviour
 	#endregion
 	
 	#region Color
+	public static Color[] colorArray = new Color[10];
 	private Color defaultColor;
 	private Color aggressiveColor;
 	private Color cautiousColor;
@@ -103,8 +107,26 @@ public class EMMainMenuAnimation : MonoBehaviour
 			bIsRotatingLeft = true;
 		// Initialization of scale
 		initialScale = gameObject.transform.localScale;
-		currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f))));
+		currentScale = initialScale * fSizeFactor;
 		transform.localScale = (Vector3)currentScale;
+		// Color array initialization
+		EMMainMenuAnimation.colorArray [0] = Color.white;
+		EMMainMenuAnimation.colorArray [1] = new Color (0f, 0f, 0.75f, 1f);
+		EMMainMenuAnimation.colorArray [2] = new Color (0f, 0.75f, 0.75f, 1f);
+		EMMainMenuAnimation.colorArray [3] = new Color (0f, 0.75f, 0f, 1f);
+		EMMainMenuAnimation.colorArray [4] = new Color (0.75f, 0f, 0.75f, 1f);
+		EMMainMenuAnimation.colorArray [5] = new Color (0f, 0f, 1.5f, 1f);
+		EMMainMenuAnimation.colorArray [6] = new Color (0f, 1.5f, 1.5f, 1f);
+		EMMainMenuAnimation.colorArray [7] = new Color (0f, 1.5f, 0f, 1f);
+		EMMainMenuAnimation.colorArray [8] = new Color (1.5f, 0f, 1.5f, 1f);
+		// Assign color to sprite renderer and make sure no color is used more than once
+		int i = 0;
+		do
+		{
+			i = Random.Range (0, 9);
+		} while (EMMainMenuAnimation.colorArray [i] == Color.black);
+		GetComponent<SpriteRenderer> ().color = EMMainMenuAnimation.colorArray [i];
+		EMMainMenuAnimation.colorArray [i] = Color.black;
 		// Initialization of color
 		defaultColor = thisRend.material.color;
 		aggressiveColor = new Vector4 (1f, 0.25f, 0.25f, 1f);
@@ -117,7 +139,6 @@ public class EMMainMenuAnimation : MonoBehaviour
 		nCurrentStateNo = Random.Range (1, 8);
 		nPreviousStateNo = nCurrentStateNo;
 	}
-
 	
 	void Update () 
 	{
@@ -188,12 +209,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 	{
 		if (EnemyMainFSM.Instance() != null)
 		{
-			if (currentScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))) && 
+			if (currentScale != initialScale * fSizeFactor && 
 			    !bIsExpanding &&
 			    !bIsShrinking &&
 			    nCurrentStateNo != 7)
 			{
-				currentScale = initialScale * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f))));
+				currentScale = initialScale * fSizeFactor;
 				transform.localScale = (Vector3)currentScale;
 			}
 		}
@@ -254,12 +275,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 				}
 			} else if (!bIsExpanding && 
 			           bIsShrinking &&
-			           currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) {
+			           currentScale.x >= initialScale.x * fSizeFactor) {
 				currentScale.x -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			} else if (!bIsExpanding && 
 			           bIsShrinking &&
-			           currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) {
+			           currentScale.x < initialScale.x * fSizeFactor) {
 				bIsShrinking = false;
 			}
 			
@@ -316,12 +337,12 @@ public class EMMainMenuAnimation : MonoBehaviour
 
 			if (nDieAniPhase == 0)
 			{
-				currentScale.x += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.x - currentScale.x)) / 2f;
-				currentScale.y += fDefaultExpandRate * Mathf.Sqrt (Mathf.Abs (initialScale.y - currentScale.y)) / 2f;
+				currentScale.x += fDefaultExpandRate * (initialScale.x * fSizeFactor - currentScale.x / 1.5f) / 2f;
+				currentScale.y += fDefaultExpandRate * (initialScale.y * fSizeFactor - currentScale.y / 1.5f) / 2f;
 				
-				if (currentScale.x >= initialScale.x * Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f))))))
+				if (currentScale.x >= initialScale.x * fSizeFactor)
 				{
-					StateUpdate ();
+					bCanTransition = true;
 				}
 			}
 			
@@ -356,14 +377,14 @@ public class EMMainMenuAnimation : MonoBehaviour
 			} 
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x >= initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) 
+			         currentScale.x >= initialScale.x * fSizeFactor) 
 			{
 				currentScale.x -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.x));
 				currentScale.y -= fDefaultExpandRate * fLandmineExpandFactor * Mathf.Sqrt (Mathf.Abs (fTargetSize - currentScale.y));
 			}
 			else if (!bIsExpanding && 
 			         bIsShrinking &&
-			         currentScale.x < initialScale.x * Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt (Mathf.Sqrt(Mathf.Pow((float)Settings.s_nEnemyMainInitialHealth / 2f, 1.5f)))))) 
+			         currentScale.x < initialScale.x * fSizeFactor) 
 			{
 				bIsShrinking = false;
 				bIsExpanding = true;
