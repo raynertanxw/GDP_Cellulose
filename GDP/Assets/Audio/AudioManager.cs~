@@ -19,6 +19,8 @@ public class AudioManager : MonoBehaviour {
 	
 	private SceneType CurrentSceneType;
 	private enum SceneType{Menu,Gameplay,Null};
+	
+	private bool SceneTransitionInProgress;
 
 	// Use this for initialization
 	void Start () 
@@ -36,26 +38,32 @@ public class AudioManager : MonoBehaviour {
 		SquadChildTracks = new AudioClip[2];
 		
 		CurrentSceneName = Application.loadedLevelName;
+		SceneTransitionInProgress = false;
 		
 		LoadTracksToLists();
 		LoadRandomBackgroundTrack();
+		
+		BackgroundAudioSource.volume = 0f;
+		StartCoroutine(FadeInBackgroundMusic());
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
 		//if the scene had been change, reload a random background track
-		if(CurrentSceneName != Application.loadedLevelName)
+		if(CurrentSceneName != Application.loadedLevelName && !SceneTransitionInProgress)
 		{
+			StopCoroutine(FadeInBackgroundMusic());
+			StopCoroutine(FadeOutBackgroundMusic());
 			StartCoroutine(SceneTransition());
 		}
 	
 		//Fading in/Fading out of BGM
-		if(BackgroundAudioSource.time <= 3.5f)
+		if(BackgroundAudioSource.time <= 3.5f && !SceneTransitionInProgress)
 		{
 			StartCoroutine(FadeInBackgroundMusic());
 		}
-		if(BackgroundAudioSource.time >= BackgroundClipLength - 3.5f)
+		if(BackgroundAudioSource.time >= BackgroundClipLength - 3.5f && !SceneTransitionInProgress)
 		{
 			StartCoroutine(FadeOutBackgroundMusic());
 		}
@@ -147,7 +155,7 @@ public class AudioManager : MonoBehaviour {
 	{
 		while(BackgroundAudioSource.volume < 1.0f)
 		{
-			BackgroundAudioSource.volume += 0.0075f;
+			BackgroundAudioSource.volume += 0.01f;
 			yield return new WaitForSeconds(0.75f);
 		}
 	}
@@ -156,7 +164,7 @@ public class AudioManager : MonoBehaviour {
 	{
 		while(BackgroundAudioSource.volume > 0.0f)
 		{
-			BackgroundAudioSource.volume -= 0.0075f;
+			BackgroundAudioSource.volume -= 0.01f;
 			yield return new WaitForSeconds(0.75f);
 		}
 		LoadRandomBackgroundTrack();
@@ -219,20 +227,36 @@ public class AudioManager : MonoBehaviour {
 	
 	private IEnumerator SceneTransition()
 	{		
+		SceneTransitionInProgress = true;
+		Debug.Log("start transition");
+	
 		while(BackgroundAudioSource.volume > 0.0f)
 		{
-			BackgroundAudioSource.volume -= 0.0075f;
-			yield return new WaitForSeconds(0.05f);
+			Debug.Log(BackgroundAudioSource.volume);
+			BackgroundAudioSource.volume -= 0.03f;
+			yield return new WaitForSeconds(0.0025f);
 		}
+		
+		Debug.Log("fade out done");
 		
 		LoadRandomBackgroundTrack();
 		
 		CurrentSceneName = Application.loadedLevelName;
 		
+		Debug.Log("track loaded");
+		
 		while(BackgroundAudioSource.volume < 1.0f)
 		{
-			BackgroundAudioSource.volume += 0.0075f;
-			yield return new WaitForSeconds(0.05f);
+			BackgroundAudioSource.volume += 0.03f;
+			yield return new WaitForSeconds(0.0025f);
 		}
+		
+		SceneTransitionInProgress = false;
+		Debug.Log("fade in done");
+	}
+	
+	public void ReloadForSceneChange()
+	{
+		StartCoroutine(SceneTransition());
 	}
 }
