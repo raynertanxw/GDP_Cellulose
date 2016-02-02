@@ -164,7 +164,9 @@ public class EMLeraningAgent : MonoBehaviour
 		EMState currentStateEnum = m_EMFSM.CurrentStateIndex;
 		int nCurrentEnemyChild = m_EMFSM.AvailableChildNum;
 		int nCurrentPlayerChild = PlayerChildFSM.GetActiveChildCount ();
-		int nCurrentSquadChild = PlayerSquadFSM.Instance.AliveChildCount ();
+		int nCurrentSquadChild;
+		if (PlayerSquadFSM.Instance != null)
+			nCurrentSquadChild = PlayerSquadFSM.Instance.AliveChildCount ();
 		bool bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
 		int nCurrentEnemyHealth = m_EMFSM.Health;
 		int nCurrentPlayerHealth = 0;
