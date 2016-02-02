@@ -12,6 +12,8 @@ public class MainMenu_Buttons : MonoBehaviour
 	private Transform cameraTransform;
 
 	private bool shouldSnapUp, shouldSnapDown;
+	private MainMenuPosition _menuPosition;
+	private float snapTolerance = 1.0f;
 
 	void Awake()
 	{
@@ -19,6 +21,7 @@ public class MainMenu_Buttons : MonoBehaviour
 
 		shouldSnapUp = false;
 		shouldSnapDown = false;
+		_menuPosition = MainMenuPosition.Center;
 	}
 
 	public void Button_Level(int _level)
@@ -48,6 +51,11 @@ public class MainMenu_Buttons : MonoBehaviour
 	{
 
 	}
+
+	private void SnapBack()
+	{
+
+	}
 	#endregion
 
 
@@ -68,7 +76,19 @@ public class MainMenu_Buttons : MonoBehaviour
 	{
 		PointerEventData _pointerData = _data as PointerEventData;
 
-
+		float dragDeltaY = _pointerData.position.y - _pointerData.pressPosition.y;
+		if (dragDeltaY > snapTolerance)
+		{
+			SnapUp();
+		}
+		else if (dragDeltaY < -snapTolerance)
+		{
+			SnapDown();
+		}
+		else
+		{
+			SnapBack();
+		}
 	}
 	#endregion
 }
