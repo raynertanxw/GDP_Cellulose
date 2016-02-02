@@ -149,7 +149,8 @@ public class Nutrients : MonoBehaviour
 	{
 		nCurrentSquadChildCount++;
 		transform.localScale += Vector3.one * fSizeExpandPerSpawn;
-		transform.localScale = Vector3.ClampMagnitude(transform.localScale, fMaximumSizeIncrease);
+		if (transform.localScale.x > fMaximumSizeIncrease)
+			transform.localScale = Vector3.one * fMaximumSizeIncrease;
 
 		// if: The current number of squad child cells is the required spawn amount
 		if (nCurrentSquadChildCount >= nSquadChildToSpawn)
@@ -167,7 +168,8 @@ public class Nutrients : MonoBehaviour
 					-endPosition.x, 
 					transform.position.y + Random.Range (-5f, 5f) * fMaximumOffset);
 
-			mAnimate.ExpandContract(0.5f, 1, 1.3f);
+			transform.localScale = Vector3.one;
+			mAnimate.ExpandContract(0.5f, 1, 1.5f);
 		}
 
 		return true;

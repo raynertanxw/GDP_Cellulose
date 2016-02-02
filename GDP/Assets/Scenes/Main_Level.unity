@@ -15945,7 +15945,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 615233366a63f415f9cf9fcefadf80a2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fNutrientsChance: .75
+  fNutrientsChance: .25
   fNutrientsDelay: 1
   fSpawnYRange: 12
   fSpawnYOffset: 3

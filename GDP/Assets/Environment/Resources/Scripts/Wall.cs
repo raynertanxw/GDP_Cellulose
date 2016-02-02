@@ -95,7 +95,7 @@ public class Wall : MonoBehaviour
 		while (true)
 		{
 			yield return new WaitForSeconds(fNutrientsDelay);
-			if (UnityEngine.Random.value >= fNutrientsChance)
+			if (UnityEngine.Random.value <= fNutrientsChance)
 			{
 				float xPos = 0;
 				if (Random.Range(0, 2) == 1)
