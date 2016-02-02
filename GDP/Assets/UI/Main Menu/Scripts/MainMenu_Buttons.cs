@@ -11,7 +11,7 @@ public class MainMenu_Buttons : MonoBehaviour
 	public float minY, maxY;
 	private Transform cameraTransform;
 
-	private bool shouldSnapUp, shouldSnapDown;
+	private bool shouldSnapUp, shouldSnapDown, shouldSnapBack;
 	private MainMenuPosition _menuPosition;
 	private float snapTolerance = 100.0f;
 	private float snapSpeed = 50.0f;
@@ -22,6 +22,7 @@ public class MainMenu_Buttons : MonoBehaviour
 
 		shouldSnapUp = false;
 		shouldSnapDown = false;
+		shouldSnapBack = false;
 		_menuPosition = MainMenuPosition.Center;
 	}
 
@@ -74,6 +75,11 @@ public class MainMenu_Buttons : MonoBehaviour
 				break;
 			}
 		}
+
+		if (shouldSnapBack)
+		{
+
+		}
 	}
 
 	public void Button_Level(int _level)
@@ -101,6 +107,7 @@ public class MainMenu_Buttons : MonoBehaviour
 
 		shouldSnapUp = true;
 		shouldSnapDown = false;
+		shouldSnapBack = false;
 	}
 
 	private void SnapDown()
@@ -110,11 +117,14 @@ public class MainMenu_Buttons : MonoBehaviour
 
 		shouldSnapDown = true;
 		shouldSnapUp = false;
+		shouldSnapBack = false;
 	}
 
 	private void SnapBack()
 	{
-
+		shouldSnapDown = false;
+		shouldSnapUp = false;
+		shouldSnapBack = true;
 	}
 	#endregion
 
