@@ -19,8 +19,8 @@ public class EMProductionState : IEMState
 		// Reset spawn availability
 
 		// Pause the transition for randomized time based on num of available nutrient
-		float fPauseTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 2f) / EMDifficulty.Instance().CurrentDiff, 
-		                                 Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum) * 10f) / EMDifficulty.Instance().CurrentDiff);
+		float fPauseTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum + 1f) * 2f) / EMDifficulty.Instance().CurrentDiff, 
+		                                 Mathf.Sqrt(Mathf.Sqrt(EMController.Instance ().NutrientNum + 1f) * 10f) / EMDifficulty.Instance().CurrentDiff);
 		helper.StartPauseTransition (fPauseTime);
 	}
 
