@@ -89,6 +89,7 @@ public class EMController : MonoBehaviour
 	public void ReduceNutrient () { nCurrentNutrientNum--; }
 	public void AddNutrient () { nCurrentNutrientNum++; }
 	public void AddFewNutrient (int num) { nCurrentNutrientNum += num; }
+	public void AddFewChildCells (int num) { AddChildCells (num); }
 	#endregion
 
 	private Rigidbody2D thisRB;
@@ -503,6 +504,13 @@ public class EMController : MonoBehaviour
 	void StartWithChildCells ()
 	{
 		for (int i = 0; i < fNumOfDefaultCells; i++) {
+			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position, true);
+		}
+	}
+
+	void AddChildCells (int num)
+	{
+		for (int i = 0; i < num; i++) {
 			EMHelper.Instance().ECPool.SpawnFromPool (EMHelper.Instance().Position, true);
 		}
 	}
