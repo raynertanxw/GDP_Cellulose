@@ -49,7 +49,7 @@ public class EMAggressiveAttackState : IEMState
 			
 			if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AvailableChildNum <= 15)
 			{
-				for (int nAmount = 0; nAmount < Random.Range (1, 2 + (int)nEnemyChildFactor); nAmount++)
+				for (int nAmount = 0; nAmount < Random.Range (1, 2 + (int)Mathf.Sqrt(nEnemyChildFactor)); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
@@ -60,7 +60,7 @@ public class EMAggressiveAttackState : IEMState
 			}
 			else if (m_EMFSM.AvailableChildNum > 15 && m_EMFSM.AvailableChildNum <= 30)
 			{
-				for (int nAmount = 0; nAmount < Random.Range (2, 4 + (int)nEnemyChildFactor); nAmount++)
+				for (int nAmount = 0; nAmount < Random.Range (2, 4 + (int)Mathf.Sqrt(nEnemyChildFactor)); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
@@ -71,7 +71,7 @@ public class EMAggressiveAttackState : IEMState
 			}
 			else if (m_EMFSM.AvailableChildNum > 30)
 			{
-				for (int nAmount = 0; nAmount < Random.Range (4, 6 + (int)nEnemyChildFactor); nAmount++)
+				for (int nAmount = 0; nAmount < Random.Range (4, 6 + (int)Mathf.Sqrt(nEnemyChildFactor)); nAmount++)
 				{
 					int nIndex = Random.Range (0, m_EMFSM.ECList.Count);
 					if (m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Idle || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Defend || m_EMFSM.ECList[nIndex].CurrentStateEnum == ECState.Avoid)
