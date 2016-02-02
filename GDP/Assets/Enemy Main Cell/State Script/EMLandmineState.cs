@@ -49,7 +49,6 @@ public class EMLandmineState : IEMState
 		{
 			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f + 1f;
 			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
-			Debug.Log (PlayerChildFSM.GetActiveChildCount ());
 			
 			if (m_EMFSM.AvailableChildNum > 0 && m_EMFSM.AvailableChildNum <= 15)
 			{
