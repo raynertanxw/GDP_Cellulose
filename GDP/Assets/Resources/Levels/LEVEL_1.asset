@@ -14,6 +14,7 @@ MonoBehaviour:
   nPlayerInitialHealth: 50
   nPlayerInitialResourceCount: 200
   nPlayerNutrientPerBlock: 10
+  fPlayerNutrientChance: .25
   nPlayerChildSpawnCost: 5
   nPlayerSqaudCaptainChildCost: 10
   nPlayerActionBurstShotChildCost: 5
@@ -45,7 +46,6 @@ MonoBehaviour:
   fEnemyDefendRCWeight: 1
   fEnemyDefendTurtleWeight: 1
   fEnemyDefendLadderWeight: 1
-  EnemyColor: {r: 1, g: 1, b: 1, a: 1}
-  EnvrionmentColor: {r: 1, g: 1, b: 1, a: 1}
-  fSideWallSpeed: 15
-  BackgroundSpeed: 12.5
+  EnvironmentColor: {r: 1, g: 1, b: 1, a: 1}
+  fSideWallSpeed: 5
+  BackgroundSpeed: 2.5
