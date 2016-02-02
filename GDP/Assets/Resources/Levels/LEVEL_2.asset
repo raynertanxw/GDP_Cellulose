@@ -30,7 +30,7 @@ MonoBehaviour:
   fEnemyMainInitialVertSpeed: .0549999997
   fEnemyMainMinHiriSpeed: .0549999997
   fDefaultStunTime: 4.5
-  fDefaultStunTolerance: 6
+  fDefaultStunTolerance: 5
   nEnemyChildCountCap: 50
   fEnemyTargetLeftNodeRequirement: .100000001
   fEnemyTargetRightNodeRequirement: .100000001
