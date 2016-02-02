@@ -8,7 +8,7 @@ public class EMNutrientGeneration : MonoBehaviour
 	
 	void Start () 
 	{
-		nLevelNo = 1;
+		nLevelNo = Level_Manager.LevelID;
 		// Randomize the number of main nutrient
 		nNumOfNutrient = (int)Random.Range (2f * Mathf.Sqrt ((float)nLevelNo), 3f * Mathf.Sqrt ((float)nLevelNo));
 		if (nNumOfNutrient > 10)
