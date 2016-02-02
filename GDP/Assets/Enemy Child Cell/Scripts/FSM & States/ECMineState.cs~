@@ -67,17 +67,19 @@ public class ECMineState : IECState {
 	{
 		if(m_ecFSM.m_AttackTarget != null){CheckIfEnoughCells();};
 	
-		m_bGatherTogether = false;
+		/*m_bGatherTogether = false;
 		m_bExploding = false;
 		m_bReachTarget = false;
 		m_bExplodeCorountineStart = false;
 		m_nECMineNearby = 0;
-		m_CurrentSpreadness = Spread.Empty;
+		m_CurrentSpreadness = Spread.Empty;*/
 
 		m_Main.GetComponent<Rigidbody2D>().drag = 2.4f;
 		ECTracker.Instance.LandmineCells.Add(m_ecFSM);
 		
 		if(m_LeaderMine == null){m_LeaderMine = ObtainLeaderFrmMines();}
+		
+		//if(
 	}
 
 	public override void Execute()
@@ -147,7 +149,7 @@ public class ECMineState : IECState {
 
 		if(m_bGatherTogether && !m_bExpandContractStart)
 		{
-			m_Animator.ExpandContract(15f,60,1.9f);//ExplodingGrowShrink();
+			m_Animator.ExpandContract(15f,60,1.9f);
 			m_bExpandContractStart = true;
 		}
 	}
@@ -200,7 +202,7 @@ public class ECMineState : IECState {
 					m_nCurrentTargetIndex++;
 					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 				}
-				Utility.DrawCross(m_Child.transform.position,Color.green,0.1f);
+				//Utility.DrawCross(m_Child.transform.position,Color.green,0.1f);
 			}
 		}
 		else if(!m_bReachTarget && m_Child != m_LeaderMine && m_bGatherTogether)
@@ -253,6 +255,11 @@ public class ECMineState : IECState {
 			m_CurrentTargetPoint = null;
 			m_nCurrentTargetIndex = 0;
 			m_LeaderMine = null;
+			m_bExploding = false;
+			m_bReachTarget = false;
+			m_bExplodeCorountineStart = false;
+			m_nECMineNearby = 0;
+			m_CurrentSpreadness = Spread.Empty;
 		}
 
 		m_Child.transform.localScale = Vector3.one;
