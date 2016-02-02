@@ -199,62 +199,79 @@ public class SC_FindResourceState : ISCState
 		m_scFSM = m_SquadChildFSM;
 	}
 
+	public override void Enter()
+	{
+		m_scFSM.m_SpriteRenderer.color = new Color(1.0f, 1.0f, 0f);
+	}
+
 	public override void Execute()
 	{
 		targetNutrients = m_scFSM.GetNearestResource();
 
-		// if: There is no target
-		if (targetNutrients == null)
-		{
-			m_scFSM.Advance(SCState.Idle);
-			return;
-		}
-		// else if: The target nutrient has left the screen OR the player has collected it
-		else if (targetNutrients.IsInPool || !targetNutrients.IsCollectable)
-		{
-			m_scFSM.Advance(SCState.Idle);
-			return;
-		}
-		else
-		{
-			// Seperation Factor
-			// vSeperationVector: The final vector used to space away from all the other nearby cells
-			Vector3 vSeperationVector = Vector3.zero;
-			Collider2D[] array_nearbyCollider = Physics2D.OverlapCircleAll(m_scFSM.transform.position, 0.5f, Constants.s_onlySquadChildLayer);
+		// if: The target nutrient is too close to the wall, disable the target
+		if (targetNutrients != null)
+			if (Mathf.Abs(targetNutrients.transform.position.x) >= 4f)
+				targetNutrients = null;
 
-			if (array_nearbyCollider.Length > 0)
+		// Seperation Factor
+		// vSeperationVector: The final vector used to space away from all the other nearby cells
+		Vector3 vSeperationVector = Vector3.zero;
+		Collider2D[] array_nearbyCollider = Physics2D.OverlapCircleAll(m_scFSM.transform.position, 0.5f, Constants.s_onlySquadChildLayer);
+
+		if (array_nearbyCollider.Length > 0)
+		{
+			for (int i = 0; i < array_nearbyCollider.Length; i++)
 			{
-				for (int i = 0; i < array_nearbyCollider.Length; i++)
-				{
-					// if: The current gameObject is itself
-					if (array_nearbyCollider[i] == m_scFSM.gameObject)
-						continue;
+				// if: The current gameObject is itself
+				if (array_nearbyCollider[i] == m_scFSM.gameObject)
+					continue;
 
-					// vDirectionVector: The vector that the current squad child should be travelling in to space away from the current neighbour
-					Vector3 vDirectionVector = (m_scFSM.transform.position - array_nearbyCollider[i].transform.position);
+				// vDirectionVector: The vector that the current squad child should be travelling in to space away from the current neighbour
+				Vector3 vDirectionVector = (m_scFSM.transform.position - array_nearbyCollider[i].transform.position);
 
-					// if: Somehow this is triggered, which is very often...
-					if (vDirectionVector.magnitude > 0)
-						vSeperationVector += vDirectionVector.normalized / vDirectionVector.sqrMagnitude;
-				}
-
-				// Average the the final vector to use for spacing away
-				vSeperationVector = vSeperationVector / array_nearbyCollider.Length;
+				// if: Somehow this is triggered, which is very often...
+				if (vDirectionVector.magnitude > 0)
+					vSeperationVector += vDirectionVector.normalized / vDirectionVector.sqrMagnitude;
 			}
 
-			// Attraction Factor
-			ExecuteMethod.OnceInUpdate("SC_FindResourceState.RecalculateCenter", null, null);
-			Vector3 vAttractionVector = vCenterPosition - m_scFSM.transform.position;
-			vAttractionVector = Vector3.ClampMagnitude(vAttractionVector, vAttractionVector.magnitude * 0.5f);
+			// Average the the final vector to use for spacing away
+			vSeperationVector = vSeperationVector / array_nearbyCollider.Length;
+			vSeperationVector = Vector3.ClampMagnitude(vSeperationVector, 7f);
 
-			// Final Velocity Vector
-			// toTargetVector: The vector between the target nutrients and the current squad child cells
-			Vector3 toTargetVector = targetNutrients.transform.position - m_scFSM.transform.position;
-			// Apply vector to velocity
-			m_scFSM.RigidBody.AddForce(toTargetVector + vSeperationVector + vAttractionVector * Time.deltaTime * 1000f, ForceMode2D.Force);
-			m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, 5f);
+		}
 
-			// if: The distance between the two bodies is less than a certain distance
+		// Attraction Factor
+		ExecuteMethod.OnceInUpdate("SC_FindResourceState.RecalculateCenter", null, null);
+		Vector3 vAttractionVector = vCenterPosition - m_scFSM.transform.position;
+		vAttractionVector *= 10f;
+
+		// Final Velocity Vector
+		// toTargetVector: The vector between the target nutrients and the current squad child cells
+		Vector3 toTargetVector;
+		// if: There is no target nutrient, the find nutrients group will idle infront of squad group
+		if (targetNutrients == null)
+			toTargetVector = PlayerSquadFSM.Instance.transform.position + new Vector3(0f, 2f, 0f) - m_scFSM.transform.position;
+		else
+			toTargetVector = targetNutrients.transform.position - m_scFSM.transform.position;
+		toTargetVector *= 10f;
+
+		if (targetNutrients != null)
+			SquadChildFSM.Circle(targetNutrients.transform.position);
+
+		//Debug.Log("toTargetVector: " + toTargetVector.magnitude + ", vSeperationVector: " + vSeperationVector.magnitude + ", vAttractionVector: " + vAttractionVector.magnitude);
+
+		// Apply vector to velocity
+		/* Quick Vector Summary:
+		 * toTargetVector -> The vector between the nutrients and the 'FindResource' group
+		 * vSeperationVector -> The personal space vector 
+		 * vAttractionVector -> The 'stay as a group' vector
+		 */
+		m_scFSM.RigidBody.AddForce(toTargetVector + vSeperationVector + vAttractionVector * Time.deltaTime * 100f, ForceMode2D.Force);
+		m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, 3f);
+
+		// if: The distance between the two bodies is less than a certain distance
+		if (targetNutrients != null)
+		{
 			if (Vector3.Distance(targetNutrients.transform.position, m_scFSM.transform.position) < 0.5f)
 			{
 				// if: The current squad child is added to the nutrients
@@ -265,6 +282,11 @@ public class SC_FindResourceState : ISCState
 				}
 			}
 		}
+	}
+
+	public override void Exit()
+	{
+		m_scFSM.m_SpriteRenderer.color = Color.white;
 	}
 
 	// Public Static Function
@@ -325,12 +347,20 @@ public class SC_AttackState : ISCState
 
 	public override void Enter()
 	{
-		ExecuteMethod.OnceInUpdate("SquadChildFSM.GetNearestTargetPosition", null, null);
+		m_scFSM.mAnimate.ExpandContract(1000f, 2000, 1.5f, true, 0.0f);
+		m_scFSM.m_SpriteRenderer.color = new Color(1f, 0.12f, 0.12f);
 	}
 
 	public override void Execute()
 	{
+		ExecuteMethod.OnceInUpdate("SquadChildFSM.GetNearestTargetPosition", null, null);
 		m_scFSM.AttackTarget();
+	}
+
+	public override void Exit()
+	{
+		m_scFSM.mAnimate.StopExpandContract(false);
+		m_scFSM.m_SpriteRenderer.color = Color.white;
 	}
 }
 

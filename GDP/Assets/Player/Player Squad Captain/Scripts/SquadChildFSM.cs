@@ -49,6 +49,8 @@ public class SquadChildFSM : MonoBehaviour
 	private ISCState m_currentState;                            // m_currentState: the current state (as of type ISCState)
 	private Vector2 mainDefenceVector;                          // mainDefenceVector: The main defence vector, this will be initilised at the start and will be use without change
 
+	public Animate mAnimate = null;
+
 	[HideInInspector] public bool bIsAlive = false;             // bIsAlive: Returns if the current child cell is alive
 	[HideInInspector] public EnemyChildFSM attackTarget;        // attackTarget: The target to attack
 
@@ -57,13 +59,17 @@ public class SquadChildFSM : MonoBehaviour
 	public Rigidbody2D m_RigidBody;                             // m_RigidBody: It is public so that states can references it
 	public Collider2D m_Collider;                            // m_Collider: It is public so that states can references it
 
-	private Vector3 gizmoVector;
+	private static Vector3 position1;
+	private static Vector3 position2;
+	private static Vector3 position3;
 	void OnDrawGizmos()
 	{
 		Gizmos.color = Color.magenta;
-		Gizmos.DrawWireSphere(gizmoVector, 1f);
+		Gizmos.DrawLine(position1, position2);
+		Gizmos.DrawWireSphere(position3, 2f);
 	}
-	public void Draw(Vector3 _position) { gizmoVector = _position; }
+	public static void Line(Vector3 _position1, Vector3 _position2) { position1 = _position1; position2 = _position2; }
+	public static void Circle(Vector3 _position3) { position3 = _position3; }
 
 	// Private Functions
 	void OnCollisionEnter2D(Collision2D _collision)
@@ -74,14 +80,6 @@ public class SquadChildFSM : MonoBehaviour
 			// Kill Enemy.
 			_collision.gameObject.GetComponent<EnemyChildFSM>().KillChildCell();
 			// Kill Self.
-			KillSquadChild();
-		}
-		// Hit Enemy Main.
-		else if (_collision.gameObject.tag == Constants.s_strEnemyTag)
-		{
-			// Damage Enemy.
-			EMController.Instance().CauseDamageOne();
-
 			KillSquadChild();
 		}
 	}
@@ -121,6 +119,7 @@ public class SquadChildFSM : MonoBehaviour
 		// Initialisation
 		playerPosition = PlayerMain.Instance.transform.position;
 		m_strafingVector = Vector3.up;
+		mAnimate = new Animate(transform);
 
 		fStrafingRadius = PlayerSquadFSM.Instance.StrafingRadius;
 		fStrafingSpeed = PlayerSquadFSM.Instance.StrafingSpeed;
@@ -144,9 +143,6 @@ public class SquadChildFSM : MonoBehaviour
 	// Private Functions
 	void Update()
 	{
-		if (attackTarget != null)
-			this.Draw(attackTarget.transform.position);
-
 		if (EnemyMainFSM.Instance() != null)
 		{
 			// Bouncing off EnemyMain
@@ -217,7 +213,6 @@ public class SquadChildFSM : MonoBehaviour
 			m_RigidBody.AddForce(toTargetPosition * Time.deltaTime * fDefenceSpeed);
 		m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, Mathf.Max(fDefenceRigidity, toTargetPosition.magnitude));
 
-
 		return true;
 	}
 	
@@ -244,16 +239,16 @@ public class SquadChildFSM : MonoBehaviour
 		if (Vector3.Distance(attackTarget.transform.position, EnemyMainFSM.Instance().transform.position) > EnemyMainFSM.Instance().transform.lossyScale.x)
 		{
 			m_RigidBody.AddForce(vToTargetVector * Time.deltaTime * fAttackSpeed);
-			m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, Mathf.Clamp(vToTargetVector.magnitude, 0.1f, 50f));
+			m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, 10f);
 		}
 		// else: The current target is hiding within the enemy main
 		else
 		{
 			// Recycling variables -> vToTargetVector, create a new vector to wait outside the enemy main for the target
-			vToTargetVector = vToTargetVector.normalized * (EnemyMainFSM.Instance().transform.lossyScale.x + 0.5f);
+			vToTargetVector = (attackTarget.transform.position - EnemyMainFSM.Instance().transform.position).normalized * 3f;
 
-			m_RigidBody.AddForce(vToTargetVector * Time.deltaTime * fAttackSpeed);
-			m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, Mathf.Clamp(vToTargetVector.magnitude, 0.1f, 50f));
+			m_RigidBody.AddForce((vToTargetVector + EnemyMainFSM.Instance().transform.position) - transform.position * Time.deltaTime * fAttackSpeed);
+			m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, 5f);
 		}
 
 		return true;
@@ -281,15 +276,23 @@ public class SquadChildFSM : MonoBehaviour
 			// if: The current nutrients is NOT in the pool and NOT being collected by player
 			if (!nutrientsPool[i].IsInPool && nutrientsPool[i].IsCollectable)
 			{
-				// if: There is no nearest nutrients yet
-				if (nearestNutrient == null)
+				// if: This function only returns nutrients that is below the EnemyMain
+				if (nutrientsPool[i].transform.position.y < EnemyMainFSM.Instance().transform.position.y - EnemyMainFSM.Instance().transform.lossyScale.y)
 				{
-					nearestNutrient = nutrientsPool[i];
-				}
-				// else if: The checking nutrient is nearer than the curent nearest nutrient
-				else if (nearestNutrient.transform.position.y > nutrientsPool[i].transform.position.y)
-				{
-					nearestNutrient = nutrientsPool[i];
+					// if: Target only nutrients that are middle of the playing field
+					if (Mathf.Abs(nutrientsPool[i].transform.position.x) < 4f)
+					{
+						// if: There is no nearest nutrients yet
+						if (nearestNutrient == null)
+						{
+							nearestNutrient = nutrientsPool[i];
+						}
+						// else if: The checking nutrient is nearer than the curent nearest nutrient
+						else if (Vector3.Distance(nearestNutrient.transform.position, PlayerSquadFSM.Instance.transform.position) > Vector3.Distance(nutrientsPool[i].transform.position, PlayerSquadFSM.Instance.transform.position))
+						{
+							nearestNutrient = nutrientsPool[i];
+						}
+					}
 				}
 			}
 		}

@@ -71,7 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 185ce2d35270740d49556d5b027b2e0e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fTimeTaken: .5
+  fTimeTaken: .25
   fMinimumSpeed: .5
   fMaximumOffset: .5
   nSquadChildToSpawn: 2
@@ -139,6 +139,10 @@ Prefab:
     - target: {fileID: 0}
       propertyPath: nSquadChildToSpawn
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: fTimeTaken
+      value: .25
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}

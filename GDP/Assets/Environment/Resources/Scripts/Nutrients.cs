@@ -149,6 +149,7 @@ public class Nutrients : MonoBehaviour
 	{
 		nCurrentSquadChildCount++;
 		transform.localScale += Vector3.one * fSizeExpandPerSpawn;
+		transform.localScale = Vector3.ClampMagnitude(transform.localScale, fMaximumSizeIncrease);
 
 		// if: The current number of squad child cells is the required spawn amount
 		if (nCurrentSquadChildCount >= nSquadChildToSpawn)

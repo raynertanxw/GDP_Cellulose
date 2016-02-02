@@ -77,7 +77,10 @@ MonoBehaviour:
   nMinimumChildProducing: 4
   nMaximumChildProducing: 10
   nOptionalToProduceAt: 40
+  nMinimumChildDefence: 5
   nMaximumChildDefence: 10
+  nNeedNutrients: 500
+  nAmountIdleBeforeConsider: 10
 --- !u!114 &11423594
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -91,14 +94,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   nMaximumChildCount: 50
   fMinimumCooldown: 1
-  fMaximumCooldown: 5
+  fMaximumCooldown: 2
   fIdleDistance: 30
   fIdleRigidity: .200000003
   fIdleRadius: 1.5
   fIdleMaximumVelocity: 25
   fStrafingRadius: 1.5
   fStrafingSpeed: .5
-  fAttackSpeed: 50
+  fAttackSpeed: 100
   fDefenceAngle: 90
   fDefenceRadius: 6
   fDefenceSpeed: 50
