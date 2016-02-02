@@ -77,9 +77,9 @@ MonoBehaviour:
   nMinimumChildProducing: 4
   nMaximumChildProducing: 10
   nOptionalToProduceAt: 40
-  nMinimumChildDefence: 5
+  nMinimumIdleToDefence: 6
   nMaximumChildDefence: 10
-  nNeedNutrients: 500
+  nNeedNutrients: 100
   nAmountIdleBeforeConsider: 10
 --- !u!114 &11423594
 MonoBehaviour:
@@ -102,10 +102,11 @@ MonoBehaviour:
   fStrafingRadius: 1.5
   fStrafingSpeed: .5
   fAttackSpeed: 100
-  fDefenceAngle: 90
+  fDefenceAngle: 80
   fDefenceRadius: 6
   fDefenceSpeed: 50
   fDefenceRigidity: .200000003
+  nMinimumChildDefence: 5
   bIsAlive: 0
   m_SpriteRenderer: {fileID: 21262188}
   m_Collider: {fileID: 5832618}

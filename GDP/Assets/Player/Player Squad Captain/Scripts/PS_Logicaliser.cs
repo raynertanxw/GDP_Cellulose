@@ -20,14 +20,14 @@ public class PS_Logicaliser : MonoBehaviour
 	[SerializeField] private int nOptionalToProduceAt = 40;
 
 	[Header("Conditions: Defensive")]
-	[Tooltip("When there is less than this amount of defence child, the shield will fall apart")]
-	[SerializeField] private int nMinimumChildDefence = 5;
+	[Tooltip("The amount of idling child needed at least to form the defence shield")]
+	[SerializeField] private int nMinimumIdleToDefence = 6;
 	[Tooltip("When there is this amount of defence squad child, the squad captain will no longer assign more squad child to defence")]
-	[SerializeField] private int nMaximumChildDefence = 15;
+	[SerializeField] private int nMaximumChildDefence = 10;
 
 	[Header("Conditions: Find Resource")]
 	[Tooltip("This amount of resources in player will determines that the player is low on resources")]
-	[SerializeField] private int nNeedNutrients = 500;
+	[SerializeField] private int nNeedNutrients = 100;
 	[Tooltip("The number of child must be idling before the squad captain thinks it is good to allocate some for finding resources")]
 	[SerializeField] private int nAmountIdleBeforeConsider = 10;
 
@@ -73,13 +73,15 @@ public class PS_Logicaliser : MonoBehaviour
 		{
 			// if: Aggressive is triggered
 			if (UnityEngine.Random.value > fAggressiveToDefensive)
-				SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Attack, fAggressiveToDefensive);
+				SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Attack, 1f);
 			else if (SquadChildFSM.StateCount(SCState.Defend) < nMaximumChildDefence)
 			{
-				int nDefenceCapacity = nMaximumChildDefence - SquadChildFSM.StateCount(SCState.Defend);
+				// nPredictedCount: The predicted number of defence cells it would have
+				int nPredictedCount = (int)((float)SquadChildFSM.StateCount(SCState.Idle) * (1f - fAggressiveToDefensive)) + SquadChildFSM.StateCount(SCState.Defend);
 
-				if (nDefenceCapacity > nMinimumChildDefence)
-					SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Attack, nDefenceCapacity);
+				// if: The current predicted count is more that its requirement AND there is room to spawn more defence
+				if (nPredictedCount > nMinimumIdleToDefence && SquadChildFSM.StateCount(SCState.Defend) < nMaximumChildDefence)
+					SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 1f - fAggressiveToDefensive);
 			}
 		}
 
@@ -92,7 +94,7 @@ public class PS_Logicaliser : MonoBehaviour
 		// if: There is extra child in Idle and the player have relatively low amount of resource
 		if (SquadChildFSM.StateCount(SCState.Idle) >= nAmountIdleBeforeConsider && player_control.Instance.s_nResources <= nNeedNutrients)
 		{
-			SquadChildFSM.AdvanceSquadPercentage(SCState.FindResource, 0.75f);
+			SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.FindResource, 0.75f);
 		}
 	}
 }

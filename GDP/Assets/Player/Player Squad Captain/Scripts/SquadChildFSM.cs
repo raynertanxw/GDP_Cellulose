@@ -38,6 +38,7 @@ public class SquadChildFSM : MonoBehaviour
 	private static float fDefenceRadius;
 	private static float fDefenceSpeed;
 	private static float fDefenceRigidity;
+	private static int nDefenceMinimumCount;
 	private static float fAttackSpeed;
 
 	// Uneditable Fields
@@ -127,6 +128,7 @@ public class SquadChildFSM : MonoBehaviour
 		fDefenceRadius = PlayerSquadFSM.Instance.DefenceRadius;
 		fDefenceSpeed = PlayerSquadFSM.Instance.DefenceSpeed;
 		fDefenceRigidity = PlayerSquadFSM.Instance.DefenceRigidity;
+		nDefenceMinimumCount = PlayerSquadFSM.Instance.DefenceMinimumCount;
 		fAttackSpeed = PlayerSquadFSM.Instance.AttackSpeed;
 
 		mainDefenceVector = Quaternion.Euler(0f, 0f, (fDefenceAngle / 2.0f)) * Vector2.up * fDefenceRadius;
@@ -207,6 +209,10 @@ public class SquadChildFSM : MonoBehaviour
 			Debug.LogWarning(gameObject.name + ".SquadChildFSM.DefenceSheild(): Current state is not SCState.Defend! Ignore Defence!");
 			return false;
 		}
+
+		// if: There is lesser defence child than it have
+		if (SquadChildFSM.StateCount(SCState.Defend) < nDefenceMinimumCount)
+			SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 1f);
 
 		Vector3 toTargetPosition = Quaternion.Euler(0f, 0f, -fDefenceOffsetAngle) * mainDefenceVector + playerPosition - transform.position;
 		if (toTargetPosition.magnitude > fDefenceRigidity)
@@ -557,17 +563,13 @@ public class SquadChildFSM : MonoBehaviour
 		// for: Every enemy child in the list...
 		for (int i = 0; i < s_list_enemyChild.Count; i++)
 		{
-			// if: The distance between the enemy child and squad captain distances is significant
-			if (Vector3.Distance(s_list_enemyChild[i].transform.position, PlayerSquadFSM.Instance.transform.position) < 6f)
+			// for: Finds a squad children in the list...
+			for (int j = 0; j < s_array_SquadChildFSM.Length; j++)
 			{
-				// for: Finds a squad children in the list...
-				for (int j = 0; j < s_array_SquadChildFSM.Length; j++)
+				// if: The current squad children is attacking and it has no target
+				if (s_array_SquadChildFSM[j].EnumState == SCState.Attack && s_array_SquadChildFSM[j].attackTarget == null)
 				{
-					// if: The current squad children is attacking and it has no target
-					if (s_array_SquadChildFSM[j].EnumState == SCState.Attack && s_array_SquadChildFSM[j].attackTarget == null)
-					{
-						s_array_SquadChildFSM[j].attackTarget = s_list_enemyChild[i];
-					}
+					s_array_SquadChildFSM[j].attackTarget = s_list_enemyChild[i];
 				}
 			}
 		}

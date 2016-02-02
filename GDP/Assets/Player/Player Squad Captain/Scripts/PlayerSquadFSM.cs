@@ -70,6 +70,8 @@ public class PlayerSquadFSM : MonoBehaviour
 	[SerializeField] private float fDefenceSpeed = 3f;
 	[Tooltip("The rigidity of the squad child when it is at the position. 0.0f = Fixed at Position")]
 	[SerializeField] private float fDefenceRigidity = 0.2f;
+	[Tooltip("The defence shield will break apart if the number of defence squad child falls below this number")]
+	[SerializeField] private int nMinimumChildDefence = 5;
 
 	// Uneditables Fields
 	[HideInInspector] public bool bIsAlive = false;     // bIsAlive: Returns if the squad captain is alive
@@ -105,7 +107,7 @@ public class PlayerSquadFSM : MonoBehaviour
 				else
 				{
 					SquadChildFSM.Spawn(transform.position);
-					mAnimate.ExpandContract(0.1f, 1, 1.1f);
+					mAnimate.ExpandContract(0.5f, 1, 1.3f);
 				}
 			}
 			else
@@ -250,6 +252,7 @@ public class PlayerSquadFSM : MonoBehaviour
 	public float DefenceRadius { get { return fDefenceRadius; } }
 	public float DefenceSpeed { get { return fDefenceSpeed; } }
 	public float DefenceRigidity { get { return fDefenceRigidity; } }
+	public int DefenceMinimumCount { get { return nMinimumChildDefence; } }
 
 	public float AttackSpeed { get { return fAttackSpeed; } }
 
