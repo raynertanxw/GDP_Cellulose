@@ -11,10 +11,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6530f6b77c04b4837b0c35effb66cb97, type: 3}
   m_Name: LEVEL_5
   m_EditorClassIdentifier: 
-  nPlayerInitialHealth: 200
-  nPlayerInitialResourceCount: 1000
-  nPlayerNutrientPerBlock: 25
-  fPlayerNutrientChance: 1
+  nPlayerInitialHealth: 50
+  nPlayerInitialResourceCount: 200
+  nPlayerNutrientPerBlock: 10
+  fPlayerNutrientChance: .25
   nPlayerChildSpawnCost: 5
   nPlayerSqaudCaptainChildCost: 15
   nPlayerActionBurstShotChildCost: 5
