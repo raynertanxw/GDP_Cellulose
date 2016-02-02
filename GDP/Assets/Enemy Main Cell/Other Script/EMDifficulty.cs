@@ -69,6 +69,7 @@ public class EMDifficulty : MonoBehaviour
 			}
 			HealthDiffUpdate ();
 			NutrientDiffUpdate ();
+			LevelDiffUpdate ();
 		}
 		#endregion
 		// Update current difficulty
@@ -96,6 +97,6 @@ public class EMDifficulty : MonoBehaviour
 
 	void LevelDiffUpdate ()
 	{
-
+		fLevelDiff = (float)Level_Manager.LevelID / 2f + 1f;
 	}	
 }
