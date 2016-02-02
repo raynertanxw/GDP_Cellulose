@@ -24,14 +24,14 @@ MonoBehaviour:
   fMinimumCooldown: 1
   fMaximumCooldown: 2
   fThinkCooldown: .5
-  nEnemyMainInitialHealth: 50
+  nEnemyMainInitialHealth: 100
   nEnemyMainInitialNutrientNum: 50
-  nEnemyMainInitialChildCellNum: 5
-  nEnemyMainInitialAggressiveness: 3
-  fEnemyMainInitialVertSpeed: .0500000007
+  nEnemyMainInitialChildCellNum: 15
+  nEnemyMainInitialAggressiveness: 7
+  fEnemyMainInitialVertSpeed: .0700000003
   fEnemyMainMinHiriSpeed: .0500000007
-  fDefaultStunTime: 5
-  fDefaultStunTolerance: 5
+  fDefaultStunTime: 3.5
+  fDefaultStunTolerance: 8
   nEnemyChildCountCap: 50
   fEnemyTargetLeftNodeRequirement: .100000001
   fEnemyTargetRightNodeRequirement: .100000001
