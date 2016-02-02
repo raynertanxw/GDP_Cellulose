@@ -11,7 +11,7 @@ public class Settings : MonoBehaviour
 	public static float s_fPlayerNutrientChance = 0.25f;
 	public static int s_nPlayerChildSpawnCost = 5;
 
-	public static int s_nPlayerSqaudCaptainChildCost = 10;
+	public static int s_nPlayerSqaudCaptainChildCost = 15;
 	public static int s_nPlayerActionBurstShotChildCost = 5;
 	public static int s_nPlayerActionSwarmTargetChildCost = 10;
 	public static int s_nPlayerActionScatterShotChildCost = 20;

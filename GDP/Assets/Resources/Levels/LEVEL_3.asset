@@ -14,14 +14,15 @@ MonoBehaviour:
   nPlayerInitialHealth: 50
   nPlayerInitialResourceCount: 200
   nPlayerNutrientPerBlock: 10
+  fPlayerNutrientChance: .25
   nPlayerChildSpawnCost: 5
-  nPlayerSqaudCaptainChildCost: 10
+  nPlayerSqaudCaptainChildCost: 15
   nPlayerActionBurstShotChildCost: 5
   nPlayerActionSwarmTargetChildCost: 10
   nPlayerActionScatterShotChildCost: 20
   fAggressiveToDefensive: .5
   fMinimumCooldown: 1
-  fMaximumCooldown: 5
+  fMaximumCooldown: 2
   fThinkCooldown: .5
   nEnemyMainInitialHealth: 75
   nEnemyMainInitialNutrientNum: 75
@@ -45,7 +46,6 @@ MonoBehaviour:
   fEnemyDefendRCWeight: 1
   fEnemyDefendTurtleWeight: 1
   fEnemyDefendLadderWeight: 1
-  EnemyColor: {r: 1, g: 1, b: 1, a: 1}
-  EnvrionmentColor: {r: 1, g: 1, b: 1, a: 1}
+  EnvironmentColor: {r: 1, g: 1, b: 1, a: 1}
   fSideWallSpeed: 15
   BackgroundSpeed: 12.5

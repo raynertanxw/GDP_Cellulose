@@ -18,7 +18,7 @@ public class LevelTemplate : ScriptableObject
     public int nPlayerChildSpawnCost = 5;
 
     [Range(10, 25)] [Tooltip("The number of player child cells needed to spawn in the player squad captain unit.")]
-    public int nPlayerSqaudCaptainChildCost = 10;
+    public int nPlayerSqaudCaptainChildCost = 15;
     [Range(3, 5)] [Tooltip("The number of player child cells needed for BurstShot command.")]
     public int nPlayerActionBurstShotChildCost = 5;
     [Range(5, 15)] [Tooltip("The number of player child cells needed for SwarmTarget command.")]

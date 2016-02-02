@@ -16,13 +16,13 @@ MonoBehaviour:
   nPlayerNutrientPerBlock: 10
   fPlayerNutrientChance: .25
   nPlayerChildSpawnCost: 5
-  nPlayerSqaudCaptainChildCost: 10
+  nPlayerSqaudCaptainChildCost: 15
   nPlayerActionBurstShotChildCost: 5
   nPlayerActionSwarmTargetChildCost: 10
   nPlayerActionScatterShotChildCost: 20
   fAggressiveToDefensive: .5
   fMinimumCooldown: 1
-  fMaximumCooldown: 5
+  fMaximumCooldown: 2
   fThinkCooldown: .5
   nEnemyMainInitialHealth: 50
   nEnemyMainInitialNutrientNum: 50
