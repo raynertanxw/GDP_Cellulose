@@ -80,7 +80,7 @@ public class EMProductionState : IEMState
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       (helper.Pow (3f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f) + 
+					                       (helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 1.5f), 2f) + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Maintain)), 
 					                       EMState.Maintain);
 				}
@@ -126,7 +126,7 @@ public class EMProductionState : IEMState
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       (helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f) + 
+					                       (helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 1.25f), 2f) + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Maintain)), 
 					                       EMState.Maintain);
 				}
@@ -164,7 +164,7 @@ public class EMProductionState : IEMState
 				// Transition to Maintain
 				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
 					EMTransition.Instance().Transition (1000f / 
-					                       (helper.Pow (3f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f) + 
+					                       (helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 1f), 2f) + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Maintain)), 
 					                       EMState.Maintain);
 				}

@@ -74,12 +74,12 @@ public class EMMaintainState : IEMState
 					                                    EMState.Landmine);
 				}
 				
-				// Transition to Maintain
-				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
+				// Transition to Production
+				if (controller.NutrientNum > 0) {
 					transition.Transition (1000f / 
-					                       (helper.Pow (3f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f) + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Maintain)), 
-					                       EMState.Maintain);
+					                       (helper.Pow (Mathf.Sqrt(controller.NutrientNum), 2f) + 
+					 EMLeraningAgent.Instance().RealScore(EMState.Production)), 
+					                       EMState.Production);
 				}
 			} 
 			else if (m_EMFSM.AvailableChildNum > 15 && m_EMFSM.AvailableChildNum <= 30) 
@@ -120,12 +120,12 @@ public class EMMaintainState : IEMState
 					                                    EMState.Landmine);
 				}
 				
-				// Transition to Maintain
-				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
+				// Transition to Production
+				if (controller.NutrientNum > 0) {
 					transition.Transition (1000f / 
-					                       (helper.Pow (5f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f) + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Maintain)), 
-					                       EMState.Maintain);
+					                       (helper.Pow (Mathf.Sqrt(controller.NutrientNum), 2f) + 
+					 EMLeraningAgent.Instance().RealScore(EMState.Production)), 
+					                       EMState.Production);
 				}
 			}
 			else if (m_EMFSM.AvailableChildNum > 30)
@@ -158,12 +158,12 @@ public class EMMaintainState : IEMState
 					                                    EMState.Landmine);
 				}
 				
-				// Transition to Maintain
-				if (nPlayerChildFactor <= 5f && helper.Abs ((nEnemyChildFactor - nPlayerChildFactor)) <= 1f) {
+				// Transition to Production
+				if (controller.NutrientNum > 0) {
 					transition.Transition (1000f / 
-					                       (helper.Pow (3f - helper.Pow (nEnemyChildFactor - nPlayerChildFactor, 2f), 2f) + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Maintain)), 
-					                       EMState.Maintain);
+					                       (helper.Pow (Mathf.Sqrt(controller.NutrientNum), 2f) + 
+					 EMLeraningAgent.Instance().RealScore(EMState.Production)), 
+					                       EMState.Production);
 				}
 			}
 			
