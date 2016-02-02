@@ -212,7 +212,7 @@ public class SquadChildFSM : MonoBehaviour
 
 		// if: There is lesser defence child than it have
 		if (SquadChildFSM.StateCount(SCState.Defend) < nDefenceMinimumCount)
-			SquadChildFSM.AdvanceSquadPercentage(SCState.Idle, SCState.Defend, 1f);
+			SquadChildFSM.AdvanceSquadPercentage(SCState.Defend, SCState.Idle, 1f);
 
 		Vector3 toTargetPosition = Quaternion.Euler(0f, 0f, -fDefenceOffsetAngle) * mainDefenceVector + playerPosition - transform.position;
 		if (toTargetPosition.magnitude > fDefenceRigidity)

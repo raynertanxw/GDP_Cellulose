@@ -39,6 +39,9 @@ public class PS_Logicaliser : MonoBehaviour
 	// Start(): Use this for initialisation
 	void Start()
 	{
+		fAggressiveToDefensive = Settings.s_fAggressiveToDefensive;
+		fThinkCooldown = Settings.s_fThinkCooldown;
+
 		m_PlayerSquadFSM = PlayerSquadFSM.Instance;
 	}
 

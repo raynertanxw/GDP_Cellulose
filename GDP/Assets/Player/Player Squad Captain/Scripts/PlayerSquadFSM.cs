@@ -124,6 +124,9 @@ public class PlayerSquadFSM : MonoBehaviour
 			s_m_Instance = this;
 		else
 			Destroy(this.gameObject);
+
+		fMinimumCooldown = Settings.s_fMinimumCooldown;
+		fMaximumCooldown = Settings.s_fMaximumCooldown;
 	}
 
 	// Start(): Use this for initialization
