@@ -3,11 +3,12 @@ using System.Collections;
 
 public class Level_Manager
 {
-	public static int LevelID = 0;
+	private static int s_nLevelID = 0;
+	public static int LevelID { get { return s_nLevelID; } }
 
 	public static void LoadLevel(int _level)
 	{
-		LevelID = _level;
+		s_nLevelID = _level;
 
 		string path = "Levels/LEVEL_" + _level.ToString();
 		LevelTemplate levelData = Resources.Load(path) as LevelTemplate;
@@ -16,7 +17,7 @@ public class Level_Manager
 
 	public static void LoadTutorial()
 	{
-		LevelID = 0;
+		s_nLevelID = 0;
 
 		string path = "Levels/LEVEL_TUTORIAL";
 		LevelTemplate tutorialData = Resources.Load(path) as LevelTemplate;
