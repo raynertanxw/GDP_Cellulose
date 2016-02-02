@@ -269,6 +269,16 @@ public class EMController : MonoBehaviour
 	#endregion
 
 	#region Movement
+	// Update default value
+	void UpdateDefaultValue ()
+	{
+		if (fSpeed != Settings.s_fEnemyMainInitialVertSpeed)
+			fSpeed = Settings.s_fEnemyMainInitialVertSpeed;
+
+		if (fMinHoriSpeed != Settings.s_fEnemyMainMinHiriSpeed)
+			fMinHoriSpeed = Settings.s_fEnemyMainMinHiriSpeed;
+	}
+
 	// Auto reset velocity
 	void ResetVelocity ()
 	{
