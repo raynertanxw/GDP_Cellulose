@@ -235,8 +235,7 @@ public class EMHelper : MonoBehaviour
 
 			if (Level_Manager.LevelID > 3)
 				intervalTime /= 1.5f;
-			yield return new WaitForSeconds (
-				UnityEngine.Random.Range (intervalTime);
+			yield return new WaitForSeconds (intervalTime);
 
 			if (m_EMFSM.AvailableChildNum < 100)
 				bCanSpawn = true;
