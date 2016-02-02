@@ -52,11 +52,15 @@ public class EMController : MonoBehaviour
 	private int nDamageNum; // Amount of damages received within certain period of time, determines whether the enemy main cell will be stunned 
 	public int CauseAnyDamage { get { return nDamageNum; } set { nDamageNum = value; } }
 	public void CauseDamageOne () { nDamageNum++; m_EMFSM.Health--; fAttackElapsedTime = 0.1f; AudioManager.PlayEMSoundEffect(EnemyMainSFX.MainBeingHit);}
+	[SerializeField]
 	private bool bPushed; 
 	public bool Pushed { get { return bPushed; } }
+	[SerializeField]
 	private bool bStunned;
 	public bool Stunned { get { return bStunned; } }
+	[SerializeField]
 	private bool bCanPush;
+	[SerializeField]
 	private bool bCanStun;
 	private bool bJustAttacked;
 	private float fAttackElapsedTime;
@@ -498,15 +502,9 @@ public class EMController : MonoBehaviour
 	// Update values according to current dificulty
 	void DifficultyUpdate ()
 	{
-		// Stun time
-		if (fCurrentStunTime != fDefaultStunTime / EMDifficulty.Instance().CurrentDiff)
-			fCurrentStunTime = fDefaultStunTime / EMDifficulty.Instance().CurrentDiff;
 		// Stun cool down
 		if (fStunCoolDown != fCurrentStunTime * 2.0f)
 			fStunCoolDown = fCurrentStunTime * 2.0f;
-		// Stun tolerance
-		if (fCurrentStunTolerance != fDefaultStunTolerance * EMDifficulty.Instance().CurrentDiff)
-			fCurrentStunTolerance = fDefaultStunTolerance * EMDifficulty.Instance().CurrentDiff;
 	}
 	#endregion
     
