@@ -7,22 +7,19 @@ public class PointDatabase
 	//Declare an instance of the PointDatabase to make Database Singleton
 	private static PointDatabase s_Instance;
 	
-	//Declare a dictionary to store the various tactical position in the database
+	private Vector2 m_InitialPlayerPos;
+	private GameObject m_PlayerMain;
 	private Dictionary<string,Point> m_Database;
 	
-	private Vector2 m_InitialPlayerPos;
-	
-	private GameObject PlayerMain;
-	
-	public float PointIntervalX;
-	public float PointIntervalY;
+	public float m_PointIntervalX;
+	public float m_PointIntervalY;
 	
 	//Constructor for the PointDatabase
 	public PointDatabase()
 	{
 		m_Database = new Dictionary<string, Point>();
-		PlayerMain = GameObject.Find("Player_Cell");
-		m_InitialPlayerPos = PlayerMain.transform.position;
+		m_PlayerMain = GameObject.Find("Player_Cell");
+		m_InitialPlayerPos = m_PlayerMain.transform.position;
 	}
 	
 	//Singleton and Get function
@@ -47,7 +44,7 @@ public class PointDatabase
 	{
 		float LeftWallX = (-Screen.width/2) + 0.5f;
 		float RightWallX = (Screen.width/2) - 0.5f;
-		float RadiusOfCell = PlayerMain.GetComponent<SpriteRenderer>().bounds.size.x/2;
+		float RadiusOfCell = m_PlayerMain.GetComponent<SpriteRenderer>().bounds.size.x/2;
 		
 		return (_Point.Position.x + RadiusOfCell > RightWallX || _Point.Position.x - RadiusOfCell < LeftWallX) ? false : true;
 	}
@@ -61,8 +58,8 @@ public class PointDatabase
 		Vector2 botRight = Camera.main.ScreenToWorldPoint(new Vector2(fScreenWidth,0));
 		
 		//width: 9 Height : 14
-		PointIntervalX = (botRight.x - topLeft.x)/8;
-		PointIntervalY = (topLeft.y - botRight.y)/14; 
+		m_PointIntervalX = (botRight.x - topLeft.x)/8;
+		m_PointIntervalY = (topLeft.y - botRight.y)/14; 
 		
 		Vector2 currentGeneration = topLeft;
 		int HKey = 0;
@@ -76,13 +73,13 @@ public class PointDatabase
 		{
 			if(HKey <= 8)
 			{
-				currentGeneration.x += PointIntervalX;
+				currentGeneration.x += m_PointIntervalX;
 				HKey++;
 			}
 			
 			if(HKey >= 9)
 			{
-				currentGeneration.y -= PointIntervalY;
+				currentGeneration.y -= m_PointIntervalY;
 				currentGeneration.x = topLeft.x;
 				LKey++;
 				HKey = 0;
@@ -152,7 +149,7 @@ public class PointDatabase
 	public void RefreshDatabase()
 	{
 		//CREATE LIST OF STRINGS TO STORE THE KEY OF THE DICTIONARY
-		float fDifferenceY = PlayerMain.transform.position.y - m_InitialPlayerPos.y;
+		float fDifferenceY = m_PlayerMain.transform.position.y - m_InitialPlayerPos.y;
 		List<string> keys = new List<string>(m_Database.Keys);
 		
 		foreach(string key in keys)

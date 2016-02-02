@@ -6,26 +6,27 @@ public class FormationDatabase
 {
 	private static FormationDatabase s_Instance;
 
-	private Dictionary<string,int> FIndexDatabase;
-    private Dictionary<int, Vector2> FPositionDatabase;// the vector2 stored will be the position difference from the supposed position to the enemy main cell position
-	private Dictionary<int, bool> FAvaliabilityDatabase; //Store the formation index and boolean to see if that specific formation position is avaliable or not
+	private Dictionary<string,int> m_FIndexDatabase;
+    private Dictionary<int, Vector2> m_FPositionDatabase;
+	private Dictionary<int, bool> m_FAvaliabilityDatabase;
 
-	public Dictionary<string,int> FIDatabase { get{ return FIndexDatabase;} }
-	public Dictionary<int, Vector2> FPDatabase { get{ return FPositionDatabase;}}
+	public Dictionary<string,int> FIDatabase { get{ return m_FIndexDatabase;} }
+	public Dictionary<int, Vector2> FPDatabase { get{ return m_FPositionDatabase;}}
 	
-	private Formation CurrentFormation;
-	private float fCurrentMainScale;
+	private Formation m_CurrentFormation;
+	private float m_fCurrentMainScale;
 	
-	private GameObject EMain;
-	private GameObject PMain;
+	private GameObject m_EMain;
+	private GameObject m_PMain;
 
 	public FormationDatabase()
 	{
+		m_EMain = GameObject.Find("Enemy_Cell");
+		m_PMain = GameObject.Find("Player_Cell");
+	
 		InitializeDatabases();
 		List<EnemyChildFSM> ECList = GameObject.Find("Enemy_Cell").GetComponent<EnemyMainFSM>().ECList;
 		RefreshDatabases(ECList);
-		EMain = GameObject.Find("Enemy_Cell");
-		PMain = GameObject.Find("Player_Cell");
 	}
 
 	//Singleton and Get function
@@ -43,9 +44,9 @@ public class FormationDatabase
 
     private void InitializeDatabases()
     {
-		FIndexDatabase = new Dictionary<string, int>();
-		FPositionDatabase = new Dictionary<int, Vector2>();
-		FAvaliabilityDatabase = new Dictionary<int, bool>();
+		m_FIndexDatabase = new Dictionary<string, int>();
+		m_FPositionDatabase = new Dictionary<int, Vector2>();
+		m_FAvaliabilityDatabase = new Dictionary<int, bool>();
 		ClearDatabases();
     }
 
@@ -57,33 +58,24 @@ public class FormationDatabase
 
 		for(int i = 0; i < _EnemyChild.Count; i++)
 		{
-			if(!FIndexDatabase.ContainsKey(_EnemyChild[i].name)){FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);}
-			if(!FPositionDatabase.ContainsKey(FormationIndex)){FPositionDatabase.Add(FormationIndex,Vector2.zero);}
-			if(!FAvaliabilityDatabase.ContainsKey(FormationIndex)){FAvaliabilityDatabase.Add(FormationIndex,true);}
+			if(!m_FIndexDatabase.ContainsKey(_EnemyChild[i].name)){m_FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);}
+			if(!m_FPositionDatabase.ContainsKey(FormationIndex)){m_FPositionDatabase.Add(FormationIndex,Vector2.zero);}
+			if(!m_FAvaliabilityDatabase.ContainsKey(FormationIndex)){m_FAvaliabilityDatabase.Add(FormationIndex,true);}
 			FormationIndex++;
-		
-			/*if(!FIndexDatabase.ContainsKey(_EnemyChild[i].name))
-			{
-				//Debug.Log("add formation index: " + FormationIndex);
-				FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);
-				FPositionDatabase.Add(FormationIndex,Vector2.zero);
-				FAvaliabilityDatabase.Add(FormationIndex,true);
-				FormationIndex++;
-			}*/
 		}
     }
 
     public void ClearDatabases()
     {
-		FIndexDatabase.Clear();
-		FPositionDatabase.Clear();
-		FAvaliabilityDatabase.Clear();
+		m_FIndexDatabase.Clear();
+		m_FPositionDatabase.Clear();
+		m_FAvaliabilityDatabase.Clear();
     }
 
 	public void UpdateDatabaseFormation(Formation _FormationType, float _MainScale)
     {
-		CurrentFormation = _FormationType;
-		fCurrentMainScale = _MainScale;
+		m_CurrentFormation = _FormationType;
+		m_fCurrentMainScale = _MainScale;
 
 		Vector2 EMPos = GameObject.Find("Enemy_Cell").transform.position;
 
@@ -99,15 +91,15 @@ public class FormationDatabase
 			
 			Vector2 TargetDirection = new Vector2(Mathf.Cos(CurrentAngle * Mathf.Deg2Rad), Mathf.Sin(CurrentAngle * Mathf.Deg2Rad));
 			Vector2 CurrentFormationPosition = TargetDirection * GapBetweenCircle;
-			List<int> Keys = new List<int>(FPositionDatabase.Keys);
+			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 			
 			foreach(int FIndex in Keys)
 			{
 				TargetDirection.x = Mathf.Cos(CurrentAngle * Mathf.Deg2Rad);
 				TargetDirection.y = Mathf.Sin(CurrentAngle * Mathf.Deg2Rad);
 				CurrentFormationPosition = TargetDirection.normalized * GapBetweenCircle * CircleCount;
-				FPositionDatabase[FIndex] = CurrentFormationPosition;
-				FAvaliabilityDatabase[FIndex] = false;
+				m_FPositionDatabase[FIndex] = CurrentFormationPosition;
+				m_FAvaliabilityDatabase[FIndex] = false;
 				//ebug.Log("Position " + FIndex + ": " + CurrentFormationPosition);
 				
 				CurrentAngle += AngleInterval;
@@ -132,7 +124,7 @@ public class FormationDatabase
 			float NextLineInterval = -0.35f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
-			List<int> Keys = new List<int>(FPositionDatabase.Keys);
+			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 			
 			foreach(int FIndex in Keys)
 			{
@@ -143,18 +135,18 @@ public class FormationDatabase
 					if(FIndex == 0)
 					{
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 					else
 					{
-						if(FPositionDatabase.ContainsKey(FIndex - 9))
+						if(m_FPositionDatabase.ContainsKey(FIndex - 9))
 						{
-							CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 9].x, FPositionDatabase[FIndex - 9].y + NextLineInterval);
+							CurrentFormationPos = new Vector2(m_FPositionDatabase[FIndex - 9].x, m_FPositionDatabase[FIndex - 9].y + NextLineInterval);
 							StoredFormationPos = CurrentFormationPos;
-							FPositionDatabase[FIndex] = StoredFormationPos;
-							FAvaliabilityDatabase[FIndex] = false;
+							m_FPositionDatabase[FIndex] = StoredFormationPos;
+							m_FAvaliabilityDatabase[FIndex] = false;
 						}
 						
 						continue;
@@ -166,12 +158,12 @@ public class FormationDatabase
 					
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
 					
-					if(FPositionDatabase.ContainsKey(CurrentCenterIndex))
+					if(m_FPositionDatabase.ContainsKey(CurrentCenterIndex))
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x + RightCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + RightCount * YInterval);
+						CurrentFormationPos = new Vector2(m_FPositionDatabase[CurrentCenterIndex].x + RightCount * XInterval, m_FPositionDatabase[CurrentCenterIndex].y + RightCount * YInterval);
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 					}
 					continue;
 				}
@@ -181,12 +173,12 @@ public class FormationDatabase
 					
 					int CurrentCenterIndex = GetCrescentCenterIndex(FIndex);
 					
-					if(FPositionDatabase.ContainsKey(CurrentCenterIndex))
+					if(m_FPositionDatabase.ContainsKey(CurrentCenterIndex))
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[CurrentCenterIndex].x - LeftCount * XInterval, FPositionDatabase[CurrentCenterIndex].y + LeftCount * YInterval);
+						CurrentFormationPos = new Vector2(m_FPositionDatabase[CurrentCenterIndex].x - LeftCount * XInterval, m_FPositionDatabase[CurrentCenterIndex].y + LeftCount * YInterval);
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 					}
 					continue;
 				}
@@ -194,7 +186,7 @@ public class FormationDatabase
 		}
 		else if(_FormationType == Formation.Turtle)
 		{
-			int ECAmount = FIndexDatabase.Count;
+			int ECAmount = m_FIndexDatabase.Count;
 			int SetAmount = (int) Mathf.Floor(ECAmount/9);
 			Vector2 CurrentFormationPos = new Vector2(0f, -2.25f * _MainScale);
 			Vector2 StoredFormationPos = Vector2.zero;
@@ -203,7 +195,7 @@ public class FormationDatabase
 			float YInterval = -0.5f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
-			List<int> Keys = new List<int>(FPositionDatabase.Keys);
+			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 			
 			foreach(int FIndex in Keys)
 			{
@@ -214,16 +206,16 @@ public class FormationDatabase
 					if(FIndex == 0)
 					{
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 					else
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[FIndex - 9].x, FPositionDatabase[FIndex - 9].y + YInterval);
+						CurrentFormationPos = new Vector2(m_FPositionDatabase[FIndex - 9].x, m_FPositionDatabase[FIndex - 9].y + YInterval);
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 				}
@@ -235,18 +227,18 @@ public class FormationDatabase
 					
 					if(RightCount == 1)
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[AreaCenterIndex].x + XInterval, FPositionDatabase[AreaCenterIndex].y);
+						CurrentFormationPos = new Vector2(m_FPositionDatabase[AreaCenterIndex].x + XInterval, m_FPositionDatabase[AreaCenterIndex].y);
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 					else
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[AreaCenterIndex].x + RightCount * XInterval + XBlockGap, FPositionDatabase[AreaCenterIndex].y - YInterval);
+						CurrentFormationPos = new Vector2(m_FPositionDatabase[AreaCenterIndex].x + RightCount * XInterval + XBlockGap, m_FPositionDatabase[AreaCenterIndex].y - YInterval);
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 				}
@@ -257,18 +249,18 @@ public class FormationDatabase
 					
 					if(LeftCount == 1)
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[AreaCenterIndex].x - XInterval, FPositionDatabase[AreaCenterIndex].y);
+						CurrentFormationPos = new Vector2(m_FPositionDatabase[AreaCenterIndex].x - XInterval, m_FPositionDatabase[AreaCenterIndex].y);
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 					else
 					{
-						CurrentFormationPos = new Vector2(FPositionDatabase[AreaCenterIndex].x - LeftCount * XInterval - XBlockGap, FPositionDatabase[AreaCenterIndex].y - YInterval);
+						CurrentFormationPos = new Vector2(m_FPositionDatabase[AreaCenterIndex].x - LeftCount * XInterval - XBlockGap, m_FPositionDatabase[AreaCenterIndex].y - YInterval);
 						StoredFormationPos = CurrentFormationPos;
-						FPositionDatabase[FIndex] = StoredFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = StoredFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 				}
@@ -284,7 +276,7 @@ public class FormationDatabase
 			float YInterval = 0.5f * _MainScale;
 			
 			Vector2 CurrentFormationPos = Vector2.zero;
-			List<int> Keys = new List<int>(FPositionDatabase.Keys);
+			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 			foreach(int FIndex in Keys)
 			{
 				if(FIndex % 12 == 0)
@@ -295,17 +287,17 @@ public class FormationDatabase
 						RightCount++;
 						CurrentFormationPos.x = XBlockGap;
 						CurrentFormationPos.y = -YInterval * 4;
-						FPositionDatabase[FIndex] = CurrentFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						m_FPositionDatabase[FIndex] = CurrentFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 					else
 					{
 						RightCount++;
-						CurrentFormationPos.x = FPositionDatabase[FIndex - 12].x;
-						CurrentFormationPos.y = FPositionDatabase[FIndex - 12].y - YInterval;
-						FPositionDatabase[FIndex] = CurrentFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						CurrentFormationPos.x = m_FPositionDatabase[FIndex - 12].x;
+						CurrentFormationPos.y = m_FPositionDatabase[FIndex - 12].y - YInterval;
+						m_FPositionDatabase[FIndex] = CurrentFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 				}
@@ -314,20 +306,20 @@ public class FormationDatabase
 					if(LeftCount == 0)
 					{
 						LeftCount++;
-						CurrentFormationPos.x = FPositionDatabase[FIndex - 1].x - (2 * XBlockGap);
-						CurrentFormationPos.y = FPositionDatabase[FIndex - 1].y;
-						FPositionDatabase[FIndex] = CurrentFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						CurrentFormationPos.x = m_FPositionDatabase[FIndex - 1].x - (2 * XBlockGap);
+						CurrentFormationPos.y = m_FPositionDatabase[FIndex - 1].y;
+						m_FPositionDatabase[FIndex] = CurrentFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 					else
 					{
 						LeftCount++;
 						//Debug.Log("left trying to access: " + (FIndex - 2));
-						CurrentFormationPos.x = FPositionDatabase[FIndex - 2].x - XInterval;
-						CurrentFormationPos.y = FPositionDatabase[FIndex - 2].y;
-						FPositionDatabase[FIndex] = CurrentFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						CurrentFormationPos.x = m_FPositionDatabase[FIndex - 2].x - XInterval;
+						CurrentFormationPos.y = m_FPositionDatabase[FIndex - 2].y;
+						m_FPositionDatabase[FIndex] = CurrentFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 				}
@@ -336,10 +328,10 @@ public class FormationDatabase
 					if(RightCount != 0)
 					{
 						RightCount++;
-						CurrentFormationPos.x = FPositionDatabase[FIndex - 2].x + XInterval;
-						CurrentFormationPos.y = FPositionDatabase[FIndex - 2].y;
-						FPositionDatabase[FIndex] = CurrentFormationPos;
-						FAvaliabilityDatabase[FIndex] = false;
+						CurrentFormationPos.x = m_FPositionDatabase[FIndex - 2].x + XInterval;
+						CurrentFormationPos.y = m_FPositionDatabase[FIndex - 2].y;
+						m_FPositionDatabase[FIndex] = CurrentFormationPos;
+						m_FAvaliabilityDatabase[FIndex] = false;
 						continue;
 					}
 				}
@@ -349,16 +341,16 @@ public class FormationDatabase
     
     public void CheckOverlapPlayerADRange()
     {
-		float YLimit = PMain.transform.position.y + PlayerMain.Instance.m_fDetectionRadius;
-		List<int> Keys = new List<int>(FPositionDatabase.Keys);
+		float YLimit = m_PMain.transform.position.y + PlayerMain.Instance.m_fDetectionRadius;
+		List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 		
 		float YAdjustment = 0f;
 		
 		foreach(int FIndex in Keys)
 		{
-			if(FPositionDatabase[FIndex].y < YLimit && YLimit - FPositionDatabase[FIndex].y > YAdjustment)
+			if(m_FPositionDatabase[FIndex].y < YLimit && YLimit - m_FPositionDatabase[FIndex].y > YAdjustment)
 			{
-				YAdjustment = YLimit - FPositionDatabase[FIndex].y;
+				YAdjustment = YLimit - m_FPositionDatabase[FIndex].y;
 			}
 		}
 		
@@ -367,9 +359,9 @@ public class FormationDatabase
 		Vector2 UpdatedPosition = Vector2.zero;
 		foreach(int FIndex in Keys)
 		{
-			UpdatedPosition = FPositionDatabase[FIndex];
+			UpdatedPosition = m_FPositionDatabase[FIndex];
 			UpdatedPosition.y += YAdjustment/2;
-			FPositionDatabase[FIndex] = UpdatedPosition;
+			m_FPositionDatabase[FIndex] = UpdatedPosition;
 		}
     }
 
@@ -382,15 +374,15 @@ public class FormationDatabase
 			int AvaliableIndex = GetFirstAvaliableIndex();
 			
 			//Since replaced, that formation index will not be avaliable for other defenders
-			FAvaliabilityDatabase[AvaliableIndex] = false;
+			m_FAvaliabilityDatabase[AvaliableIndex] = false;
 			
 			//Remove the entry whereby the previous defender occupy this formation index and rewrite with the new defender's name
-			foreach(string Key in FIndexDatabase.Keys)
+			foreach(string Key in m_FIndexDatabase.Keys)
 			{
-				if(FIndexDatabase[Key] == AvaliableIndex)
+				if(m_FIndexDatabase[Key] == AvaliableIndex)
 				{
-					FIndexDatabase.Remove(Key);
-					FIndexDatabase[_NewDefender.name] = AvaliableIndex;
+					m_FIndexDatabase.Remove(Key);
+					m_FIndexDatabase[_NewDefender.name] = AvaliableIndex;
 					break;
 				}
 			}
@@ -398,43 +390,29 @@ public class FormationDatabase
 		//If not,
 		else
 		{
-			if(!FIndexDatabase.ContainsKey(_NewDefender.name)){FIndexDatabase.Add(_NewDefender.name, FIndexDatabase.Count);} else{FIndexDatabase[_NewDefender.name] = FIndexDatabase.Count;}
-			if(!FPositionDatabase.ContainsKey(FIndexDatabase[_NewDefender.name])){FPositionDatabase.Add(FIndexDatabase[_NewDefender.name], Vector2.zero);} else{FPositionDatabase[FIndexDatabase[_NewDefender.name]] = Vector2.zero;}
-			if(!FAvaliabilityDatabase.ContainsKey(FIndexDatabase[_NewDefender.name])){FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);} else{FAvaliabilityDatabase[FIndexDatabase[_NewDefender.name]] = false;}
+			if(!m_FIndexDatabase.ContainsKey(_NewDefender.name)){m_FIndexDatabase.Add(_NewDefender.name, m_FIndexDatabase.Count);} else{m_FIndexDatabase[_NewDefender.name] = m_FIndexDatabase.Count;}
+			if(!m_FPositionDatabase.ContainsKey(m_FIndexDatabase[_NewDefender.name])){m_FPositionDatabase.Add(m_FIndexDatabase[_NewDefender.name], Vector2.zero);} else{m_FPositionDatabase[m_FIndexDatabase[_NewDefender.name]] = Vector2.zero;}
+			if(!m_FAvaliabilityDatabase.ContainsKey(m_FIndexDatabase[_NewDefender.name])){m_FAvaliabilityDatabase.Add(m_FIndexDatabase[_NewDefender.name], false);} else{m_FAvaliabilityDatabase[m_FIndexDatabase[_NewDefender.name]] = false;}
 		
-			/*if(!FIndexDatabase.ContainsKey(_NewDefender.name))
-			{
-				FIndexDatabase.Add(_NewDefender.name, FIndexDatabase.Count);
-				FPositionDatabase.Add(FIndexDatabase[_NewDefender.name], Vector2.zero);
-				FAvaliabilityDatabase.Add(FIndexDatabase[_NewDefender.name], false);
-			}
-			else
-			{
-				FIndexDatabase[_NewDefender.name] = FIndexDatabase.Count;
-				FPositionDatabase[FIndexDatabase[_NewDefender.name]] = Vector2.zero;
-				FAvaliabilityDatabase[FIndexDatabase[_NewDefender.name]] = false;
-			}*/
-			
-			//Update the database to recalculate the position for all indexes
-			UpdateDatabaseFormation(CurrentFormation,fCurrentMainScale);
+			UpdateDatabaseFormation(m_CurrentFormation,m_fCurrentMainScale);
 		}
 		CheckOverlapPlayerADRange();
 	}
 	
 	public void ReturnFormationPos(GameObject _ObjectReturn)
 	{
-		if(FIndexDatabase.ContainsKey(_ObjectReturn.name))
+		if(m_FIndexDatabase.ContainsKey(_ObjectReturn.name))
 		{
-			int IndexReturned = FIndexDatabase[_ObjectReturn.name];
-			FAvaliabilityDatabase[IndexReturned] = true;
+			int IndexReturned = m_FIndexDatabase[_ObjectReturn.name];
+			m_FAvaliabilityDatabase[IndexReturned] = true;
 		}
 	}
 	
 	private bool IsThereAvaliableIndex()
 	{
-		foreach(int Key in FAvaliabilityDatabase.Keys)
+		foreach(int Key in m_FAvaliabilityDatabase.Keys)
 		{
-			if(FAvaliabilityDatabase[Key])
+			if(m_FAvaliabilityDatabase[Key])
 			{
 				return true;
 			}
@@ -444,9 +422,9 @@ public class FormationDatabase
 	
 	private int GetFirstAvaliableIndex()
 	{
-		foreach(int Key in FAvaliabilityDatabase.Keys)
+		foreach(int Key in m_FAvaliabilityDatabase.Keys)
 		{
-			if(FAvaliabilityDatabase[Key])
+			if(m_FAvaliabilityDatabase[Key])
 			{
 				return Key;
 			}
@@ -457,16 +435,16 @@ public class FormationDatabase
     public Vector2 GetTargetFormationPosition(Formation _Formation, GameObject _EnemyCell)
     {
 		string CellName = _EnemyCell.name;
-		if(!FIndexDatabase.ContainsKey(CellName))
+		if(!m_FIndexDatabase.ContainsKey(CellName))
 		{
 			MessageDispatcher.Instance.DispatchMessage(_EnemyCell,_EnemyCell,MessageType.Idle,0);
 			return Vector2.zero;
 		}
     
-		int TargetFIndex = FIndexDatabase[CellName];
+		int TargetFIndex = m_FIndexDatabase[CellName];
 
-		Vector2 PosDifference = FPositionDatabase[TargetFIndex];
-		Vector2 EMPosition = EMain.transform.position;
+		Vector2 PosDifference = m_FPositionDatabase[TargetFIndex];
+		Vector2 EMPosition = m_EMain.transform.position;
 		Vector2 TargetPosition = Vector2.zero;
 		
 		if(_Formation == Formation.Ladder)
@@ -489,30 +467,6 @@ public class FormationDatabase
 		return Current;
     }
 
-    private int[] GetCircularCenterIndexes(int _CurrentIndex)
-    {
-		int[] Indexes = new int[2];
-		int CenterStart = 0;
-		int CenterEnd = 11;
-
-		if(_CurrentIndex > 11)
-		{
-			CenterStart = _CurrentIndex;
-
-			while(CenterStart % 12 != 0)
-			{
-				CenterStart--;
-			}
-
-			CenterEnd = CenterStart + 11;
-		}
-
-		Indexes[0] = CenterStart;
-		Indexes[1] = CenterEnd;
-
-		return Indexes;
-    }
-
     private int GetAreaBlockCenterIndex(int _CurrentIndex)
     {
 		int Current = _CurrentIndex;
@@ -525,19 +479,19 @@ public class FormationDatabase
 
     private void PrintIndexDatabase()
     {
-		List<string> Keys = new List<string>(FIndexDatabase.Keys);
+		List<string> Keys = new List<string>(m_FIndexDatabase.Keys);
 		foreach(string Key in Keys)
 		{
-			Debug.Log("Name: " + Key + " Index: " + FIndexDatabase[Key]);
+			Debug.Log("Name: " + Key + " Index: " + m_FIndexDatabase[Key]);
 		}
     }
 
 	private void PrintPositionDatabase()
 	{
-		List<int> Keys = new List<int>(FPositionDatabase.Keys);
+		List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 		foreach(int Key in Keys)
 		{
-			Debug.Log("Index: " + Key + " Position: " + FPositionDatabase[Key]);
+			Debug.Log("Index: " + Key + " Position: " + m_FPositionDatabase[Key]);
 		}
 	}
 	

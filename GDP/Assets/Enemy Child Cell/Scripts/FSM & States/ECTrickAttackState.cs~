@@ -338,5 +338,6 @@ public class ECTrickAttackState : IECState {
 		}
 		
 		m_bSqueezeDone = true;
+		AudioManager.PlayECSoundEffect(EnemyChildSFX.CellChargeTowards, m_ecFSM.Audio);
 	}
 }

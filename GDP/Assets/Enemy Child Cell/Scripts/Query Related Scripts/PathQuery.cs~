@@ -8,13 +8,13 @@ public class PathQuery
 
 	private PointDatabase m_Database;
 
-	private Dictionary<string,Edge> SearchFrontier;
-	private Dictionary<string,Edge> ShortestPath;
-	private Dictionary<string,float> fCost;
-	private Dictionary<string,float> gCost;
+	private Dictionary<string,Edge> m_SearchFrontier;
+	private Dictionary<string,Edge> m_ShortestPath;
+	private Dictionary<string,float> m_fCost;
+	private Dictionary<string,float> m_gCost;
 	
-	private string SourceIndex;
-	private string TargetIndex;
+	private string m_SourceIndex;
+	private string m_TargetIndex;
 	
 	public PathQuery()
 	{
@@ -43,35 +43,35 @@ public class PathQuery
 		List<string> keys = new List<string>(m_Database.Database.Keys);
 		foreach(string key in keys)
 		{
-			SearchFrontier[key] = null;
-			ShortestPath[key] = null;
-			fCost[key] = 0f;
-			gCost[key] = 0f;
+			m_SearchFrontier[key] = null;
+			m_ShortestPath[key] = null;
+			m_fCost[key] = 0f;
+			m_gCost[key] = 0f;
 		}
 	}
 	
 	public void AStarSearch(Vector2 _Source, Vector2 _Target, bool _AllowUnwalkable)
 	{
-		SourceIndex = PointDatabase.Instance.GetIdealPoint(_Source,_Target).Index;
-		TargetIndex = PointDatabase.Instance.GetClosestPointToPosition(_Target,_AllowUnwalkable).Index;
+		m_SourceIndex = PointDatabase.Instance.GetIdealPoint(_Source,_Target).Index;
+		m_TargetIndex = PointDatabase.Instance.GetClosestPointToPosition(_Target,_AllowUnwalkable).Index;
 		
 		List<Point> PointList = PointDatabase.Instance.ReturnDatabaseAsList();
-		SearchFrontier = new Dictionary<string,Edge>();//store all points that are being searched
-		ShortestPath = new Dictionary<string,Edge>();
-		fCost = new Dictionary<string,float>();//cumulative cost to current node + heuristic cost from current node to target node
-		gCost = new Dictionary<string,float>();//cumulative cost from the source node to the current node
+		m_SearchFrontier = new Dictionary<string,Edge>();//store all points that are being searched
+		m_ShortestPath = new Dictionary<string,Edge>();
+		m_fCost = new Dictionary<string,float>();//cumulative cost to current node + heuristic cost from current node to target node
+		m_gCost = new Dictionary<string,float>();//cumulative cost from the source node to the current node
 		InitializeDictionaries();
 	
-		PriorityQueue priorityQueue = new PriorityQueue(fCost);
-		priorityQueue.Add(SourceIndex);
+		PriorityQueue priorityQueue = new PriorityQueue(m_fCost);
+		priorityQueue.Add(m_SourceIndex);
 		
 		while(priorityQueue.Count() != 0)
 		{
 			string nextClosestPoint = priorityQueue.Dequeue();
 
-			ShortestPath[nextClosestPoint] = SearchFrontier[nextClosestPoint];
+			m_ShortestPath[nextClosestPoint] = m_SearchFrontier[nextClosestPoint];
 			
-			if(nextClosestPoint == TargetIndex)
+			if(nextClosestPoint == m_TargetIndex)
 			{
 				return;
 			}
@@ -79,44 +79,44 @@ public class PathQuery
 			foreach(Edge edge in m_Database.Database[nextClosestPoint].Edges)
 			{
 				//heuristic cost from current node to target node
-				float HCost = CalculateDistanceBetweenPoints(edge.End,m_Database.Database[TargetIndex]);
+				float HCost = CalculateDistanceBetweenPoints(edge.End,m_Database.Database[m_TargetIndex]);
 				//cumulative cost from the start node to the current node
-				float GCost = gCost[nextClosestPoint] + edge.Cost;
+				float GCost = m_gCost[nextClosestPoint] + edge.Cost;
 				
 				if(_AllowUnwalkable == false)
 				{
 					//Debug.Log("Only Walkable Points");
-					if(SearchFrontier[edge.End.Index] == null && edge.End.Walkable == true)
+					if(m_SearchFrontier[edge.End.Index] == null && edge.End.Walkable == true)
 					{
-						fCost[edge.End.Index] = HCost + GCost;
-						gCost[edge.End.Index] = GCost;
+						m_fCost[edge.End.Index] = HCost + GCost;
+						m_gCost[edge.End.Index] = GCost;
 						priorityQueue.Add(edge.End.Index);
-						SearchFrontier[edge.End.Index] = edge;
+						m_SearchFrontier[edge.End.Index] = edge;
 					}
-					else if(GCost < gCost[edge.End.Index] && ShortestPath[edge.End.Index] == null && edge.End.Walkable == true)
+					else if(GCost < m_gCost[edge.End.Index] && m_ShortestPath[edge.End.Index] == null && edge.End.Walkable == true)
 					{
-						fCost[edge.End.Index] = HCost + GCost;
-						gCost[edge.End.Index] = GCost;
+						m_fCost[edge.End.Index] = HCost + GCost;
+						m_gCost[edge.End.Index] = GCost;
 						priorityQueue.Add(edge.End.Index);
-						SearchFrontier[edge.End.Index] = edge;
+						m_SearchFrontier[edge.End.Index] = edge;
 					}
 				}
 				else
 				{
 					//Debug.Log("Both Walkable and Unwalkable points");
-					if(SearchFrontier[edge.End.Index] == null)
+					if(m_SearchFrontier[edge.End.Index] == null)
 					{
-						fCost[edge.End.Index] = HCost + GCost;
-						gCost[edge.End.Index] = GCost;
+						m_fCost[edge.End.Index] = HCost + GCost;
+						m_gCost[edge.End.Index] = GCost;
 						priorityQueue.Add(edge.End.Index);
-						SearchFrontier[edge.End.Index] = edge;
+						m_SearchFrontier[edge.End.Index] = edge;
 					}
-					else if(GCost < gCost[edge.End.Index] && ShortestPath[edge.End.Index] == null)
+					else if(GCost < m_gCost[edge.End.Index] && m_ShortestPath[edge.End.Index] == null)
 					{
-						fCost[edge.End.Index] = HCost + GCost;
-						gCost[edge.End.Index] = GCost;
+						m_fCost[edge.End.Index] = HCost + GCost;
+						m_gCost[edge.End.Index] = GCost;
 						priorityQueue.Add(edge.End.Index);
-						SearchFrontier[edge.End.Index] = edge;
+						m_SearchFrontier[edge.End.Index] = edge;
 					}
 				}
 			}
@@ -160,12 +160,12 @@ public class PathQuery
 	public List<Point> GetPathToTarget(Directness _directness)
 	{
 		List<Point> Path = new List<Point>();
-		string currentKey = TargetIndex;
+		string currentKey = m_TargetIndex;
 		Path.Insert(0,m_Database.Database[currentKey]);
 		
-		while(currentKey != SourceIndex && ShortestPath[currentKey] != null)
+		while(currentKey != m_SourceIndex && m_ShortestPath[currentKey] != null)
 		{
-			currentKey = ShortestPath[currentKey].Start.Index;
+			currentKey = m_ShortestPath[currentKey].Start.Index;
 			Path.Insert(0,m_Database.Database[currentKey]);
 		}
 
@@ -238,24 +238,6 @@ public class PathQuery
 			}
 		}
 		return false;
-	}
-	
-	public Point ReturnVertSequenceStartPoint(List<Point> _Path)
-	{
-		Point ReferencePoint = _Path[_Path.Count - 1];
-		Point StartPoint = _Path[_Path.Count - 1];
-		for(int i = _Path.Count - 1; i >= 0; i--)
-		{
-			if(_Path[i].Position.x == ReferencePoint.Position.x)
-			{
-				StartPoint = _Path[i];
-			}
-			else
-			{
-				break;
-			}
-		}
-		return StartPoint;
 	}
 	
 	public static void ResetStatics()

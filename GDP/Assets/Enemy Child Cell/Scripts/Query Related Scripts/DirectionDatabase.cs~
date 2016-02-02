@@ -7,16 +7,15 @@ public class DirectionDatabase
 	private static DirectionDatabase s_Instance;
 	
 	private Dictionary<int,Vector2> m_Database;
-	
 	private Dictionary<int,bool> m_Usage;
 	
-	private int MaximumECCells;
+	private int m_nMaximumECCells;
 	
 	public DirectionDatabase()
 	{
 		m_Database = new Dictionary<int, Vector2>();
 		m_Usage = new Dictionary<int, bool>();
-		MaximumECCells = ECPoolManager.ECPool.Count;
+		m_nMaximumECCells = ECPoolManager.ECPool.Count;
 		
 		Initilize();
 	}
@@ -45,7 +44,7 @@ public class DirectionDatabase
 	
 	private void Initilize()
 	{
-		for(int i = 0; i < MaximumECCells; i++)
+		for(int i = 0; i < m_nMaximumECCells; i++)
 		{
 			m_Usage.Add(i + 1, false);
 		}
@@ -59,7 +58,7 @@ public class DirectionDatabase
 		Vector2 TargetDirection = Vector2.zero;
 		
 		m_Database.Add(1,FirstDirection);
-		for(int i = 2; i <= MaximumECCells; i++)
+		for(int i = 2; i <= m_nMaximumECCells; i++)
 		{
 			CurrentAngle += AngleInterval;
 			if(CurrentAngle > 360f)
@@ -120,5 +119,10 @@ public class DirectionDatabase
 	{
 		_Angle *= Mathf.Deg2Rad;
 		return new Vector2(Mathf.Cos(_Angle),Mathf.Sin(_Angle));
+	}
+	
+	public static void ResetStatics()
+	{
+		s_Instance = null;
 	}
 }

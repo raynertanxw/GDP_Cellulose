@@ -7,9 +7,7 @@ public class ECPoolManager : MonoBehaviour {
 	private static Queue<GameObject> s_ECPool;
 	private ECTracker s_ECTracker;
 	
-	public GameObject EnemyChildCell;
-	
-	private int SpawnCount;
+	private int m_nSpawnCount;
 
 	// Use this for initialization
 	void Start () 
@@ -30,7 +28,7 @@ public class ECPoolManager : MonoBehaviour {
 			}
 		}
 		
-		SpawnCount = 0;
+		m_nSpawnCount = 0;
 	}
 	
 	public static Queue<GameObject> ECPool
@@ -53,7 +51,7 @@ public class ECPoolManager : MonoBehaviour {
 	{
 		if (!_Default)
 			EMHelper.Instance ().StartProduceChild ();
-		SpawnCount++;
+		m_nSpawnCount++;
 		
 		//Extract the enemy child cell pool from the pool and add it to the enemy child cell list
 		GameObject newChild = s_ECPool.Dequeue();

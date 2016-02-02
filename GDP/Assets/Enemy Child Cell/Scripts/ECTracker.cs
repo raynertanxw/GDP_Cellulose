@@ -6,14 +6,23 @@ public class ECTracker
 {
 	public static ECTracker s_Instance;
 
-	public List<EnemyChildFSM> IdleCells;
-	public List<EnemyChildFSM> AttackingCells;
-	public List<EnemyChildFSM> ChargeChildCells;
-	public List<EnemyChildFSM> ChargeMainCells;
-	public List<EnemyChildFSM> LandmineCells;
-	public List<EnemyChildFSM> TrickAttackCells;
-	public List<EnemyChildFSM> AvoidCells;
-	public List<EnemyChildFSM> DefendCells;
+	private List<EnemyChildFSM> m_IdleCells;
+	private List<EnemyChildFSM> m_AttackingCells;
+	private List<EnemyChildFSM> m_ChargeChildCells;
+	private List<EnemyChildFSM> m_ChargeMainCells;
+	private List<EnemyChildFSM> m_LandmineCells;
+	private List<EnemyChildFSM> m_TrickAttackCells;
+	private List<EnemyChildFSM> m_AvoidCells;
+	private List<EnemyChildFSM> m_DefendCells;
+	
+	public List<EnemyChildFSM> IdleCells{get{return m_IdleCells;}}
+	public List<EnemyChildFSM> AttackingCells{get{return m_AttackingCells;}}
+	public List<EnemyChildFSM> ChargeChildCells{get{return m_ChargeChildCells;}}
+	public List<EnemyChildFSM> ChargeMainCells{get{return m_ChargeMainCells;}}
+	public List<EnemyChildFSM> LandmineCells{get{return m_LandmineCells;}}
+	public List<EnemyChildFSM> TrickAttackCells{get{return m_TrickAttackCells;}}
+	public List<EnemyChildFSM> AvoidCells{get{return m_AvoidCells;}}
+	public List<EnemyChildFSM> DefendCells{get{return m_DefendCells;}}
 	
 	public static ECTracker Instance
 	{
@@ -29,14 +38,14 @@ public class ECTracker
 	
 	public ECTracker()
 	{
-		IdleCells = new List<EnemyChildFSM>();
-		AttackingCells = new List<EnemyChildFSM>();
-		ChargeChildCells = new List<EnemyChildFSM>();
-		ChargeMainCells = new List<EnemyChildFSM>();
-		LandmineCells = new List<EnemyChildFSM>();
-		TrickAttackCells = new List<EnemyChildFSM>();
-		AvoidCells = new List<EnemyChildFSM>();
-		DefendCells = new List<EnemyChildFSM>();
+		m_IdleCells = new List<EnemyChildFSM>();
+		m_AttackingCells = new List<EnemyChildFSM>();
+		m_ChargeChildCells = new List<EnemyChildFSM>();
+		m_ChargeMainCells = new List<EnemyChildFSM>();
+		m_LandmineCells = new List<EnemyChildFSM>();
+		m_TrickAttackCells = new List<EnemyChildFSM>();
+		m_AvoidCells = new List<EnemyChildFSM>();
+		m_DefendCells = new List<EnemyChildFSM>();
 	}
 	
 	public static void ResetStatics()

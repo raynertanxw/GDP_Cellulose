@@ -4,43 +4,43 @@ using System.Collections.Generic;
 
 public class Point 
 {
-	private string strIndex;
-	private string strLIndex;
-	private string strHIndex;
+	private string m_strIndex;
+	private string m_strLIndex;
+	private string m_strHIndex;
+	
+	private bool m_bWalkable;
+	
 	private Vector2 m_Position;
-	private bool bWalkable;
-	private List<Edge> EdgeList;
+	private List<Edge> m_EdgeList;
 	
 	public Point(string _Index, Vector2 _Pos, bool _Walkable) 
 	{
-		strIndex = _Index;
+		m_strIndex = _Index;
 		m_Position = _Pos;
-		bWalkable = _Walkable;
-		EdgeList = new List<Edge>();
+		m_bWalkable = _Walkable;
+		m_EdgeList = new List<Edge>();
 		
 		if(_Index.Contains("-"))
 		{
 			string[] keys = _Index.Split('-');
-			strLIndex = keys[0];
-			strHIndex = keys[1];
+			m_strLIndex = keys[0];
+			m_strHIndex = keys[1];
 		}
-		
-		//Utility.DrawCross(Position,Color.green,0.1f);
 	}
 	
 	public string Index
 	{
-		get{ return strIndex;}
+		get{ return m_strIndex;}
 	}
 	
 	public string LIndex
 	{
-		get{ return strLIndex;}
+		get{ return m_strLIndex;}
 	}
 	
 	public string HIndex
 	{
-		get{ return strHIndex;}
+		get{ return m_strHIndex;}
 	}
 	
 	public Vector2 Position
@@ -51,14 +51,14 @@ public class Point
 	
 	public bool Walkable
 	{
-		get{ return bWalkable;}
-		set{ bWalkable = value;}
+		get{ return m_bWalkable;}
+		set{ m_bWalkable = value;}
 	}
 	
 	public List<Edge> Edges
 	{
-		get{ return EdgeList;}
-		set{ EdgeList = value;}
+		get{ return m_EdgeList;}
+		set{ m_EdgeList = value;}
 	}
 
 }

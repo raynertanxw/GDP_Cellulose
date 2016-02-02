@@ -6,16 +6,16 @@ public class PositionQuery
 {
 	//Declare an instance of PositionQuery for Singleton purpose
 	private static PositionQuery s_Instance;
-	private GameObject PlayerMain;
-	private GameObject EnemyMain;
-	private GameObject SquadCaptain;
+	private GameObject m_PlayerMain;
+	private GameObject m_EnemyMain;
+	private GameObject m_SquadCaptain;
 	
 	//Constructor for PositionQuery
 	public PositionQuery()
 	{
-		PlayerMain = GameObject.Find("Player_Cell");
-		EnemyMain = GameObject.Find("Enemy_Cell");
-		SquadCaptain = GameObject.Find("Squad_Captain_Cell");
+		m_PlayerMain = GameObject.Find("Player_Cell");
+		m_EnemyMain = GameObject.Find("Enemy_Cell");
+		m_SquadCaptain = GameObject.Find("Squad_Captain_Cell");
 	}
 	
 	//Singleton and Getter function for Position Query
@@ -79,34 +79,7 @@ public class PositionQuery
 
 		return Threats[nIndexForMostThreating];
 	}
-	
-	//A function that evaluate all the nodes of the player and return the most weak node
-	private GameObject GetMostWeakNode ()
-	{
-		List<GameObject> Threats = new List<GameObject>();
-		Threats.Add(Node_Manager.GetNode(Node.LeftNode).gameObject);
-		Threats.Add(Node_Manager.GetNode(Node.RightNode).gameObject);
-		Threats.Add(GameObject.Find("Squad_Captain_Cell"));
-		int nIndexForMostWeak = 0;
-		int nLowestScore = 999;
-		
-		for(int i = 0; i < Threats.Count; i++)
-		{
-			if(Threats[i].name.Contains("Node") && EvaluateNode(Threats[i]) < nLowestScore)
-			{
-				nIndexForMostWeak = i;
-				nLowestScore = EvaluateNode(Threats[i]);
-			}
-			else if(Threats[i].name.Contains("Squad") && Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount() < nLowestScore)
-			{
-				nIndexForMostWeak = i;
-				nLowestScore = Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount();
-			}
-		}
-		
-		return Threats[nIndexForMostWeak];
-	}
-	
+
 	//a function that evalute the given node and return a score
 	private int EvaluateNode (GameObject _Node)
 	{
@@ -132,14 +105,14 @@ public class PositionQuery
 	
 	private List<Vector2> GetPointRangeBetweenPlayerEnemy()
 	{
-		Point PlayerClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
-		Point EnemyClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(EnemyMain.transform.position,false);
+		Point PlayerClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(m_PlayerMain.transform.position,false);
+		Point EnemyClosestPoint = PointDatabase.Instance.GetClosestPointToPosition(m_EnemyMain.transform.position,false);
 		
 		float PosDifferenceX = EnemyClosestPoint.Position.x - PlayerClosestPoint.Position.x;
 		float PosDifferenceY = EnemyClosestPoint.Position.y - PlayerClosestPoint.Position.y;
 		
-		int PointDifferenceX = Mathf.RoundToInt(PosDifferenceX/PointDatabase.Instance.PointIntervalX);
-		int PointDifferenceY = Mathf.RoundToInt(PosDifferenceY/PointDatabase.Instance.PointIntervalY);
+		int PointDifferenceX = Mathf.RoundToInt(PosDifferenceX/PointDatabase.Instance.m_PointIntervalX);
+		int PointDifferenceY = Mathf.RoundToInt(PosDifferenceY/PointDatabase.Instance.m_PointIntervalY);
 		
 		List<Vector2> PointRange = new List<Vector2>();
 		PointRange.Add(new Vector2(Mathf.RoundToInt(0.6f * PointDifferenceX), Mathf.RoundToInt(0.6f * PointDifferenceY)));
@@ -185,20 +158,6 @@ public class PositionQuery
 		return CurrentPoint;
 	}
 	
-	public Vector2 InduceNoiseToPosition (Vector2 _TargetPos)
-	{
-		float fRandomXNeg = Random.Range(-0.5f, 0f);
-		float fRandomXPos = Random.Range(0f, 0.5f);
-		float fRandomYNeg = Random.Range(-0.5f, 0f);
-		float fRandomYPos = Random.Range(0f, 0.75f);
-		
-		float fNoiseToX = Random.Range(fRandomXNeg,fRandomXPos);
-		float fNoiseToY = Random.Range(fRandomYNeg,fRandomYPos);
-		Vector2 RandomResult = new Vector2(_TargetPos.x + fNoiseToX, _TargetPos.y + fNoiseToY);
-		
-		return RandomResult;
-	}
-	
 	public GameObject GetLandmineTarget(PositionType PType, GameObject Agent)
 	{
 		GameObject target = null;
@@ -207,17 +166,17 @@ public class PositionQuery
 		{
 			if(IsAllThreatEmpty())
 			{
-				return PlayerMain;
+				return m_PlayerMain;
 			}
 			else
 			{
-				if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
+				if(m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 				{
-					return SquadCaptain;
+					return m_SquadCaptain;
 				}
 				else
 				{
-					return PlayerMain;
+					return m_PlayerMain;
 				}
 			}
 		}
@@ -225,7 +184,7 @@ public class PositionQuery
 		{
 			if(IsAllThreatEmpty())
 			{
-				return PlayerMain;
+				return m_PlayerMain;
 			}
 			else
 			{
@@ -234,7 +193,7 @@ public class PositionQuery
 		}
 		else if(PType == PositionType.Neutral)
 		{
-			return PlayerMain;
+			return m_PlayerMain;
 		}
 		
 		return null;
@@ -248,19 +207,19 @@ public class PositionQuery
 		{
 			if(IsAllThreatEmpty())
 			{
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(m_PlayerMain.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 			else
 			{
 				Point CurrentPoint = null;
-				if(SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
+				if(m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
 				{
-					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(SquadCaptain.transform.position,false);
+					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(m_SquadCaptain.transform.position,false);
 				}
 				else
 				{
-					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
+					CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(m_PlayerMain.transform.position,false);
 				}
 				targetPos = CurrentPoint.Position;
 			}
@@ -269,7 +228,7 @@ public class PositionQuery
 		{
 			if(IsAllThreatEmpty())
 			{
-				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
+				Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(m_PlayerMain.transform.position,false);
 				targetPos = CurrentPoint.Position;
 			}
 			else
@@ -281,7 +240,7 @@ public class PositionQuery
 		}
 		else if(PType == PositionType.Neutral)
 		{
-			Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(PlayerMain.transform.position,false);
+			Point CurrentPoint = PointDatabase.Instance.GetClosestPointToPosition(m_PlayerMain.transform.position,false);
 			targetPos = CurrentPoint.Position;
 		}
 		

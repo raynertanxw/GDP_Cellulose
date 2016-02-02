@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 public class PriorityQueue
 {
-	private Queue<string> queue;
-	private Dictionary<string,float> cost;
+	private Queue<string> m_Queue;
+	private Dictionary<string,float> m_Cost;
 	
-	public PriorityQueue(Dictionary<string,float> fCost)
+	public PriorityQueue(Dictionary<string,float> _fCost)
 	{
-		queue = new Queue<string>();
-		cost = fCost;
+		m_Queue = new Queue<string>();
+		m_Cost = _fCost;
 	}
 	
 	public void Add(string index)
@@ -21,16 +21,16 @@ public class PriorityQueue
 		}
 		else
 		{
-			queue.Enqueue(index);
+			m_Queue.Enqueue(index);
 		}
 	}
 	
-	bool CheckLowestCost(string index)
+	bool CheckLowestCost(string _index)
 	{
-		var items = queue.ToArray();
+		var items = m_Queue.ToArray();
 		for(int i = 0; i < items.Length; i++)
 		{
-			if(cost[items[i]] < cost[index])
+			if(m_Cost[items[i]] < m_Cost[_index])
 			{
 				return false;
 			}
@@ -40,31 +40,31 @@ public class PriorityQueue
 	
 	public void DebugAllEntries()
 	{
-		Debug.Log("count: " + queue.Count);
-		for(int i = 0; i < queue.Count; i++)
+		Debug.Log("count: " + m_Queue.Count);
+		for(int i = 0; i < m_Queue.Count; i++)
 		{
-			string current = queue.Dequeue();
+			string current = m_Queue.Dequeue();
 			Debug.Log(current);
-			queue.Enqueue(current);
+			m_Queue.Enqueue(current);
 		}
-		Debug.Log("after count: " + queue.Count);
+		Debug.Log("after count: " + m_Queue.Count);
 	}
 	
 	void EnqueueToFront(string index)
 	{
-		if(queue.Count >= 1)
+		if(m_Queue.Count >= 1)
 		{
-			var indexes = queue.ToArray();
-			queue.Clear();
-			queue.Enqueue(index);
+			var indexes = m_Queue.ToArray();
+			m_Queue.Clear();
+			m_Queue.Enqueue(index);
 			foreach(var i in indexes)
 			{
-				queue.Enqueue(i);
+				m_Queue.Enqueue(i);
 			}
 		}
 		else
 		{
-			queue.Enqueue(index);
+			m_Queue.Enqueue(index);
 		}
 	}
 	
@@ -78,12 +78,12 @@ public class PriorityQueue
 	
 	public string Dequeue()
 	{
-		string dq = queue.Dequeue();
+		string dq = m_Queue.Dequeue();
 		return dq;
 	}
 	
 	public int Count()
 	{
-		return queue.Count;
+		return m_Queue.Count;
 	}
 }
