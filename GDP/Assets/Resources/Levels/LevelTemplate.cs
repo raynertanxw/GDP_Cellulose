@@ -31,10 +31,10 @@ public class LevelTemplate : ScriptableObject
     [Header("Squad Captain Data")]
     [Range(0.0f, 1.0f)] [Tooltip("The slider to depict the aggressiveness and the defensiveness of the squad captain.")]
     public float fAggressiveToDefensive = 0.5f;
-    [Range(1.0f, 3.0f)] [Tooltip("The fastest that the squad captain can spawn children, this is the speed of production when all squad children is in produce state.")]
+    [Range(1.0f, 10.0f)] [Tooltip("The fastest that the squad captain can spawn children, this is the speed of production when all squad children is in produce state.")]
     public float fMinimumCooldown = 1f;
-    [Range(5.0f, 7.0f)] [Tooltip("The slowest that the squad captain can spawn children, this is the speed of production when 1 squad children is in produce state.")]
-    public float fMaximumCooldown = 5f;
+    [Range(1.0f, 10.0f)] [Tooltip("The slowest that the squad captain can spawn children, this is the speed of production when 1 squad children is in produce state.")]
+    public float fMaximumCooldown = 2f;
     [Range(0.5f, 2.0f)] [Tooltip("The speed at which the squad captain thinks, this will not affect quick reactions.")]
     public float fThinkCooldown = 0.5f;
     #endregion

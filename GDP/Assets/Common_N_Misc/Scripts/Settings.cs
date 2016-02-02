@@ -20,7 +20,7 @@ public class Settings : MonoBehaviour
     #region Squad Captain Level Variables
     public static float s_fAggressiveToDefensive = 0.5f;
     public static float s_fMinimumCooldown = 1f;
-    public static float s_fMaximumCooldown = 5f;
+    public static float s_fMaximumCooldown = 2f;
     public static float s_fThinkCooldown = 0.5f;
     #endregion
 
