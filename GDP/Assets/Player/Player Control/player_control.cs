@@ -27,6 +27,9 @@ public class player_control : MonoBehaviour
 	private const float s_UITintFlickerSpeed = 1.0f;
 	private float s_UITintFlickerAlpha = 0f;
 	private bool m_bUITintFlickerIncreasingAlpha = false;
+	public Color m_highLightedColor;
+	public Color m_unselectedColor;
+	private Image[] controlImages;
 
 	private const string GOname_LeftNode = "UI_Player_LeftNode";
 	private const string GOname_RightNode = "UI_Player_RightNode";
@@ -67,6 +70,22 @@ public class player_control : MonoBehaviour
 		nutrientText = transform.GetChild(7).GetChild(3).GetComponent<Text>();
 		infoPanelCanvasGrp = transform.GetChild(7).GetChild(4).GetComponent<CanvasGroup>();
 		infoText = transform.GetChild(7).GetChild(4).GetChild(0).GetComponent<Text>();
+
+		controlImages = new Image[9];
+		controlImages[0] = transform.GetChild(4).GetChild(3).GetComponent<Image>();	// Left BurstShot.
+		controlImages[1] = transform.GetChild(4).GetChild(2).GetComponent<Image>();	// Left SwarmTarget.
+		controlImages[2] = transform.GetChild(4).GetChild(1).GetComponent<Image>();	// Left ScatterShot.
+		controlImages[3] = transform.GetChild(4).GetChild(0).GetComponent<Image>();	// Left DefendAvoid.
+		controlImages[4] = transform.GetChild(5).GetChild(3).GetComponent<Image>();	// Right BurstShot.
+		controlImages[5] = transform.GetChild(5).GetChild(2).GetComponent<Image>();	// Right SwarmTarget.
+		controlImages[6] = transform.GetChild(5).GetChild(1).GetComponent<Image>();	// Right ScatterShot.
+		controlImages[7] = transform.GetChild(5).GetChild(0).GetComponent<Image>();	// Right DefendAvoid.
+		controlImages[8] = transform.GetChild(3).GetChild(0).GetComponent<Image>();	// SpwnCpt Btn.
+
+		for (int i = 0; i < controlImages.Length; i++)
+		{
+			controlImages[i].color = m_unselectedColor;
+		}
 
 		// Hide controls, tints, and info panel.
 		spawnCtrlCanvasGrp.alpha = 0f;
@@ -579,7 +598,7 @@ public class player_control : MonoBehaviour
 	{
 		PointerEventData pointerData = _data as PointerEventData;
 
-		if (pointerData == null)
+		if (pointerData.pointerCurrentRaycast.gameObject == null)
 			return;
 
 		switch (activeDraggedNode)
@@ -594,7 +613,46 @@ public class player_control : MonoBehaviour
 				AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectAppear);
 			}
 			else
+			{
 				SetLeftNodeControlVisibility(false);
+			}
+
+			switch (pointerData.pointerCurrentRaycast.gameObject.name)
+			{
+			case GOname_LeftNode_BurstShot:
+				controlImages[0].color = m_highLightedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			case GOname_LeftNode_SwamTarget:
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_highLightedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			case GOname_LeftNode_ScatterShot:
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_highLightedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			case GOname_LeftNode_DefendAvoid:
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_highLightedColor;
+				break;
+			default:
+				// Only disabled when default becasue no matter what other buttons were highlighted,
+				// default will be triggered unpon exiting that touch area before player can move to other buttons.
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			}
+
 			break;
 
 		case Node.RightNode:
@@ -607,7 +665,46 @@ public class player_control : MonoBehaviour
 			    AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectAppear);
 			}
 			else
+			{
 				SetRightNodeControlVisibility(false);
+			}
+
+			switch (pointerData.pointerCurrentRaycast.gameObject.name)
+			{
+			case GOname_RightNode_BurstShot:
+				controlImages[4].color = m_highLightedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			case GOname_RightNode_SwamTarget:
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_highLightedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			case GOname_RightNode_ScatterShot:
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_highLightedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			case GOname_RightNode_DefendAvoid:
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_highLightedColor;
+				break;
+			default:
+				// Only disabled when default becasue no matter what other buttons were highlighted,
+				// default will be triggered unpon exiting that touch area before player can move to other buttons.
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			}
+
 			break;
 		}
 	}
@@ -676,14 +773,28 @@ public class player_control : MonoBehaviour
 		activeDraggedNode = Node.None;
 	}
 
-	public void MainBtnUp()
+	public void MainCellBtnUp()
 	{
 		SetSpawnCtrlVisibility(false);
 	}
 
-	public void MainEndDrag(BaseEventData data)
+	public void MainCellDrag(BaseEventData _data)
 	{
-		PointerEventData pointerData = data as PointerEventData;
+		PointerEventData pointerData = _data as PointerEventData;
+		switch(pointerData.pointerCurrentRaycast.gameObject.name)
+		{
+		case GOname_SpawnCptButton:
+			controlImages[8].color = m_highLightedColor;
+			break;
+		default:
+			controlImages[8].color = m_unselectedColor;
+			break;
+		}
+	}
+
+	public void MainCellEndDrag(BaseEventData _data)
+	{
+		PointerEventData pointerData = _data as PointerEventData;
 		switch (pointerData.pointerCurrentRaycast.gameObject.name)
 		{
 		case GOname_SpawnCptButton:
