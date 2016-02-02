@@ -110,6 +110,7 @@ public class ECAttackState : IECState {
 		{
 			if(m_nPlayerTotalCellCount >= 5f * Settings.s_fEnemyAttackLandmineRequirement * m_nEnemyMaxHP)
 			{
+				Debug.Log("choose landmine");
 				return "Landmine";
 			}
 			
