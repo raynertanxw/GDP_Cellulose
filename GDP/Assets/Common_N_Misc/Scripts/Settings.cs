@@ -8,6 +8,7 @@ public class Settings : MonoBehaviour
     public static int s_nPlayerInitialResourceCount = 200;
 
 	public static int s_nPlayerNutrientPerBlock = 10;
+	public static float s_fPlayerNutrientChance = 0.25f;
 	public static int s_nPlayerChildSpawnCost = 5;
 
 	public static int s_nPlayerSqaudCaptainChildCost = 10;
@@ -58,8 +59,7 @@ public class Settings : MonoBehaviour
     #endregion
 
     #region Aesthetics Level Variables
-    public static Color s_EnemyColor = Color.white;
-    public static Color s_EnvrionmentColor = Color.white;
+    public static Color s_EnvironmentColor = Color.white;
     public static float s_fSideWallSpeed = 15f;
     public static float s_BackgroundSpeed = 12.5f;
     #endregion

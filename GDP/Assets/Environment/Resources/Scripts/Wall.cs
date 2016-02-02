@@ -61,6 +61,14 @@ public class Wall : MonoBehaviour
 
 		} while (resultColor < 3f * fMinimumArtilleryRGB || resultColor > 3f * fMaximumArtilleryRGB);
 
+		// Read level specific settings from Settings.cs
+		colorArtillery = Settings.s_EnvironmentColor;
+		fNutrientsChance = Settings.s_fPlayerNutrientChance;
+		fWallSidesSpeed = Settings.s_fSideWallSpeed;
+		fWallBackgroundSpeed = Settings.s_BackgroundSpeed;
+
+
+
 		// Background particle system set-up 
 		bgParticleSystem = transform.GetChild(2).GetComponent<ParticleSystem>();
 		// Use the same color as the wall-sides and background

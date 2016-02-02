@@ -12,6 +12,8 @@ public class LevelTemplate : ScriptableObject
 
     [Range(10, 25)] [Tooltip("The number of nutrient units given per nutrient block.")]
     public int nPlayerNutrientPerBlock = 10;
+	[Range(0f, 1f)] [Tooltip("The percentage chance that nutrient will spawn every nutrient spawn delay.")]
+	public float fPlayerNutrientChance = 0.25f;
     [Range(5, 10)] [Tooltip("The number of nutrient units needed to spawn 1 player child cell.")]
     public int nPlayerChildSpawnCost = 5;
 
@@ -97,10 +99,8 @@ public class LevelTemplate : ScriptableObject
 
     #region Aesthetics Level Variables
     [Header("Aesthetics Data")]
-    [Tooltip("Colour of the enemy for the level.")]
-    public Color EnemyColor = Color.white;
     [Tooltip("Colour of the background and walls for the level.")]
-    public Color EnvrionmentColor = Color.white;
+    public Color EnvironmentColor = Color.white;
     [Range(5.0f, 20.0f)] [Tooltip("Scrolling speed of the walls.")]
     public float fSideWallSpeed = 15f;
     [Range(2.5f, 15.0f)] [Tooltip("Scrolling speed of the background.")]

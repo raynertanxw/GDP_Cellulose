@@ -31,6 +31,7 @@ public class Level_Manager
         Settings.s_nPlayerInitialResourceCount = _data.nPlayerInitialResourceCount;
 
         Settings.s_nPlayerNutrientPerBlock = _data.nPlayerNutrientPerBlock;
+		Settings.s_fPlayerNutrientChance = _data.fPlayerNutrientChance;
         Settings.s_nPlayerChildSpawnCost = _data.nPlayerChildSpawnCost;
 
         Settings.s_nPlayerSqaudCaptainChildCost = _data.nPlayerSqaudCaptainChildCost;
@@ -77,8 +78,7 @@ public class Level_Manager
         Settings.s_fEnemyDefendLadderWeight = _data.fEnemyDefendLadderWeight;
 
         // Aesthetics Level Variables
-        Settings.s_EnemyColor = _data.EnemyColor;
-        Settings.s_EnvrionmentColor = _data.EnvrionmentColor;
+        Settings.s_EnvironmentColor = _data.EnvironmentColor;
         Settings.s_fSideWallSpeed = _data.fSideWallSpeed;
         Settings.s_BackgroundSpeed = _data.BackgroundSpeed;
     }
