@@ -11,9 +11,14 @@ public class MainMenu_Buttons : MonoBehaviour
 	public float minY, maxY;
 	private Transform cameraTransform;
 
+	private bool shouldSnapUp, shouldSnapDown;
+
 	void Awake()
 	{
 		cameraTransform = GameObject.Find("Main Camera").transform;
+
+		shouldSnapUp = false;
+		shouldSnapDown = false;
 	}
 
 	public void Button_Level(int _level)
@@ -33,6 +38,19 @@ public class MainMenu_Buttons : MonoBehaviour
 	}
 
 
+	#region Animation Helper Functions
+	private void SnapUp()
+	{
+
+	}
+
+	private void SnapDown()
+	{
+
+	}
+	#endregion
+
+
 	#region Event Trigger functions
 	public void Drag(BaseEventData _data)
 	{
@@ -44,6 +62,13 @@ public class MainMenu_Buttons : MonoBehaviour
 			cameraTransform.position = new Vector3(cameraTransform.position.x, minY, cameraTransform.position.z);
 		else if (cameraTransform.position.y > maxY)
 			cameraTransform.position = new Vector3(cameraTransform.position.x, maxY, cameraTransform.position.z);
+	}
+
+	public void EndDrag(BaseEventData _data)
+	{
+		PointerEventData _pointerData = _data as PointerEventData;
+
+
 	}
 	#endregion
 }
