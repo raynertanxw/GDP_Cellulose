@@ -157,7 +157,7 @@ public class ECIdleState : IECState
 		m_ChildRB.AddForce(Acceleration);
 		
 		//Rotate the enemy child cell according to the specific direction of velocity it is enforced on
-		m_ecFSM.RotateToHeading();
+		if(!m_ecFSM.IsHittingSideWalls()){m_ecFSM.RotateToHeading();}
 	}
 	
 	public override void Exit()

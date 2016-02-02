@@ -23,7 +23,7 @@ public class ECMineState : IECState {
 	private Vector2 m_TargetLandminePos;
 	private Spread m_CurrentSpreadness;
 	private Animate m_Animator;
-	private Point m_CurrentTargetPoint;
+	private static Point m_CurrentTargetPoint;
 	
 	private bool m_bExploding;
 	private bool m_bExploded;
@@ -32,7 +32,9 @@ public class ECMineState : IECState {
 	private bool m_bExpandContractStart;
 	
 	private int m_nECMineNearby;
-	private int m_nCurrentTargetIndex;
+	private static int m_nCurrentTargetIndex;
+	
+	private static GameObject m_LeaderMine;
 
 	private enum Spread{Empty,Tight, Wide};
 
@@ -74,32 +76,42 @@ public class ECMineState : IECState {
 
 		m_Main.GetComponent<Rigidbody2D>().drag = 2.4f;
 		ECTracker.Instance.LandmineCells.Add(m_ecFSM);
+		
+		if(m_LeaderMine == null){m_LeaderMine = ObtainLeaderFrmMines();}
 	}
 
 	public override void Execute()
 	{
+		m_LeaderMine = ObtainLeaderFrmMines(); 	
+		//if(m_LeaderMine == null || m_LeaderMine.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Dead){m_LeaderMine = ObtainLeaderFrmMines(); Debug.Log("new leader mine assigned");}
+		
 		if(!m_bGatherTogether)
 		{
 			m_nECMineNearby = GetNearbyECMineAmount();
 
-			if(m_nECMineNearby == GetLandmines().Count)
+			if(m_nECMineNearby == ECTracker.Instance.LandmineCells.Count)
 			{
-				m_CurrentPositionType = DeterminePositionType();
-				Debug.Log(m_CurrentPositionType);
-
-				m_Target = m_ecFSM.m_AttackTarget;
-				if(m_Target == null)
+				if(m_LeaderMine != null)
 				{
-					m_Target = PositionQuery.Instance.GetLandmineTarget(m_CurrentPositionType,m_Child);
+					m_CurrentPositionType = DeterminePositionType();
+					m_Target = m_ecFSM.m_AttackTarget;
+					
+					if(m_Target == null)
+					{
+						m_Target = PositionQuery.Instance.GetLandmineTarget(m_CurrentPositionType,m_Child);
+					}
+					
+					m_TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),m_CurrentPositionType,m_LeaderMine);
+					PathQuery.Instance.AStarSearch(m_LeaderMine.transform.position,m_TargetLandminePos,false);
+					m_PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(m_Target));
+					m_nCurrentTargetIndex = 0;
+					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
+					
+					//Debug.Log("A* path searched");
 				}
-				m_TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),m_CurrentPositionType,m_Child);
-				PathQuery.Instance.AStarSearch(m_Child.transform.position,m_TargetLandminePos,false);
-				m_PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(m_Target));
-				m_nCurrentTargetIndex = 0;
-				m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 
+				//Debug.Log("Gather done");
 				m_bGatherTogether = true;
-				
 				AudioManager.PlayECSoundEffect(EnemyChildSFX.DeployLandmine,m_ecFSM.Audio);
 			}
 		}
@@ -118,16 +130,18 @@ public class ECMineState : IECState {
 			m_ecFSM.rigidbody2D.velocity = new Vector2(0f,m_ecFSM.rigidbody2D.velocity.y);
 		}
 
-		if(m_bGatherTogether && HasCellReachTarget(m_PathToTarget[m_PathToTarget.Count - 1].Position))
+		if (m_bGatherTogether && (HasCellReachTarget(m_PathToTarget[m_PathToTarget.Count - 1].Position) || ECTracker.Instance.LandmineCells.Count <= 1 || m_Child.transform.position.y < m_PathToTarget[m_PathToTarget.Count - 1].Position.y))
 		{
+			//Debug.Log("float towards bot of screen");
 			m_bReachTarget = true;
 			m_EndPosition = new Vector2(m_Child.transform.position.x,-99f);
 			m_ecFSM.StopChildCorountine(ExplodeCorountine());
-			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
+			//m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
 
 		if(m_bGatherTogether && m_ecFSM.HitBottomOfScreen())
 		{
+			//Debug.Log("dead");
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 
@@ -147,87 +161,59 @@ public class ECMineState : IECState {
 			m_ecFSM.rigidbody2D.drag = 3f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,7.5f);
 		}
-		else if(m_bGatherTogether && m_PathToTarget == null)
+		else if(m_bGatherTogether && m_PathToTarget == null && m_Child == m_LeaderMine)
 		{
 			m_Target = PositionQuery.Instance.GetLandmineTarget(m_CurrentPositionType,m_Child);
 			m_TargetLandminePos = PositionQuery.Instance.GetLandminePos(DetermineRangeValue(),m_CurrentPositionType,m_Child);
 			PathQuery.Instance.AStarSearch(m_Child.transform.position,m_TargetLandminePos,false);
 			m_PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(m_Target));
-			//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 		}
 
-
-		if(!m_bReachTarget && m_bGatherTogether && !m_bExploding && (m_CurrentPositionType == PositionType.Aggressive || m_CurrentPositionType == PositionType.Defensive) && m_bReachTarget == false)
+		if(!m_bReachTarget && m_Child == m_LeaderMine && m_bGatherTogether)
 		{
-			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
-
-			if(m_CurrentTargetPoint == null)
+			//Debug.Log("leader movement: " + m_LeaderMine.name);
+		
+			if(!m_bReachTarget && m_bGatherTogether && !m_bExploding )
 			{
-				m_nCurrentTargetIndex = 0;
-				m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
-			}
-			
-			if(!HasCellReachTarget(m_CurrentTargetPoint.Position))
-			{
-				m_ecFSM.rigidbody2D.drag = 3f;
-				Acceleration += SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,9f);
-				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;
-
-				Debug.Log("Seeking: " + SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,9f));	
-				Debug.Log("Sepertion: " + SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f);	
-
-				AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
-			}
-			else if((HasCellReachTarget(m_CurrentTargetPoint.Position)|| m_Child.transform.position.y < m_CurrentTargetPoint.Position.y) && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
-			{
-				m_nCurrentTargetIndex++;
-				m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
-			}
-			
-			if(m_Child.transform.position.y < m_CurrentTargetPoint.Position.y && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
-			{
-				m_nCurrentTargetIndex++;
-				m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
+				//Debug.Log("following path");
+				if(m_CurrentTargetPoint == null)
+				{
+					m_nCurrentTargetIndex = 0;
+					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
+				}
+				
+				if(!HasCellReachTarget(m_CurrentTargetPoint.Position))
+				{
+					//Debug.Log("leader seek: " + SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,12f));
+					//m_ecFSM.rigidbody2D.drag = 3f;
+					Acceleration += SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,12f);
+					AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
+				}
+				else if((HasCellReachTarget(m_CurrentTargetPoint.Position)|| m_Child.transform.position.y < m_CurrentTargetPoint.Position.y) && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
+				{
+					m_nCurrentTargetIndex++;
+					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
+				}
+				
+				if(m_Child.transform.position.y < m_CurrentTargetPoint.Position.y && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
+				{
+					m_nCurrentTargetIndex++;
+					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
+				}
+				Utility.DrawCross(m_Child.transform.position,Color.green,0.1f);
 			}
 		}
-		else if(!m_bReachTarget && m_bGatherTogether && !m_bExploding && m_CurrentPositionType == PositionType.Neutral && m_bReachTarget == false)
+		else if(!m_bReachTarget && m_Child != m_LeaderMine && m_bGatherTogether)
 		{
-			Vector2 CrowdCenter = GetCenterOfMines(GetLandmines());
-
-			if(m_CurrentSpreadness == Spread.Empty)
-			{
-				m_CurrentSpreadness = DetermineSpreadness();
-			}
-			
-			if(m_CurrentTargetPoint == null)
-			{
-				m_nCurrentTargetIndex = 0;
-				m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
-			}
-
-			if(!HasCellReachTarget(m_CurrentTargetPoint.Position))
-			{
-				m_ecFSM.rigidbody2D.drag = 5f;
-				Acceleration += SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,12f);
-				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
-				AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
-			}
-			else if((HasCellReachTarget(m_CurrentTargetPoint.Position) || (m_Child.transform.position.y < m_CurrentTargetPoint.Position.y)) && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
-			{
-				m_nCurrentTargetIndex++;
-				m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
-			}
-			
-			if(m_Child.transform.position.y < m_CurrentTargetPoint.Position.y && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
-			{
-				m_nCurrentTargetIndex++;
-				m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
-			}
+			//Debug.Log("non-leader movement: " + m_Child.name);
+			Acceleration += SteeringBehavior.Seek(m_Child,m_LeaderMine.transform.position,12f);
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 12f;
+			AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
 		}
 		else if(m_bReachTarget)
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_EndPosition,12f);
-			Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;//TagLandmines(Spread.Wide));
+			Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 12f;
 			AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
 		}
 		
@@ -254,10 +240,19 @@ public class ECMineState : IECState {
 		if(!m_bExploded)
 		{
 			MainCamera.CameraShake();
-			//Utility.DrawCircleCross(m_Child.transform.position,fExplosiveRange,Color.green);
-			//Utility.DrawCircleCross(m_Child.transform.position,fKillRange,Color.red);
 			m_ecFSM.StartChildCorountine(ExplodeCorountine());//ExplodeDestroy();
 			ExplodeDestroy();
+		}
+		
+		if(ECTracker.Instance.LandmineCells.Count <= 1)
+		{
+			m_bGatherTogether = false;
+			m_EndPosition = Vector2.zero;
+			m_Target = null;
+			m_PathToTarget = null;
+			m_CurrentTargetPoint = null;
+			m_nCurrentTargetIndex = 0;
+			m_LeaderMine = null;
 		}
 
 		m_Child.transform.localScale = Vector3.one;
@@ -419,7 +414,7 @@ public class ECMineState : IECState {
 		}
 		else if(_Spreadness == Spread.Wide)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 40f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 120f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
@@ -499,6 +494,28 @@ public class ECMineState : IECState {
 			m_Child.transform.localScale = Vector3.one;
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
 		}
+	}
+	
+	private GameObject ObtainLeaderFrmMines()
+	{
+		int ClosestIndex = 0;
+		float ClosestDist = Mathf.Infinity;
+		
+		for(int i = 0; i < ECTracker.Instance.LandmineCells.Count; i++)
+		{
+			if(m_CurrentTargetPoint != null && Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_CurrentTargetPoint.Position) < ClosestDist)
+			{
+				ClosestDist = Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_CurrentTargetPoint.Position);
+				ClosestIndex = i;
+			}
+			else if(m_CurrentTargetPoint == null && Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_ecFSM.m_PMain.transform.position) < ClosestDist)
+			{
+				ClosestDist = Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_Main.transform.position);
+				ClosestIndex = i;
+			}
+		}
+		
+		return ECTracker.Instance.LandmineCells[ClosestIndex].gameObject;
 	}
 
 	private Vector2 GetBlastAwayForce(float _Distance)
@@ -616,5 +633,7 @@ public class ECMineState : IECState {
 		{
 			ExplodeDestroy();
 		}
+		
+		m_Child.transform.localScale = Vector3.one;
 	}
 }

@@ -13,9 +13,10 @@ public class ECDeadState : IECState {
 
 	public override void Enter()
 	{
+		m_Child.transform.localScale = Vector3.one;
 		//Disable the enemy child cell once it enter the dead state
 		DisableCell();
-		m_Child.transform.localScale = Vector3.one;
+		
 	}
 
 	public override void Execute()
