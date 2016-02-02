@@ -4,48 +4,38 @@ using System.Collections.Generic;
 
 public class EnemyChildFSM : MonoBehaviour
 {
-	//3 gameobjects variables to store the player main cell, enemy main cell and the target for this child
-	//cell to charge towards
 	public GameObject m_PMain;
 	public GameObject m_EMain;
-	private static Node_Manager NodeLeft;
-	private static Node_Manager NodeRight;
 	public GameObject m_ChargeTarget;
 	public GameObject m_AttackTarget;
-	private static EnemyMainFSM EMFSM;
-	private static EMController EMControl;
 	private Rigidbody2D m_Rigidbody2D;
-
-	//3 variables to store the current state, the enumeration of the current state and the current command for
-	//the child cell
+	private static EnemyMainFSM m_EMFSM;
+	private static EMController m_EMControl;
+	
 	private IECState m_CurrentState;
 	private ECState m_CurrentEnum;
 	private MessageType m_CurrentCommand;
-	
-	public bool bHitWall;
+	private AudioSource m_AudioSource;
 
-	//declare a dictoary to store various IECstate with the key being ECState
 	private Dictionary<ECState,IECState> m_StatesDictionary;
 
-	private float fRotationTarget;
-	private bool bRotateCW;
-	private bool bRotateACW;
+	private float m_fRotationTarget;
+	private bool m_bRotateCW;
+	private bool m_bRotateACW;
+	public bool m_bHitWall;
 	
-	private AudioSource m_AudioSource;
 
 	void Start()
 	{
 		//Initialize the variables and data structure
-		fRotationTarget = Random.Range(0f,360f);
-		bRotateCW = false;
-		bRotateACW = false;
+		m_fRotationTarget = Random.Range(0f,360f);
+		m_bRotateCW = false;
+		m_bRotateACW = false;
 		m_PMain = GameObject.Find("Player_Cell");
 		m_EMain = GameObject.Find("Enemy_Cell");
-		EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
-		EMControl = m_EMain.GetComponent<EMController>();
+		m_EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
+		m_EMControl = m_EMain.GetComponent<EMController>();
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
-		NodeLeft = Node_Manager.GetNode(Node.LeftNode);
-		NodeRight = Node_Manager.GetNode(Node.RightNode);
 		
 		m_ChargeTarget = null;
 		m_StatesDictionary = new Dictionary<ECState,IECState>();
@@ -75,20 +65,20 @@ public class EnemyChildFSM : MonoBehaviour
 		m_CurrentState.Execute();
 		UpdateState();
 
-		if((m_CurrentEnum == ECState.Idle || m_CurrentEnum == ECState.Defend) && EMControl.bIsMainBeingAttacked && EMControl.bShouldMainTank)
+		if((m_CurrentEnum == ECState.Idle || m_CurrentEnum == ECState.Defend) && m_EMControl.bIsMainBeingAttacked && m_EMControl.bShouldMainTank)
 		{
 			AutoAvoid();
 		}
-		else if(m_CurrentEnum == ECState.Idle && EMControl.bIsMainBeingAttacked && !IsEMTanking() && !IsThereEnoughDefence())
+		else if(m_CurrentEnum == ECState.Idle && m_EMControl.bIsMainBeingAttacked && !IsEMTanking() && !IsThereEnoughDefence())
 		{
 			AutoDefend();
 		}
-		else if(m_CurrentEnum == ECState.Idle && !ECDefendState.ReturningToMain && ECDefendState.bThereIsDefenders)
+		else if(m_CurrentEnum == ECState.Idle && !ECDefendState.ReturningToMain && ECDefendState.m_bThereIsDefenders)
 		{
 			ReinforceDefence();
 		}
 		
-		if(EMFSM.CurrentStateIndex == EMState.Die && CurrentStateEnum != ECState.TrickAttack && CurrentStateEnum != ECState.Dead)
+		if(m_EMFSM.CurrentStateIndex == EMState.Die && CurrentStateEnum != ECState.TrickAttack && CurrentStateEnum != ECState.Dead)
 		{
 			MessageDispatcher.Instance.DispatchMessage(gameObject,gameObject,MessageType.TrickAttack,0f);
 		}
@@ -201,26 +191,6 @@ public class EnemyChildFSM : MonoBehaviour
 		ChangeState(ECState.Dead);
 	}
 
-	/*private bool IsMainBeingAttacked()
-	{
-		Collider2D[] IncomingObjects;
-		PCState PCCurrentState = PCState.Dead;
-		
-		//Incoming objects to main
-		IncomingObjects = Physics2D.OverlapCircleAll(m_EMain.transform.position, 100f * m_EMain.GetComponent<SpriteRenderer>().bounds.size.x,Constants.s_onlyPlayerChildLayer);
-		if(IncomingObjects.Length <= 0){return false;}
-		
-		for(int i = 0; i < IncomingObjects.Length; i++)
-		{
-			PCCurrentState = IncomingObjects[i].GetComponent<PlayerChildFSM>().GetCurrentState();
-			if(PCCurrentState == PCState.ChargeChild || PCCurrentState == PCState.ChargeMain)
-			{
-				return true;
-			}
-		}
-		return false;
-	}*/
-
 	private bool IsThereEnoughDefence()
 	{
 		int AttackerAmount = 0;
@@ -234,28 +204,6 @@ public class EnemyChildFSM : MonoBehaviour
 			}
 		}
 		return (DefenderAmount > AttackerAmount) ? true : false;
-	}
-	
-	private bool IsThereDefenders()
-	{
-		List<EnemyChildFSM> ECList = EMFSM.ECList;
-		for(int i = 0; i < ECList.Count; i++)
-		{
-			if(ECList[i].CurrentStateEnum == ECState.Defend)
-			{
-				return true;
-			}
-		}
-		return false;
-		
-		/*foreach(EnemyChildFSM EC in EMFSM.ECList)
-		{
-			if(EC.CurrentStateEnum == ECState.Defend)
-			{
-				return true;
-			}
-		}
-		return false;*/
 	}
 
 	private void ReinforceDefence()
@@ -326,42 +274,40 @@ public class EnemyChildFSM : MonoBehaviour
 
 	public void RandomRotation(float _RotateSpeed)
 	{
-		if(bRotateCW == false && bRotateACW == false)
+		if(m_bRotateCW == false && m_bRotateACW == false)
 		{
-			if(fRotationTarget > gameObject.transform.eulerAngles.z)
+			if(m_fRotationTarget > gameObject.transform.eulerAngles.z)
 			{
-				bRotateCW = true;
+				m_bRotateCW = true;
 			}
 			else
 			{
-				bRotateACW = true;
+				m_bRotateACW = true;
 			}
 		}
 
 		//Debug.Log(gameObject.name + "'s info: " + bRotateCW + " , " + bRotateACW + " , " + gameObject.transform.eulerAngles.z + " , " + fRotationTarget);
 
-		if(bRotateCW && !bRotateACW && gameObject.transform.eulerAngles.z >= fRotationTarget || !bRotateCW && bRotateACW && gameObject.transform.eulerAngles.z <= fRotationTarget)
+		if(m_bRotateCW && !m_bRotateACW && gameObject.transform.eulerAngles.z >= m_fRotationTarget || !m_bRotateCW && m_bRotateACW && gameObject.transform.eulerAngles.z <= m_fRotationTarget)
 		{
-			bRotateCW = !bRotateCW;
-			bRotateACW = !bRotateACW;
-			fRotationTarget = Random.Range(0f,360f);
+			m_bRotateCW = !m_bRotateCW;
+			m_bRotateACW = !m_bRotateACW;
+			m_fRotationTarget = Random.Range(0f,360f);
 		}
 
-		if(bRotateCW && !bRotateACW && gameObject.transform.eulerAngles.z < fRotationTarget)
+		if(m_bRotateCW && !m_bRotateACW && gameObject.transform.eulerAngles.z < m_fRotationTarget)
 		{
-			//Debug.Log("Rotate CW: " + gameObject.name);
 			gameObject.transform.eulerAngles += new Vector3(0f,0f,_RotateSpeed);
 		}
-		else if(!bRotateCW && bRotateACW && gameObject.transform.eulerAngles.z > fRotationTarget)
+		else if(!m_bRotateCW && m_bRotateACW && gameObject.transform.eulerAngles.z > m_fRotationTarget)
 		{
-			//Debug.Log("Rotate ACW: " + gameObject.name);
 			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed);
 		}
 	}
 
 	private bool IsEMTanking()
 	{
-		List<EnemyChildFSM> Children = EMFSM.ECList;
+		List<EnemyChildFSM> Children = m_EMFSM.ECList;
 		for(int i = 0; i < Children.Count; i++)
 		{
 			if(Children[i].CurrentStateEnum == ECState.Avoid)

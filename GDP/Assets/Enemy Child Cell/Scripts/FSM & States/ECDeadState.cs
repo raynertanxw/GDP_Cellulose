@@ -35,7 +35,6 @@ public class ECDeadState : IECState {
 		m_Child.GetComponent<SpriteRenderer>().enabled = false;
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
 		m_ecFSM.rigidbody2D.isKinematic = true;
-		//m_Child.transform.SetParent(m_Main.transform);
 		ECPoolManager.AddToPool(m_Child);
 	}
 

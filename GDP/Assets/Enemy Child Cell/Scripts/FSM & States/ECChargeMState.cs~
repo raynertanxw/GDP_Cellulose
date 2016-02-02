@@ -5,33 +5,21 @@ using System.Collections.Generic;
 public class ECChargeMState : IECState {
 
 	//A float to dictate the maximum acceleration that the Enemy Child can undertake
-	private static float fMaxAcceleration;
+	private static int m_nCurrentTargetIndex;
+	private static bool m_bReachPosition;
+	private static float m_fMaxAcceleration;
+	private static float m_fSpreadRange;
 	
 	//A GameObject reference that store the player main cell
+	private static Point m_CurrentTargetPoint;
 	private static GameObject m_PlayerMain;
+	private static List<Point> m_PathToTarget;
 	
-	//A list of Points that is used to store a sequence of points which are then used as a path for the enemy child cell to travel to the player main cell
-	private static List<Point> PathToTarget;
+	private static Vector2 m_EndPos;
+	private static Vector3 m_ShrinkRate;
 	
-	//A Point variable that store the current Point that the enemy child cell is traveling towards in the path
-	private static Point CurrentTargetPoint;
-	
-	//An integer variable that store the current Point index that the enemy child cell is traveling towards
-	private static int CurrentTargetIndex;
-
-	private int ChargeNearby;
-
-	private static bool bReachPosition;
-	
-	private bool bSqueezeToggle;
-	
-	private bool bSqueezeDone;
-
-	private static Vector2 EndPos;
-	
-	private static Vector3 ShrinkRate;
-	
-	private static float fSpreadRange;
+	private bool m_bSqueezeToggle;
+	private bool m_bSqueezeDone;
 
 	public ECChargeMState(GameObject _childCell, EnemyChildFSM _ecFSM)
 	{
@@ -40,14 +28,15 @@ public class ECChargeMState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 		m_PlayerMain = m_ecFSM.m_PMain;
 		
-		PathToTarget = null;
-		fMaxAcceleration = 25f;
-		fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
-		ShrinkRate = new Vector3(-0.4f, 0.4f, 0.0f);
-		PathToTarget = null;
-		CurrentTargetPoint = null;
-		CurrentTargetIndex = 0;
-		EndPos = Vector2.zero;
+		m_PathToTarget = null;
+		m_CurrentTargetPoint = null;
+		m_nCurrentTargetIndex = 0;
+		
+		m_fSpreadRange = m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 1.75f;
+		m_ShrinkRate = new Vector3(-0.4f, 0.4f, 0.0f);
+		
+		m_fMaxAcceleration = 25f;
+		m_EndPos = Vector2.zero;
 	}
 	
 	public override void Enter()
@@ -55,34 +44,34 @@ public class ECChargeMState : IECState {
 		//Reset the velocity of enemy child cell
 		m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 		m_ecFSM.rigidbody2D.drag = 2.6f;
-		bReachPosition = false;
-		bSqueezeDone = false;
-		bSqueezeToggle = false;
+		m_bReachPosition = false;
+		m_bSqueezeDone = false;
+		m_bSqueezeToggle = false;
 		ECTracker.s_Instance.ChargeMainCells.Add(m_ecFSM);
 	}
 	
 	public override void Execute()
 	{
-		if(!bSqueezeDone)
+		if(!m_bSqueezeDone)
 		{
 			//use a boolean to track the squeeze corountine had been activated
 			// activated the corountine then toggle the boolean, toggle the boolean again in the boolean once squeeze done
 			//if the squeeze corountine is done, toggle squeeze done
-			if(!bSqueezeToggle)
+			if(!m_bSqueezeToggle)
 			{
 				m_ecFSM.StartChildCorountine(SqueezeBeforeCharge(m_Main.transform.position));
-				bSqueezeToggle = true;
+				m_bSqueezeToggle = true;
 			}
 		}
-		else if(bSqueezeDone && m_ecFSM.HitBottomOfScreen())
+		else if(m_bSqueezeDone && m_ecFSM.HitBottomOfScreen())
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 		
-		if(CurrentTargetPoint != null && m_Child.transform.position.y < CurrentTargetPoint.Position.y && CurrentTargetIndex + 1 < PathToTarget.Count)
+		if(m_CurrentTargetPoint != null && m_Child.transform.position.y < m_CurrentTargetPoint.Position.y && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
 		{
-			CurrentTargetIndex++;
-			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			m_nCurrentTargetIndex++;
+			m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 		}
 	}
 	
@@ -93,29 +82,29 @@ public class ECChargeMState : IECState {
 		//remove the gather movement, once squeeze done, perform the a star search
 
 		//once squeeze done and a star search done, start move along the a star path (no more center based movement) and extend the Y scale of the child while moving
-		if(!bReachPosition && bSqueezeDone && PathToTarget != null && HasCellReachTargetPos(m_Child.transform.position,PathToTarget[PathToTarget.Count - 1].Position))
+		if(!m_bReachPosition && m_bSqueezeDone && m_PathToTarget != null && HasCellReachTargetPos(m_Child.transform.position,m_PathToTarget[m_PathToTarget.Count - 1].Position))
 		{
-			bReachPosition = true;
-			EndPos = new Vector2(m_PlayerMain.transform.position.x, -10f);
+			m_bReachPosition = true;
+			m_EndPos = new Vector2(m_PlayerMain.transform.position.x, -10f);
 		}
-		else if(!bReachPosition && bSqueezeDone && PathToTarget != null && !HasCellReachTargetPos(m_Child.transform.position,CurrentTargetPoint.Position))
+		else if(!m_bReachPosition && m_bSqueezeDone && m_PathToTarget != null && !HasCellReachTargetPos(m_Child.transform.position,m_CurrentTargetPoint.Position))
 		{
-			Acceleration += SteeringBehavior.Seek(m_Child,CurrentTargetPoint.Position,25f);
+			Acceleration += SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,25f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 20f;
-			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
+			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += m_ShrinkRate;}
 		}
-		else if(!bReachPosition && bSqueezeDone && CurrentTargetIndex + 1 < PathToTarget.Count)
+		else if(!m_bReachPosition && m_bSqueezeDone && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
 		{
-			CurrentTargetIndex++;
-			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			m_nCurrentTargetIndex++;
+			m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 		}
-		else if(bReachPosition && bSqueezeDone)
+		else if(m_bReachPosition && m_bSqueezeDone)
 		{
-			Acceleration += SteeringBehavior.Seek(m_Child,new Vector2(m_Child.transform.position.x,EndPos.y),10f);
+			Acceleration += SteeringBehavior.Seek(m_Child,new Vector2(m_Child.transform.position.x,m_EndPos.y),10f);
 		}
 	
 		//Clamp the acceleration of the enemy child cell and add that acceleration to the enemy child cell
-		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+		Acceleration = Vector2.ClampMagnitude(Acceleration,m_fMaxAcceleration);
 		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 		
 		//Rotate the enemy child to the direction of the velocity
@@ -131,10 +120,10 @@ public class ECChargeMState : IECState {
 
 		if(ECTracker.s_Instance.ChargeMainCells.Count <= 1)
 		{
-			bSqueezeDone = false;
-			bSqueezeToggle = false;
-			bReachPosition = false;
-			PathToTarget = null;
+			m_bSqueezeDone = false;
+			m_bSqueezeToggle = false;
+			m_bReachPosition = false;
+			m_PathToTarget = null;
 		}
 		
 		ECTracker.s_Instance.ChargeMainCells.Remove(m_ecFSM);
@@ -151,7 +140,7 @@ public class ECChargeMState : IECState {
 	{
 		List<GameObject> Neighbours = new List<GameObject>();
 		
-		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, fSpreadRange,Constants.s_onlyEnemeyChildLayer);
+		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_fSpreadRange,Constants.s_onlyEnemeyChildLayer);
 		
 		for(int i = 0; i < Neighbouring.Length; i++)
 		{
@@ -162,22 +151,6 @@ public class ECChargeMState : IECState {
 		}
 		
 		return Neighbours;
-	}
-
-	private int GetNearbyECChargeAmount()
-	{
-		Collider2D[] Collisions = Physics2D.OverlapCircleAll(m_Child.transform.position,m_Child.GetComponent<SpriteRenderer>().bounds.size.x/4,Constants.s_onlyEnemeyChildLayer);
-		int ECChargeCount = 0;
-		
-		for(int i = 0; i < Collisions.Length; i++)
-		{
-			if(Collisions[i].GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.ChargeMain)
-			{
-				ECChargeCount++;
-			}
-		}
-		
-		return ECChargeCount;
 	}
 	
 	private EnemyChildFSM GetClosestChargerToPMain()
@@ -217,15 +190,16 @@ public class ECChargeMState : IECState {
 			yield return new WaitForSeconds(0.25f);//0.0005
 		}
 		
-		if(PathToTarget == null)
+		if(m_PathToTarget == null)
 		{
 			PathQuery.Instance.AStarSearch(GetClosestChargerToPMain().transform.position,m_ecFSM.m_PMain.transform.position,false);
-			PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
-			CurrentTargetIndex = 0;
-			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			m_PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.High);
+			m_nCurrentTargetIndex = 0;
+			m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 		}
 
-		bSqueezeDone = true;
+		m_bSqueezeDone = true;
+
 		AudioManager.PlayECSoundEffect(EnemyChildSFX.CellChargeTowards, m_ecFSM.Audio);
 	}
 }

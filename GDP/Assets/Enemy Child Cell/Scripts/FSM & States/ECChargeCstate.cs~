@@ -4,22 +4,15 @@ using System.Collections.Generic;
 
 public class ECChargeCState : IECState {
 
-	//A static float variable that state the maximum accelerateion that the enemy child cell can have at any point of time
 	private static float m_fMaxAcceleration;
 
-	//A boolean to state whether this enemy child cell had reach the final waypoint of the given path
 	private bool m_bReachTarget;
-
-	private GameObject m_TargetSource;
-
-	private Vector2 m_TargetEndPos;
-
 	private bool m_bReturnToIdle;
-	
 	private bool m_bSqueezeToggle;
-	
 	private bool m_bSqueezeDone;
 	
+	private GameObject m_TargetSource;
+	private Vector2 m_TargetEndPos;
 	private static Vector3 m_ShrinkRate;
 	
 	private enum Style {Aggressive,Defensive};
@@ -251,47 +244,6 @@ public class ECChargeCState : IECState {
 		return null;
 	}
 
-	private GameObject GetMostThreateningSource()
-	{
-		//Three different GameObject references to store the three potential source that produce a threat to the enemy main cell
-		GameObject m_Squad = GameObject.Find("Squad_Captain_Cell");
-		GameObject m_LeftNode = Node_Manager.GetNode(Node.LeftNode).gameObject;
-		GameObject m_RightNode = Node_Manager.GetNode(Node.RightNode).gameObject;
-
-		//Calculate the scores for the three threat source on how threatening it is to the enemy main cell
-		int nSquadScore = 0;
-		if(m_Squad != null && m_Squad.transform.position.y != 1000f)
-		{
-			nSquadScore = m_Squad.GetComponent<PlayerSquadFSM>().AliveChildCount();
-		}
-
-		int nLeftScore = EvaluateNode(m_LeftNode);
-		int nRightScore = EvaluateNode(m_RightNode);
-
-		//Compare the score of the nodes and obtain the highest threat score, then return the most threatening source
-		int nHighestThreat = Mathf.Max(Mathf.Max(nSquadScore,nLeftScore),nRightScore);
-
-		if(nHighestThreat == 0)
-		{
-			return null;
-		}
-
-		if(nHighestThreat == nSquadScore)
-		{
-			return m_Squad;
-		}
-		else if(nHighestThreat == nLeftScore)
-		{
-			return m_LeftNode;
-		}
-		else if(nHighestThreat == nRightScore)
-		{
-			return m_RightNode;
-		}
-
-		return null;
-	}
-
 	//A function to evaluate the node based on the enemy main cell and player condition to return a score
 	private int EvaluateNode (GameObject _Node)
 	{
@@ -312,39 +264,6 @@ public class ECChargeCState : IECState {
 	private bool HasCellReachTargetPos(Vector2 _Pos)
 	{
 		return (Utility.Distance(m_Child.transform.position,_Pos) <= 0.05f) ? true : false;
-	}
-
-	//A function that return a boolean on whether all the cells had reached the given position in the perimeter
-	private bool HasAllCellReachTargetPos(Vector2 _Pos)
-	{
-		List<EnemyChildFSM> ECList = m_Main.GetComponent<EnemyMainFSM>().ECList;
-		for(int i = 0; i < ECList.Count; i++)
-		{
-			if(ECList[i].CurrentStateEnum == ECState.Idle && !HasCellReachTargetPos(_Pos))
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	//A function that return a boolean to show the target gameobject is dead
-	private bool IsTargetDead(GameObject _Target)
-	{
-		return (_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Dead) ? true : false;
-	}
-
-	//A function that return the first player child cell from a list of player child cells
-	private GameObject GetFirstAvailableCell(List<PlayerChildFSM> _PotentialTarget)
-	{
-		for(int i = 0; i < _PotentialTarget.Count; i++)
-		{
-			if(_PotentialTarget[i] != null)
-			{
-				return _PotentialTarget[i].gameObject;
-			}
-		}
-		return null;
 	}
 
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell

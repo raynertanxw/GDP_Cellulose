@@ -4,50 +4,32 @@ using System.Collections.Generic;
 
 public class ECTrickAttackState : IECState {
 
-	//a gameobject variable to store the target to attack
 	private GameObject m_AttackTarget;
-
-	//3 positions used for the trick attack to be performed
+	private Point m_CurrentTargetPoint;
+	
 	private Vector2 m_StartTelePos;
 	private Vector2 m_EndTelePos;
 	private Vector2 m_TargetPos;
 
-	//boolean that track whether the enemy child cell had reach the target position
-	private bool bReachStart;
-
-	//float to store the speed of movement for the enemy child cell in trick attacking
-	private static float fMaxAcceleration;
-
-	//an array of gameobject to store the player nodes
-	private GameObject[] m_Nodes;
+	private static float m_fMaxAcceleration;
 	private static GameObject m_SquadCaptain;
-
-	//A list of Point to store the A* path calculated for the enemy child cell to reach the target position
-	private List<Point> PathToTarget;
-
-	//An integer to store the current target point's index that the cell is traveling to
-	private int CurrentTargetIndex;
-
-	//A Point variable that store the current target point that the cell is traveling to
-	private Point CurrentTargetPoint;
-
-	//A boolean that state whether the enemy child cell had teleported during the trick attack state
-	private bool bTeleported;
-	private bool bTeleporting;
-
-	//A boolean that state whether the enemy child cell had reached the last point of the calculated path
-	private bool bReachTarget;
-
-	private bool bSqueezeToggle;
 	
-	private bool bSqueezeDone;
+	private GameObject[] m_Nodes;
+	private List<Point> m_PathToTarget;
 
-	private static Vector3 ShrinkRate;
+	private int m_nCurrentTargetIndex;
+	private bool m_bReachStart;
 	
-	private static BoxCollider2D LeftWall;
-	private static BoxCollider2D RightWall;
-	
-	private static EnemyMainFSM EMFSM;
+	private bool m_bTeleported;
+	private bool m_bTeleporting;
+	private bool m_bReachTarget;
+	private bool m_bSqueezeToggle;
+	private bool m_bSqueezeDone;
+
+	private static Vector3 m_ShrinkRate;
+	private static BoxCollider2D m_LeftWall;
+	private static BoxCollider2D m_RightWall;
+	private static EnemyMainFSM m_EMFSM;
 
 	//constructor
 	public ECTrickAttackState(GameObject _childCell, EnemyChildFSM _ecFSM)
@@ -57,24 +39,24 @@ public class ECTrickAttackState : IECState {
 		m_Main = m_ecFSM.m_EMain;
 
 		m_Nodes = new GameObject[3];
-		fMaxAcceleration = 40f;
+		m_ShrinkRate = new Vector3(-0.225f, 0.225f, 0.0f);
+		m_fMaxAcceleration = 40f;
 
+		m_EMFSM = m_Main.GetComponent<EnemyMainFSM>();
 		m_Nodes[0] = Node_Manager.GetNode(Node.LeftNode).gameObject;
 		m_Nodes[1] = Node_Manager.GetNode(Node.RightNode).gameObject;
 		m_SquadCaptain = PlayerSquadFSM.Instance.gameObject;
-		EMFSM = m_Main.GetComponent<EnemyMainFSM>();
-		ShrinkRate = new Vector3(-0.225f, 0.225f, 0.0f);
 		
 		BoxCollider2D[] Walls = GameObject.Find("Wall").GetComponents<BoxCollider2D>();
 		for(int i = 0 ; i < Walls.Length; i++)
 		{
 			if(Walls[i].offset.y > 39f && Walls[i].offset.x > 7f)
 			{
-				RightWall = Walls[i];
+				m_RightWall = Walls[i];
 			}
 			else if(Walls[i].offset.y > 39f && Walls[i].offset.x < -7f)
 			{
-				LeftWall = Walls[i];
+				m_LeftWall = Walls[i];
 			}
 		}
 	}
@@ -85,8 +67,8 @@ public class ECTrickAttackState : IECState {
 		if(m_ecFSM.m_AttackTarget == null){m_ecFSM.m_AttackTarget = m_ecFSM.m_PMain;}
 	
 		m_AttackTarget = m_ecFSM.m_AttackTarget;
-		bReachStart = false;
-		bReachTarget = false;
+		m_bReachStart = false;
+		m_bReachTarget = false;
 		
 		if(m_ecFSM.m_AttackTarget != null){CheckIfEnoughCells();};
 
@@ -96,11 +78,11 @@ public class ECTrickAttackState : IECState {
 		m_TargetPos = m_Positions[2];
 
 		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_StartTelePos,true);
-		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
-		PathToTarget = PathQuery.Instance.RefinePathForTA(PathToTarget,m_StartTelePos);
-		CurrentTargetIndex = 0;
-		CurrentTargetPoint = PathToTarget[0];
-		bTeleported = false;
+		m_PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
+		m_PathToTarget = PathQuery.Instance.RefinePathForTA(m_PathToTarget,m_StartTelePos);
+		m_nCurrentTargetIndex = 0;
+		m_CurrentTargetPoint = m_PathToTarget[0];
+		m_bTeleported = false;
 
 		m_ecFSM.rigidbody2D.drag = 6f;
 		ECTracker.s_Instance.TrickAttackCells.Add(m_ecFSM);
@@ -109,23 +91,23 @@ public class ECTrickAttackState : IECState {
 	public override void Execute()
 	{
 		//If the cell had teleported and reach the final point of its travel, let it continue travel a short amount of distance before killing it
-		if(!bSqueezeDone)
+		if(!m_bSqueezeDone)
 		{
-			if(!bSqueezeToggle)
+			if(!m_bSqueezeToggle)
 			{
 				m_ecFSM.StartChildCorountine(SqueezeBeforeCharge(m_Main.transform.position));
 				m_ecFSM.GetComponent<BoxCollider2D>().isTrigger = true;
-				bSqueezeToggle = true;
+				m_bSqueezeToggle = true;
 			}
 		}
-		else if(bSqueezeDone && m_ecFSM.HitBottomOfScreen())
+		else if(m_bSqueezeDone && m_ecFSM.HitBottomOfScreen())
 		{
 			m_ecFSM.StopChildCorountine(m_ecFSM.PassThroughDeath(1f));
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
-		else if(bSqueezeDone && HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleported && bReachStart)
+		else if(m_bSqueezeDone && HasCellReachTargetPos(m_PathToTarget[m_PathToTarget.Count - 1].Position) && m_bTeleported && m_bReachStart)
 		{
-			bReachTarget = true;
+			m_bReachTarget = true;
 			m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
 	}
@@ -138,38 +120,38 @@ public class ECTrickAttackState : IECState {
 		//move towards the player main cell
 		Vector2 Acceleration = Vector2.zero;
 
-		if(bSqueezeDone && bTeleporting && !HasCellReachTargetPos(m_StartTelePos))
+		if(m_bSqueezeDone && m_bTeleporting && !HasCellReachTargetPos(m_StartTelePos))
 		{
 			Acceleration += SteeringBehavior.Seek(m_Child,m_StartTelePos, 45f);
-			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
+			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += m_ShrinkRate;}
 		}
-		else if(bSqueezeDone && bTeleporting && HasCellReachTargetPos(m_StartTelePos))
+		else if(m_bSqueezeDone && m_bTeleporting && HasCellReachTargetPos(m_StartTelePos))
 		{
-			bTeleported = true;
-			bTeleporting = false;
+			m_bTeleported = true;
+			m_bTeleporting = false;
 			m_ecFSM.StartChildCorountine(Teleport());
 		}
 		//If the cell has not reached the current target position, continue seek towards that target position and remain seperate from rest of the enemy child cells
-		else if(bSqueezeDone && !HasCellReachTargetPos(CurrentTargetPoint.Position) && !bReachTarget)
+		else if(m_bSqueezeDone && !HasCellReachTargetPos(m_CurrentTargetPoint.Position) && !m_bReachTarget)
 		{
-			Acceleration += SteeringBehavior.Arrive(m_Child,CurrentTargetPoint.Position, 0.03f);
+			Acceleration += SteeringBehavior.Arrive(m_Child,m_CurrentTargetPoint.Position, 0.03f);
 			//Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
-			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += ShrinkRate;}
+			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += m_ShrinkRate;}
 		}
-		else if(bSqueezeDone && CurrentTargetIndex + 1 < PathToTarget.Count && !bReachTarget)
+		else if(m_bSqueezeDone && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count && !m_bReachTarget)
 		{
-			CurrentTargetIndex++;
-			CurrentTargetPoint = PathToTarget[CurrentTargetIndex];
+			m_nCurrentTargetIndex++;
+			m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 		}
 		//If the cell had reached the teleporting position and it hasn't teleported, start teleporting the cell to the calculated position
-		else if(bSqueezeDone && HasCellReachTargetPos(PathToTarget[PathToTarget.Count - 1].Position) && bTeleporting == false && bTeleported == false)
+		else if(m_bSqueezeDone && HasCellReachTargetPos(m_PathToTarget[m_PathToTarget.Count - 1].Position) && m_bTeleporting == false && m_bTeleported == false)
 		{
-			bTeleporting = true;
+			m_bTeleporting = true;
 		}
 
 		//Clamp the acceleration of the enemy child cell to a maximum value and then add that acceleration force to the enemy child cell
-		Acceleration = Vector2.ClampMagnitude(Acceleration,fMaxAcceleration);
+		Acceleration = Vector2.ClampMagnitude(Acceleration,m_fMaxAcceleration);
 		m_ecFSM.rigidbody2D.AddForce(Acceleration,ForceMode2D.Force);
 
 		//Rotate the enemy child cell based on the direction of travel
@@ -184,50 +166,6 @@ public class ECTrickAttackState : IECState {
 		ECTracker.s_Instance.TrickAttackCells.Remove(m_ecFSM);
 	}
 
-	//a function that return a boolean that state whether all the player nodes is empty
-	private bool IsAllThreatEmpty ()
-	{
-		List<GameObject> Threats = new List<GameObject>();
-		Threats.Add(m_Nodes[0]);
-		Threats.Add(m_Nodes[1]);
-		Threats.Add(m_SquadCaptain);
-
-		for(int i = 0; i < Threats.Count; i++)
-		{
-			if(Threats[i].GetComponent<Node_Manager>() != null && Threats[i].GetComponent<Node_Manager>().activeChildCount > 0)
-			{
-				return false;
-			}
-			else if(Threats[i].GetComponent<PlayerSquadFSM>() != null && Threats[i].GetComponent<PlayerSquadFSM>().AliveChildCount() > 0)
-			{
-				return false;
-			}
-		}
-		return true;
-	}
-
-	//a function to return the least threatening node from the player
-	private GameObject GetMostThreatPoint()
-	{
-		int ScoreLeft = EvaluteNode(m_Nodes[0]);
-		int ScoreRight = EvaluteNode(m_Nodes[1]);
-
-		if(m_SquadCaptain != null)
-		{
-			int ScoreSquad = m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
-			int HighestScore = Mathf.Max(ScoreSquad,Mathf.Max(ScoreLeft,ScoreRight));
-
-			if(HighestScore == ScoreSquad)
-			{
-				return m_SquadCaptain;
-			}
-
-			return HighestScore == ScoreLeft ? m_Nodes[0] : m_Nodes[1];
-		}
-
-		return ScoreLeft > ScoreRight ? m_Nodes[0] : m_Nodes[1];
-	}
-
 	//a function that evluate a specific node based on several conditions and return an integer that represent the score of threat
 	private int EvaluteNode(GameObject _Node)
 	{
@@ -237,19 +175,6 @@ public class ECTrickAttackState : IECState {
 		nthreatLevel += _Node.GetComponent<Node_Manager>().activeChildCount;
 
 		return nthreatLevel;
-	}
-
-	//a function to return the target object that the enemy child should aim towards
-	private GameObject GetTarget()
-	{
-		if(IsAllThreatEmpty())
-		{
-			return m_ecFSM.m_PMain;
-		}
-		else
-		{
-			return GetMostThreatPoint();
-		}
 	}
 
 	//a functon that return a list of the 3 key position used to perform the trick attack
@@ -327,7 +252,7 @@ public class ECTrickAttackState : IECState {
 		m_Child.GetComponent<BoxCollider2D>().enabled = false;
 		m_ecFSM.rigidbody2D.isKinematic = true;
 
-		if(EMFSM.CurrentStateIndex == EMState.Die)
+		if(m_EMFSM.CurrentStateIndex == EMState.Die)
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0f);
 			yield break;
@@ -345,17 +270,17 @@ public class ECTrickAttackState : IECState {
 		m_Child.transform.position = m_EndTelePos;
 
 		PathQuery.Instance.AStarSearch(m_Child.transform.position,m_TargetPos,true);
-		PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
-		CurrentTargetIndex = 0;
-		CurrentTargetPoint = PathToTarget[0];
+		m_PathToTarget = PathQuery.Instance.GetPathToTarget(Directness.Mid);
+		m_nCurrentTargetIndex = 0;
+		m_CurrentTargetPoint = m_PathToTarget[0];
 		
-		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),LeftWall);
-		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),RightWall);
+		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),m_LeftWall);
+		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),m_RightWall);
 		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 
 		m_ecFSM.GetComponent<BoxCollider2D>().isTrigger = false;
 
-		bReachStart = true;
+		m_bReachStart = true;
 	}
 
 	//A function that return a list of GameObjects that are within a circular range to the enemy child cell
@@ -412,6 +337,6 @@ public class ECTrickAttackState : IECState {
 			yield return new WaitForSeconds(0.25f);//0.0005
 		}
 		
-		bSqueezeDone = true;
+		m_bSqueezeDone = true;
 	}
 }

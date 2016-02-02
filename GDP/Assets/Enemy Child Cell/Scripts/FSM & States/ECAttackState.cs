@@ -165,9 +165,4 @@ public class ECAttackState : IECState {
 		}
 		return false;
 	} 
-
-	private int GetSquadCellCount()
-	{
-		return m_SquadCaptain.GetComponent<PlayerSquadFSM>().AliveChildCount();
-	}
 }
