@@ -16,10 +16,8 @@ public class EMNutrientGeneration : MonoBehaviour
 
 		if (EMNutrientMainAgent.AgentList != null)
 		{
-			if (nNumOfNutrient > EMNutrientMainAgent.AgentList.Count)
-				nNumOfNutrient = EMNutrientMainAgent.AgentList.Count;
-			if (EMNutrientMainAgent.AgentList.Count - nNumOfNutrient > 0) {
-				for (int i = 0; i < EMNutrientMainAgent.AgentList.Count - nNumOfNutrient; i++) {
+			if (nNumOfNutrient > 0) {
+				for (int i = 0; i < nNumOfNutrient; i++) {
 					EMNutrientMainAgent.AgentList [i].ActivateOrDeactivate (false);
 				}
 			}
