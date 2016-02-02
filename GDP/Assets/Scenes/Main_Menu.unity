@@ -128,7 +128,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (2)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &107320666 stripped
@@ -403,6 +405,82 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 189423814}
+--- !u!1 &190620769 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 1769192281}
+--- !u!114 &190620770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 190620769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &190620771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 190620769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
+--- !u!1 &191435034 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 1040280758}
+--- !u!114 &191435035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 191435034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &191435036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 191435034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1 &226950357
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,6 +579,44 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1596585923}
   m_RootOrder: 3
+--- !u!1 &227213585 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 628155387}
+--- !u!114 &227213586
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 227213585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &227213587
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 227213585}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1 &273161090
 GameObject:
   m_ObjectHideFlags: 0
@@ -795,6 +911,44 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
+--- !u!1 &389689582 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 867450367}
+--- !u!114 &389689583
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 389689582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &389689584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 389689582}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1 &402832500
 GameObject:
   m_ObjectHideFlags: 0
@@ -851,6 +1005,44 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1625063522}
   m_RootOrder: 0
+--- !u!1 &436156457 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 107320665}
+--- !u!114 &436156458
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 436156457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &436156459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 436156457}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1001 &474754998
 Prefab:
   m_ObjectHideFlags: 0
@@ -894,7 +1086,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (4)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &474754999 stripped
@@ -957,6 +1151,44 @@ Transform:
   m_Children: []
   m_Father: {fileID: 636293055}
   m_RootOrder: 0
+--- !u!1 &574155718 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 474754998}
+--- !u!114 &574155719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 574155718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &574155720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 574155718}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1 &590810011
 GameObject:
   m_ObjectHideFlags: 0
@@ -1165,7 +1397,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (8)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &628155388 stripped
@@ -2006,7 +2240,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (1)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &867450368 stripped
@@ -2380,7 +2616,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (5)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &1040280759 stripped
@@ -2551,7 +2789,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (7)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &1057705007 stripped
@@ -2699,13 +2939,53 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (6)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &1263960550 stripped
 Transform:
   m_PrefabParentObject: {fileID: 481940, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_PrefabInternal: {fileID: 1263960549}
+--- !u!1 &1302808740 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 1263960549}
+--- !u!114 &1302808741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1302808740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &1302808742
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1302808740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1 &1307427339
 GameObject:
   m_ObjectHideFlags: 0
@@ -4197,7 +4477,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (10)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &1769192282 stripped
@@ -4457,6 +4739,82 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1811812144}
+--- !u!1 &1847601692 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 2042849837}
+--- !u!114 &1847601693
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1847601692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &1847601694
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1847601692}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
+--- !u!1 &1860874714 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 1057705006}
+--- !u!114 &1860874715
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1860874714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &1860874716
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1860874714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1 &1888847590
 GameObject:
   m_ObjectHideFlags: 0
@@ -4985,6 +5343,44 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2011580941}
+--- !u!1 &2012144921 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 177402, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+  m_PrefabInternal: {fileID: 2018623103}
+--- !u!114 &2012144922
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2012144921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0371e288c160b3f41a6437c42890db85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fFlockWeight: 0
+  fSeekWeight: 0
+  fNeighbourRadius: 0
+  fAlignmentWeight: 0
+  fCohesionWeigth: 0
+  fSeperationWeight: 0
+--- !u!114 &2012144923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 2012144921}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa98208b18039b54e9fabbfe800e1797, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nSize: 0
+  fMaxVelocity: 1
+  currentVelocity: {x: 0, y: 0}
+  bSucked: 0
+  fFriction: 0
+  miniNutrient: {fileID: 0}
 --- !u!1 &2013453236
 GameObject:
   m_ObjectHideFlags: 0
@@ -5100,7 +5496,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (9)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &2018623104 stripped
@@ -5369,7 +5767,9 @@ Prefab:
       propertyPath: m_Name
       value: Enemy_Nutrient_Main (3)
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 11444382, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
+    - {fileID: 11461550, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_ParentPrefab: {fileID: 100100000, guid: 70542141434af4a4fa529766d97d61ed, type: 2}
   m_IsPrefabParent: 0
 --- !u!4 &2042849838 stripped
