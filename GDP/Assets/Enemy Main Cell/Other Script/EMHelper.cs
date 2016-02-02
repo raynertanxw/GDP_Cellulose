@@ -229,8 +229,8 @@ public class EMHelper : MonoBehaviour
 			// Randomize the interval time between spawns of child cells in terms of current difficulty
 			yield return new WaitForSeconds (
 				UnityEngine.Random.Range (
-				1.0f / EMDifficulty.Instance().CurrentDiff, 
-				1.5f / EMDifficulty.Instance().CurrentDiff)
+				1.25f / EMDifficulty.Instance().CurrentDiff, 
+				1.75f / EMDifficulty.Instance().CurrentDiff)
 				);
 			
 			if (m_EMFSM.AvailableChildNum < 100)

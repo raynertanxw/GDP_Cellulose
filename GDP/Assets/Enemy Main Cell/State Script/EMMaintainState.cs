@@ -67,10 +67,11 @@ public class EMMaintainState : IEMState
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 1.5f) {
-					transition.Transition (1000f / 
-					                       (helper.Pow (nPlayerChildFactor, 3f) * 2f + m_EMFSM.CurrentAggressiveness * 3f + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)), 
-					                       EMState.Landmine);
+					EMTransition.Instance().Transition (1000f / 
+					                                    ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
+					 m_EMFSM.CurrentAggressiveness * 2f +
+					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)),
+					                                    EMState.Landmine);
 				}
 				
 				// Transition to Maintain
@@ -112,10 +113,11 @@ public class EMMaintainState : IEMState
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 1f) {
-					transition.Transition (1000f / 
-					                       ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1.5f + m_EMFSM.CurrentAggressiveness * 1f) + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)), 
-					                       EMState.Landmine);
+					EMTransition.Instance().Transition (1000f / 
+					                                    ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
+					 m_EMFSM.CurrentAggressiveness * 2f +
+					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)),
+					                                    EMState.Landmine);
 				}
 				
 				// Transition to Maintain
@@ -149,10 +151,11 @@ public class EMMaintainState : IEMState
 				
 				// Transition to Landmine
 				if (nPlayerChildFactor > 1f) {
-					transition.Transition (1000f / 
-					                       ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
-					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)), 
-					                       EMState.Landmine);
+					EMTransition.Instance().Transition (1000f / 
+					                                    ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
+					 m_EMFSM.CurrentAggressiveness * 2f +
+					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)),
+					                                    EMState.Landmine);
 				}
 				
 				// Transition to Maintain

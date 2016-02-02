@@ -72,7 +72,7 @@ public class EMProductionState : IEMState
 				if (nPlayerChildFactor > 1.5f) {
 					EMTransition.Instance().Transition (1000f / 
 					                                    ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
-					 m_EMFSM.CurrentAggressiveness * 1f +
+					 m_EMFSM.CurrentAggressiveness * 2f +
 					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)),
 					                                    EMState.Landmine);
 				}
@@ -118,7 +118,7 @@ public class EMProductionState : IEMState
 				if (nPlayerChildFactor > 1f) {
 					EMTransition.Instance().Transition (1000f / 
 					                                    ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
-					 m_EMFSM.CurrentAggressiveness * 1f +
+					 m_EMFSM.CurrentAggressiveness * 2f +
 					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)),
 					                                    EMState.Landmine);
 				}
@@ -156,7 +156,7 @@ public class EMProductionState : IEMState
 				if (nPlayerChildFactor > 1f) {
 					EMTransition.Instance().Transition (1000f / 
 					                                    ((helper.Pow (nPlayerChildFactor, 2f) / helper.Sqrt (nPlayerChildFactor) * 1f) + 
-					 m_EMFSM.CurrentAggressiveness * 1f +
+					 m_EMFSM.CurrentAggressiveness * 2f +
 					 EMLeraningAgent.Instance().RealScore(EMState.Landmine)),
 					                                    EMState.Landmine);
 				}

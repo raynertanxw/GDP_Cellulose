@@ -27,8 +27,8 @@ MonoBehaviour:
   nEnemyMainInitialNutrientNum: 75
   nEnemyMainInitialChildCellNum: 15
   nEnemyMainInitialAggressiveness: 5
-  fEnemyMainInitialVertSpeed: .075000003
-  fEnemyMainMinHiriSpeed: .075000003
+  fEnemyMainInitialVertSpeed: .0649999976
+  fEnemyMainMinHiriSpeed: .0649999976
   fDefaultStunTime: 4
   fDefaultStunTolerance: 7
   nEnemyChildCountCap: 50
