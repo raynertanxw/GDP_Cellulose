@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Name: LEVEL_4
   m_EditorClassIdentifier: 
   nPlayerInitialHealth: 100
-  nPlayerInitialResourceCount: 500
+  nPlayerInitialResourceCount: 350
   nPlayerNutrientPerBlock: 15
-  fPlayerNutrientChance: .5
+  fPlayerNutrientChance: .400000006
   nPlayerChildSpawnCost: 5
   nPlayerSqaudCaptainChildCost: 15
   nPlayerActionBurstShotChildCost: 5
