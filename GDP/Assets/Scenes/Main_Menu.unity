@@ -1186,7 +1186,7 @@ GameObject:
   - 114: {fileID: 636293057}
   - 114: {fileID: 636293056}
   m_Layer: 12
-  m_Name: Enemy_Cell (4)
+  m_Name: Enemy_Cell_4
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3701,7 +3701,7 @@ GameObject:
   - 114: {fileID: 1625063524}
   - 114: {fileID: 1625063523}
   m_Layer: 12
-  m_Name: Enemy_Cell (1)
+  m_Name: Enemy_Cell_1
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4207,7 +4207,7 @@ GameObject:
   - 114: {fileID: 1794913781}
   - 114: {fileID: 1794913780}
   m_Layer: 12
-  m_Name: Enemy_Cell (5)
+  m_Name: Enemy_Cell_5
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4460,7 +4460,7 @@ GameObject:
   - 114: {fileID: 1888847593}
   - 114: {fileID: 1888847592}
   m_Layer: 12
-  m_Name: Enemy_Cell (3)
+  m_Name: Enemy_Cell_3
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4592,7 +4592,7 @@ GameObject:
   - 114: {fileID: 1909233336}
   - 114: {fileID: 1909233335}
   m_Layer: 12
-  m_Name: Enemy_Cell (2)
+  m_Name: Enemy_Cell_2
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

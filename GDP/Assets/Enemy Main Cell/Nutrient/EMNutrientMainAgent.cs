@@ -6,6 +6,8 @@ using System.Collections.Generic;
 [RequireComponent (typeof (CircleCollider2D))]
 public class EMNutrientMainAgent : MonoBehaviour 
 {
+	private Camera mainCamera;
+	Vector2 previousCameraPos;
 	// Size
 	[SerializeField]
 	private int nSize;
@@ -49,6 +51,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 	void Awake()
 	{
 		// Initialiation
+		mainCamera = Camera.main;
+		previousCameraPos = mainCamera.transform.position;
 		nSize = Random.Range (4, 9);
 		fFriction = 0.02f;
 		initialScale = gameObject.transform.localScale;
@@ -75,9 +79,8 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Remove destroyed from the list
 		if (AgentList != null)
 			AgentList.RemoveAll(item => item == null);
-		// Deactivate the nutrient if enemy main cell is invisible
-		if (!EMHelper.Instance().IsEnemyVisible)
-			ActivateOrDeactivate (false);
+		// Follow camera
+		FollowCamera ();
 		// Deactivate the nutrient if it is empty
 		if (nSize == 0)
 			ActivateOrDeactivate (false);
@@ -114,11 +117,13 @@ public class EMNutrientMainAgent : MonoBehaviour
 				GetComponent<Rigidbody2D> ().velocity = currentVelocity;
 		}
 
+		/*
 		// Instantiate mini nutrient
 		if (bCanSpawn && MapManager.Instance.IsInBounds ((Vector2)(position * 1.5f)) && gameObject.activeSelf) 
 		{
 			StartCoroutine (PauseSpawn ());
 		}
+		*/
 	}
 
 	void FixedUpdate ()
@@ -133,6 +138,19 @@ public class EMNutrientMainAgent : MonoBehaviour
 		// Update localScale of the agent
 		if ((Vector2)transform.localScale != initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize)))
 			transform.localScale = (Vector3)initialScale * Mathf.Sqrt(Mathf.Sqrt(nSize));
+	}
+	// Follow camera
+	private void FollowCamera ()
+	{
+		//thisRB.AddForce (Vector2.one * 10f);
+		
+		if (mainCamera.transform.position.x != previousCameraPos.x || mainCamera.transform.position.y != previousCameraPos.y)
+		{
+			transform.position = new Vector2 (transform.position.x - (previousCameraPos.x - mainCamera.transform.position.x),
+			                                  transform.position.y - (previousCameraPos.y - mainCamera.transform.position.y));
+			
+			previousCameraPos = mainCamera.transform.position;
+		}
 	}
 
 	// Sucking behavior
