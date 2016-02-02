@@ -3,9 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 
 [RequireComponent (typeof (Renderer))]
-[RequireComponent (typeof (EMMainMenuController))]
+[RequireComponent (typeof (EMMenuController))]
 [RequireComponent (typeof (Rigidbody2D))]
-public class EMMainMenuAnimation : MonoBehaviour 
+public class EMMenuAnimation : MonoBehaviour 
 {
 	private Rigidbody2D thisRB;
 	private Renderer thisRend;
@@ -110,23 +110,23 @@ public class EMMainMenuAnimation : MonoBehaviour
 		currentScale = initialScale * fSizeFactor;
 		transform.localScale = (Vector3)currentScale;
 		// Color array initialization
-		EMMainMenuAnimation.colorArray [0] = Color.white;
-		EMMainMenuAnimation.colorArray [1] = new Color (0.80f, 1f, 1f, 1f);
-		EMMainMenuAnimation.colorArray [2] = new Color (0.85f, 1f, 1f, 1f);
-		EMMainMenuAnimation.colorArray [3] = new Color (0.90f, 1f, 1f, 1f);
-		EMMainMenuAnimation.colorArray [4] = new Color (0.95f, 1f, 1f, 1f);
-		EMMainMenuAnimation.colorArray [5] = new Color (1.05f, 1f, 1f, 1f);
-		EMMainMenuAnimation.colorArray [6] = new Color (1.10f, 1f, 1f, 1f);
-		EMMainMenuAnimation.colorArray [7] = new Color (1.15f, 1f, 1f, 1f);
-		EMMainMenuAnimation.colorArray [8] = new Color (1.20f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [0] = Color.white;
+		EMMenuAnimation.colorArray [1] = new Color (0.80f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [2] = new Color (0.85f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [3] = new Color (0.90f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [4] = new Color (0.95f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [5] = new Color (1.05f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [6] = new Color (1.10f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [7] = new Color (1.15f, 1f, 1f, 1f);
+		EMMenuAnimation.colorArray [8] = new Color (1.20f, 1f, 1f, 1f);
 		// Assign color to sprite renderer and make sure no color is used more than once
 		int i = 0;
 		do
 		{
 			i = Random.Range (0, 9);
-		} while (EMMainMenuAnimation.colorArray [i] == Color.black);
-		GetComponent<SpriteRenderer> ().color = EMMainMenuAnimation.colorArray [i];
-		EMMainMenuAnimation.colorArray [i] = Color.black;
+		} while (EMMenuAnimation.colorArray [i] == Color.black);
+		GetComponent<SpriteRenderer> ().color = EMMenuAnimation.colorArray [i];
+		EMMenuAnimation.colorArray [i] = Color.black;
 		// Initialization of color
 		defaultColor = thisRend.material.color;
 		aggressiveColor = new Vector4 (1f, 0.25f, 0.25f, 1f);
