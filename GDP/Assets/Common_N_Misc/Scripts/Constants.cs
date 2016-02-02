@@ -11,6 +11,7 @@ public class Constants : MonoBehaviour
     public const float s_fEnemyMainMaxY = 9.6f;
     public const float s_fEnemyMainMinY = -1.5f;
     public const int s_nEnemyMaxChildCount = 100;
+	public const int s_nNumLevels = 5;
     #endregion
 
     #region Layer Masks
