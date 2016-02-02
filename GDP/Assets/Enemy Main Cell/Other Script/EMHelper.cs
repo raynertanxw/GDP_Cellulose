@@ -228,12 +228,16 @@ public class EMHelper : MonoBehaviour
 			if (Level_Manager.LevelID < 4)
 				EMController.Instance().ReduceNutrient ();
 			// Randomize the interval time between spawns of child cells in terms of current difficulty
-			yield return new WaitForSeconds (
-				UnityEngine.Random.Range (
+			float intervalTime = UnityEngine.Random.Range (
 				1.25f / EMDifficulty.Instance().CurrentDiff, 
-				1.75f / EMDifficulty.Instance().CurrentDiff)
+				1.75f / EMDifficulty.Instance().CurrentDiff
 				);
-			
+
+			if (Level_Manager.LevelID > 3)
+				intervalTime /= 1.5f;
+			yield return new WaitForSeconds (
+				UnityEngine.Random.Range (intervalTime);
+
 			if (m_EMFSM.AvailableChildNum < 100)
 				bCanSpawn = true;
 		}
