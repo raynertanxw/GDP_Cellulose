@@ -113,6 +113,11 @@ public class EndGamePanel : MonoBehaviour
 	public void ButtonNextLevel()
 	{
 		if(AudioManager.Instance != null){AudioManager.Instance.ReloadForSceneChange();}
+
+		if (Level_Manager.LevelID < Constants.s_nNumLevels)
+			Level_Manager.LoadLevel(Level_Manager.LevelID + 1);
+		else
+			Level_Manager.LoadLevel(Level_Manager.LevelID);
 		SceneManager.LoadScene(Application.loadedLevel);
 	}
 

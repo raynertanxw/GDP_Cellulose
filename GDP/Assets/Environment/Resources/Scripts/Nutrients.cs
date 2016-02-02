@@ -105,6 +105,11 @@ public class Nutrients : MonoBehaviour
 			Vector2 vectorToTarget = endPosition - transform.position;
 			transform.position = Vector2.MoveTowards(transform.position, endPosition, (vectorToTarget.magnitude * fTimeTaken + fMinimumSpeed) * Time.deltaTime);
 			transform.rotation = Quaternion.AngleAxis(vectorToTarget.magnitude * 60f, Vector3.forward);
+
+			// ExpandContract.
+			if (mAnimate.IsExpandContract == false)
+				mAnimate.ExpandContract(0.5f, 1, 1.5f, true, 0f);
+
 			if (transform.position == endPosition)
 				SendBackToPool();
 		}
@@ -131,6 +136,8 @@ public class Nutrients : MonoBehaviour
 			player_control.Instance.UpdateUI_nutrients();
 			fClickMagnitude = (transform.position - playerMainTransform.position).magnitude;
 			bIsCollectable = false;
+
+			mAnimate.StopExpandContract(false);
 		}
 	}
 
