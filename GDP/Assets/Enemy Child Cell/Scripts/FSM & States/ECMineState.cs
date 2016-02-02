@@ -147,7 +147,7 @@ public class ECMineState : IECState {
 
 		if(m_bGatherTogether && !m_bExpandContractStart)
 		{
-			m_Animator.ExpandContract(15f,60,1.9f);//ExplodingGrowShrink();
+			m_Animator.ExpandContract(15f,60,1.9f);
 			m_bExpandContractStart = true;
 		}
 	}
@@ -200,7 +200,7 @@ public class ECMineState : IECState {
 					m_nCurrentTargetIndex++;
 					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 				}
-				Utility.DrawCross(m_Child.transform.position,Color.green,0.1f);
+				//Utility.DrawCross(m_Child.transform.position,Color.green,0.1f);
 			}
 		}
 		else if(!m_bReachTarget && m_Child != m_LeaderMine && m_bGatherTogether)
