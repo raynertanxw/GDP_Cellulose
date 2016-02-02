@@ -123,6 +123,9 @@ public class PC_DefendState : IPCState
 
 	private bool FindNewTarget()
 	{
+		if (PlayerMain.Instance == null)
+			return false;
+
 		if (FindNewLocalTarget() == false) // If can't find local target, find in danger zone.
 		{
 			if (PlayerMain.Instance.hasSurroundingEnemyCells == true)
