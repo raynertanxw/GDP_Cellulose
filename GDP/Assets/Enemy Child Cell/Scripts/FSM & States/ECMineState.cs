@@ -85,6 +85,7 @@ public class ECMineState : IECState {
 			if(m_nECMineNearby == GetLandmines().Count)
 			{
 				m_CurrentPositionType = DeterminePositionType();
+				Debug.Log(m_CurrentPositionType);
 
 				m_Target = m_ecFSM.m_AttackTarget;
 				if(m_Target == null)
@@ -171,6 +172,10 @@ public class ECMineState : IECState {
 				m_ecFSM.rigidbody2D.drag = 3f;
 				Acceleration += SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,9f);
 				Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f;
+
+				Debug.Log("Seeking: " + SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,9f));	
+				Debug.Log("Sepertion: " + SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 9f);	
+
 				AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
 			}
 			else if((HasCellReachTarget(m_CurrentTargetPoint.Position)|| m_Child.transform.position.y < m_CurrentTargetPoint.Position.y) && m_nCurrentTargetIndex + 1 < m_PathToTarget.Count)
@@ -424,6 +429,8 @@ public class ECMineState : IECState {
 				}
 			}
 		}
+
+		//Debug.Log("Neighbour landmine count: " + NeighbouringLandmine.Count);
 
 		return NeighbouringLandmine;
 	}

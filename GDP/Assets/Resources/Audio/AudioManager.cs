@@ -3,6 +3,8 @@ using System.Collections;
 
 public class AudioManager : MonoBehaviour {
 
+	public static AudioManager s_Instance;
+
 	private AudioSource BackgroundAudioSource;
 	public AudioClip[] BackgroundTracks;
 	
@@ -22,9 +24,15 @@ public class AudioManager : MonoBehaviour {
 	
 	private bool SceneTransitionInProgress;
 
+	public static AudioManager Instance {get{return s_Instance;}}
+
 	// Use this for initialization
 	void Start () 
 	{
+		if(s_Instance == null)
+		{
+			s_Instance = this;
+		}
 		if(GameObject.FindGameObjectsWithTag("AudioController").Length > 1){Destroy(gameObject);}
 	
 		DontDestroyOnLoad(gameObject);

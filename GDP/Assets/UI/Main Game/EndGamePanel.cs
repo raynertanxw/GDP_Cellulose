@@ -10,8 +10,6 @@ public class EndGamePanel : MonoBehaviour
 	private CanvasGroup winCanvasGrp, loseCanvasGrp;
 	private Button winNextLevelBtn, winMenuBtn, loseRetryBtn, loseMenuBtn;
 	private float fButtonDisableTiming = 2.0f;
-	
-	private AudioManager AudioController;
 
 	void Awake()
 	{
@@ -29,8 +27,6 @@ public class EndGamePanel : MonoBehaviour
 
 		SetEndGamePanelVisibility(false);
 		SetEndGameButtonsInteractable(false);
-		
-		AudioController = GameObject.Find("Audio Manager").GetComponent<AudioManager>();
 	}
 
 	public void SetEndGamePanelVisibility(bool _visible)
@@ -116,13 +112,13 @@ public class EndGamePanel : MonoBehaviour
 
 	public void ButtonNextLevel()
 	{
-		AudioController.ReloadForSceneChange();
+		if(AudioManager.Instance != null){AudioManager.Instance.ReloadForSceneChange();}
 		SceneManager.LoadScene(Application.loadedLevel);
 	}
 
 	public void ButtonRetry()
 	{
-		AudioController.ReloadForSceneChange();
+		if(AudioManager.Instance != null){AudioManager.Instance.ReloadForSceneChange();}
 		SceneManager.LoadScene(Application.loadedLevel);
 	}
 	#endregion

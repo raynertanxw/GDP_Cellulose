@@ -91,10 +91,14 @@ public static class SteeringBehavior
 			}
 		}
 
+		//Debug.Log("seperation velo before: " + Steering);
+
 		Vector2 SeperationNormal = Steering.normalized;
 		float SeperationMagnitude =  Steering.magnitude;
 		float MinimumMagnitude = 0.8f;
 		Steering = Mathf.Clamp(SeperationMagnitude,MinimumMagnitude,SeperationMagnitude) * SeperationNormal;
+
+		//Debug.Log("seperation velo after: " + Steering);
 
 		return Steering;
 	}
