@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 
@@ -11,7 +12,7 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 	private float fSeekWeight;
 	public float SeekWeight { get { return fSeekWeight; } }
 	
-	EMNutrientMainAgent agent;
+	EnemyNutrientMainMenuAgent agent;
 	
 	public float fNeighbourRadius;
 	public float fAlignmentWeight;
@@ -21,7 +22,7 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 	private GameObject target;
 	private Vector2 currentPosition;
 	// List of neighbouring agents
-	List<EMNutrientMainAgent> neighbouringAgents = new List<EMNutrientMainAgent>();
+	List<EnemyNutrientMainMenuAgent> neighbouringAgents = new List<EnemyNutrientMainMenuAgent>();
 	
 	void Start () 
 	{
@@ -38,7 +39,7 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 		fCohesionWeigth = .6f;
 		fSeperationWeight = .8f;
 		// Add this behavior to the agent
-		agent = GetComponent<EMNutrientMainAgent>();
+		agent = GetComponent<EnemyNutrientMainMenuAgent>();
 		agent.AddBehaviour(this);
 	}
 	
@@ -61,7 +62,9 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 	public Vector2 GetTargetVelocity()
 	{
 		if (target != null)
-			return (((Vector2)target.transform.position - (Vector2)transform.position).normalized * agent.fMaxVelocity) - agent.currentVelocity;   
+			return (((Vector2)target.transform.position - (Vector2)transform.position).normalized * agent.fMaxVelocity) - agent.currentVelocity;
+		else
+			return Vector2.zero;
 	}
 	// Return velocity based on neighbouring agents' velocity
 	private Vector2 Alignment()
@@ -71,7 +74,7 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 		if (neighbouringAgents.Count == 0)
 			return direction;
 		
-		foreach (EMNutrientMainAgent agent in neighbouringAgents)
+		foreach (EnemyNutrientMainMenuAgent agent in neighbouringAgents)
 			direction += agent.currentVelocity;
 		
 		direction /= neighbouringAgents.Count;
@@ -82,7 +85,7 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 	{
 		Vector2 direction = Vector2.zero;
 		
-		foreach (EMNutrientMainAgent agent in neighbouringAgents)
+		foreach (EnemyNutrientMainMenuAgent agent in neighbouringAgents)
 			direction += (Vector2)agent.transform.position;
 		
 		direction /= neighbouringAgents.Count;
@@ -111,9 +114,9 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 		// Clean up the list of neighbouring agents
 		neighbouringAgents.Clear();
 		// Add neighbouring agents into the list if they are within the radius
-		if (EMNutrientMainAgent.AgentList != null) 
+		if (EnemyNutrientMainMenuAgent.AgentList != null) 
 		{
-			foreach (EMNutrientMainAgent agent in EMNutrientMainAgent.AgentList)
+			foreach (EnemyNutrientMainMenuAgent agent in EnemyNutrientMainMenuAgent.AgentList)
 			{
 				if (Vector2.Distance ((Vector2)agent.transform.position, currentPosition) < fNeighbourRadius)
 				{

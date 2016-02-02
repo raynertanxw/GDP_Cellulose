@@ -19,21 +19,17 @@ public class EMNutrientMainFlock : MonoBehaviour
 	public float fCohesionWeigth;
 	public float fSeperationWeight;
 
-	private GameObject target;
+	private Vector2 targetPosition;
 	private Vector2 currentPosition;
 	// List of neighbouring agents
 	List<EMNutrientMainAgent> neighbouringAgents = new List<EMNutrientMainAgent>();
 	
 	void Start () 
 	{
-		// Get the target object
-		int index = Random.Range (1, 6);
-		string targetName = "Enemy_Cell_" + index.ToString ();
-		target = GameObject.Find (targetName);
 		// Initialization
 		fFlockWeight = 1f;
 		// Number behind makes sure the seek weight is so small that the nutrient never mve away from the main cell
-		fSeekWeight = .175f;
+		fSeekWeight = .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt((float)EMController.Instance().NutrientNum + 50f)));
 		fNeighbourRadius = 1f;
 		fAlignmentWeight = .6f;
 		fCohesionWeigth = .6f;
@@ -45,7 +41,12 @@ public class EMNutrientMainFlock : MonoBehaviour
 
 	void Update ()
 	{
-
+		// Update enemy main cell's position
+		if (EMHelper.Instance () != null)
+			targetPosition = EMHelper.Instance ().Position;
+		// Update seek weight
+		if (fSeekWeight != .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum + 50f))))
+			fSeekWeight = .24f / Mathf.Sqrt(Mathf.Sqrt(Mathf.Sqrt(EMController.Instance().NutrientNum + 50f)));
 	}
 
 	#region Behaviour
@@ -61,7 +62,7 @@ public class EMNutrientMainFlock : MonoBehaviour
 	// Return velocity based on enemy main cell's position, current position and current velocity
 	public Vector2 GetTargetVelocity()
 	{
-		return (((Vector2)target.transform.position - (Vector2)transform.position).normalized * agent.fMaxVelocity) - agent.currentVelocity;   
+		return ((targetPosition - (Vector2)transform.position).normalized * agent.fMaxVelocity) - agent.currentVelocity;     
 	}
 	// Return velocity based on neighbouring agents' velocity
 	private Vector2 Alignment()
