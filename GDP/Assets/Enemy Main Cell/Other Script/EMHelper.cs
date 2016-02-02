@@ -224,8 +224,9 @@ public class EMHelper : MonoBehaviour
 			Animate mAnimate;
 			mAnimate = new Animate (this.transform);
 			mAnimate.ExpandContract (0.1f, 1, 1.1f);
-			
-			EMController.Instance().ReduceNutrient ();
+
+			if (Level_Manager.LevelID < 4)
+				EMController.Instance().ReduceNutrient ();
 			// Randomize the interval time between spawns of child cells in terms of current difficulty
 			yield return new WaitForSeconds (
 				UnityEngine.Random.Range (
