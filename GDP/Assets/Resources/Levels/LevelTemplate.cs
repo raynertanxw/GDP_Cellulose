@@ -55,7 +55,7 @@ public class LevelTemplate : ScriptableObject
 
     [Range(3.0f, 5.0f)] [Tooltip("Enemy Main initial stun duration.")]
     public float fDefaultStunTime = 5f;
-    [Range(5.0f, 10.0f)] [Tooltip("Enemy Main initial stun tolerance (max number of hits can receive before getting stunned).")]
+    [Range(4.0f, 10.0f)] [Tooltip("Enemy Main initial stun tolerance (max number of hits can receive before getting stunned).")]
     public float fDefaultStunTolerance = 5f;
     #endregion
 
