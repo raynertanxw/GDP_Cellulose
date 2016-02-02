@@ -1693,7 +1693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3567bd2bff9ae43ed82f8dc327a1e0cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: .0500000007
+  scrollSpeed: .0255999994
   minY: -12.5
   maxY: 12.5
 --- !u!114 &729912258
@@ -3859,6 +3859,12 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+      m_TypeName: UnityEngine.EventSystems.EventTrigger+TriggerEvent, UnityEngine.UI,
+        Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  - eventID: 14
+    callback:
+      m_PersistentCalls:
+        m_Calls:
         - m_Target: {fileID: 729912257}
           m_MethodName: EndDrag
           m_Mode: 0

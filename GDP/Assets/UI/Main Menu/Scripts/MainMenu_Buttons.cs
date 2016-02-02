@@ -13,7 +13,8 @@ public class MainMenu_Buttons : MonoBehaviour
 
 	private bool shouldSnapUp, shouldSnapDown;
 	private MainMenuPosition _menuPosition;
-	private float snapTolerance = 1.0f;
+	private float snapTolerance = 100.0f;
+	private float snapSpeed = 50.0f;
 
 	void Awake()
 	{
@@ -22,6 +23,57 @@ public class MainMenu_Buttons : MonoBehaviour
 		shouldSnapUp = false;
 		shouldSnapDown = false;
 		_menuPosition = MainMenuPosition.Center;
+	}
+
+	void Update()
+	{
+		if (shouldSnapUp)
+		{
+			cameraTransform.position += Vector3.up * snapSpeed * Time.deltaTime;
+			switch(_menuPosition)
+			{
+			case MainMenuPosition.Bottom:
+				if (cameraTransform.position.y > 0f)
+				{
+					cameraTransform.position = new Vector3(cameraTransform.position.x, 0f, cameraTransform.position.z);
+					_menuPosition = MainMenuPosition.Center;
+					shouldSnapUp = false;
+				}
+				break;
+			case MainMenuPosition.Center:
+				if (cameraTransform.position.y > maxY)
+				{
+					cameraTransform.position = new Vector3(cameraTransform.position.x, maxY, cameraTransform.position.z);
+					_menuPosition = MainMenuPosition.Top;
+					shouldSnapUp = false;
+				}
+				break;
+			}
+		}
+
+		if (shouldSnapDown)
+		{
+			cameraTransform.position -= Vector3.up * snapSpeed * Time.deltaTime;
+			switch(_menuPosition)
+			{
+			case MainMenuPosition.Top:
+				if (cameraTransform.position.y < 0f)
+				{
+					cameraTransform.position = new Vector3(cameraTransform.position.x, 0f, cameraTransform.position.z);
+					_menuPosition = MainMenuPosition.Center;
+					shouldSnapDown = false;
+				}
+				break;
+			case MainMenuPosition.Center:
+				if (cameraTransform.position.y < minY)
+				{
+					cameraTransform.position = new Vector3(cameraTransform.position.x, minY, cameraTransform.position.z);
+					_menuPosition = MainMenuPosition.Bottom;
+					shouldSnapDown = false;
+				}
+				break;
+			}
+		}
 	}
 
 	public void Button_Level(int _level)
@@ -44,12 +96,20 @@ public class MainMenu_Buttons : MonoBehaviour
 	#region Animation Helper Functions
 	private void SnapUp()
 	{
+		if (_menuPosition == MainMenuPosition.Top)
+			return;
 
+		shouldSnapUp = true;
+		shouldSnapDown = false;
 	}
 
 	private void SnapDown()
 	{
+		if (_menuPosition == MainMenuPosition.Bottom)
+			return;
 
+		shouldSnapDown = true;
+		shouldSnapUp = false;
 	}
 
 	private void SnapBack()
@@ -76,12 +136,14 @@ public class MainMenu_Buttons : MonoBehaviour
 	{
 		PointerEventData _pointerData = _data as PointerEventData;
 
+		// Inverse scrolling.
 		float dragDeltaY = _pointerData.position.y - _pointerData.pressPosition.y;
-		if (dragDeltaY > snapTolerance)
+		Debug.Log(dragDeltaY);
+		if (dragDeltaY < snapTolerance)
 		{
 			SnapUp();
 		}
-		else if (dragDeltaY < -snapTolerance)
+		else if (dragDeltaY > -snapTolerance)
 		{
 			SnapDown();
 		}
