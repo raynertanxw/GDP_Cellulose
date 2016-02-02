@@ -15,15 +15,9 @@ public class FormationDatabase
 	
 	private Formation m_CurrentFormation;
 	private float m_fCurrentMainScale;
-	
-	private GameObject m_EMain;
-	private GameObject m_PMain;
 
 	public FormationDatabase()
 	{
-		m_EMain = GameObject.Find("Enemy_Cell");
-		m_PMain = GameObject.Find("Player_Cell");
-	
 		InitializeDatabases();
 		List<EnemyChildFSM> ECList = GameObject.Find("Enemy_Cell").GetComponent<EnemyMainFSM>().ECList;
 		RefreshDatabases(ECList);
@@ -341,7 +335,7 @@ public class FormationDatabase
     
     public void CheckOverlapPlayerADRange()
     {
-		float YLimit = m_PMain.transform.position.y + PlayerMain.Instance.m_fDetectionRadius;
+		float YLimit = PlayerMain.Instance.transform.position.y + PlayerMain.Instance.m_fDetectionRadius;
 		List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 		
 		float YAdjustment = 0f;
@@ -444,7 +438,7 @@ public class FormationDatabase
 		int TargetFIndex = m_FIndexDatabase[CellName];
 
 		Vector2 PosDifference = m_FPositionDatabase[TargetFIndex];
-		Vector2 EMPosition = m_EMain.transform.position;
+		Vector2 EMPosition = EMHelper.Instance().Position;
 		Vector2 TargetPosition = Vector2.zero;
 		
 		if(_Formation == Formation.Ladder)

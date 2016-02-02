@@ -54,6 +54,8 @@ public class ECPoolManager : MonoBehaviour {
 		m_nSpawnCount++;
 		
 		//Extract the enemy child cell pool from the pool and add it to the enemy child cell list
+		if(s_ECPool.Dequeue() == null){return null;}
+		
 		GameObject newChild = s_ECPool.Dequeue();
 		newChild.transform.position = _SpawnPos;
 		MessageDispatcher.Instance.DispatchMessage(this.gameObject,newChild,MessageType.Idle,0);
