@@ -199,8 +199,9 @@ public class SquadChildFSM : MonoBehaviour
 		ExecuteMethod.OnceInUpdate("SquadChildFSM.StrafingVector", null, null);
 		// targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
 		Vector3 targetPosition = Quaternion.Euler(0.0f, 0.0f, fStrafingOffsetAngle) * m_strafingVector + PlayerSquadFSM.Instance.transform.position;
-		m_RigidBody.AddForce((targetPosition - transform.position) * 10f);
-		m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, 1f);
+		Vector3 toTargetPosition = targetPosition - transform.position;
+		m_RigidBody.AddForce(toTargetPosition.normalized, ForceMode2D.Impulse);
+		m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, toTargetPosition.magnitude * 3f);
 		return true;
 	}
 
