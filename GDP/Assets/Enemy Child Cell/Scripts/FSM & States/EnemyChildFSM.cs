@@ -24,7 +24,7 @@ public class EnemyChildFSM : MonoBehaviour
 	private bool m_bRotateACW;
 	public bool m_bHitWall;
 	
-
+	//
 	void Start()
 	{
 		//Initialize the variables and data structure
