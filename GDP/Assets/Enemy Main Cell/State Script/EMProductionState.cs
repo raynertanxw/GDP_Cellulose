@@ -30,8 +30,13 @@ public class EMProductionState : IEMState
 		helper = m_EMFSM.emHelper;
 	
 		// Produce enemy mini cell if has nutrient and can spawn
-		if (controller.NutrientNum > 0 && helper.CanSpawn)
-			helper.ECPool.SpawnFromPool (EMHelper.Instance().Position, false);
+		if (controller.NutrientNum > 0 && helper.CanSpawn && Level_Manager.LevelID < 4)
+			helper.ECPool.SpawnFromPool (EMHelper.Instance ().Position, false);
+		else if (controller.NutrientNum > 0 && helper.CanSpawn && Level_Manager.LevelID > 3)
+		{
+			for (int i = 0; i < 2; i++)
+				helper.ECPool.SpawnFromPool (EMHelper.Instance ().Position, false);
+		}
 		else if (controller.NutrientNum == 0 && EMTransition.Instance().CanTransit)
 			m_EMFSM.ChangeState (EMState.Maintain);
 
