@@ -24,6 +24,11 @@ public class GameManager : MonoBehaviour
 		Time.timeScale = 1f;
 	}
 
+	void Start()
+	{
+		player_control.Instance.PresentInfoPanel("LEVEL " + Level_Manager.LevelID, 1.5f);
+	}
+
 	void Update()
 	{
 		if (bGameIsOver == true)

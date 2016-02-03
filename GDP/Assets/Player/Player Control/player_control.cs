@@ -28,6 +28,7 @@ public class player_control : MonoBehaviour
 
 	private const float s_UIFadeOutSpeed = 5.0f;
 	private const float s_UIInfoPanelFadeDelay = 0.75f;
+	private float m_fUIInfoPanelAdditionalFadeDelay = 0f;
 	private const float s_UIInfoPanelFadeSpeed = 1.25f;
 	private const float s_UIPopInSpeed = 5f;
 	private const float s_UIHurtTintFadeSpeed = 2.0f;
@@ -304,9 +305,28 @@ public class player_control : MonoBehaviour
 		StartCoroutine(Constants.s_strFadeOutInfoPanel);
 	}
 
+	public void PresentInfoPanel(string _infoStr)
+	{
+		infoText.text = _infoStr;
+		infoPanelCanvasGrp.alpha = 1f;
+		StopCoroutine(Constants.s_strFadeOutInfoPanel);
+		StartCoroutine(Constants.s_strFadeOutInfoPanel);
+	}
+
+	public void PresentInfoPanel(string _infoStr, float _additionalFadeDelay)
+	{
+		infoText.text = _infoStr;
+		infoPanelCanvasGrp.alpha = 1f;
+		StopCoroutine(Constants.s_strFadeOutInfoPanel);
+		float fOrgFadeDelay = s_UIInfoPanelFadeDelay;
+		m_fUIInfoPanelAdditionalFadeDelay = _additionalFadeDelay;
+		StartCoroutine(Constants.s_strFadeOutInfoPanel);
+		m_fUIInfoPanelAdditionalFadeDelay = 0f;
+	}
+
 	private IEnumerator FadeOutInfoPanel()
 	{
-		yield return new WaitForSeconds(s_UIInfoPanelFadeDelay);
+		yield return new WaitForSeconds(s_UIInfoPanelFadeDelay + m_fUIInfoPanelAdditionalFadeDelay);
 		while (infoPanelCanvasGrp.alpha > 0)
 		{
 			infoPanelCanvasGrp.alpha -= s_UIInfoPanelFadeSpeed * Time.deltaTime;
