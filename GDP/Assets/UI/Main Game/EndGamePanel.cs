@@ -9,6 +9,7 @@ public class EndGamePanel : MonoBehaviour
 
 	private CanvasGroup winCanvasGrp, loseCanvasGrp;
 	private Button winNextLevelBtn, winMenuBtn, loseRetryBtn, loseMenuBtn;
+	private Text enemyHealthText;
 	private float fButtonDisableTiming = 2.0f;
 
 	void Awake()
@@ -24,6 +25,7 @@ public class EndGamePanel : MonoBehaviour
 		loseCanvasGrp = transform.GetChild(1).GetComponent<CanvasGroup>();
 		loseRetryBtn = transform.GetChild(1).GetChild(3).GetComponent<Button>();
 		loseMenuBtn = transform.GetChild(1).GetChild(4).GetComponent<Button>();
+		enemyHealthText = transform.GetChild(1).GetChild(7).GetComponent<Text>();
 
 		SetEndGamePanelVisibility(false);
 		SetEndGameButtonsInteractable(false);
@@ -78,6 +80,7 @@ public class EndGamePanel : MonoBehaviour
 	{
 		if (_visible)
 		{
+			enemyHealthText.text = "Remaining\nEnemy\nHealth:\n\n" + EnemyMainFSM.Instance().Health + " / " + Settings.s_nEnemyMainInitialHealth;
 			loseCanvasGrp.interactable = true;
 			loseCanvasGrp.blocksRaycasts = true;
 			loseCanvasGrp.alpha = 1f;
