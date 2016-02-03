@@ -188,7 +188,7 @@ public class EMLeraningAgent : MonoBehaviour
 		yield return new WaitForSeconds (checkFreq);
 
 		// If we are still in the same state then proceed
-		if (EMLeraningAgent.instance != null && PlayerChildFSM != null && PlayerSquadFSM.Instance != null)
+		if (EMLeraningAgent.instance != null && PlayerChildFSM.playerChildPool != null && PlayerSquadFSM.Instance != null)
 		{
 			if (pastState == m_EMFSM.CurrentStateIndex)
 				LearningElement (pastState, pastEnemyChild, m_EMFSM.AvailableChildNum, pastPlayerChild, PlayerChildFSM.GetActiveChildCount(),
