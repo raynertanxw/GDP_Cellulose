@@ -279,6 +279,37 @@ public class AudioManager : MonoBehaviour {
 		//Debug.Log("fade in done");
 	}
 	
+	public void PauseFadeOut()
+	{
+		while(BackgroundAudioSource.volume > 0.0f)
+		{
+			BackgroundAudioSource.volume -= 0.03f;
+			StartCoroutine(WaitForRealSeconds(0.05f));
+		}
+		
+		BackgroundAudioSource.Pause ();
+	}
+	
+	public void PauseFadeIn()
+	{
+		BackgroundAudioSource.Play ();
+		
+		while(BackgroundAudioSource.volume < 1.0f)
+		{
+			BackgroundAudioSource.volume += 0.03f;
+			StartCoroutine(WaitForRealSeconds(0.05f));
+		}
+	}
+	
+	private IEnumerator WaitForRealSeconds( float delay )
+	{
+		float start = Time.realtimeSinceStartup;
+		while( Time.realtimeSinceStartup < start + delay )
+		{
+			yield return null;
+		}
+	}
+	
 	public void ReloadForSceneChange()
 	{
 		StartCoroutine(SceneTransition());

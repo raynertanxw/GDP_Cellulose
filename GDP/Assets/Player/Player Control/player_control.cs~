@@ -13,19 +13,35 @@ public class player_control : MonoBehaviour
 
 	private Transform m_SquadCaptainNode;
 	private GameObject spwnCptBtnGO;
-	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp, infoPanelCanvasGrp;
+	private CanvasGroup leftNodeCanvasGrp,
+						rightNodeCanavsGrp,
+						spawnCtrlCanvasGrp,
+						playerHurtTintCanvasGrp,
+						enemyWarningTintCanvasGrp,
+						infoPanelCanvasGrp,
+						pausePanelCanvasGrp;
 	private RectTransform spwnCptBtnRectTransform;
 	private Text leftNodeChildText, rightNodeChildText, nutrientText, infoText;
+	private Image pauseButtonImage;
 	private Vector3 mainCellPos;
 	private Vector3 spwnCptBtnPos;
 
+	private const float s_UIFadeOutSpeed = 5.0f;
 	private const float s_UIInfoPanelFadeDelay = 0.75f;
+	private float m_fUIInfoPanelAdditionalFadeDelay = 0f;
 	private const float s_UIInfoPanelFadeSpeed = 1.25f;
 	private const float s_UIPopInSpeed = 5f;
 	private const float s_UIHurtTintFadeSpeed = 2.0f;
 	private const float s_UITintFlickerSpeed = 1.0f;
 	private float s_UITintFlickerAlpha = 0f;
 	private bool m_bUITintFlickerIncreasingAlpha = false;
+	public Color m_highLightedColor;
+	public Color m_unselectedColor;
+	private Image[] controlImages;
+	private bool m_bIsHoldingDownSpawnBtn;
+	private float m_fHoldTime;
+	private float m_fInitialHoldSpawnDelay = 0.3f;
+	private float m_fHoldSpawnInterval = 0.05f;
 
 	private const string GOname_LeftNode = "UI_Player_LeftNode";
 	private const string GOname_RightNode = "UI_Player_RightNode";
@@ -41,6 +57,12 @@ public class player_control : MonoBehaviour
 	private const string GOname_RightNode_ScatterShot = "UI_Player_RightNode_ScatterShot";
 	private const string GOname_RightNode_SwamTarget = "UI_Player_RightNode_SwamTarget";
 	private const string GOname_RightNode_BurstShot = "UI_Player_RightNode_BurstShot";
+
+	private Animate m_ResourceTextAnimate;
+	private Animate m_LeftNodeChildTextAnimate, m_RightNodeChildTextAnimate;
+	private float childCountTextPopOffsetY = 240.0f;
+	private const float childCountTextOriginY = -800.0f;
+	private float childCountTextReturnSpeed = 400.0f;
 	
 	void Awake()
 	{
@@ -66,18 +88,50 @@ public class player_control : MonoBehaviour
 		nutrientText = transform.GetChild(7).GetChild(3).GetComponent<Text>();
 		infoPanelCanvasGrp = transform.GetChild(7).GetChild(4).GetComponent<CanvasGroup>();
 		infoText = transform.GetChild(7).GetChild(4).GetChild(0).GetComponent<Text>();
+		pausePanelCanvasGrp = transform.GetChild(8).GetComponent<CanvasGroup>();
+		pauseButtonImage = transform.GetChild(9).GetComponent<Image>();
+
+		controlImages = new Image[9];
+		controlImages[0] = transform.GetChild(4).GetChild(3).GetComponent<Image>();	// Left BurstShot.
+		controlImages[1] = transform.GetChild(4).GetChild(2).GetComponent<Image>();	// Left SwarmTarget.
+		controlImages[2] = transform.GetChild(4).GetChild(1).GetComponent<Image>();	// Left ScatterShot.
+		controlImages[3] = transform.GetChild(4).GetChild(0).GetComponent<Image>();	// Left DefendAvoid.
+		controlImages[4] = transform.GetChild(5).GetChild(3).GetComponent<Image>();	// Right BurstShot.
+		controlImages[5] = transform.GetChild(5).GetChild(2).GetComponent<Image>();	// Right SwarmTarget.
+		controlImages[6] = transform.GetChild(5).GetChild(1).GetComponent<Image>();	// Right ScatterShot.
+		controlImages[7] = transform.GetChild(5).GetChild(0).GetComponent<Image>();	// Right DefendAvoid.
+		controlImages[8] = transform.GetChild(3).GetChild(0).GetComponent<Image>();	// SpwnCpt Btn.
+
+		for (int i = 0; i < controlImages.Length; i++)
+		{
+			controlImages[i].color = m_unselectedColor;
+		}
 
 		// Hide controls, tints, and info panel.
+		spawnCtrlCanvasGrp.alpha = 0f;
+		leftNodeCanvasGrp.alpha = 0f;
+		rightNodeCanavsGrp.alpha = 0f;
 		DeselectAllCtrls();
 		playerHurtTintCanvasGrp.alpha = 0f;
 		enemyWarningTintCanvasGrp.alpha = 0f;
 		infoPanelCanvasGrp.alpha = 0f;
+		SetPausePanelVisibility(false);
+		pauseButtonImage.enabled = true;
+
+		// Initialize spawn variables
+		m_bIsHoldingDownSpawnBtn = false;
+		m_fHoldTime = 0f;
+
+		// Create Animate objects.
+		m_ResourceTextAnimate = new Animate(transform.GetChild(7).GetChild(3));
+		m_LeftNodeChildTextAnimate = new Animate(transform.GetChild(7).GetChild(2).GetChild(0));
+		m_RightNodeChildTextAnimate = new Animate(transform.GetChild(7).GetChild(2).GetChild(1));
 	}
 
 	void Start()
 	{
 		// Update UI
-		UpdateUI_nutrients();
+		nutrientText.text = s_nResources.ToString();	// Update without the animation.
 		UpdateUI_nodeChildCountText();
 	}
 
@@ -108,18 +162,53 @@ public class player_control : MonoBehaviour
 			if (spwnCptBtnGO.activeSelf == false)
 				spwnCptBtnGO.SetActive(true);
 		}
+
+		if (m_bIsHoldingDownSpawnBtn)
+		{
+			m_fHoldTime += Time.deltaTime;
+
+			if (m_fHoldTime > (m_fInitialHoldSpawnDelay + m_fHoldSpawnInterval))
+			{
+				m_fHoldTime -= m_fHoldSpawnInterval;
+				ActionSpawn((int)activeNode);
+			}
+		}
+		else
+		{
+			m_fHoldTime = 0f;
+		}
+
+		UpdateUI_nodeChildCountPos();
 	}
 
 	#region UI HUD update functions
 	public void UpdateUI_nutrients()
 	{
 		nutrientText.text = s_nResources.ToString();
+		m_ResourceTextAnimate.ExpandContract(0.25f, 1, 1.5f, true, 0.5f);
 	}
 
 	public void UpdateUI_nodeChildCountText()
 	{
 		leftNodeChildText.text = Node_Manager.GetNode(Node.LeftNode).activeChildCount.ToString();
 		rightNodeChildText.text = Node_Manager.GetNode(Node.RightNode).activeChildCount.ToString();
+	}
+
+	private void UpdateUI_nodeChildCountPos()
+	{
+		if (leftNodeChildText.transform.localPosition.y != childCountTextOriginY)
+		{
+			leftNodeChildText.transform.localPosition -= new Vector3(0f, childCountTextReturnSpeed * Time.deltaTime);
+			if (leftNodeChildText.transform.localPosition.y < childCountTextOriginY)
+				leftNodeChildText.transform.localPosition = new Vector3(leftNodeChildText.transform.localPosition.x, childCountTextOriginY);
+		}
+
+		if (rightNodeChildText.transform.localPosition.y != childCountTextOriginY)
+		{
+			rightNodeChildText.transform.localPosition -= new Vector3(0f, childCountTextReturnSpeed * Time.deltaTime);
+			if (rightNodeChildText.transform.localPosition.y < childCountTextOriginY)
+				rightNodeChildText.transform.localPosition = new Vector3(rightNodeChildText.transform.localPosition.x, childCountTextOriginY);
+		}
 	}
 
 	public void FlashPlayerHurtTint()
@@ -181,6 +270,29 @@ public class player_control : MonoBehaviour
 		SetRightNodeControlVisibility(false);
 		;
 	}
+	
+	public void SetPausePanelVisibility(bool _visibile)
+	{
+		if (_visibile)
+		{
+			pausePanelCanvasGrp.alpha = 1f;
+			pausePanelCanvasGrp.interactable = true;
+			pausePanelCanvasGrp.blocksRaycasts = true;
+			pauseButtonImage.enabled = false;
+		}
+		else
+		{
+			pausePanelCanvasGrp.alpha = 0f;
+			pausePanelCanvasGrp.interactable = false;
+			pausePanelCanvasGrp.blocksRaycasts = false;
+			pauseButtonImage.enabled = true;
+		}
+	}
+
+	public void HidePauseButton()
+	{
+		pauseButtonImage.enabled = false;
+	}
 	#endregion
 
 
@@ -196,22 +308,21 @@ public class player_control : MonoBehaviour
 		else
 		{
 			if(_cgrp.alpha == 1f){AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectDissapear);}
-			_cgrp.alpha = 0f;
+			StartCoroutine(Constants.s_FadeOutCanvasGroup, _cgrp);
 			_cgrp.interactable = false;
 			_cgrp.blocksRaycasts = false;
 		}
 	}
 
-	private IEnumerator FadeOutInfoPanel()
+	private IEnumerator FadeOutCanvasGroup(CanvasGroup _cgrp)
 	{
-		yield return new WaitForSeconds(s_UIInfoPanelFadeDelay);
-		while (infoPanelCanvasGrp.alpha > 0)
+		while (_cgrp.alpha > 0f)
 		{
-			infoPanelCanvasGrp.alpha -= s_UIInfoPanelFadeSpeed * Time.deltaTime;
+			_cgrp.alpha -= s_UIFadeOutSpeed * Time.deltaTime;
 			yield return null;
 		}
 	}
-	
+
 	private void PresentInfoPanel()
 	{
 		infoPanelCanvasGrp.alpha = 1f;
@@ -219,12 +330,34 @@ public class player_control : MonoBehaviour
 		StartCoroutine(Constants.s_strFadeOutInfoPanel);
 	}
 
+	public void PresentInfoPanel(string _infoStr)
+	{
+		infoText.text = _infoStr;
+		infoPanelCanvasGrp.alpha = 1f;
+		StopCoroutine(Constants.s_strFadeOutInfoPanel);
+		StartCoroutine(Constants.s_strFadeOutInfoPanel);
+	}
 
+	public void PresentInfoPanel(string _infoStr, float _additionalFadeDelay)
+	{
+		infoText.text = _infoStr;
+		infoPanelCanvasGrp.alpha = 1f;
+		StopCoroutine(Constants.s_strFadeOutInfoPanel);
+		float fOrgFadeDelay = s_UIInfoPanelFadeDelay;
+		m_fUIInfoPanelAdditionalFadeDelay = _additionalFadeDelay;
+		StartCoroutine(Constants.s_strFadeOutInfoPanel);
+		m_fUIInfoPanelAdditionalFadeDelay = 0f;
+	}
 
-
-
-
-	
+	private IEnumerator FadeOutInfoPanel()
+	{
+		yield return new WaitForSeconds(s_UIInfoPanelFadeDelay + m_fUIInfoPanelAdditionalFadeDelay);
+		while (infoPanelCanvasGrp.alpha > 0)
+		{
+			infoPanelCanvasGrp.alpha -= s_UIInfoPanelFadeSpeed * Time.deltaTime;
+			yield return null;
+		}
+	}
 
 	private IEnumerator AnimateInSpawnCtrl()
 	{
@@ -249,14 +382,38 @@ public class player_control : MonoBehaviour
 	}
 	#endregion
 
-
+	#region Pause Controls
+	public void Button_Pause()
+	{
+		GameManager.Instance.SetPause(true);
+		SetPausePanelVisibility(true);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressSelection);
+		AudioManager.Instance.PauseFadeOut();
+	}
+	
+	public void Button_Resume()
+	{
+		GameManager.Instance.SetPause(false);
+		SetPausePanelVisibility(false);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressCancel);
+		AudioManager.Instance.PauseFadeIn();
+	}
+	
+	public void Button_PauseReturnMainMenu()
+	{
+		// Reset Timescale
+		Time.timeScale = 1f;
+		SceneManager.LoadScene(0);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressSelection);
+	}
+	#endregion
 
 	
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)
 	{
 		Node _selectedNode = (Node) _nodeIndex;
-		if (activeNode != Node.None)
+		if (activeNode != Node.None && !m_bIsHoldingDownSpawnBtn)
 			return;
 
 		if (PlayerChildFSM.GetActiveChildCount() >= Constants.s_nPlayerMaxChildCount)
@@ -278,8 +435,21 @@ public class player_control : MonoBehaviour
 			s_nResources -= Settings.s_nPlayerChildSpawnCost;
 			UpdateUI_nutrients();
 			UpdateUI_nodeChildCountText();
-			
+
+			// Animations
 			PlayerMain.Instance.animate.ExpandContract(0.5f, 1, 1.2f, true, 0.2f);
+			switch(_selectedNode)
+			{
+			case Node.LeftNode:
+				leftNodeChildText.transform.localPosition = new Vector3(leftNodeChildText.transform.localPosition.x, childCountTextOriginY + childCountTextPopOffsetY);
+				m_LeftNodeChildTextAnimate.ExpandContract(1.1f, 1, 4.0f, true, 0.4f);
+				break;
+			case Node.RightNode:
+				rightNodeChildText.transform.localPosition = new Vector3(rightNodeChildText.transform.localPosition.x, childCountTextOriginY + childCountTextPopOffsetY);
+				m_RightNodeChildTextAnimate.ExpandContract(1.1f, 1, 4.0f, true, 0.4f);
+				break;
+			}
+
 			AudioManager.PlayPMSoundEffect(PlayerMainSFX.SpawnCell);
 		}
 		else
@@ -305,23 +475,31 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
+			int[] childrenInNode = new int[] {-1};
+			switch (_selectedNode)
+			{
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionBurstShotChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+
+			// Assumes that there will be at least the required amount of cells
+			for (int i = 0; i < childrenInNode.Length; i++)
 			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
-				{
-					formationCells[fcIndex] = PlayerChildFSM.playerChildPool[i];
-					formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
-					formationCells[fcIndex].attackMode = PlayerAttackMode.BurstShot;
+				int poolId = childrenInNode[i];
 
-					formationCells[fcIndex].m_assignedNode.SendChildToAttack(i);
-					formationCells[fcIndex].DeferredChangeState(PCState.ChargeMain);
-
-					fcIndex++;
-					if (fcIndex == formationCells.Length)
-						break;
-				}
+				formationCells[fcIndex] = PlayerChildFSM.playerChildPool[poolId];
+				formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
+				formationCells[fcIndex].attackMode = PlayerAttackMode.BurstShot;
+				
+				formationCells[fcIndex].m_assignedNode.SendChildToAttack(poolId);
+				formationCells[fcIndex].DeferredChangeState(PCState.ChargeMain);
+				
+				fcIndex++;
+				if (fcIndex == formationCells.Length)
+					break;
 			}
 
 			infoText.text = "BurstShot";
@@ -342,22 +520,30 @@ public class player_control : MonoBehaviour
         }
         else
         {
+			int[] childrenInNode = new int[] {-1};
+			switch (_selectedNode)
+			{
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionSwarmTargetChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
-			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
-				{
-					formationCells[fcIndex] = PlayerChildFSM.playerChildPool[i];
-					formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
-					formationCells[fcIndex].attackMode = PlayerAttackMode.SwarmTarget;
-					formationCells[fcIndex].m_assignedNode.SendChildToAttack(i);
-					formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
 
-					fcIndex++;
-					if (fcIndex == formationCells.Length)
-						break;
-				}
+			// Assumes that there will be at least the required amount of cells
+			for (int i = 0; i < childrenInNode.Length; i++)
+			{
+				int poolId = childrenInNode[i];
+
+				formationCells[fcIndex] = PlayerChildFSM.playerChildPool[poolId];
+				formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
+				formationCells[fcIndex].attackMode = PlayerAttackMode.SwarmTarget;
+				formationCells[fcIndex].m_assignedNode.SendChildToAttack(poolId);
+				formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
+				
+				fcIndex++;
+				if (fcIndex == formationCells.Length)
+					break;
 			}
 
 			infoText.text = "SwarmTarget";
@@ -378,22 +564,30 @@ public class player_control : MonoBehaviour
 		}
 		else
 		{
+			int[] childrenInNode = new int[] {-1};
+			switch (_selectedNode)
+			{
+			case Node.LeftNode: childrenInNode = PlayerChildFSM.childrenInLeftNode; break;
+			case Node.RightNode: childrenInNode = PlayerChildFSM.childrenInRightNode; break;
+			}
+
 			PlayerChildFSM[] formationCells = new PlayerChildFSM[Settings.s_nPlayerActionScatterShotChildCost];
 			int fcIndex = 0;
-			for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
-			{
-				if (PlayerChildFSM.s_playerChildStatus[i] == selectedNode.nodePCStatus)
-				{
-					formationCells[fcIndex] = PlayerChildFSM.playerChildPool[i];
-					formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
-					formationCells[fcIndex].attackMode = PlayerAttackMode.ScatterShot;
-					formationCells[fcIndex].m_assignedNode.SendChildToAttack(i);
-					formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
 
-					fcIndex++;
-					if (fcIndex == formationCells.Length)
-						break;
-				}
+			// Assumes that there will be at least the required amount of cells
+			for (int i = 0; i < childrenInNode.Length; i++)
+			{
+				int poolId = childrenInNode[i];
+
+				formationCells[fcIndex] = PlayerChildFSM.playerChildPool[poolId];
+				formationCells[fcIndex].m_formationCells = formationCells; // arrays are reference types.
+				formationCells[fcIndex].attackMode = PlayerAttackMode.ScatterShot;
+				formationCells[fcIndex].m_assignedNode.SendChildToAttack(poolId);
+				formationCells[fcIndex].DeferredChangeState(PCState.ChargeChild);
+				
+				fcIndex++;
+				if (fcIndex == formationCells.Length)
+					break;
 			}
 
 			infoText.text = "ScatterShot";
@@ -419,41 +613,32 @@ public class player_control : MonoBehaviour
 			if (leftNode.activeChildCount > rightNode.activeChildCount)
 			{
 				// Use up cells in smaller node, OR till half of spawn cost.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost / 2; i++)
 				{
-					// Move to center.
-
-					// Converge to center.
-
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						rightNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
+					int poolId = PlayerChildFSM.childrenInRightNode[i];
+					if (poolId == -1)
+						break;
 
-						if (childrenLeftToConsume <= Settings.s_nPlayerSqaudCaptainChildCost / 2)
-							break;
-					}
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					rightNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
 				}
 
 				// Consume the remaining needed children.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost; i++)
 				{
-					// Move to center.
-					
-					// Converge to center.
-					
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						leftNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
-						
-						if (childrenLeftToConsume == 0)
-							break;
-					}
+					int poolId = PlayerChildFSM.childrenInLeftNode[i];
+					if (poolId == -1)
+						break;
+
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					leftNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
+
+					if (childrenLeftToConsume == 0)
+						break;
 				}
 			}
 
@@ -461,41 +646,32 @@ public class player_control : MonoBehaviour
 			else
 			{
 				// Use up cells in smaller node, OR till half of spawn cost.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost / 2; i++)
 				{
-					// Move to center.
-					
-					// Converge to center.
-					
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InLeftNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						leftNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
-						
-						if (childrenLeftToConsume <= Settings.s_nPlayerSqaudCaptainChildCost / 2)
-							break;
-					}
+					int poolId = PlayerChildFSM.childrenInLeftNode[i];
+					if (poolId == -1)
+						break;
+					
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					leftNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
 				}
 				
 				// Consume the remaining needed children.
-				for (int i = 0; i < Constants.s_nPlayerMaxChildCount; i++)
+				for (int i = 0; i < Settings.s_nPlayerSqaudCaptainChildCost; i++)
 				{
-					// Move to center.
-					
-					// Converge to center.
-					
 					// Kill them.
-					if (PlayerChildFSM.s_playerChildStatus[i] == pcStatus.InRightNode)
-					{
-						PlayerChildFSM.playerChildPool[i].SacrificeToSquadCpt();
-						rightNode.SendChildToAttack(i);
-						childrenLeftToConsume--;
-						
-						if (childrenLeftToConsume == 0)
-							break;
-					}
+					int poolId = PlayerChildFSM.childrenInRightNode[i];
+					if (poolId == -1)
+						break;
+					
+					PlayerChildFSM.playerChildPool[poolId].SacrificeToSquadCpt();
+					rightNode.SendChildToAttack(poolId);
+					childrenLeftToConsume--;
+					
+					if (childrenLeftToConsume == 0)
+						break;
 				}
 			}
 			
@@ -524,6 +700,8 @@ public class player_control : MonoBehaviour
 			return;
 
 		Node _selectedNode = (Node) _nodeIndex;
+		m_bIsHoldingDownSpawnBtn = true;
+
 		switch (_selectedNode)
 		{
 		case Node.LeftNode:
@@ -542,8 +720,11 @@ public class player_control : MonoBehaviour
 	{
 		Node _selectedNode = (Node) _nodeIndex;
 
-		if (_selectedNode == activeNode)
-			activeNode = Node.None;
+		if (_selectedNode != activeNode)
+			return;
+
+		activeNode = Node.None;
+		m_bIsHoldingDownSpawnBtn = false;
 	}
 
 	public void NodeBeginDrag(BaseEventData _data)
@@ -567,6 +748,9 @@ public class player_control : MonoBehaviour
 	{
 		PointerEventData pointerData = _data as PointerEventData;
 
+		if (pointerData.pointerCurrentRaycast.gameObject == null)
+			return;
+
 		switch (activeDraggedNode)
 		{
 		case Node.LeftNode:
@@ -576,10 +760,53 @@ public class player_control : MonoBehaviour
 			if (pointerData.pointerCurrentRaycast.gameObject.name != GOname_LeftNode)
 			{
 				SetLeftNodeControlVisibility(true);
+				// Disable hold to spawn when dragging.
+				m_bIsHoldingDownSpawnBtn = false;
 				AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectAppear);
 			}
 			else
+			{
+				// Renable hold to spawn when control panel is back.
+				m_bIsHoldingDownSpawnBtn = true;
 				SetLeftNodeControlVisibility(false);
+			}
+
+			switch (pointerData.pointerCurrentRaycast.gameObject.name)
+			{
+			case GOname_LeftNode_BurstShot:
+				controlImages[0].color = m_highLightedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			case GOname_LeftNode_SwamTarget:
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_highLightedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			case GOname_LeftNode_ScatterShot:
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_highLightedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			case GOname_LeftNode_DefendAvoid:
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_highLightedColor;
+				break;
+			default:
+				// Only disabled when default becasue no matter what other buttons were highlighted,
+				// default will be triggered unpon exiting that touch area before player can move to other buttons.
+				controlImages[0].color = m_unselectedColor;
+				controlImages[1].color = m_unselectedColor;
+				controlImages[2].color = m_unselectedColor;
+				controlImages[3].color = m_unselectedColor;
+				break;
+			}
+
 			break;
 
 		case Node.RightNode:
@@ -589,10 +816,53 @@ public class player_control : MonoBehaviour
 			if (pointerData.pointerCurrentRaycast.gameObject.name != GOname_RightNode)
 			{
 				SetRightNodeControlVisibility(true);
+				// Disable hold to spawn when dragging.
+				m_bIsHoldingDownSpawnBtn = false;
 			    AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectAppear);
 			}
 			else
+			{
+				// Renable hold to spawn when control panel is back.
+				m_bIsHoldingDownSpawnBtn = true;
 				SetRightNodeControlVisibility(false);
+			}
+
+			switch (pointerData.pointerCurrentRaycast.gameObject.name)
+			{
+			case GOname_RightNode_BurstShot:
+				controlImages[4].color = m_highLightedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			case GOname_RightNode_SwamTarget:
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_highLightedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			case GOname_RightNode_ScatterShot:
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_highLightedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			case GOname_RightNode_DefendAvoid:
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_highLightedColor;
+				break;
+			default:
+				// Only disabled when default becasue no matter what other buttons were highlighted,
+				// default will be triggered unpon exiting that touch area before player can move to other buttons.
+				controlImages[4].color = m_unselectedColor;
+				controlImages[5].color = m_unselectedColor;
+				controlImages[6].color = m_unselectedColor;
+				controlImages[7].color = m_unselectedColor;
+				break;
+			}
+
 			break;
 		}
 	}
@@ -660,10 +930,29 @@ public class player_control : MonoBehaviour
 
 		activeDraggedNode = Node.None;
 	}
-	
-	public void MainEndDrag(BaseEventData data)
+
+	public void MainCellBtnUp()
 	{
-		PointerEventData pointerData = data as PointerEventData;
+		SetSpawnCtrlVisibility(false);
+	}
+
+	public void MainCellDrag(BaseEventData _data)
+	{
+		PointerEventData pointerData = _data as PointerEventData;
+		switch(pointerData.pointerCurrentRaycast.gameObject.name)
+		{
+		case GOname_SpawnCptButton:
+			controlImages[8].color = m_highLightedColor;
+			break;
+		default:
+			controlImages[8].color = m_unselectedColor;
+			break;
+		}
+	}
+
+	public void MainCellEndDrag(BaseEventData _data)
+	{
+		PointerEventData pointerData = _data as PointerEventData;
 		switch (pointerData.pointerCurrentRaycast.gameObject.name)
 		{
 		case GOname_SpawnCptButton:

@@ -387,12 +387,16 @@ public class player_control : MonoBehaviour
 	{
 		GameManager.Instance.SetPause(true);
 		SetPausePanelVisibility(true);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressSelection);
+		AudioManager.Instance.PauseFadeOut();
 	}
 	
 	public void Button_Resume()
 	{
 		GameManager.Instance.SetPause(false);
 		SetPausePanelVisibility(false);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressCancel);
+		AudioManager.Instance.PauseFadeIn();
 	}
 	
 	public void Button_PauseReturnMainMenu()
@@ -400,6 +404,7 @@ public class player_control : MonoBehaviour
 		// Reset Timescale
 		Time.timeScale = 1f;
 		SceneManager.LoadScene(0);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressSelection);
 	}
 	#endregion
 
