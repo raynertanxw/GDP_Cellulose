@@ -47,6 +47,6 @@ MonoBehaviour:
   fEnemyDefendTurtleWeight: 1
   fEnemyDefendLadderWeight: 1
   EnvironmentColor: {r: 1, g: .724137902, b: 0, a: 1}
-  fSideWallSpeed: 15
-  fBackgroundSpeed: 12.5
-  fParticleStartSpeedMultiplier: 15
+  fSideWallSpeed: 16.4300003
+  fBackgroundSpeed: 13.46
+  fParticleStartSpeedMultiplier: 23.7000008
