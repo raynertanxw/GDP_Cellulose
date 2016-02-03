@@ -84,7 +84,7 @@ public class AudioManager : MonoBehaviour {
 		int MenuTrackCount = 0;
 		int PlayerMainTrackCount = 0;
 		int EnemyMainTrackCount = 0;
-		
+
 		for(int i = 0; i < transform.childCount; i++)
 		{
 			GameObject Child = transform.GetChild(i).gameObject;
@@ -185,10 +185,11 @@ public class AudioManager : MonoBehaviour {
 		LoadRandomBackgroundTrack();
 	}
 	
-	public static void PlayMenuSoundEffect(MenuSFX _sfx)
+	public void PlayMenuSoundEffect(MenuSFX _sfx)
 	{
 		if (MenuTracks == null)
 			return;
+		LoadTracksToLists();
 		MenuTracks[(int) _sfx].Stop();
 		MenuTracks[(int) _sfx].Play();
 	}

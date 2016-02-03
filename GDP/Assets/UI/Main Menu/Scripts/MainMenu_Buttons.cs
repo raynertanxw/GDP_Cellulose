@@ -84,7 +84,7 @@ public class MainMenu_Buttons : MonoBehaviour
 
 	public void Button_Level(int _level)
 	{
-		AudioManager.PlayMenuSoundEffect(MenuSFX.PressSelection);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressSelection);
 
 		Level_Manager.LoadLevel(_level);
 		SceneManager.LoadScene(1);
@@ -92,7 +92,7 @@ public class MainMenu_Buttons : MonoBehaviour
 
 	public void Button_Tutorial()
 	{
-		AudioManager.PlayMenuSoundEffect(MenuSFX.PressSelection);
+		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressSelection);
 
 		Level_Manager.LoadTutorial();
 		SceneManager.LoadScene(3);
