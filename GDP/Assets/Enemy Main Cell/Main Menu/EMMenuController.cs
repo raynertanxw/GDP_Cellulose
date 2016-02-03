@@ -47,7 +47,7 @@ public class EMMenuController : MonoBehaviour
 	void Update () 
 	{
 		// Update camera border
-		CameraLimit ();
+		//CameraLimit ();
 		// Follow camera
 		FollowCamera ();
 		// Update Radius

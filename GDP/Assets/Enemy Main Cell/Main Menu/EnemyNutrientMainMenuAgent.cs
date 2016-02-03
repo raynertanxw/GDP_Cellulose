@@ -80,7 +80,7 @@ public class EnemyNutrientMainMenuAgent : MonoBehaviour
 		if (AgentList != null)
 			AgentList.RemoveAll(item => item == null);
 		// Follow camera
-		FollowCamera ();
+		//FollowCamera ();
 		// Deactivate the nutrient if it is empty
 		if (nSize == 0)
 			ActivateOrDeactivate (false);
