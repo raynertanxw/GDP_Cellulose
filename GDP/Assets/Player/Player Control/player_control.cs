@@ -38,7 +38,7 @@ public class player_control : MonoBehaviour
 	private Image[] controlImages;
 	private bool m_bIsHoldingDownSpawnBtn;
 	private float m_fHoldTime;
-	private float m_fInitialHoldSpawnDelay = 1.0f;
+	private float m_fInitialHoldSpawnDelay = 0.3f;
 	private float m_fHoldSpawnInterval = 0.05f;
 
 	private const string GOname_LeftNode = "UI_Player_LeftNode";
