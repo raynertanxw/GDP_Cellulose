@@ -48,6 +48,7 @@ public class EndGamePanel : MonoBehaviour
 			}
 
 			player_control.Instance.DeselectAllCtrls();
+			player_control.Instance.HidePauseButton();
 			Invoke("EnableEndGameButtons", fButtonDisableTiming);
 		}
 		else

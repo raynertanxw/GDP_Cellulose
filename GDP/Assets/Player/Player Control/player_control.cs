@@ -22,6 +22,7 @@ public class player_control : MonoBehaviour
 						pausePanelCanvasGrp;
 	private RectTransform spwnCptBtnRectTransform;
 	private Text leftNodeChildText, rightNodeChildText, nutrientText, infoText;
+	private Image pauseButtonImage;
 	private Vector3 mainCellPos;
 	private Vector3 spwnCptBtnPos;
 
@@ -55,6 +56,8 @@ public class player_control : MonoBehaviour
 	private const string GOname_RightNode_ScatterShot = "UI_Player_RightNode_ScatterShot";
 	private const string GOname_RightNode_SwamTarget = "UI_Player_RightNode_SwamTarget";
 	private const string GOname_RightNode_BurstShot = "UI_Player_RightNode_BurstShot";
+
+	private Animate m_ResourceTextAnimate;
 	
 	void Awake()
 	{
@@ -81,6 +84,7 @@ public class player_control : MonoBehaviour
 		infoPanelCanvasGrp = transform.GetChild(7).GetChild(4).GetComponent<CanvasGroup>();
 		infoText = transform.GetChild(7).GetChild(4).GetChild(0).GetComponent<Text>();
 		pausePanelCanvasGrp = transform.GetChild(8).GetComponent<CanvasGroup>();
+		pauseButtonImage = transform.GetChild(9).GetComponent<Image>();
 
 		controlImages = new Image[9];
 		controlImages[0] = transform.GetChild(4).GetChild(3).GetComponent<Image>();	// Left BurstShot.
@@ -107,16 +111,20 @@ public class player_control : MonoBehaviour
 		enemyWarningTintCanvasGrp.alpha = 0f;
 		infoPanelCanvasGrp.alpha = 0f;
 		SetPausePanelVisibility(false);
+		pauseButtonImage.enabled = true;
 
 		// Initialize spawn variables
 		m_bIsHoldingDownSpawnBtn = false;
 		m_fHoldTime = 0f;
+
+		// Create Animate objects.
+		m_ResourceTextAnimate = new Animate(transform.GetChild(7).GetChild(3));
 	}
 
 	void Start()
 	{
 		// Update UI
-		UpdateUI_nutrients();
+		nutrientText.text = s_nResources.ToString();	// Update without the animation.
 		UpdateUI_nodeChildCountText();
 	}
 
@@ -168,6 +176,7 @@ public class player_control : MonoBehaviour
 	public void UpdateUI_nutrients()
 	{
 		nutrientText.text = s_nResources.ToString();
+		m_ResourceTextAnimate.ExpandContract(0.25f, 1, 1.5f, true, 0.5f);
 	}
 
 	public void UpdateUI_nodeChildCountText()
@@ -243,13 +252,20 @@ public class player_control : MonoBehaviour
 			pausePanelCanvasGrp.alpha = 1f;
 			pausePanelCanvasGrp.interactable = true;
 			pausePanelCanvasGrp.blocksRaycasts = true;
+			pauseButtonImage.enabled = false;
 		}
 		else
 		{
 			pausePanelCanvasGrp.alpha = 0f;
 			pausePanelCanvasGrp.interactable = false;
 			pausePanelCanvasGrp.blocksRaycasts = false;
+			pauseButtonImage.enabled = true;
 		}
+	}
+
+	public void HidePauseButton()
+	{
+		pauseButtonImage.enabled = false;
 	}
 	#endregion
 
