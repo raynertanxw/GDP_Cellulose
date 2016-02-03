@@ -350,6 +350,8 @@ public class SC_AttackState : ISCState
 	{
 		m_scFSM.mAnimate.ExpandContract(1000f, 2000, 1.5f, true, 0.0f);
 		isColorChanged = false;
+		
+		AudioManager.PlaySquadSoundEffect(SquadSFX.ChildAttack);
 	}
 
 	public override void Execute()

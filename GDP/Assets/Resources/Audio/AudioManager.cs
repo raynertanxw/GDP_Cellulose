@@ -14,8 +14,8 @@ public class AudioManager : MonoBehaviour {
 	private static AudioSource[] MenuTracks;
 	private static AudioSource[] PlayerMainTracks;
 	private static AudioSource[] EnemyMainTracks;
+	private static AudioSource[] SquadMainTracks;
 	
-	private static AudioClip[] PlayerChildTracks;
 	private static AudioClip[] EnemyChildTracks;
 	private static AudioClip[] SquadChildTracks;
 	
@@ -40,10 +40,10 @@ public class AudioManager : MonoBehaviour {
 		BackgroundAudioSource = GetComponent<AudioSource>();
 
 		MenuTracks = new AudioSource[2];
-		PlayerMainTracks = new AudioSource[10];
+		PlayerMainTracks = new AudioSource[13];
 		EnemyMainTracks = new AudioSource[7];
-		
-		PlayerChildTracks = new AudioClip[3];
+		SquadMainTracks = new AudioSource[2];
+
 		EnemyChildTracks = new AudioClip[5];
 		SquadChildTracks = new AudioClip[2];
 		
@@ -84,7 +84,8 @@ public class AudioManager : MonoBehaviour {
 		int MenuTrackCount = 0;
 		int PlayerMainTrackCount = 0;
 		int EnemyMainTrackCount = 0;
-
+		int SquadTrackCount = 0;
+		
 		for(int i = 0; i < transform.childCount; i++)
 		{
 			GameObject Child = transform.GetChild(i).gameObject;
@@ -104,20 +105,18 @@ public class AudioManager : MonoBehaviour {
 				EnemyMainTracks[EnemyMainTrackCount] = Child.GetComponent<AudioSource>();
 				EnemyMainTrackCount++;
 			}
+			else if(Child.name.Contains("Squad"))
+			{
+				SquadMainTracks[SquadTrackCount] = Child.GetComponent<AudioSource>();
+				SquadTrackCount++;
+			}
 		}
-		
-		PlayerChildTracks[0] = Resources.Load<AudioClip>("Audio/Sound Effects/Player SFX/ADPCM/Player_BurstShotv2");
-		PlayerChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Scattershotv2",typeof(AudioClip)) as AudioClip);
-		PlayerChildTracks[2] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Player_Swarm",typeof(AudioClip)) as AudioClip);
-		
+
 		EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_CellChargeTowards",typeof(AudioClip)) as AudioClip);
 		EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_Defend",typeof(AudioClip)) as AudioClip);
 		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_DeployLandmine",typeof(AudioClip)) as AudioClip);
 		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping",typeof(AudioClip)) as AudioClip);
 		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode",typeof(AudioClip)) as AudioClip);
-		
-		SquadChildTracks[0] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_SpawnCell",typeof(AudioClip)) as AudioClip);
-		SquadChildTracks[1] = (Resources.Load("Audio/Sound Effects/Player SFX/ADPCM/Squad_ChildAttack",typeof(AudioClip)) as AudioClip);
 		
 		/*Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
 		for(int i = 0; i < PlayerChildTracks.Length; i++){Debug.Log(PlayerChildTracks[i].name);}
@@ -202,12 +201,32 @@ public class AudioManager : MonoBehaviour {
 		PlayerMainTracks[(int) _sfx].Play();
 	}
 	
+	public static void PlayPMSoundEffectNoOverlap(PlayerMainSFX _sfx)
+	{
+		if (PlayerMainTracks == null)
+			return;
+		if(!PlayerMainTracks[(int) _sfx].isPlaying)
+		{
+			PlayerMainTracks[(int) _sfx].Stop();
+			PlayerMainTracks[(int) _sfx].Play();
+		}
+	}
+	
 	public static void PlayEMSoundEffect(EnemyMainSFX _sfx)
 	{
 		if (EnemyMainTracks == null)
 			return;
 		EnemyMainTracks[(int) _sfx].Stop();
 		EnemyMainTracks[(int) _sfx].Play();
+	}
+	
+	public static void PlayECSoundEffect(EnemyChildSFX _sfx, AudioSource _Source)
+	{
+		if (EnemyChildTracks == null)
+			return;
+		_Source.Stop();
+		_Source.clip = EnemyChildTracks[(int) _sfx];
+		_Source.Play();	
 	}
 	
 	public static void PlayEMSoundEffectNoOverlap(EnemyMainSFX _sfx)
@@ -220,36 +239,14 @@ public class AudioManager : MonoBehaviour {
 			EnemyMainTracks[(int) _sfx].Play();
 		}
 	}
-	
-	public static void PlayPCSoundEffect(PlayerChildSFX _sfx, AudioSource _Source)
-	{
-		if (PlayerChildTracks == null)
-			return;
 
-		_Source.Stop();
-		_Source.clip = PlayerChildTracks[(int) _sfx];
-		_Source.Play();
-	}
-	
-	public static void PlayECSoundEffect(EnemyChildSFX _sfx, AudioSource _Source)
-	{
-		if (EnemyChildTracks == null)
-			return;
-
-		_Source.Stop();
-		_Source.clip = EnemyChildTracks[(int) _sfx];
-		//Debug.Log(EnemyChildTracks[(int) _sfx].name);
-		_Source.Play();
-	}
-	
-	public static void PlaySquadSoundEffect(SquadSFX _sfx, AudioSource _Source)
+	public static void PlaySquadSoundEffect(SquadSFX _sfx)
 	{
 		if (SquadChildTracks == null)
 			return;
 
-		_Source.Stop();
-		_Source.clip = SquadChildTracks[(int) _sfx];
-		_Source.Play();
+		SquadMainTracks[(int) _sfx].Stop();
+		SquadMainTracks[(int) _sfx].Play();
 	}
 	
 	private IEnumerator SceneTransition()

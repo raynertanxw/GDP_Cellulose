@@ -359,6 +359,7 @@ public class SquadChildFSM : MonoBehaviour
 			{
 				s_array_SquadChildFSM[i].transform.position = _position;
 				s_array_SquadChildFSM[i].Advance(SCState.Produce);
+				AudioManager.PlaySquadSoundEffect(SquadSFX.SpawnCell);
 				return s_array_SquadChildFSM[i];
 			}
 		}
