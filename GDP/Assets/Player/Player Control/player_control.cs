@@ -30,6 +30,10 @@ public class player_control : MonoBehaviour
 	public Color m_highLightedColor;
 	public Color m_unselectedColor;
 	private Image[] controlImages;
+	private bool m_bIsHoldingDownSpawnBtn;
+	private float m_fHoldTime;
+	private float m_fInitialHoldSpawnDelay = 1.0f;
+	private float m_fHoldSpawnInterval = 0.05f;
 
 	private const string GOname_LeftNode = "UI_Player_LeftNode";
 	private const string GOname_RightNode = "UI_Player_RightNode";
@@ -95,6 +99,10 @@ public class player_control : MonoBehaviour
 		playerHurtTintCanvasGrp.alpha = 0f;
 		enemyWarningTintCanvasGrp.alpha = 0f;
 		infoPanelCanvasGrp.alpha = 0f;
+
+		// Initialize spawn variables
+		m_bIsHoldingDownSpawnBtn = false;
+		m_fHoldTime = 0f;
 	}
 
 	void Start()
@@ -130,6 +138,21 @@ public class player_control : MonoBehaviour
 		{
 			if (spwnCptBtnGO.activeSelf == false)
 				spwnCptBtnGO.SetActive(true);
+		}
+
+		if (m_bIsHoldingDownSpawnBtn)
+		{
+			m_fHoldTime += Time.deltaTime;
+
+			if (m_fHoldTime > (m_fInitialHoldSpawnDelay + m_fHoldSpawnInterval))
+			{
+				m_fHoldTime -= m_fHoldSpawnInterval;
+				ActionSpawn((int)activeNode);
+			}
+		}
+		else
+		{
+			m_fHoldTime = 0f;
 		}
 	}
 
@@ -281,7 +304,7 @@ public class player_control : MonoBehaviour
 	public void ActionSpawn(int _nodeIndex)
 	{
 		Node _selectedNode = (Node) _nodeIndex;
-		if (activeNode != Node.None)
+		if (activeNode != Node.None && !m_bIsHoldingDownSpawnBtn)
 			return;
 
 		if (PlayerChildFSM.GetActiveChildCount() >= Constants.s_nPlayerMaxChildCount)
@@ -555,6 +578,8 @@ public class player_control : MonoBehaviour
 			return;
 
 		Node _selectedNode = (Node) _nodeIndex;
+		m_bIsHoldingDownSpawnBtn = true;
+
 		switch (_selectedNode)
 		{
 		case Node.LeftNode:
@@ -573,14 +598,20 @@ public class player_control : MonoBehaviour
 	{
 		Node _selectedNode = (Node) _nodeIndex;
 
-		if (_selectedNode == activeNode)
-			activeNode = Node.None;
+		if (_selectedNode != activeNode)
+			return;
+
+		activeNode = Node.None;
+		m_bIsHoldingDownSpawnBtn = false;
 	}
 
 	public void NodeBeginDrag(BaseEventData _data)
 	{
 		if (activeDraggedNode != Node.None)
 			return;
+
+		// Disable hold to spawn when dragging.
+		m_bIsHoldingDownSpawnBtn = false;
 
 		PointerEventData pointerData = _data as PointerEventData;
 		switch (pointerData.pointerPressRaycast.gameObject.name)
