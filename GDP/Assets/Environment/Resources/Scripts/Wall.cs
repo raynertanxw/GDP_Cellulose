@@ -75,7 +75,6 @@ public class Wall : MonoBehaviour
 		bgParticleSystem.startColor = colorArtillery;
 		// Set the starting speed from Settings.cs
 		bgParticleSystem.startSpeed = Settings.s_fParticleStartSpeedMultiplier;
-		bgParticleSystem.emissionRate = Settings.s_fParticleStartSpeedMultiplier;
 		// Since prewarm of particle systems doesn't adapt to the new color, the particle system will be simulated beforehand
 		bgParticleSystem.Clear();
 		bgParticleSystem.Simulate(bgParticleSystem.startLifetime);

@@ -13,13 +13,7 @@ public class player_control : MonoBehaviour
 
 	private Transform m_SquadCaptainNode;
 	private GameObject spwnCptBtnGO;
-	private CanvasGroup leftNodeCanvasGrp,
-						rightNodeCanavsGrp,
-						spawnCtrlCanvasGrp,
-						playerHurtTintCanvasGrp,
-						enemyWarningTintCanvasGrp,
-						infoPanelCanvasGrp,
-						pausePanelCanvasGrp;
+	private CanvasGroup leftNodeCanvasGrp, rightNodeCanavsGrp, spawnCtrlCanvasGrp, playerHurtTintCanvasGrp, enemyWarningTintCanvasGrp, infoPanelCanvasGrp;
 	private RectTransform spwnCptBtnRectTransform;
 	private Text leftNodeChildText, rightNodeChildText, nutrientText, infoText;
 	private Vector3 mainCellPos;
@@ -76,7 +70,6 @@ public class player_control : MonoBehaviour
 		nutrientText = transform.GetChild(7).GetChild(3).GetComponent<Text>();
 		infoPanelCanvasGrp = transform.GetChild(7).GetChild(4).GetComponent<CanvasGroup>();
 		infoText = transform.GetChild(7).GetChild(4).GetChild(0).GetComponent<Text>();
-		pausePanelCanvasGrp = transform.GetChild(8).GetComponent<CanvasGroup>();
 
 		controlImages = new Image[9];
 		controlImages[0] = transform.GetChild(4).GetChild(3).GetComponent<Image>();	// Left BurstShot.
@@ -102,7 +95,6 @@ public class player_control : MonoBehaviour
 		playerHurtTintCanvasGrp.alpha = 0f;
 		enemyWarningTintCanvasGrp.alpha = 0f;
 		infoPanelCanvasGrp.alpha = 0f;
-		SetPausePanelVisibility(false);
 	}
 
 	void Start()
@@ -212,22 +204,6 @@ public class player_control : MonoBehaviour
 		SetRightNodeControlVisibility(false);
 		;
 	}
-
-	public void SetPausePanelVisibility(bool _visibile)
-	{
-		if (_visibile)
-		{
-			pausePanelCanvasGrp.alpha = 1f;
-			pausePanelCanvasGrp.interactable = true;
-			pausePanelCanvasGrp.blocksRaycasts = true;
-		}
-		else
-		{
-			pausePanelCanvasGrp.alpha = 0f;
-			pausePanelCanvasGrp.interactable = false;
-			pausePanelCanvasGrp.blocksRaycasts = false;
-		}
-	}
 	#endregion
 
 
@@ -299,26 +275,7 @@ public class player_control : MonoBehaviour
 	#endregion
 
 
-	#region Pause Controls
-	public void Button_Pause()
-	{
-		GameManager.Instance.SetPause(true);
-		SetPausePanelVisibility(true);
-	}
 
-	public void Button_Resume()
-	{
-		GameManager.Instance.SetPause(false);
-		SetPausePanelVisibility(false);
-	}
-
-	public void Button_PauseReturnMainMenu()
-	{
-		// Reset Timescale
-		Time.timeScale = 1f;
-		SceneManager.LoadScene(0);
-	}
-	#endregion
 	
 	#region Actions for UI Buttons to call
 	public void ActionSpawn(int _nodeIndex)

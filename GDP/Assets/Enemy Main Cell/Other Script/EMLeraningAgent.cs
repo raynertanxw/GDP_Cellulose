@@ -165,9 +165,12 @@ public class EMLeraningAgent : MonoBehaviour
 		int nCurrentEnemyChild = m_EMFSM.AvailableChildNum;
 		int nCurrentPlayerChild = PlayerChildFSM.GetActiveChildCount ();
 		int nCurrentSquadChild = 0;
-		if (PlayerSquadFSM.Instance != null)
+		bool bSquadCaptainIsAlive = false;
+		if (PlayerSquadFSM.Instance != null) 
+		{
 			nCurrentSquadChild = PlayerSquadFSM.Instance.AliveChildCount ();
-		bool bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
+			bSquadCaptainIsAlive = PlayerSquadFSM.Instance.IsAlive;
+		}
 		int nCurrentEnemyHealth = m_EMFSM.Health;
 		int nCurrentPlayerHealth = 0;
 		if (PlayerMain.Instance != null)
@@ -185,7 +188,7 @@ public class EMLeraningAgent : MonoBehaviour
 		yield return new WaitForSeconds (checkFreq);
 
 		// If we are still in the same state then proceed
-		if (EMLeraningAgent.instance != null)
+		if (EMLeraningAgent.instance != null && PlayerChildFSM.playerChildPool != null && PlayerSquadFSM.Instance != null)
 		{
 			if (pastState == m_EMFSM.CurrentStateIndex)
 				LearningElement (pastState, pastEnemyChild, m_EMFSM.AvailableChildNum, pastPlayerChild, PlayerChildFSM.GetActiveChildCount(),

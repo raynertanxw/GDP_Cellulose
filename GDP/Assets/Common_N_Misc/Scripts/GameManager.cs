@@ -6,9 +6,6 @@ public class GameManager : MonoBehaviour
 	private static GameManager s_Instance = null;
 	public static GameManager Instance { get { return s_Instance; } }
 
-	private static bool s_bPaused = false;
-	public static bool IsPaused { get { return s_bPaused; } }
-
 	public bool bPlayerWon;
 	public bool bGameIsOver;
 
@@ -21,8 +18,6 @@ public class GameManager : MonoBehaviour
 
 		bPlayerWon = false;
 		bGameIsOver = false;
-		s_bPaused = false;
-		Time.timeScale = 1f;
 	}
 
 	void Update()
@@ -36,27 +31,8 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-	public void SetPause(bool _pause)
-	{
-		if (_pause)
-		{
-			s_bPaused = true;
-			Time.timeScale = 0f;
-		}
-		else
-		{
-			s_bPaused = false;
-			Time.timeScale = 1f;
-		}
-	}
-
 	private bool CheckGameEnd()
 	{
-		if (EnemyMainFSM.Instance() == null ||
-		    PlayerMain.Instance == null ||
-		    EMHelper.Instance() == null)
-			return false;
-
 		if (EnemyMainFSM.Instance().CurrentStateIndex == EMState.Die)
 		{
 			bPlayerWon = true;

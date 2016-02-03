@@ -14,7 +14,7 @@ MonoBehaviour:
   nPlayerInitialHealth: 50
   nPlayerInitialResourceCount: 200
   nPlayerNutrientPerBlock: 10
-  fPlayerNutrientChance: .400000006
+  fPlayerNutrientChance: .600000024
   nPlayerChildSpawnCost: 5
   nPlayerSqaudCaptainChildCost: 15
   nPlayerActionBurstShotChildCost: 5
@@ -29,7 +29,7 @@ MonoBehaviour:
   nEnemyMainInitialChildCellNum: 15
   nEnemyMainInitialAggressiveness: 7
   fEnemyMainInitialVertSpeed: .0700000003
-  fEnemyMainMinHiriSpeed: .0500000007
+  fEnemyMainMinHiriSpeed: .0700000003
   fDefaultStunTime: 3.5
   fDefaultStunTolerance: 8
   nEnemyChildCountCap: 50
@@ -47,6 +47,6 @@ MonoBehaviour:
   fEnemyDefendTurtleWeight: 1
   fEnemyDefendLadderWeight: 1
   EnvironmentColor: {r: 1, g: .724137902, b: 0, a: 1}
-  fSideWallSpeed: 16.4300003
-  fBackgroundSpeed: 13.46
-  fParticleStartSpeedMultiplier: 23.7000008
+  fSideWallSpeed: 15
+  fBackgroundSpeed: 12.5
+  fParticleStartSpeedMultiplier: 15

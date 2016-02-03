@@ -48,5 +48,4 @@ MonoBehaviour:
   fEnemyDefendLadderWeight: 1
   EnvironmentColor: {r: .492647052, g: .958012164, b: 1, a: 1}
   fSideWallSpeed: 5
-  fBackgroundSpeed: 2.5
-  fParticleStartSpeedMultiplier: 5
+  BackgroundSpeed: 2.5

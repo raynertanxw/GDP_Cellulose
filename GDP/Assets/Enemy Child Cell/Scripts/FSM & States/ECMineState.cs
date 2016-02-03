@@ -66,13 +66,18 @@ public class ECMineState : IECState {
 	public override void Enter()
 	{
 		if(m_ecFSM.m_AttackTarget != null){CheckIfEnoughCells();};
+	
+		m_bGatherTogether = false;
+		m_bExploding = false;
+		m_bReachTarget = false;
+		m_bExplodeCorountineStart = false;
+		m_nECMineNearby = 0;
+		m_CurrentSpreadness = Spread.Empty;
 
-		m_bExpandContractStart = false;
 		m_Main.GetComponent<Rigidbody2D>().drag = 2.4f;
 		ECTracker.Instance.LandmineCells.Add(m_ecFSM);
 		
 		if(m_LeaderMine == null){m_LeaderMine = ObtainLeaderFrmMines();}
-		if(m_bGatherTogether){m_ecFSM.rigidbody2D.drag = 3.0f;}
 	}
 
 	public override void Execute()
@@ -142,7 +147,6 @@ public class ECMineState : IECState {
 
 		if(m_bGatherTogether && !m_bExpandContractStart)
 		{
-			Debug.Log(m_Child.name + " expands and contract");
 			m_Animator.ExpandContract(15f,60,1.9f);
 			m_bExpandContractStart = true;
 		}
@@ -208,7 +212,6 @@ public class ECMineState : IECState {
 		}
 		else if(m_bReachTarget)
 		{
-			//Debug.Log("go for ending movement: " + m_Child.name);
 			Acceleration += SteeringBehavior.Seek(m_Child,m_EndPosition,12f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 12f;
 			AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
@@ -250,12 +253,6 @@ public class ECMineState : IECState {
 			m_CurrentTargetPoint = null;
 			m_nCurrentTargetIndex = 0;
 			m_LeaderMine = null;
-
-			m_bExploding = false;
-			m_bReachTarget = false;
-			m_bExplodeCorountineStart = false;
-			m_nECMineNearby = 0;
-			m_CurrentSpreadness = Spread.Empty;
 		}
 
 		m_Child.transform.localScale = Vector3.one;
