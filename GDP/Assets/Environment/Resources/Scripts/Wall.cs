@@ -65,7 +65,7 @@ public class Wall : MonoBehaviour
 		colorArtillery = Settings.s_EnvironmentColor;
 		fNutrientsChance = Settings.s_fPlayerNutrientChance;
 		fWallSidesSpeed = Settings.s_fSideWallSpeed;
-		fWallBackgroundSpeed = Settings.s_BackgroundSpeed;
+		fWallBackgroundSpeed = Settings.s_fBackgroundSpeed;
 
 
 
@@ -73,6 +73,8 @@ public class Wall : MonoBehaviour
 		bgParticleSystem = transform.GetChild(2).GetComponent<ParticleSystem>();
 		// Use the same color as the wall-sides and background
 		bgParticleSystem.startColor = colorArtillery;
+		// Set the starting speed from Settings.cs
+		bgParticleSystem.startSpeed = Settings.s_fParticleStartSpeedMultiplier;
 		// Since prewarm of particle systems doesn't adapt to the new color, the particle system will be simulated beforehand
 		bgParticleSystem.Clear();
 		bgParticleSystem.Simulate(bgParticleSystem.startLifetime);

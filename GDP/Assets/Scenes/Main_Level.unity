@@ -4033,6 +4033,10 @@ MonoBehaviour:
   bIsDefend: 0
   bMovingLeft: 0
   nDamageNum: 0
+  bPushed: 0
+  bStunned: 0
+  bCanPush: 0
+  bCanStun: 0
   fDefaultStunTime: 0
   fCurrentStunTime: 0
   fStunCoolDown: 0
@@ -12292,7 +12296,7 @@ ParticleSystem:
   InitialModule:
     enabled: 1
     startLifetime:
-      scalar: 10
+      scalar: 15
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -12346,7 +12350,7 @@ ParticleSystem:
           tangentMode: 0
         m_PreInfinity: 2
         m_PostInfinity: 2
-      minMaxState: 3
+      minMaxState: 2
     startColor:
       maxGradient:
         key0:
@@ -12836,7 +12840,7 @@ ParticleSystem:
   ForceModule:
     enabled: 1
     x:
-      scalar: .5
+      scalar: .25
       maxCurve:
         serializedVersion: 2
         m_Curve:

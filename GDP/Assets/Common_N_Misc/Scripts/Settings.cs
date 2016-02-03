@@ -61,6 +61,7 @@ public class Settings : MonoBehaviour
     #region Aesthetics Level Variables
     public static Color s_EnvironmentColor = Color.white;
     public static float s_fSideWallSpeed = 15f;
-    public static float s_BackgroundSpeed = 12.5f;
+    public static float s_fBackgroundSpeed = 12.5f;
+	public static float s_fParticleStartSpeedMultiplier = 15.0f;
     #endregion
 }

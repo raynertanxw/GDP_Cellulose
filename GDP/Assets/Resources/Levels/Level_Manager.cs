@@ -80,6 +80,7 @@ public class Level_Manager
         // Aesthetics Level Variables
         Settings.s_EnvironmentColor = _data.EnvironmentColor;
         Settings.s_fSideWallSpeed = _data.fSideWallSpeed;
-        Settings.s_BackgroundSpeed = _data.BackgroundSpeed;
+        Settings.s_fBackgroundSpeed = _data.fBackgroundSpeed;
+		Settings.s_fParticleStartSpeedMultiplier = _data.fParticleStartSpeedMultiplier;
     }
 }

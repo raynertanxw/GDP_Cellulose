@@ -104,6 +104,8 @@ public class LevelTemplate : ScriptableObject
     [Range(5.0f, 20.0f)] [Tooltip("Scrolling speed of the walls.")]
     public float fSideWallSpeed = 15f;
     [Range(2.5f, 15.0f)] [Tooltip("Scrolling speed of the background.")]
-    public float BackgroundSpeed = 12.5f;
+    public float fBackgroundSpeed = 12.5f;
+	[Range(5.0f, 50.0f)] [Tooltip("Multiplier for start speed of particle system.")]
+	public float fParticleStartSpeedMultiplier = 15.0f;
     #endregion
 }
