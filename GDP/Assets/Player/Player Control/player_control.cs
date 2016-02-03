@@ -610,9 +610,6 @@ public class player_control : MonoBehaviour
 		if (activeDraggedNode != Node.None)
 			return;
 
-		// Disable hold to spawn when dragging.
-		m_bIsHoldingDownSpawnBtn = false;
-
 		PointerEventData pointerData = _data as PointerEventData;
 		switch (pointerData.pointerPressRaycast.gameObject.name)
 		{
@@ -641,10 +638,14 @@ public class player_control : MonoBehaviour
 			if (pointerData.pointerCurrentRaycast.gameObject.name != GOname_LeftNode)
 			{
 				SetLeftNodeControlVisibility(true);
+				// Disable hold to spawn when dragging.
+				m_bIsHoldingDownSpawnBtn = false;
 				AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectAppear);
 			}
 			else
 			{
+				// Renable hold to spawn when control panel is back.
+				m_bIsHoldingDownSpawnBtn = true;
 				SetLeftNodeControlVisibility(false);
 			}
 
@@ -693,10 +694,14 @@ public class player_control : MonoBehaviour
 			if (pointerData.pointerCurrentRaycast.gameObject.name != GOname_RightNode)
 			{
 				SetRightNodeControlVisibility(true);
+				// Disable hold to spawn when dragging.
+				m_bIsHoldingDownSpawnBtn = false;
 			    AudioManager.PlayPMSoundEffect(PlayerMainSFX.ActionSelectAppear);
 			}
 			else
 			{
+				// Renable hold to spawn when control panel is back.
+				m_bIsHoldingDownSpawnBtn = true;
 				SetRightNodeControlVisibility(false);
 			}
 
