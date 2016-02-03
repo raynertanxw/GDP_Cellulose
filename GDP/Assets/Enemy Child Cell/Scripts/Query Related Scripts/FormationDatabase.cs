@@ -81,7 +81,8 @@ public class FormationDatabase
 			
 			float AngleInterval = 360f/CellsPerCircle;
 			float CurrentAngle = 180f;
-			float GapBetweenCircle = 2.5f;
+			float GapBetweenCircle = 1.25f * m_fCurrentMainScale;//2.5f;
+			float YAdjustValue = 0.5f;
 			
 			Vector2 TargetDirection = new Vector2(Mathf.Cos(CurrentAngle * Mathf.Deg2Rad), Mathf.Sin(CurrentAngle * Mathf.Deg2Rad));
 			Vector2 CurrentFormationPosition = TargetDirection * GapBetweenCircle;
@@ -92,6 +93,8 @@ public class FormationDatabase
 				TargetDirection.x = Mathf.Cos(CurrentAngle * Mathf.Deg2Rad);
 				TargetDirection.y = Mathf.Sin(CurrentAngle * Mathf.Deg2Rad);
 				CurrentFormationPosition = TargetDirection.normalized * GapBetweenCircle * CircleCount;
+				CurrentFormationPosition.y -= YAdjustValue;
+
 				m_FPositionDatabase[FIndex] = CurrentFormationPosition;
 				m_FAvaliabilityDatabase[FIndex] = false;
 				//ebug.Log("Position " + FIndex + ": " + CurrentFormationPosition);

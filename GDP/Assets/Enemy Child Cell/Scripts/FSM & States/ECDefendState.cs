@@ -55,7 +55,7 @@ public class ECDefendState : IECState {
 		m_bKillClosestAttacker = false;
 		m_bThereIsDefenders = true;
 		
-		m_fMainScale = m_Main.transform.localScale.x * 0.75f;
+		m_fMainScale = m_Main.transform.localScale.x;//m_Main.transform.localScale.x * 0.75f;
 		m_ecFSM.rigidbody2D.drag = 3f;
 		
 		ECTracker.s_Instance.DefendCells.Add(m_ecFSM);
@@ -158,14 +158,14 @@ public class ECDefendState : IECState {
 			m_ecFSM.RotateToHeading();
 		}
 		//If there is no attackers to the enemy main cell, increase the defend time. If that time reaches a limit, return the cells back to the main cell and transition back to idle state
-		else if(!m_bKillClosestAttacker && m_bReachPos && !m_bReturnToMain && IsThereNoAttackers())
+		/*else if(!m_bKillClosestAttacker && m_bReachPos && !m_bReturnToMain && IsThereNoAttackers())
 		{
 			m_fDefendTime += Time.deltaTime;
 			if(m_fDefendTime >= 20f)
 			{
 				m_bReturnToMain = true;
 			}
-		}
+		}*/
 
 		//If the enemy child cells is return back to the enemy main cell but has not reach the position, continue seek back to the main cell
 		if(!m_bReachedMain && m_bReturnToMain && !HasCellReachTargetPos(m_ECTransform.position,m_EMTransform.position))
