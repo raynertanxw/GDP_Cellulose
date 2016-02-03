@@ -16225,8 +16225,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fNutrientsChance: .25
   fNutrientsDelay: 1
-  fSpawnYRange: 12
-  fSpawnYOffset: 3
+  fSpawnYRange: 10
+  fSpawnYOffset: 2
   array_WallSidesGO:
   - {fileID: 647463703}
   - {fileID: 1147798510}
@@ -21959,8 +21959,8 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: fdbd0fbbbbafa9f4db00c6a754288044, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4

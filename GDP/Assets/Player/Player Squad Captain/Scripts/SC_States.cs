@@ -339,6 +339,7 @@ public class SC_DefendState : ISCState
 // SC_AttackState: The attack state of the player squad's captain FSM
 public class SC_AttackState : ISCState
 {
+	public bool isColorChanged = false;
 	// Constructor
 	public SC_AttackState(SquadChildFSM m_SquadChildFSM)
 	{
@@ -348,11 +349,17 @@ public class SC_AttackState : ISCState
 	public override void Enter()
 	{
 		m_scFSM.mAnimate.ExpandContract(1000f, 2000, 1.5f, true, 0.0f);
-		m_scFSM.m_SpriteRenderer.color = new Color(1f, 0.12f, 0.12f);
+		isColorChanged = false;
 	}
 
 	public override void Execute()
 	{
+		if (m_scFSM.attackTarget != null && !isColorChanged)
+		{
+			m_scFSM.m_SpriteRenderer.color = new Color(1f, 0.12f, 0.12f);
+			isColorChanged = true;
+		}
+
 		ExecuteMethod.OnceInUpdate("SquadChildFSM.GetNearestTargetPosition", null, null);
 		m_scFSM.AttackTarget();
 	}
@@ -361,6 +368,7 @@ public class SC_AttackState : ISCState
 	{
 		m_scFSM.mAnimate.StopExpandContract(false);
 		m_scFSM.m_SpriteRenderer.color = Color.white;
+		isColorChanged = false;
 	}
 }
 
@@ -403,7 +411,7 @@ public class SC_AvoidState : ISCState
 
 		//Debug.Log(m_scFSM.gameObject.name + "::Rigibody->velocity(): " + m_scFSM.RigidBody.velocity + ", finalMovment: " + finalMovement);
 
-		m_scFSM.RigidBody.AddForce(finalMovement * 50.0f);
-		m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, finalMovement.magnitude * 5.0f);
+		m_scFSM.RigidBody.AddForce(finalMovement * 10.0f);
+		m_scFSM.RigidBody.velocity = Vector3.ClampMagnitude(m_scFSM.RigidBody.velocity, finalMovement.magnitude * 0.5f);
 	}
 }

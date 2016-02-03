@@ -75,6 +75,8 @@ public class SquadChildFSM : MonoBehaviour
 	// Private Functions
 	void OnCollisionEnter2D(Collision2D _collision)
 	{
+		Debug.Log(this.gameObject.name + " Collided With: " + _collision.gameObject.name);
+
 		// Hit Enemy Child
 		if (_collision.gameObject.tag == Constants.s_strEnemyChildTag)
 		{
@@ -197,7 +199,8 @@ public class SquadChildFSM : MonoBehaviour
 		ExecuteMethod.OnceInUpdate("SquadChildFSM.StrafingVector", null, null);
 		// targetPosition: The calculated target position - includes its angular offset from the main vector and the squad's captain position
 		Vector3 targetPosition = Quaternion.Euler(0.0f, 0.0f, fStrafingOffsetAngle) * m_strafingVector + PlayerSquadFSM.Instance.transform.position;
-		m_RigidBody.MovePosition((targetPosition - transform.position) * Time.deltaTime * 3.0f + transform.position);
+		m_RigidBody.AddForce((targetPosition - transform.position) * 10f);
+		m_RigidBody.velocity = Vector3.ClampMagnitude(m_RigidBody.velocity, 1f);
 		return true;
 	}
 
@@ -535,6 +538,12 @@ public class SquadChildFSM : MonoBehaviour
 	// GetNearestTargetPosition(): Assign a target to aggressive squad child cells.
 	public static bool GetNearestTargetPosition()
 	{
+		// if: There are no attacking squad children
+		if (SquadChildFSM.StateCount(SCState.Attack) == 0)
+		{
+			return false;
+		}
+
 		s_list_enemyChild = EnemyMainFSM.Instance().ECList;
 
 		// if: There is no enemy child cells to attack
@@ -545,12 +554,6 @@ public class SquadChildFSM : MonoBehaviour
 				if (s_array_SquadChildFSM[i].EnumState == SCState.Attack)
 					s_array_SquadChildFSM[i].Advance(SCState.Idle);
 			}
-			return false;
-		}
-
-		// if: There are no attacking squad children
-		if (SquadChildFSM.StateCount(SCState.Attack) == 0)
-		{
 			return false;
 		}
 
