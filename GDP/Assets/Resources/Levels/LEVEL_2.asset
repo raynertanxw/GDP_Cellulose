@@ -24,7 +24,7 @@ MonoBehaviour:
   fMinimumCooldown: 1
   fMaximumCooldown: 2
   fThinkCooldown: .5
-  nEnemyMainInitialHealth: 60
+  nEnemyMainInitialHealth: 75
   nEnemyMainInitialNutrientNum: 60
   nEnemyMainInitialChildCellNum: 10
   nEnemyMainInitialAggressiveness: 4
@@ -48,4 +48,5 @@ MonoBehaviour:
   fEnemyDefendLadderWeight: 1
   EnvironmentColor: {r: .250980407, g: .282352954, b: .623529434, a: 1}
   fSideWallSpeed: 8.89999962
-  BackgroundSpeed: 5.61000013
+  fBackgroundSpeed: 12.5
+  fParticleStartSpeedMultiplier: 15

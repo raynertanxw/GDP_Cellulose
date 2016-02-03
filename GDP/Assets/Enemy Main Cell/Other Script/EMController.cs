@@ -260,7 +260,7 @@ public class EMController : MonoBehaviour
 		// Not force back when stunned
 		ResetVelocity ();
         // Wait(being stunned)pushBackVel for seconds
-		yield return new WaitForSeconds (Settings.s_fDefaultStunTime);
+		yield return new WaitForSeconds (Settings.s_fDefaultStunTime + Mathf.Sqrt((float)nDamageNum)/2f);
         // Set back the stunned status
 		bStunned = false;
 		float stunCoolDown = (float)nDamageNum * 1.5f;

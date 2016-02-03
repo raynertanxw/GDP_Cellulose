@@ -24,12 +24,12 @@ MonoBehaviour:
   fMinimumCooldown: 1
   fMaximumCooldown: 2
   fThinkCooldown: .5
-  nEnemyMainInitialHealth: 100
+  nEnemyMainInitialHealth: 125
   nEnemyMainInitialNutrientNum: 50
   nEnemyMainInitialChildCellNum: 15
   nEnemyMainInitialAggressiveness: 7
-  fEnemyMainInitialVertSpeed: .0700000003
-  fEnemyMainMinHiriSpeed: .0700000003
+  fEnemyMainInitialVertSpeed: .0649999976
+  fEnemyMainMinHiriSpeed: .0649999976
   fDefaultStunTime: 3.5
   fDefaultStunTolerance: 8
   nEnemyChildCountCap: 50
