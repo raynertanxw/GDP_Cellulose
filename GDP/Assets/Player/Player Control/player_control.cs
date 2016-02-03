@@ -59,6 +59,10 @@ public class player_control : MonoBehaviour
 	private const string GOname_RightNode_BurstShot = "UI_Player_RightNode_BurstShot";
 
 	private Animate m_ResourceTextAnimate;
+	private Animate m_LeftNodeChildTextAnimate, m_RightNodeChildTextAnimate;
+	private float childCountTextPopOffsetY = 240.0f;
+	private const float childCountTextOriginY = -800.0f;
+	private float childCountTextReturnSpeed = 400.0f;
 	
 	void Awake()
 	{
@@ -120,6 +124,8 @@ public class player_control : MonoBehaviour
 
 		// Create Animate objects.
 		m_ResourceTextAnimate = new Animate(transform.GetChild(7).GetChild(3));
+		m_LeftNodeChildTextAnimate = new Animate(transform.GetChild(7).GetChild(2).GetChild(0));
+		m_RightNodeChildTextAnimate = new Animate(transform.GetChild(7).GetChild(2).GetChild(1));
 	}
 
 	void Start()
@@ -171,6 +177,8 @@ public class player_control : MonoBehaviour
 		{
 			m_fHoldTime = 0f;
 		}
+
+		UpdateUI_nodeChildCountPos();
 	}
 
 	#region UI HUD update functions
@@ -184,6 +192,23 @@ public class player_control : MonoBehaviour
 	{
 		leftNodeChildText.text = Node_Manager.GetNode(Node.LeftNode).activeChildCount.ToString();
 		rightNodeChildText.text = Node_Manager.GetNode(Node.RightNode).activeChildCount.ToString();
+	}
+
+	private void UpdateUI_nodeChildCountPos()
+	{
+		if (leftNodeChildText.transform.localPosition.y != childCountTextOriginY)
+		{
+			leftNodeChildText.transform.localPosition -= new Vector3(0f, childCountTextReturnSpeed * Time.deltaTime);
+			if (leftNodeChildText.transform.localPosition.y < childCountTextOriginY)
+				leftNodeChildText.transform.localPosition = new Vector3(leftNodeChildText.transform.localPosition.x, childCountTextOriginY);
+		}
+
+		if (rightNodeChildText.transform.localPosition.y != childCountTextOriginY)
+		{
+			rightNodeChildText.transform.localPosition -= new Vector3(0f, childCountTextReturnSpeed * Time.deltaTime);
+			if (rightNodeChildText.transform.localPosition.y < childCountTextOriginY)
+				rightNodeChildText.transform.localPosition = new Vector3(rightNodeChildText.transform.localPosition.x, childCountTextOriginY);
+		}
 	}
 
 	public void FlashPlayerHurtTint()
@@ -405,8 +430,21 @@ public class player_control : MonoBehaviour
 			s_nResources -= Settings.s_nPlayerChildSpawnCost;
 			UpdateUI_nutrients();
 			UpdateUI_nodeChildCountText();
-			
+
+			// Animations
 			PlayerMain.Instance.animate.ExpandContract(0.5f, 1, 1.2f, true, 0.2f);
+			switch(_selectedNode)
+			{
+			case Node.LeftNode:
+				leftNodeChildText.transform.localPosition = new Vector3(leftNodeChildText.transform.localPosition.x, childCountTextOriginY + childCountTextPopOffsetY);
+				m_LeftNodeChildTextAnimate.ExpandContract(1.1f, 1, 4.0f, true, 0.4f);
+				break;
+			case Node.RightNode:
+				rightNodeChildText.transform.localPosition = new Vector3(rightNodeChildText.transform.localPosition.x, childCountTextOriginY + childCountTextPopOffsetY);
+				m_RightNodeChildTextAnimate.ExpandContract(1.1f, 1, 4.0f, true, 0.4f);
+				break;
+			}
+
 			AudioManager.PlayPMSoundEffect(PlayerMainSFX.SpawnCell);
 		}
 		else
