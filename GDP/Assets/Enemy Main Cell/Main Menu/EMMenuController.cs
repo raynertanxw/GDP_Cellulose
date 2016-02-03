@@ -49,7 +49,7 @@ public class EMMenuController : MonoBehaviour
 		// Update camera border
 		//CameraLimit ();
 		// Follow camera
-		FollowCamera ();
+		//FollowCamera ();
 		// Update Radius
 		if (fRadius != GetComponent<CircleCollider2D> ().bounds.size.x / 2f)
 			fRadius = GetComponent<CircleCollider2D> ().bounds.size.x / 2f;
