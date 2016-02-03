@@ -351,6 +351,8 @@ public class PositionQuery
 		if(HighestDesirability == LadderDesirability){return Formation.Ladder;}
 		
 		return Formation.ReverseCircular;
+
+		//return Formation.Turtle;
 	}
 
 	public PlayerAttackMode GetMostSignificantAttack()

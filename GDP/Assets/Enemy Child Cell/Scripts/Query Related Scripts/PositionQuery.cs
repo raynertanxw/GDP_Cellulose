@@ -251,7 +251,7 @@ public class PositionQuery
 	public Formation GetDefensiveFormation()
 	{
 		// Factors - Types of Attack, Amount of Defenders, Attack Source
-		/*float QCDesirability = 0;
+		float QCDesirability = 0;
 		float RCDesirability = 0;
 		float TurtleDesirability = 0;
 		float LadderDesirability = 0;
@@ -344,15 +344,15 @@ public class PositionQuery
 		TurtleDesirability *= Settings.s_fEnemyDefendTurtleWeight;
 		LadderDesirability *= Settings.s_fEnemyDefendLadderWeight;
 		
-		/*float HighestDesirability = Mathf.Max(QCDesirability,Mathf.Max(RCDesirability,Mathf.Max(TurtleDesirability,LadderDesirability)));
+		float HighestDesirability = Mathf.Max(QCDesirability,Mathf.Max(RCDesirability,Mathf.Max(TurtleDesirability,LadderDesirability)));
 		if(HighestDesirability == QCDesirability){return Formation.QuickCircle;}
 		if(HighestDesirability == RCDesirability){return Formation.ReverseCircular;}
 		if(HighestDesirability == TurtleDesirability){return Formation.Turtle;}
 		if(HighestDesirability == LadderDesirability){return Formation.Ladder;}
 		
-		return Formation.ReverseCircular;*/
+		return Formation.ReverseCircular;
 
-		return Formation.QuickCircle;
+		//return Formation.Turtle;
 	}
 
 	public PlayerAttackMode GetMostSignificantAttack()

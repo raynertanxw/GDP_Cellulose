@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -55,7 +55,7 @@ public class ECDefendState : IECState {
 		m_bKillClosestAttacker = false;
 		m_bThereIsDefenders = true;
 		
-		m_fMainScale = m_Main.transform.localScale.x * 0.75f;
+		m_fMainScale = m_Main.transform.localScale.x;//m_Main.transform.localScale.x * 0.75f;
 		m_ecFSM.rigidbody2D.drag = 3f;
 		
 		ECTracker.s_Instance.DefendCells.Add(m_ecFSM);
@@ -72,11 +72,14 @@ public class ECDefendState : IECState {
 			
 			FormationDatabase.Instance.RefreshDatabases(m_Main.GetComponent<EnemyMainFSM>().ECList);
 			FormationDatabase.Instance.UpdateDatabaseFormation(m_CurrentFormation,m_fMainScale);
-			FormationDatabase.Instance.CheckOverlapPlayerADRange();
+			if(m_CurrentFormation != Formation.QuickCircle){FormationDatabase.Instance.CheckOtherOverlapADRange();}
 		}
 
 		//Based on the current formation, get a specific target position within that formation
-		m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child);
+		if(m_CurrentFormation == Formation.QuickCircle){m_TargetPos = FormationDatabase.Instance.CheckCircleOverlapADRange(FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child));}
+		if(m_CurrentFormation != Formation.QuickCircle){m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child);}
+		//if(m_CurrentFormation == Formation.QuickCircle){m_TargetPos = FormationDatabase.Instance.CheckCircleOverlapADRange(FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child));}
+		//else{m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child);}
 	}
 
 	public override void FixedExecute()
@@ -99,14 +102,6 @@ public class ECDefendState : IECState {
 			else{Acceleration += new Vector2(0f, SeekVelo.y);}
 			
 			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);
-		
-			/*if((m_Child.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0) || (m_Child.transform.position.x >= 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x <= 0))
-			{
-				Acceleration += new Vector2(m_Main.GetComponent<Rigidbody2D>().velocity.x, m_Main.GetComponent<Rigidbody2D>().velocity.y) * 24f;
-			}
-			else{Acceleration += new Vector2(0f, m_Main.GetComponent<Rigidbody2D>().velocity.y) * 24f;}
-			
-			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);*/
 		}
 		else if(!m_bReachPos && !m_bReturnToMain && HasCellReachTargetPos(m_ECTransform.position,m_TargetPos))
 		{
@@ -119,7 +114,7 @@ public class ECDefendState : IECState {
 			Acceleration += SteeringBehavior.ShakeOnSpot(m_Child,1f,8f);
 			
 			//If at any point of time, the child cell got too far away from the given position, see back to the target position in the formation
-			if(!HasCellReachTargetPos(m_Child.transform.position,m_TargetPos) && !m_bKillClosestAttacker && !m_ecFSM.IsHittingSideWalls())
+			if(!HasCellReachTargetPos(m_Child.transform.position,m_TargetPos) && !m_bKillClosestAttacker)
 			{
 				m_ecFSM.rigidbody2D.drag = 5f;
 				Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,24f);
@@ -135,7 +130,6 @@ public class ECDefendState : IECState {
 			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 			
 			m_bKillClosestAttacker = true;
-			//Utility.CheckEmpty<GameObject>(m_ecFSM.m_ChargeTarget);
 			if(m_ecFSM.m_ChargeTarget == null)
 			{
 				m_bKillClosestAttacker = false;
@@ -194,7 +188,7 @@ public class ECDefendState : IECState {
 		//if the enemy child cell had reached the targeted position in the formation, rotate the enemy child cell randomly. Else, rotate it based on the direction of force applied
 		if(m_bReachPos)
 		{
-			m_ecFSM.RandomRotation(0.85f);
+			m_ecFSM.RandomRotation();
 		}
 		else if(!m_ecFSM.IsHittingSideWalls())
 		{
@@ -207,7 +201,7 @@ public class ECDefendState : IECState {
 		m_fDefendTime = 0f;
 
 		//When exiting, if there is no more defending child cells, empty out the CurrentFormation variable
-		if(ECTracker.s_Instance.DefendCells.Count <= 1)
+		if(ECTracker.s_Instance == null || ECTracker.s_Instance.DefendCells.Count <= 1)
 		{
 			m_CurrentFormation = Formation.Empty;
 			m_fDefendTime = 0f;

@@ -16,9 +16,11 @@ public class EnemyChildFSM : MonoBehaviour
 	private ECState m_CurrentEnum;
 	private MessageType m_CurrentCommand;
 	private AudioSource m_AudioSource;
+	private Transform m_ChildTransform;
 
 	private Dictionary<ECState,IECState> m_StatesDictionary;
 
+	private Vector3 m_RandomRotateSpeed;
 	private float m_fRotationTarget;
 	private bool m_bRotateCW;
 	private bool m_bRotateACW;
@@ -29,6 +31,7 @@ public class EnemyChildFSM : MonoBehaviour
 	{
 		//Initialize the variables and data structure
 		m_fRotationTarget = Random.Range(0f,360f);
+		m_RandomRotateSpeed = new Vector3(0f,0f,0.85f);
 		m_bRotateCW = false;
 		m_bRotateACW = false;
 		m_PMain = GameObject.Find("Player_Cell");
@@ -36,7 +39,8 @@ public class EnemyChildFSM : MonoBehaviour
 		m_EMFSM = m_EMain.GetComponent<EnemyMainFSM>();
 		m_EMControl = m_EMain.GetComponent<EMController>();
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
-		
+		m_ChildTransform = transform;
+			
 		m_ChargeTarget = null;
 		m_StatesDictionary = new Dictionary<ECState,IECState>();
 		
@@ -272,11 +276,13 @@ public class EnemyChildFSM : MonoBehaviour
 		m_Rigidbody2D.MoveRotation(Rotation);
 	}
 
-	public void RandomRotation(float _RotateSpeed)
+	public void RandomRotation()
 	{
+		Vector3 EulerAngles = m_ChildTransform.eulerAngles;
+	
 		if(m_bRotateCW == false && m_bRotateACW == false)
 		{
-			if(m_fRotationTarget > gameObject.transform.eulerAngles.z)
+			if(m_fRotationTarget > EulerAngles.z)
 			{
 				m_bRotateCW = true;
 			}
@@ -288,20 +294,22 @@ public class EnemyChildFSM : MonoBehaviour
 
 		//Debug.Log(gameObject.name + "'s info: " + bRotateCW + " , " + bRotateACW + " , " + gameObject.transform.eulerAngles.z + " , " + fRotationTarget);
 
-		if(m_bRotateCW && !m_bRotateACW && gameObject.transform.eulerAngles.z >= m_fRotationTarget || !m_bRotateCW && m_bRotateACW && gameObject.transform.eulerAngles.z <= m_fRotationTarget)
+		if(m_bRotateCW && !m_bRotateACW && EulerAngles.z >= m_fRotationTarget || !m_bRotateCW && m_bRotateACW && EulerAngles.z <= m_fRotationTarget)
 		{
 			m_bRotateCW = !m_bRotateCW;
 			m_bRotateACW = !m_bRotateACW;
 			m_fRotationTarget = Random.Range(0f,360f);
 		}
 
-		if(m_bRotateCW && !m_bRotateACW && gameObject.transform.eulerAngles.z < m_fRotationTarget)
+		if(m_bRotateCW && !m_bRotateACW && EulerAngles.z < m_fRotationTarget)
 		{
-			gameObject.transform.eulerAngles += new Vector3(0f,0f,_RotateSpeed);
+			m_ChildTransform.Rotate(m_RandomRotateSpeed);
+			//m_ChildTransform.eulerAngles += m_RandomRotateSpeed;
 		}
-		else if(!m_bRotateCW && m_bRotateACW && gameObject.transform.eulerAngles.z > m_fRotationTarget)
+		else if(!m_bRotateCW && m_bRotateACW && EulerAngles.z > m_fRotationTarget)
 		{
-			gameObject.transform.eulerAngles -= new Vector3(0f,0f,_RotateSpeed);
+			m_ChildTransform.Rotate(-m_RandomRotateSpeed);
+			//m_ChildTransform.eulerAngles -= m_RandomRotateSpeed;
 		}
 	}
 

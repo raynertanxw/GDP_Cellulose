@@ -78,15 +78,12 @@ public class ECMineState : IECState {
 		ECTracker.Instance.LandmineCells.Add(m_ecFSM);
 		
 		if(m_LeaderMine == null){m_LeaderMine = ObtainLeaderFrmMines();}
-		
-		//if(
 	}
 
 	public override void Execute()
 	{
-		m_LeaderMine = ObtainLeaderFrmMines(); 	
-		//if(m_LeaderMine == null || m_LeaderMine.GetComponent<EnemyChildFSM>().CurrentStateEnum == ECState.Dead){m_LeaderMine = ObtainLeaderFrmMines(); Debug.Log("new leader mine assigned");}
-		
+		if(EnemyMainFSM.Instance() != null){ m_LeaderMine = ObtainLeaderFrmMines();} 	
+	
 		if(!m_bGatherTogether)
 		{
 			m_nECMineNearby = GetNearbyECMineAmount();
@@ -228,7 +225,7 @@ public class ECMineState : IECState {
 		}
 		else if(m_bExploding)
 		{
-			m_ecFSM.RandomRotation(0.75f);
+			m_ecFSM.RandomRotation();
 		}
 	}
 
@@ -508,21 +505,22 @@ public class ECMineState : IECState {
 		int ClosestIndex = 0;
 		float ClosestDist = Mathf.Infinity;
 		
-		for(int i = 0; i < ECTracker.Instance.LandmineCells.Count; i++)
+		List<EnemyChildFSM> Landmines = ECTracker.Instance.LandmineCells;
+		
+		for(int i = 0; i < Landmines.Count; i++)
 		{
-			if(m_CurrentTargetPoint != null && Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_CurrentTargetPoint.Position) < ClosestDist)
+			if(m_CurrentTargetPoint != null && Vector2.Distance(Landmines[i].transform.position,m_CurrentTargetPoint.Position) < ClosestDist)
 			{
-				ClosestDist = Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_CurrentTargetPoint.Position);
+				ClosestDist = Vector2.Distance(Landmines[i].transform.position,m_CurrentTargetPoint.Position);
 				ClosestIndex = i;
 			}
-			else if(m_CurrentTargetPoint == null && Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_ecFSM.m_PMain.transform.position) < ClosestDist)
+			else if(m_CurrentTargetPoint == null && Vector2.Distance(Landmines[i].transform.position,m_ecFSM.m_PMain.transform.position) < ClosestDist)
 			{
-				ClosestDist = Vector2.Distance(ECTracker.Instance.LandmineCells[i].transform.position,m_Main.transform.position);
+				ClosestDist = Vector2.Distance(Landmines[i].transform.position,m_Main.transform.position);
 				ClosestIndex = i;
 			}
 		}
-		
-		return ECTracker.Instance.LandmineCells[ClosestIndex].gameObject;
+		return Landmines[ClosestIndex].gameObject;
 	}
 
 	private Vector2 GetBlastAwayForce(float _Distance)

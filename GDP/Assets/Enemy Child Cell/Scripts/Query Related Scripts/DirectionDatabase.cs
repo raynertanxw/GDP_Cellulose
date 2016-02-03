@@ -15,7 +15,7 @@ public class DirectionDatabase
 	{
 		m_Database = new Dictionary<int, Vector2>();
 		m_Usage = new Dictionary<int, bool>();
-		m_nMaximumECCells = ECPoolManager.ECPool.Count;
+		m_nMaximumECCells = Settings.s_nEnemyChildCountCap;
 		
 		Initilize();
 	}

@@ -99,7 +99,7 @@ public class ECAvoidState : IECState {
 		}
 		else
 		{
-			m_ecFSM.RandomRotation(0.75f);
+			m_ecFSM.RandomRotation();
 		}
 	}
 

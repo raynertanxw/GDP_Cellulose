@@ -13,14 +13,19 @@ public class FormationDatabase
 	public Dictionary<string,int> FIDatabase { get{ return m_FIndexDatabase;} }
 	public Dictionary<int, Vector2> FPDatabase { get{ return m_FPositionDatabase;}}
 	
+	private Bounds m_EMainBound;
 	private Formation m_CurrentFormation;
 	private float m_fCurrentMainScale;
+	private float m_fPlayerDefendLimit;
 
 	public FormationDatabase()
 	{
 		InitializeDatabases();
 		List<EnemyChildFSM> ECList = GameObject.Find("Enemy_Cell").GetComponent<EnemyMainFSM>().ECList;
 		RefreshDatabases(ECList);
+		
+		m_EMainBound = GameObject.Find("Enemy_Cell").GetComponent<SpriteRenderer>().bounds;
+		m_fPlayerDefendLimit = GameObject.Find("Player_Cell").transform.position.y + 5.0f;
 	}
 
 	//Singleton and Get function
@@ -81,7 +86,8 @@ public class FormationDatabase
 			
 			float AngleInterval = 360f/CellsPerCircle;
 			float CurrentAngle = 180f;
-			float GapBetweenCircle = 2.5f;
+			float GapBetweenCircle = 1.25f * m_fCurrentMainScale;//2.5f;
+			float YAdjustValue = 0.1f;//0.38f;
 			
 			Vector2 TargetDirection = new Vector2(Mathf.Cos(CurrentAngle * Mathf.Deg2Rad), Mathf.Sin(CurrentAngle * Mathf.Deg2Rad));
 			Vector2 CurrentFormationPosition = TargetDirection * GapBetweenCircle;
@@ -92,6 +98,8 @@ public class FormationDatabase
 				TargetDirection.x = Mathf.Cos(CurrentAngle * Mathf.Deg2Rad);
 				TargetDirection.y = Mathf.Sin(CurrentAngle * Mathf.Deg2Rad);
 				CurrentFormationPosition = TargetDirection.normalized * GapBetweenCircle * CircleCount;
+				CurrentFormationPosition.y -= YAdjustValue;
+
 				m_FPositionDatabase[FIndex] = CurrentFormationPosition;
 				m_FAvaliabilityDatabase[FIndex] = false;
 				//ebug.Log("Position " + FIndex + ": " + CurrentFormationPosition);
@@ -101,7 +109,7 @@ public class FormationDatabase
 				
 				CircleCellCount++;
 				
-				if(CircleCellCount > 20)
+				if(CircleCellCount > 19)
 				{
 					//CircleCount++;
 					GapBetweenCircle += 0.75f;
@@ -184,9 +192,9 @@ public class FormationDatabase
 			int SetAmount = (int) Mathf.Floor(ECAmount/9);
 			Vector2 CurrentFormationPos = new Vector2(0f, -2.25f * _MainScale);
 			Vector2 StoredFormationPos = Vector2.zero;
-			float XInterval = 0.65f * _MainScale;
-			float XBlockGap = 0.1f * _MainScale;
-			float YInterval = -0.5f * _MainScale;
+			float XInterval = 0.5f * _MainScale;//1.0f;//0.65f * _MainScale;
+			float XBlockGap = 0.1f * _MainScale;//1.08f;//0.1f * _MainScale;
+			float YInterval = -0.5f * _MainScale;//-1.04f;//-0.5f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
 			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
@@ -265,9 +273,9 @@ public class FormationDatabase
 			int RightCount = 0;
 			int LeftCount = 0;
 			
-			float XInterval = 0.45f * _MainScale;
-			float XBlockGap = 0.65f * _MainScale;
-			float YInterval = 0.5f * _MainScale;
+			float XInterval = 0.937f;//0.45f * _MainScale;
+			float XBlockGap = 0.293f;//0.65f * _MainScale;
+			float YInterval = 1.041f;//0.5f * _MainScale;
 			
 			Vector2 CurrentFormationPos = Vector2.zero;
 			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
@@ -333,18 +341,53 @@ public class FormationDatabase
 		}
     }
     
-    public void CheckOverlapPlayerADRange()
+	public Vector2 CheckCircleOverlapADRange(Vector2 _GivenPos)
+	{		
+		float YAdjustment = 0f;
+		if(_GivenPos.y < m_fPlayerDefendLimit && m_fPlayerDefendLimit - _GivenPos.y > YAdjustment){ YAdjustment = m_fPlayerDefendLimit - _GivenPos.y;}
+		if(_GivenPos.y <  m_fPlayerDefendLimit){_GivenPos.y += YAdjustment;}///2;}
+		return _GivenPos;
+	}
+	
+	public void CheckOtherOverlapADRange()
     {
 		float YLimit = PlayerMain.Instance.transform.position.y + PlayerMain.Instance.m_fDetectionRadius;
 		List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
 		
 		float YAdjustment = 0f;
+		float DistanceFromFirstToMain = EMHelper.Instance().Position.y  - m_EMainBound.size.y/2;
+		Vector2 EMPosition = EMHelper.Instance().Position;
 		
 		foreach(int FIndex in Keys)
 		{
-			if(m_FPositionDatabase[FIndex].y < YLimit && YLimit - m_FPositionDatabase[FIndex].y > YAdjustment)
+			if(EMPosition.y + m_FPositionDatabase[FIndex].y < YLimit && YLimit - (EMPosition.y + m_FPositionDatabase[FIndex].y) > YAdjustment)
+			{
+				YAdjustment = YLimit - (EMPosition.y + m_FPositionDatabase[FIndex].y);
+			}
+		}
+		if(YAdjustment == 0f){return;}
+		
+		Vector2 UpdatedPosition = Vector2.zero;
+		
+		foreach(int FIndex in Keys)
+		{
+			if(m_FPositionDatabase[FIndex].y <  YLimit)
+			{
+				UpdatedPosition = m_FPositionDatabase[FIndex];
+				UpdatedPosition.y += YAdjustment;
+				m_FPositionDatabase[FIndex] = UpdatedPosition;
+			}
+		}
+		
+		/*foreach(int FIndex in Keys)
+		{
+			if((m_FPositionDatabase[FIndex].y < YLimit && YLimit - m_FPositionDatabase[FIndex].y > YAdjustment))
 			{
 				YAdjustment = YLimit - m_FPositionDatabase[FIndex].y;
+			}
+			else if((m_FPositionDatabase[FIndex].y > YLimit && m_FPositionDatabase[0].y > DistanceFromFirstToMain)
+			{
+				YAdjustment = m_FPositionDatabase[0].y - DistanceFromFirstToMain;
 			}
 		}
 		
@@ -353,10 +396,19 @@ public class FormationDatabase
 		Vector2 UpdatedPosition = Vector2.zero;
 		foreach(int FIndex in Keys)
 		{
-			UpdatedPosition = m_FPositionDatabase[FIndex];
-			UpdatedPosition.y += YAdjustment/2;
-			m_FPositionDatabase[FIndex] = UpdatedPosition;
-		}
+			if(m_FPositionDatabase[FIndex].y <  YLimit)
+			{
+				UpdatedPosition = m_FPositionDatabase[FIndex];
+				UpdatedPosition.y += YAdjustment;
+				m_FPositionDatabase[FIndex] = UpdatedPosition;
+			}
+			else if(m_FPositionDatabase[FIndex].y > YLimit)
+			{
+				UpdatedPosition = m_FPositionDatabase[FIndex];
+				UpdatedPosition.y -= YAdjustment;
+				m_FPositionDatabase[FIndex] = UpdatedPosition; 
+			}
+		}*/
     }
 
 	public void AddNewDefenderToCurrentFormation(GameObject _NewDefender)
@@ -390,7 +442,7 @@ public class FormationDatabase
 		
 			UpdateDatabaseFormation(m_CurrentFormation,m_fCurrentMainScale);
 		}
-		CheckOverlapPlayerADRange();
+		if(m_CurrentFormation != Formation.QuickCircle){CheckOtherOverlapADRange();}
 	}
 	
 	public void ReturnFormationPos(GameObject _ObjectReturn)
@@ -428,27 +480,22 @@ public class FormationDatabase
 
     public Vector2 GetTargetFormationPosition(Formation _Formation, GameObject _EnemyCell)
     {
-		string CellName = _EnemyCell.name;
-		if(!m_FIndexDatabase.ContainsKey(CellName))
+		if(!m_FIndexDatabase.ContainsKey(_EnemyCell.name))
 		{
 			MessageDispatcher.Instance.DispatchMessage(_EnemyCell,_EnemyCell,MessageType.Idle,0);
 			return Vector2.zero;
 		}
     
-		int TargetFIndex = m_FIndexDatabase[CellName];
-
+		int TargetFIndex = m_FIndexDatabase[_EnemyCell.name];
 		Vector2 PosDifference = m_FPositionDatabase[TargetFIndex];
 		Vector2 EMPosition = EMHelper.Instance().Position;
-		Vector2 TargetPosition = Vector2.zero;
 		
 		if(_Formation == Formation.Ladder)
 		{
-			TargetPosition = new Vector2(PosDifference.x, EMPosition.y + PosDifference.y);
-			return TargetPosition;
+			return new Vector2(PosDifference.x, EMPosition.y + PosDifference.y);
 		}
-		
-		TargetPosition = new Vector2(EMPosition.x + PosDifference.x, EMPosition.y + PosDifference.y);
-		return TargetPosition;
+
+		return new Vector2(EMPosition.x + PosDifference.x, EMPosition.y + PosDifference.y);
     }
 
     private int GetCrescentCenterIndex(int _CurrentIndex)
