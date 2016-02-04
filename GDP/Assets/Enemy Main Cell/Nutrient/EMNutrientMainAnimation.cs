@@ -29,15 +29,16 @@ public class EMNutrientMainAnimation : MonoBehaviour
 
 	void Start ()
 	{
+		// Cannot have footsteps by default
 		bHaveFootstep = false;
-
+		// If no other nutrient has footsteps, then the current nutrient is allowed to have
 		if ((EMNutrientMainAnimation.bCanHaveFootstep == true || EMNutrientMainAnimation.previousParent == null) && gameObject.activeSelf) 
 		{
 			EMNutrientMainAnimation.bCanHaveFootstep = false;
 			bHaveFootstep = true;
 			EMNutrientMainAnimation.previousParent = this.gameObject;
 		}
-
+		// Initialization of footsteps and array
 		if (bHaveFootstep) 
 		{
 			footstepArr = new Transform[10];
@@ -63,6 +64,7 @@ public class EMNutrientMainAnimation : MonoBehaviour
 			footstepArr [8] = footstep8;
 			footstepArr [9] = footstep9;
 
+			// Timer
 			fElapsedTime = 0f;
 			fFootstepRate = 1f;
 
@@ -86,9 +88,11 @@ public class EMNutrientMainAnimation : MonoBehaviour
 			{
 				fElapsedTime = 0f;
 
+				// Move the next footstep to the nutrient's current position
 				if (footstepArr [nNewFootstep] != null)
 					footstepArr [nNewFootstep].position = transform.position;
 
+				// If reach the end of the array, go back to the front
 				if (nNewFootstep == 9)
 					nNewFootstep = 0;
 				else
