@@ -18,6 +18,9 @@ public class MainMenu_Buttons : MonoBehaviour
 	private float slowDownFactor;
 	private float minSlowDownFactor = 0.6f;
 
+	public Sprite[] alienBodySprites;
+	private Image alienBodyImage;
+
 	void Awake()
 	{
 		cameraTransform = GameObject.Find("Main Camera").transform;
@@ -27,6 +30,9 @@ public class MainMenu_Buttons : MonoBehaviour
 		shouldSnapBack = false;
 		isSnapping = false;
 		_menuPosition = MainMenuPosition.Center;
+
+		alienBodyImage = transform.GetChild(3).GetChild(0).GetComponent<Image>();
+		alienBodyImage.sprite = alienBodySprites[Random.Range(0, alienBodySprites.Length)];
 	}
 
 	void Update()
