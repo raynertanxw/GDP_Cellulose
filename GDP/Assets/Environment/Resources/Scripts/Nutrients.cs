@@ -129,6 +129,9 @@ public class Nutrients : MonoBehaviour
 	// OnMouseDown(): Detects when the object is clicked
 	void OnMouseDown()
 	{
+		if (GameManager.IsPaused)
+			return;
+
 		if (bIsCollectable)
 		{
 			AudioManager.PlayPMSoundEffect(PlayerMainSFX.AbsorbNutrient);
