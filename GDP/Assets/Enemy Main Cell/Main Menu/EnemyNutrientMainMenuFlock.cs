@@ -21,6 +21,8 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 	
 	private GameObject target;
 	private Vector2 currentPosition;
+
+	private float fFlowFactor;
 	// List of neighbouring agents
 	List<EnemyNutrientMainMenuAgent> neighbouringAgents = new List<EnemyNutrientMainMenuAgent>();
 	
@@ -38,6 +40,8 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 		fAlignmentWeight = .6f;
 		fCohesionWeigth = .6f;
 		fSeperationWeight = .8f;
+		// Factor that simulates flowing
+		fFlowFactor = 0.5f;
 		// Add this behavior to the agent
 		agent = GetComponent<EnemyNutrientMainMenuAgent>();
 		agent.AddBehaviour(this);
@@ -56,7 +60,7 @@ public class EnemyNutrientMainMenuFlock : MonoBehaviour {
 		
 		UpdateNeighbours();
 		
-		return Alignment() * fAlignmentWeight + Cohesion() * fCohesionWeigth + Seperation() * fSeperationWeight;
+		return Alignment() * fAlignmentWeight + Cohesion() * fCohesionWeigth + Seperation() * fSeperationWeight - new Vector2 (fFlowFactor, 0f);
 	}
 	// Return velocity based on enemy main cell's position, current position and current velocity
 	public Vector2 GetTargetVelocity()

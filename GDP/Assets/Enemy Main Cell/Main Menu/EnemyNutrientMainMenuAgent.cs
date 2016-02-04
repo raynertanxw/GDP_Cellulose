@@ -81,6 +81,8 @@ public class EnemyNutrientMainMenuAgent : MonoBehaviour
 			AgentList.RemoveAll(item => item == null);
 		// Follow camera
 		//FollowCamera ();
+		// Every flow to the left
+		FlowSimulation ();
 		// Deactivate the nutrient if it is empty
 		if (nSize == 0)
 			ActivateOrDeactivate (false);
@@ -152,7 +154,12 @@ public class EnemyNutrientMainMenuAgent : MonoBehaviour
 			previousCameraPos = mainCamera.transform.position;
 		}
 	}
-	
+	// Every flow to the left
+	void FlowSimulation ()
+	{
+		if (transform.position.x < EMMenuController.leftLimit - EMMenuController.fRadius * 4f)
+			transform.position = new Vector2 (EMMenuController.rightLimit + EMMenuController.fRadius * 4f, transform.position.y);
+	}
 	// Sucking behavior
 	void Sucking ()
 	{

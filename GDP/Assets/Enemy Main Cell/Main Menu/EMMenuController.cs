@@ -9,18 +9,19 @@ public class EMMenuController : MonoBehaviour
 	private Rigidbody2D thisRB;
 	private Camera mainCamera;
 
-	float leftLimit;
-	float rightLimit;
-	float topLimit;
-	float bottomLimit;
+	public static float leftLimit;
+	public static float rightLimit;
+	public static float topLimit;
+	public static float bottomLimit;
 
 	Vector2 previousCameraPos;
 
-	private float fRadius;
-	private float width;
+	public static float fRadius;
+	public static float width;
 
 	[SerializeField]
 	private Vector2 velocity;
+	private float fFlowFactor;
 	[SerializeField] 
 	private bool bCanChangeDir;
 	private float fChangeRate;
@@ -35,6 +36,7 @@ public class EMMenuController : MonoBehaviour
 
 		previousCameraPos = mainCamera.transform.position;
 
+		fFlowFactor = 0.5f;
 		bCanChangeDir = true;
 		fChangeRate = Random.Range (3f, 6f);
 
@@ -56,8 +58,14 @@ public class EMMenuController : MonoBehaviour
 		// Update velocity
 		if (thisRB.velocity != velocity)
 			thisRB.velocity = velocity;
+		if (velocity.x > -0.25) {
+			velocity.x -= fFlowFactor;
+			thisRB.velocity = velocity;
+		}
 		// Limit the area that the enemy main cell can move
 		PositionLimit ();
+		// Every flow to the left
+		FlowSimulation ();
 		// Randomize velocity if allowed
 		if (bCanChangeDir)
 			StartCoroutine (RandomizeVelocity ());
@@ -74,19 +82,7 @@ public class EMMenuController : MonoBehaviour
 	// Limit the area that the enemy main cell can move
 	void PositionLimit ()
 	{
-		if (transform.position.x > rightLimit) {
-			transform.position = new Vector2 (rightLimit, transform.position.y);
-			if (velocity.x > 0f) {
-				velocity.x *= -1f;
-				thisRB.velocity = velocity;
-			}
-		} else if (transform.position.x < leftLimit) {
-			transform.position = new Vector2 (leftLimit, transform.position.y);
-			if (velocity.x < 0f) {
-				velocity.x *= -1f;
-				thisRB.velocity = velocity;
-			}
-		} else if (transform.position.y > topLimit) {
+		if (transform.position.y > topLimit) {
 			transform.position = new Vector2 (transform.position.x, topLimit);
 			if (velocity.y > 0f) {
 				velocity.y *= -1f;
@@ -99,6 +95,12 @@ public class EMMenuController : MonoBehaviour
 				thisRB.velocity = velocity;
 			}
 		}
+	}
+	// Every flow to the left
+	void FlowSimulation ()
+	{
+		if (transform.position.x < leftLimit - fRadius * 4f)
+			transform.position = new Vector2 (rightLimit + fRadius * 4f, transform.position.y);
 	}
 	// Follow camera
 	private void FollowCamera ()
