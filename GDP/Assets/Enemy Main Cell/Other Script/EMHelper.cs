@@ -234,7 +234,7 @@ public class EMHelper : MonoBehaviour
 				);
 
 			if (Level_Manager.LevelID > 3)
-				intervalTime /= 1.5f;
+				intervalTime /= 1.25f;
 			yield return new WaitForSeconds (intervalTime);
 
 			if (m_EMFSM.AvailableChildNum < 100)
