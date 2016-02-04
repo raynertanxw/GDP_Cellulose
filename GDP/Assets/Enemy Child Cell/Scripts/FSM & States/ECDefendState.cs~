@@ -93,6 +93,7 @@ public class ECDefendState : IECState {
 		}
 		else if(!m_bReachPos && !m_bReturnToMain && !HasCellReachTargetPos(m_ECTransform.position,m_TargetPos) && m_ecFSM.IsHittingSideWalls())
 		{
+			m_ecFSM.rigidbody2D.drag = 5f;
 			Vector2 SeekVelo = SteeringBehavior.Seek(m_Child,m_TargetPos,300f);
 		
 			if((m_Child.transform.position.x < 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x > 0) || (m_Child.transform.position.x >= 0 && m_Main.GetComponent<Rigidbody2D>().velocity.x <= 0))

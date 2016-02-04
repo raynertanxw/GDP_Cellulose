@@ -143,7 +143,7 @@ public class ECIdleState : IECState
 		{
 			if(!HasChildEnterMain(m_Child))
 			{
-				m_ChildRB.drag = 2.5f;
+				m_ChildRB.drag = 1f;
 				Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,10f);
 			}
 			else
