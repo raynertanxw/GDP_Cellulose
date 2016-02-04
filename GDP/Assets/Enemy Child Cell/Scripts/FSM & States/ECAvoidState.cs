@@ -12,7 +12,7 @@ public class ECAvoidState : IECState {
 	private float m_fAvoidTimer;
 	private float m_fTimerLimit;
 
-	private GameObject m_ClosestAttacker;
+	private PlayerChildFSM m_ClosestAttacker;
 	private List<GameObject> m_AttackersNearby;
 
     //Constructor
@@ -65,9 +65,10 @@ public class ECAvoidState : IECState {
 		Acceleration += m_Main.GetComponent<Rigidbody2D>().velocity ;
 
 		//if there is any attacking player cell nearby and there is a closest attacker, add the velocity for the enemy child cell to evade that closest attacker
-		if(!m_bReturnToMain && m_AttackersNearby.Count > 0 && m_ClosestAttacker != null)
+		if(!m_bReturnToMain && m_AttackersNearby.Count > 0 && m_ClosestAttacker != null && m_ClosestAttacker.attackMode != PlayerAttackMode.SwarmTarget)
 		{
-			Acceleration += LimitMaxAccelBasedOnHeight(SteeringBehavior.Evade(m_Child,m_ClosestAttacker,24f));
+			Acceleration += LimitMaxAccelBasedOnHeight(SteeringBehavior.Evade(m_Child,m_ClosestAttacker.gameObject,24f));
+			Debug.Log(m_Child.name + " avoid velo: " + Acceleration);
 		}
 		else if(m_bReturnToMain && !ECIdleState.HasChildEnterMain(m_Child))
 		{
@@ -124,7 +125,7 @@ public class ECAvoidState : IECState {
 		}
 	}
 	
-	private GameObject GetClosestAttacker()
+	private PlayerChildFSM GetClosestAttacker()
 	{
 		//If there is no attacking child cell in the list, return null. Else, based on the distance from that attacking child cell to the enemy child cell, get the closest attacking player cell.
 		if(m_AttackersNearby.Count <= 0)
@@ -147,7 +148,7 @@ public class ECAvoidState : IECState {
 			}
 		}
 
-		return ClosestAttacker;
+		return ClosestAttacker.GetComponent<PlayerChildFSM>();
 	}
 	
 	private Vector2 LimitMaxAccelBasedOnHeight(Vector2 _Accel)

@@ -118,8 +118,8 @@ public class AudioManager : MonoBehaviour {
 		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping",typeof(AudioClip)) as AudioClip);
 		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode",typeof(AudioClip)) as AudioClip);
 		
-		Debug.Log("SquadMainTracks count: " + SquadMainTracks.Length);
-		for(int i = 0; i < SquadMainTracks.Length; i++){Debug.Log(SquadMainTracks[i].name);}
+		/*Debug.Log("SquadMainTracks count: " + SquadMainTracks.Length);
+		for(int i = 0; i < SquadMainTracks.Length; i++){Debug.Log(SquadMainTracks[i].name);}*/
 		
 		/*Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
 		for(int i = 0; i < PlayerChildTracks.Length; i++){Debug.Log(PlayerChildTracks[i].name);}
