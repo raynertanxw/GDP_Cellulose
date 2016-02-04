@@ -86,6 +86,7 @@ public class GameManager : MonoBehaviour
 	private void EndGame()
 	{
 		EndGamePanel.Instance.SetEndGamePanelVisibility(true);
+		AudioManager.Instance.SoftenInEndGame();
 	}
 
 	#region XML Readeer

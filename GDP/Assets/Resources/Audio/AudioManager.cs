@@ -261,6 +261,20 @@ public class AudioManager : MonoBehaviour {
 		m_SceneTransitionInProgress = false;
 	}
 	
+	private IEnumerator EndGameTransition()
+	{
+		while(m_BackgroundAudioSource.volume > 0.2f)
+		{
+			m_BackgroundAudioSource.volume -= 0.03f;
+			yield return new WaitForSeconds(0.0025f);
+		}
+	}
+	
+	public void SoftenInEndGame()
+	{
+		StartCoroutine(EndGameTransition());
+	}
+	
 	public void PauseFadeOut()
 	{
 		while(m_BackgroundAudioSource.volume > 0.0f)
