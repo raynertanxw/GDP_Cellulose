@@ -292,8 +292,6 @@ public class EnemyChildFSM : MonoBehaviour
 			}
 		}
 
-		//Debug.Log(gameObject.name + "'s info: " + bRotateCW + " , " + bRotateACW + " , " + gameObject.transform.eulerAngles.z + " , " + fRotationTarget);
-
 		if(m_bRotateCW && !m_bRotateACW && EulerAngles.z >= m_fRotationTarget || !m_bRotateCW && m_bRotateACW && EulerAngles.z <= m_fRotationTarget)
 		{
 			m_bRotateCW = !m_bRotateCW;
@@ -304,12 +302,10 @@ public class EnemyChildFSM : MonoBehaviour
 		if(m_bRotateCW && !m_bRotateACW && EulerAngles.z < m_fRotationTarget)
 		{
 			m_ChildTransform.Rotate(m_RandomRotateSpeed);
-			//m_ChildTransform.eulerAngles += m_RandomRotateSpeed;
 		}
 		else if(!m_bRotateCW && m_bRotateACW && EulerAngles.z > m_fRotationTarget)
 		{
 			m_ChildTransform.Rotate(-m_RandomRotateSpeed);
-			//m_ChildTransform.eulerAngles -= m_RandomRotateSpeed;
 		}
 	}
 

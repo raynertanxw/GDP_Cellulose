@@ -42,7 +42,7 @@ public class ECDefendState : IECState {
 
 		m_fMaxFormingAcceleration = 150f;
 		m_fMaxChaseAcceleration = 500f;
-		m_fAutoDefendRange = 7f;//6f;//25f;//20f;//12f//9f;//4f;//5.5f;
+		m_fAutoDefendRange = 7f;
 		m_fDefendTime = 0f;
 		m_bReturnToMain = false;
 		m_bReachedMain = false;
@@ -55,7 +55,7 @@ public class ECDefendState : IECState {
 		m_bKillClosestAttacker = false;
 		m_bThereIsDefenders = true;
 		
-		m_fMainScale = m_Main.transform.localScale.x;//m_Main.transform.localScale.x * 0.75f;
+		m_fMainScale = m_Main.transform.localScale.x;
 		m_ecFSM.rigidbody2D.drag = 3f;
 		
 		ECTracker.s_Instance.DefendCells.Add(m_ecFSM);
@@ -75,11 +75,8 @@ public class ECDefendState : IECState {
 			if(m_CurrentFormation != Formation.QuickCircle){FormationDatabase.Instance.CheckOtherOverlapADRange();}
 		}
 
-		//Based on the current formation, get a specific target position within that formation
 		if(m_CurrentFormation == Formation.QuickCircle){m_TargetPos = FormationDatabase.Instance.CheckCircleOverlapADRange(FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child));}
 		if(m_CurrentFormation != Formation.QuickCircle){m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child);}
-		//if(m_CurrentFormation == Formation.QuickCircle){m_TargetPos = FormationDatabase.Instance.CheckCircleOverlapADRange(FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child));}
-		//else{m_TargetPos = FormationDatabase.Instance.GetTargetFormationPosition(m_CurrentFormation, m_Child);}
 	}
 
 	public override void FixedExecute()
@@ -89,7 +86,7 @@ public class ECDefendState : IECState {
 		if(!m_bReachPos && !m_bReturnToMain && !HasCellReachTargetPos(m_ECTransform.position,m_TargetPos) && !m_ecFSM.IsHittingSideWalls())
 		{
 			m_ecFSM.rigidbody2D.drag = 15f;//5f;
-			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,300f);//27
+			Acceleration += SteeringBehavior.Seek(m_Child,m_TargetPos,300f);
 		}
 		else if(!m_bReachPos && !m_bReturnToMain && !HasCellReachTargetPos(m_ECTransform.position,m_TargetPos) && m_ecFSM.IsHittingSideWalls())
 		{
@@ -145,10 +142,9 @@ public class ECDefendState : IECState {
 				m_ecFSM.m_ChargeTarget = null;
 				return;
 			}
-			//Debug.Log("pursuit");
+
 			if(m_AttackType != PlayerAttackMode.BurstShot){ Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.m_ChargeTarget,24f);}
 			else if(m_AttackType == PlayerAttackMode.BurstShot){ Acceleration += SteeringBehavior.Pursuit(m_Child,m_ecFSM.m_ChargeTarget,70f);}
-			//Debug.Log("magnitude: " + Acceleration.magnitude);
 
 			m_ecFSM.RotateToHeading();
 		}
@@ -165,7 +161,6 @@ public class ECDefendState : IECState {
 		//If the enemy child cells is return back to the enemy main cell but has not reach the position, continue seek back to the main cell
 		if(!m_bReachedMain && m_bReturnToMain && !HasCellReachTargetPos(m_ECTransform.position,m_EMTransform.position))
 		{
-			//Debug.Log("return to main");
 			Acceleration += SteeringBehavior.Seek(m_Child,m_EMTransform.position,30f);
 		}
 		//if the enemy child cell returned back to the enemy main cell, transition it back to the idle state
@@ -176,7 +171,6 @@ public class ECDefendState : IECState {
 		else if(m_bReachedMain)
 		{
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0f);
-			//ECIdleState.ImmediateCohesion();
 		}
 
 		//Clamp the acceleration velocity to a specific value and add that acceleration as a force to the enemy child cell
@@ -268,7 +262,6 @@ public class ECDefendState : IECState {
 		
 		if(IsthereBurstShot())
 		{
-			//Debug.Log("check for burst target");
 			for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
 			{
 				if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.BurstShot && Utility.Distance(PlayerChildFSM.playerChildPool[i].transform.position,m_ecFSM.m_EMain.transform.position) < Distance)
@@ -280,7 +273,6 @@ public class ECDefendState : IECState {
 		}
 		else
 		{
-			//Debug.Log("no burst target");
 			GameObject[] PlayerChilds = GameObject.FindGameObjectsWithTag(Constants.s_strPlayerChildTag);
 			float ECtoPCDistance = 0f;
 			PCState PCCurrentState = PCState.Idle;

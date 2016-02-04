@@ -67,7 +67,6 @@ public class PointDatabase
 		int Count = 0;
 		
 		m_Database.Add(LKey.ToString() + "-" + HKey.ToString(), new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
-		//Utility.DrawCross(currentGeneration,Color.red,0.05f);
 		
 		while(Count < 125)
 		{
@@ -88,7 +87,6 @@ public class PointDatabase
 			string CurrentKey = LKey.ToString() + "-" + HKey.ToString();
 			m_Database.Add(CurrentKey, new Point(LKey.ToString() + "-" + HKey.ToString(),currentGeneration,true));
 			m_Database[CurrentKey].Walkable = IsPointWalkable(m_Database[CurrentKey]);
-			//Utility.DrawCross(currentGeneration,Color.red,0.05f);
 		
 			Count++;
 		}

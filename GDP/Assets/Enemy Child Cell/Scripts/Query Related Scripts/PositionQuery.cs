@@ -244,7 +244,6 @@ public class PositionQuery
 			targetPos = CurrentPoint.Position;
 		}
 		
-	   // Utility.DrawCross(targetPos,Color.green,0.5f);
 		return targetPos;
 	}
 
@@ -263,7 +262,6 @@ public class PositionQuery
 		if(AttackSource == null){return Formation.ReverseCircular;}
 		
 		float EnemyToAttackSourceXDifference = GameObject.Find("Enemy_Cell").transform.position.x - AttackSource.transform.position.x;
-		//Player left node x - -3f Player Right Node - 3f
 		
 		if(AttackToDefendAgainst == PlayerAttackMode.BurstShot)
 		{
@@ -351,8 +349,6 @@ public class PositionQuery
 		if(HighestDesirability == LadderDesirability){return Formation.Ladder;}
 		
 		return Formation.ReverseCircular;
-
-		//return Formation.Ladder;
 	}
 
 	public PlayerAttackMode GetMostSignificantAttack()
@@ -379,25 +375,6 @@ public class PositionQuery
 			}
 		}
 		
-		/*for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
-		{
-			if(PlayerChildFSM.s_playerChildStatus[i] == pcStatus.Attacking)
-			{
-				if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.BurstShot)
-				{
-					BurstCount++;
-				}
-				else if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.SwarmTarget)
-				{
-					SwarmCount++;
-				}
-				else if(PlayerChildFSM.playerChildPool[i].attackMode == PlayerAttackMode.ScatterShot)
-				{
-					ScatterCount++;
-				}
-			}
-		}*/
-		
 		BurstCount *= Settings.s_fEnemyDefendBurstSignificancy;
 		SwarmCount *= Settings.s_fEnemyDefendSwarmSignificancy;
 		ScatterCount *= Settings.s_fEnemyDefendScatterSignificancy;
@@ -421,14 +398,7 @@ public class PositionQuery
 				return PlayerChildFSM.playerChildPool[PlayerChildFSM.childrenInAttack[i]].gameObject;
 			}
 		}
-	
-		/*for(int i = 0; i < PlayerChildFSM.playerChildPool.Length; i++)
-		{
-			if(PlayerChildFSM.playerChildPool[i].attackMode == _Attack)
-			{
-				return PlayerChildFSM.playerChildPool[i].gameObject;
-			}
-		}*/
+
 		return null;
 	}
 

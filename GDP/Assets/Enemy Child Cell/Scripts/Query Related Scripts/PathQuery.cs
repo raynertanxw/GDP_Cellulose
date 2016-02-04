@@ -85,7 +85,6 @@ public class PathQuery
 				
 				if(_AllowUnwalkable == false)
 				{
-					//Debug.Log("Only Walkable Points");
 					if(m_SearchFrontier[edge.End.Index] == null && edge.End.Walkable == true)
 					{
 						m_fCost[edge.End.Index] = HCost + GCost;
@@ -103,7 +102,6 @@ public class PathQuery
 				}
 				else
 				{
-					//Debug.Log("Both Walkable and Unwalkable points");
 					if(m_SearchFrontier[edge.End.Index] == null)
 					{
 						m_fCost[edge.End.Index] = HCost + GCost;

@@ -44,6 +44,7 @@ public class ECAvoidState : IECState {
 		//Check for any nearby player attacking cells and obtain the closest attacking cell, store it in the "ClosestAttacker" Gameobject
 		UpdateAttackerList();
 		m_ClosestAttacker = GetClosestAttacker();
+		if(m_ClosestAttacker.attackMode == PlayerAttackMode.SwarmTarget){MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0.0f);}
 		
 		//If there is no attackers nearby, increase the avoid timer. Once it reach a limit, transition the child cell back to idle state
 		if(m_AttackersNearby.Count <= 0)
@@ -68,17 +69,14 @@ public class ECAvoidState : IECState {
 		if(!m_bReturnToMain && m_AttackersNearby.Count > 0 && m_ClosestAttacker != null && m_ClosestAttacker.attackMode != PlayerAttackMode.SwarmTarget)
 		{
 			Acceleration += LimitMaxAccelBasedOnHeight(SteeringBehavior.Evade(m_Child,m_ClosestAttacker.gameObject,24f));
-			Debug.Log(m_Child.name + " avoid velo: " + Acceleration);
 		}
 		else if(m_bReturnToMain && !ECIdleState.HasChildEnterMain(m_Child))
 		{
-			//Debug.Log("going back to main");
 			m_ecFSM.rigidbody2D.drag = 1.4f;
 			Acceleration += SteeringBehavior.Seek(m_Child,m_Main.transform.position,10f);
 		}
 		else if(m_bReturnToMain && ECIdleState.HasChildEnterMain(m_Child))
 		{
-			//Debug.Log("reach main");
 			m_ecFSM.rigidbody2D.velocity = Vector2.zero;
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Idle,0);
 		}
@@ -106,7 +104,6 @@ public class ECAvoidState : IECState {
 
     public override void Exit()
     {
-		//m_ecFSM.rigidbody2D.drag = 0f;
 		ECTracker.s_Instance.AvoidCells.Remove(m_ecFSM);
     }
 
@@ -153,7 +150,7 @@ public class ECAvoidState : IECState {
 	
 	private Vector2 LimitMaxAccelBasedOnHeight(Vector2 _Accel)
 	{
-		float MaxEvadeRange = 4.0f;//3.5f;
+		float MaxEvadeRange = 4.0f;
 		float DifferenceYFromChildToMain = Mathf.Abs(m_Child.transform.position.y - m_Main.transform.position.y);
 		
 		if(DifferenceYFromChildToMain > MaxEvadeRange)

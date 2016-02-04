@@ -5,24 +5,23 @@ public class AudioManager : MonoBehaviour {
 
 	public static AudioManager s_Instance;
 
-	private AudioSource BackgroundAudioSource;
-	public AudioClip[] BackgroundTracks;
+	private AudioSource m_BackgroundAudioSource;
+	public AudioClip[] m_BackgroundTracks;
 	
-	private float BackgroundClipLength;
-	private string CurrentSceneName;
+	private float m_BackgroundClipLength;
+	private string m_CurrentSceneName;
 	
-	private static AudioSource[] MenuTracks;
-	private static AudioSource[] PlayerMainTracks;
-	private static AudioSource[] EnemyMainTracks;
-	private static AudioSource[] SquadMainTracks;
+	private static AudioSource[] m_MenuTracks;
+	private static AudioSource[] m_PlayerMainTracks;
+	private static AudioSource[] m_EnemyMainTracks;
+	private static AudioSource[] m_SquadMainTracks;
 	
-	private static AudioClip[] EnemyChildTracks;
-	private static AudioClip[] SquadChildTracks;
+	private static AudioClip[] m_EnemyChildTracks;
 	
-	private SceneType CurrentSceneType;
+	private SceneType m_CurrentSceneType;
 	private enum SceneType{Menu,Gameplay,Null};
 	
-	private bool SceneTransitionInProgress;
+	private bool m_SceneTransitionInProgress;
 
 	public static AudioManager Instance {get{return s_Instance;}}
 
@@ -37,23 +36,22 @@ public class AudioManager : MonoBehaviour {
 	
 		DontDestroyOnLoad(gameObject);
 	
-		BackgroundAudioSource = GetComponent<AudioSource>();
+		m_BackgroundAudioSource = GetComponent<AudioSource>();
 
-		MenuTracks = new AudioSource[2];
-		PlayerMainTracks = new AudioSource[14];
-		EnemyMainTracks = new AudioSource[7];
-		SquadMainTracks = new AudioSource[2];
+		m_MenuTracks = new AudioSource[2];
+		m_PlayerMainTracks = new AudioSource[14];
+		m_EnemyMainTracks = new AudioSource[7];
+		m_SquadMainTracks = new AudioSource[2];
 
-		EnemyChildTracks = new AudioClip[5];
-		SquadChildTracks = new AudioClip[2];
+		m_EnemyChildTracks = new AudioClip[5];
 		
-		CurrentSceneName = Application.loadedLevelName;
-		SceneTransitionInProgress = false;
+		m_CurrentSceneName = Application.loadedLevelName;
+		m_SceneTransitionInProgress = false;
 		
 		LoadTracksToLists();
 		LoadRandomBackgroundTrack();
 		
-		BackgroundAudioSource.volume = 0f;
+		m_BackgroundAudioSource.volume = 0f;
 		StartCoroutine(FadeInBackgroundMusic());
 	}
 	
@@ -61,7 +59,7 @@ public class AudioManager : MonoBehaviour {
 	void Update () 
 	{
 		//if the scene had been change, reload a random background track
-		if(CurrentSceneName != Application.loadedLevelName && !SceneTransitionInProgress)
+		if(m_CurrentSceneName != Application.loadedLevelName && !Application.loadedLevelName.Contains("Tutorial") && !m_SceneTransitionInProgress)
 		{
 			StopCoroutine(FadeInBackgroundMusic());
 			StopCoroutine(FadeOutBackgroundMusic());
@@ -69,11 +67,11 @@ public class AudioManager : MonoBehaviour {
 		}
 	
 		//Fading in/Fading out of BGM
-		if(BackgroundAudioSource.time <= 3.5f && !SceneTransitionInProgress)
+		if(m_BackgroundAudioSource.time <= 3.5f && !m_SceneTransitionInProgress)
 		{
 			StartCoroutine(FadeInBackgroundMusic());
 		}
-		if(BackgroundAudioSource.time >= BackgroundClipLength - 3.5f && !SceneTransitionInProgress)
+		if(m_BackgroundAudioSource.time >= m_BackgroundClipLength - 3.5f && !m_SceneTransitionInProgress)
 		{
 			StartCoroutine(FadeOutBackgroundMusic());
 		}
@@ -92,43 +90,31 @@ public class AudioManager : MonoBehaviour {
 			
 			if(Child.name.Contains("Menu"))
 			{
-				MenuTracks[MenuTrackCount] = Child.GetComponent<AudioSource>();
+				m_MenuTracks[MenuTrackCount] = Child.GetComponent<AudioSource>();
 				MenuTrackCount++;
 			}
 			else if(Child.name.Contains("Player"))
 			{
-				PlayerMainTracks[PlayerMainTrackCount] = Child.GetComponent<AudioSource>();
+				m_PlayerMainTracks[PlayerMainTrackCount] = Child.GetComponent<AudioSource>();
 				PlayerMainTrackCount++;
 			}
 			else if(Child.name.Contains("Enemy"))
 			{
-				EnemyMainTracks[EnemyMainTrackCount] = Child.GetComponent<AudioSource>();
+				m_EnemyMainTracks[EnemyMainTrackCount] = Child.GetComponent<AudioSource>();
 				EnemyMainTrackCount++;
 			}
 			else if(Child.name.Contains("Squad"))
 			{
-				SquadMainTracks[SquadTrackCount] = Child.GetComponent<AudioSource>();
+				m_SquadMainTracks[SquadTrackCount] = Child.GetComponent<AudioSource>();
 				SquadTrackCount++;
 			}
 		}
 
-		EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_CellChargeTowards",typeof(AudioClip)) as AudioClip);
-		EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_Defend",typeof(AudioClip)) as AudioClip);
-		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_DeployLandmine",typeof(AudioClip)) as AudioClip);
-		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping",typeof(AudioClip)) as AudioClip);
-		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode",typeof(AudioClip)) as AudioClip);
-		
-		/*Debug.Log("SquadMainTracks count: " + SquadMainTracks.Length);
-		for(int i = 0; i < SquadMainTracks.Length; i++){Debug.Log(SquadMainTracks[i].name);}*/
-		
-		/*Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
-		for(int i = 0; i < PlayerChildTracks.Length; i++){Debug.Log(PlayerChildTracks[i].name);}
-		
-		Debug.Log("EnemyChildTracks count: " + EnemyChildTracks.Length);
-		for(int i = 0; i < EnemyChildTracks.Length; i++){Debug.Log(EnemyChildTracks[i].name);}
-		
-		Debug.Log("SquadChildTracks count: " + SquadChildTracks.Length);
-		for(int i = 0; i < SquadChildTracks.Length; i++){Debug.Log(SquadChildTracks[i].name);}*/
+		m_EnemyChildTracks[0] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_CellChargeTowards",typeof(AudioClip)) as AudioClip);
+		m_EnemyChildTracks[1] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_Defend",typeof(AudioClip)) as AudioClip);
+		m_EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_DeployLandmine",typeof(AudioClip)) as AudioClip);
+		m_EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping",typeof(AudioClip)) as AudioClip);
+		m_EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode",typeof(AudioClip)) as AudioClip);
 	}
 	
 	private SceneType DetermineCurrentSceneType()
@@ -146,42 +132,42 @@ public class AudioManager : MonoBehaviour {
 	
 	public void LoadRandomBackgroundTrack()
 	{
-		CurrentSceneType = DetermineCurrentSceneType();
+		m_CurrentSceneType = DetermineCurrentSceneType();
 		
-		if(CurrentSceneType == SceneType.Null){return;}
+		if(m_CurrentSceneType == SceneType.Null){return;}
 		
 		int RandomTrackIndex = 0;
 		
-		if(CurrentSceneType == SceneType.Menu){RandomTrackIndex = Random.Range(0,3);}
-		if(CurrentSceneType == SceneType.Gameplay){RandomTrackIndex = Random.Range(3,7);}
+		if(m_CurrentSceneType == SceneType.Menu){RandomTrackIndex = Random.Range(0,3);}
+		if(m_CurrentSceneType == SceneType.Gameplay){RandomTrackIndex = Random.Range(3,7);}
 		
-		LoadAndPlayBackgroundTrack(BackgroundTracks[RandomTrackIndex]);
+		LoadAndPlayBackgroundTrack(m_BackgroundTracks[RandomTrackIndex]);
 	
-		if(RandomTrackIndex == 1 || RandomTrackIndex == 2){BackgroundClipLength = BackgroundTracks[RandomTrackIndex].length * 6f; return;}
-		BackgroundClipLength = BackgroundTracks[RandomTrackIndex].length;
+		if(RandomTrackIndex == 1 || RandomTrackIndex == 2){m_BackgroundClipLength = m_BackgroundTracks[RandomTrackIndex].length * 6f; return;}
+		m_BackgroundClipLength = m_BackgroundTracks[RandomTrackIndex].length;
 	}
 	
 	public void LoadAndPlayBackgroundTrack(AudioClip _Clip)
 	{
-		BackgroundAudioSource.Stop();
-		BackgroundAudioSource.clip = _Clip;
-		BackgroundAudioSource.Play();
+		m_BackgroundAudioSource.Stop();
+		m_BackgroundAudioSource.clip = _Clip;
+		m_BackgroundAudioSource.Play();
 	}
 	
 	private IEnumerator FadeInBackgroundMusic()
 	{
-		while(BackgroundAudioSource.volume < 1.0f)
+		while(m_BackgroundAudioSource.volume < 1.0f)
 		{
-			BackgroundAudioSource.volume += 0.01f;
+			m_BackgroundAudioSource.volume += 0.01f;
 			yield return new WaitForSeconds(0.75f);
 		}
 	}
 	
 	private IEnumerator FadeOutBackgroundMusic()
 	{
-		while(BackgroundAudioSource.volume > 0.0f)
+		while(m_BackgroundAudioSource.volume > 0.0f)
 		{
-			BackgroundAudioSource.volume -= 0.01f;
+			m_BackgroundAudioSource.volume -= 0.01f;
 			yield return new WaitForSeconds(0.75f);
 		}
 		LoadRandomBackgroundTrack();
@@ -189,117 +175,110 @@ public class AudioManager : MonoBehaviour {
 	
 	public void PlayMenuSoundEffect(MenuSFX _sfx)
 	{
-		if (MenuTracks == null)
+		if (m_MenuTracks == null)
 			return;
 		LoadTracksToLists();
-		MenuTracks[(int) _sfx].Stop();
-		MenuTracks[(int) _sfx].Play();
+		m_MenuTracks[(int) _sfx].Stop();
+		m_MenuTracks[(int) _sfx].Play();
 	}
 	
 	public static void PlayPMSoundEffect(PlayerMainSFX _sfx)
 	{
-		if (PlayerMainTracks == null)
+		if (m_PlayerMainTracks == null)
 			return;
-		PlayerMainTracks[(int) _sfx].Stop();
-		PlayerMainTracks[(int) _sfx].Play();
+		m_PlayerMainTracks[(int) _sfx].Stop();
+		m_PlayerMainTracks[(int) _sfx].Play();
 	}
 	
 	public static void PlayPMSoundEffectNoOverlap(PlayerMainSFX _sfx)
 	{
-		if (PlayerMainTracks == null)
+		if (m_PlayerMainTracks == null)
 			return;
-		if(!PlayerMainTracks[(int) _sfx].isPlaying)
+		if(!m_PlayerMainTracks[(int) _sfx].isPlaying)
 		{
-			PlayerMainTracks[(int) _sfx].Stop();
-			PlayerMainTracks[(int) _sfx].Play();
+			m_PlayerMainTracks[(int) _sfx].Stop();
+			m_PlayerMainTracks[(int) _sfx].Play();
 		}
 	}
 	
 	public static void PlayEMSoundEffect(EnemyMainSFX _sfx)
 	{
-		if (EnemyMainTracks == null)
+		if (m_EnemyMainTracks == null)
 			return;
-		EnemyMainTracks[(int) _sfx].Stop();
-		EnemyMainTracks[(int) _sfx].Play();
+		m_EnemyMainTracks[(int) _sfx].Stop();
+		m_EnemyMainTracks[(int) _sfx].Play();
 	}
 	
 	public static void PlayECSoundEffect(EnemyChildSFX _sfx, AudioSource _Source)
 	{
-		if (EnemyChildTracks == null)
+		if (m_EnemyChildTracks == null)
 			return;
 		_Source.Stop();
-		_Source.clip = EnemyChildTracks[(int) _sfx];
+		_Source.clip = m_EnemyChildTracks[(int) _sfx];
 		_Source.Play();	
 	}
 	
 	public static void PlayEMSoundEffectNoOverlap(EnemyMainSFX _sfx)
 	{
-		if (EnemyMainTracks == null)
+		if (m_EnemyMainTracks == null)
 			return;
-		if(!EnemyMainTracks[(int) _sfx].isPlaying)
+		if(!m_EnemyMainTracks[(int) _sfx].isPlaying)
 		{
-			EnemyMainTracks[(int) _sfx].Stop();
-			EnemyMainTracks[(int) _sfx].Play();
+			m_EnemyMainTracks[(int) _sfx].Stop();
+			m_EnemyMainTracks[(int) _sfx].Play();
 		}
 	}
 
 	public static void PlaySquadSoundEffect(SquadSFX _sfx)
 	{
-		if (SquadChildTracks == null)
+		if (m_SquadMainTracks == null)
 			return;
 
-		SquadMainTracks[(int) _sfx].Stop();
-		SquadMainTracks[(int) _sfx].Play();
+		m_SquadMainTracks[(int) _sfx].Stop();
+		m_SquadMainTracks[(int) _sfx].Play();
 	}
 	
 	private IEnumerator SceneTransition()
 	{		
-		SceneTransitionInProgress = true;
-		//Debug.Log("start transition");
+		m_SceneTransitionInProgress = true;
 	
-		while(BackgroundAudioSource.volume > 0.0f)
+		while(m_BackgroundAudioSource.volume > 0.0f)
 		{
-			//Debug.Log(BackgroundAudioSource.volume);
-			BackgroundAudioSource.volume -= 0.03f;
+			m_BackgroundAudioSource.volume -= 0.03f;
 			yield return new WaitForSeconds(0.0025f);
 		}
-		
-		//Debug.Log("fade out done");
 		
 		LoadRandomBackgroundTrack();
 		
-		CurrentSceneName = Application.loadedLevelName;
+		m_CurrentSceneName = Application.loadedLevelName;
 		
-		//Debug.Log("track loaded");
-		
-		while(BackgroundAudioSource.volume < 1.0f)
+		while(m_BackgroundAudioSource.volume < 1.0f)
 		{
-			BackgroundAudioSource.volume += 0.03f;
+			m_BackgroundAudioSource.volume += 0.03f;
 			yield return new WaitForSeconds(0.0025f);
 		}
 		
-		SceneTransitionInProgress = false;
-		//Debug.Log("fade in done");
+		m_SceneTransitionInProgress = false;
 	}
 	
 	public void PauseFadeOut()
 	{
-		while(BackgroundAudioSource.volume > 0.0f)
+		while(m_BackgroundAudioSource.volume > 0.0f)
 		{
-			BackgroundAudioSource.volume -= 0.03f;
+			m_BackgroundAudioSource.volume -= 0.03f;
 			StartCoroutine(WaitForRealSeconds(0.05f));
 		}
 		
-		BackgroundAudioSource.Pause ();
+		m_BackgroundAudioSource.Pause ();
 	}
 	
 	public void PauseFadeIn()
 	{
-		BackgroundAudioSource.Play ();
+		m_BackgroundAudioSource.Play ();
 		
-		while(BackgroundAudioSource.volume < 1.0f)
+		while(m_BackgroundAudioSource.volume < 1.0f)
 		{
-			BackgroundAudioSource.volume += 0.03f;
+			m_BackgroundAudioSource.volume += 0.03f;
 			StartCoroutine(WaitForRealSeconds(0.05f));
 		}
 	}

@@ -85,8 +85,8 @@ public class FormationDatabase
 			
 			float AngleInterval = 360f/CellsPerCircle;
 			float CurrentAngle = 180f;
-			float GapBetweenCircle = 1.25f * m_fCurrentMainScale;//2.5f;
-			float YAdjustValue = 0.1f;//0.38f;
+			float GapBetweenCircle = 1.25f * m_fCurrentMainScale;
+			float YAdjustValue = 0.1f;
 			
 			Vector2 TargetDirection = new Vector2(Mathf.Cos(CurrentAngle * Mathf.Deg2Rad), Mathf.Sin(CurrentAngle * Mathf.Deg2Rad));
 			Vector2 CurrentFormationPosition = TargetDirection * GapBetweenCircle;
@@ -101,7 +101,6 @@ public class FormationDatabase
 
 				m_FPositionDatabase[FIndex] = CurrentFormationPosition;
 				m_FAvaliabilityDatabase[FIndex] = false;
-				//ebug.Log("Position " + FIndex + ": " + CurrentFormationPosition);
 				
 				CurrentAngle += AngleInterval;
 				if(CurrentAngle >= 360f){CurrentAngle -= 360.0f;}
@@ -110,7 +109,6 @@ public class FormationDatabase
 				
 				if(CircleCellCount > 19)
 				{
-					//CircleCount++;
 					GapBetweenCircle += 0.75f;
 					CircleCellCount = 0;
 				}
@@ -120,7 +118,7 @@ public class FormationDatabase
 		{
 			Vector2 CurrentFormationPos = new Vector2(0f,-1.6f * _MainScale);
 			Vector2 StoredFormationPos = Vector2.zero;
-			float XInterval = 0.7f * _MainScale;// and -0.65 for left side
+			float XInterval = 0.7f * _MainScale;
 			float YInterval = -0.15f * _MainScale;
 			float NextLineInterval = -0.35f * _MainScale;
 			int RightCount = 0;
@@ -191,9 +189,9 @@ public class FormationDatabase
 			int SetAmount = (int) Mathf.Floor(ECAmount/9);
 			Vector2 CurrentFormationPos = new Vector2(0f, -2.25f * _MainScale);
 			Vector2 StoredFormationPos = Vector2.zero;
-			float XInterval = 0.5f * _MainScale;//1.0f;//0.65f * _MainScale;
-			float XBlockGap = 0.1f * _MainScale;//1.08f;//0.1f * _MainScale;
-			float YInterval = -0.5f * _MainScale;//-1.04f;//-0.5f * _MainScale;
+			float XInterval = 0.5f * _MainScale;
+			float XBlockGap = 0.1f * _MainScale;
+			float YInterval = -0.5f * _MainScale;
 			int RightCount = 0;
 			int LeftCount = 0;
 			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
@@ -272,9 +270,9 @@ public class FormationDatabase
 			int RightCount = 0;
 			int LeftCount = 0;
 			
-			float XInterval = 0.937f;//0.45f * _MainScale;
-			float XBlockGap = 0.293f;//0.65f * _MainScale;
-			float YInterval = 1.041f;//0.5f * _MainScale;
+			float XInterval = 0.937f;
+			float XBlockGap = 0.293f;
+			float YInterval = 1.041f;
 			
 			Vector2 CurrentFormationPos = Vector2.zero;
 			List<int> Keys = new List<int>(m_FPositionDatabase.Keys);
@@ -316,7 +314,6 @@ public class FormationDatabase
 					else
 					{
 						LeftCount++;
-						//Debug.Log("left trying to access: " + (FIndex - 2));
 						CurrentFormationPos.x = m_FPositionDatabase[FIndex - 2].x - XInterval;
 						CurrentFormationPos.y = m_FPositionDatabase[FIndex - 2].y;
 						m_FPositionDatabase[FIndex] = CurrentFormationPos;
@@ -344,7 +341,7 @@ public class FormationDatabase
 	{		
 		float YAdjustment = 0f;
 		if(_GivenPos.y < m_fPlayerDefendLimit && m_fPlayerDefendLimit - _GivenPos.y > YAdjustment){ YAdjustment = m_fPlayerDefendLimit - _GivenPos.y;}
-		if(_GivenPos.y <  m_fPlayerDefendLimit){_GivenPos.y += YAdjustment;}///2;}
+		if(_GivenPos.y <  m_fPlayerDefendLimit){_GivenPos.y += YAdjustment;}
 		return _GivenPos;
 	}
 	
@@ -377,37 +374,6 @@ public class FormationDatabase
 				m_FPositionDatabase[FIndex] = UpdatedPosition;
 			}
 		}
-		
-		/*foreach(int FIndex in Keys)
-		{
-			if((m_FPositionDatabase[FIndex].y < YLimit && YLimit - m_FPositionDatabase[FIndex].y > YAdjustment))
-			{
-				YAdjustment = YLimit - m_FPositionDatabase[FIndex].y;
-			}
-			else if((m_FPositionDatabase[FIndex].y > YLimit && m_FPositionDatabase[0].y > DistanceFromFirstToMain)
-			{
-				YAdjustment = m_FPositionDatabase[0].y - DistanceFromFirstToMain;
-			}
-		}
-		
-		if(YAdjustment == 0f){return;}
-
-		Vector2 UpdatedPosition = Vector2.zero;
-		foreach(int FIndex in Keys)
-		{
-			if(m_FPositionDatabase[FIndex].y <  YLimit)
-			{
-				UpdatedPosition = m_FPositionDatabase[FIndex];
-				UpdatedPosition.y += YAdjustment;
-				m_FPositionDatabase[FIndex] = UpdatedPosition;
-			}
-			else if(m_FPositionDatabase[FIndex].y > YLimit)
-			{
-				UpdatedPosition = m_FPositionDatabase[FIndex];
-				UpdatedPosition.y -= YAdjustment;
-				m_FPositionDatabase[FIndex] = UpdatedPosition; 
-			}
-		}*/
     }
 
 	public void AddNewDefenderToCurrentFormation(GameObject _NewDefender)

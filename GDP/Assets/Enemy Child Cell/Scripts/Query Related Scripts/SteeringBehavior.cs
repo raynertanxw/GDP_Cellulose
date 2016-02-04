@@ -21,16 +21,11 @@ public static class SteeringBehavior
 		//If the target is directly ahead of the agent and they are moving in both same direction
 		if(_Target.name.Contains("Player") && (_Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeChild || _Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.ChargeMain) && ((DistanceBetween < 0.75f) || (Vector2.Dot(DirectionToTarget,_Agent.GetComponent<Rigidbody2D>().velocity) > 0.0f && RelativeHeading < -0.95f))) 
 		{
-			//Debug.Log("Convert Pursuit to Seek");
 			return Seek (_Agent,_Target.transform.position,_Speed);
 		}
-		/*if(_Target.name.Contains("Player") && _Target.GetComponent<PlayerChildFSM>().GetCurrentState() == PCState.Defend||Vector2.Dot(DirectionToTarget,_Agent.GetComponent<Rigidbody2D>().velocity) > 0.0f && RelativeHeading < -0.95f && DistanceBetween < 0.75f)
-		{
-			return Seek (_Agent,_Target.transform.position,_Speed);
-		}*/
 		
 		//If the target is not directly ahead of the agent, the agent will need to predict the direction to move towards based of the target's velocity
-		float LookAheadTime = 0.5f;//0.55f;//0.5f;
+		float LookAheadTime = 0.5f;
 		
 		Vector2 Adjustment = (_Target.GetComponent<Rigidbody2D>().velocity * LookAheadTime);
 		Vector2 TargetPos = new Vector2(_Target.transform.position.x + Adjustment.x, _Target.transform.position.y + Adjustment.y);
@@ -91,14 +86,10 @@ public static class SteeringBehavior
 			}
 		}
 
-		//Debug.Log("seperation velo before: " + Steering);
-
 		Vector2 SeperationNormal = Steering.normalized;
 		float SeperationMagnitude =  Steering.magnitude;
 		float MinimumMagnitude = 0.8f;
 		Steering = Mathf.Clamp(SeperationMagnitude,MinimumMagnitude,SeperationMagnitude) * SeperationNormal;
-
-		//Debug.Log("seperation velo after: " + Steering);
 
 		return Steering;
 	}

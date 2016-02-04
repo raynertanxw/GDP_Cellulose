@@ -118,9 +118,7 @@ public class ECIdleState : IECState
 	public override void FixedExecute()
 	{  
 		Vector2 Acceleration = Vector2.zero;
-		
-		//If the current idle status is cohesioning and the enemy child cell had not enter the enemy main cell, continue seek towards the enemy main cell
-
+	
 		if(!m_ecFSM.m_bHitWall)
 		{
 			if(m_ecFSM.IsHittingSideWalls())

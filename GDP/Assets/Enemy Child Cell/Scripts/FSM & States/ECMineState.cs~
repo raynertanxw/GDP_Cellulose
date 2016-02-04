@@ -66,13 +66,6 @@ public class ECMineState : IECState {
 	public override void Enter()
 	{
 		if(m_ecFSM.m_AttackTarget != null){CheckIfEnoughCells();};
-	
-		/*m_bGatherTogether = false;
-		m_bExploding = false;
-		m_bReachTarget = false;
-		m_bExplodeCorountineStart = false;
-		m_nECMineNearby = 0;
-		m_CurrentSpreadness = Spread.Empty;*/
 
 		m_Main.GetComponent<Rigidbody2D>().drag = 2.4f;
 		ECTracker.Instance.LandmineCells.Add(m_ecFSM);
@@ -105,11 +98,8 @@ public class ECMineState : IECState {
 					m_PathToTarget = PathQuery.Instance.GetPathToTarget(DetermineDirectness(m_Target));
 					m_nCurrentTargetIndex = 0;
 					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
-					
-					//Debug.Log("A* path searched");
 				}
 
-				//Debug.Log("Gather done");
 				m_bGatherTogether = true;
 				AudioManager.PlayECSoundEffect(EnemyChildSFX.DeployLandmine,m_ecFSM.Audio);
 			}
@@ -131,16 +121,13 @@ public class ECMineState : IECState {
 
 		if (m_bGatherTogether && (HasCellReachTarget(m_PathToTarget[m_PathToTarget.Count - 1].Position) || ECTracker.Instance.LandmineCells.Count <= 1 || m_Child.transform.position.y < m_PathToTarget[m_PathToTarget.Count - 1].Position.y))
 		{
-			//Debug.Log("float towards bot of screen");
 			m_bReachTarget = true;
 			m_EndPosition = new Vector2(m_Child.transform.position.x,-99f);
 			m_ecFSM.StopChildCorountine(ExplodeCorountine());
-			//m_ecFSM.StartChildCorountine(m_ecFSM.PassThroughDeath(1f));
 		}
 
 		if(m_bGatherTogether && m_ecFSM.HitBottomOfScreen())
 		{
-			//Debug.Log("dead");
 			MessageDispatcher.Instance.DispatchMessage(m_Child,m_Child,MessageType.Dead,0.0f);
 		}
 
@@ -170,11 +157,8 @@ public class ECMineState : IECState {
 
 		if(!m_bReachTarget && m_Child == m_LeaderMine && m_bGatherTogether)
 		{
-			//Debug.Log("leader movement: " + m_LeaderMine.name);
-		
 			if(!m_bReachTarget && m_bGatherTogether && !m_bExploding )
 			{
-				//Debug.Log("following path");
 				if(m_CurrentTargetPoint == null)
 				{
 					m_nCurrentTargetIndex = 0;
@@ -183,8 +167,6 @@ public class ECMineState : IECState {
 				
 				if(!HasCellReachTarget(m_CurrentTargetPoint.Position))
 				{
-					//Debug.Log("leader seek: " + SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,12f));
-					//m_ecFSM.rigidbody2D.drag = 3f;
 					Acceleration += SteeringBehavior.Seek(m_Child,m_CurrentTargetPoint.Position,12f);
 					AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
 				}
@@ -199,12 +181,10 @@ public class ECMineState : IECState {
 					m_nCurrentTargetIndex++;
 					m_CurrentTargetPoint = m_PathToTarget[m_nCurrentTargetIndex];
 				}
-				//Utility.DrawCross(m_Child.transform.position,Color.green,0.1f);
 			}
 		}
 		else if(!m_bReachTarget && m_Child != m_LeaderMine && m_bGatherTogether)
 		{
-			//Debug.Log("non-leader movement: " + m_Child.name);
 			Acceleration += SteeringBehavior.Seek(m_Child,m_LeaderMine.transform.position,12f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagLandmines(Spread.Wide)) * 12f;
 			AudioManager.PlayEMSoundEffectNoOverlap(EnemyMainSFX.LandmineBeeping);
@@ -406,7 +386,7 @@ public class ECMineState : IECState {
 
 		if(_Spreadness == Spread.Tight)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 20f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 20f,Constants.s_onlyEnemeyChildLayer);
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
@@ -418,7 +398,7 @@ public class ECMineState : IECState {
 		}
 		else if(_Spreadness == Spread.Wide)
 		{
-			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 120f,Constants.s_onlyEnemeyChildLayer);//Physics2D.OverlapAreaAll(m_SpreadTopLeft,m_SpreadBotRight,LayerMask.NameToLayer ("EnemyChild"));
+			Collider2D[] m_NeighbourChilds = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x * 120f,Constants.s_onlyEnemeyChildLayer);
 
 			for(int i = 0; i < m_NeighbourChilds.Length; i++)
 			{
@@ -428,8 +408,6 @@ public class ECMineState : IECState {
 				}
 			}
 		}
-
-		//Debug.Log("Neighbour landmine count: " + NeighbouringLandmine.Count);
 
 		return NeighbouringLandmine;
 	}

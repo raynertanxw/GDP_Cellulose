@@ -124,6 +124,7 @@ public class ECChargeCState : IECState {
 		//Clamp the acceleration of the enemy child cell to a maximum value and then add that acceleration force to the enemy child cell
 		Acceleration = Vector2.ClampMagnitude(Acceleration,m_fMaxAcceleration);
 		m_ecFSM.rigidbody2D.AddForce(Acceleration);
+		
 		//Rotate the enemy child cell based on the direction of travel
 		if(m_bSqueezeDone) {m_ecFSM.RotateToHeading();}
 	}
@@ -315,7 +316,7 @@ public class ECChargeCState : IECState {
 			
 			m_Child.transform.localScale += ShrinkScale;
 			m_Child.transform.localScale += ExpandScale;
-			yield return new WaitForSeconds(0.2f);//0.0005
+			yield return new WaitForSeconds(0.2f);
 		}
 		
 		m_bSqueezeDone = true;

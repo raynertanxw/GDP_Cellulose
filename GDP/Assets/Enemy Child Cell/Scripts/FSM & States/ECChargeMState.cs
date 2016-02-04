@@ -80,7 +80,6 @@ public class ECChargeMState : IECState {
 		Vector2 Acceleration = Vector2.zero;
 
 		//remove the gather movement, once squeeze done, perform the a star search
-
 		//once squeeze done and a star search done, start move along the a star path (no more center based movement) and extend the Y scale of the child while moving
 		if(!m_bReachPosition && m_bSqueezeDone && m_PathToTarget != null && HasCellReachTargetPos(m_Child.transform.position,m_PathToTarget[m_PathToTarget.Count - 1].Position))
 		{
@@ -187,7 +186,7 @@ public class ECChargeMState : IECState {
 		
 			m_Child.transform.localScale += ShrinkScale;
 			m_Child.transform.localScale += ExpandScale;
-			yield return new WaitForSeconds(0.25f);//0.0005
+			yield return new WaitForSeconds(0.25f);
 		}
 		
 		if(m_PathToTarget == null)

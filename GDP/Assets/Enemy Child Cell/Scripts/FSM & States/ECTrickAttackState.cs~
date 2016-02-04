@@ -135,7 +135,6 @@ public class ECTrickAttackState : IECState {
 		else if(m_bSqueezeDone && !HasCellReachTargetPos(m_CurrentTargetPoint.Position) && !m_bReachTarget)
 		{
 			Acceleration += SteeringBehavior.Arrive(m_Child,m_CurrentTargetPoint.Position, 0.03f);
-			//Acceleration += SteeringBehavior.Seek(m_Child, CurrentTargetPoint.Position, 45f);
 			Acceleration += SteeringBehavior.Seperation(m_Child,TagNeighbours()) * 30f;
 			if(m_Child.transform.localScale.y < 1f && m_Child.transform.localScale.x > 0.5f){m_Child.transform.localScale += m_ShrinkRate;}
 		}
@@ -276,7 +275,6 @@ public class ECTrickAttackState : IECState {
 		
 		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),m_LeftWall);
 		Physics2D.IgnoreCollision(m_Child.GetComponent<BoxCollider2D>(),m_RightWall);
-		//Utility.DrawPath(PathToTarget,Color.red,0.1f);
 
 		m_ecFSM.GetComponent<BoxCollider2D>().isTrigger = false;
 
@@ -289,7 +287,6 @@ public class ECTrickAttackState : IECState {
 		List<GameObject> Neighbours = new List<GameObject>();
 
 		Collider2D[] Neighbouring = Physics2D.OverlapCircleAll(m_Child.transform.position, m_Child.GetComponent<SpriteRenderer>().bounds.size.x);
-		//Debug.Log("Neighbouring count: " + Neighbouring.Length);
 
 		for(int i = 0; i < Neighbouring.Length; i++)
 		{
@@ -334,7 +331,7 @@ public class ECTrickAttackState : IECState {
 			
 			m_Child.transform.localScale += ShrinkScale;
 			m_Child.transform.localScale += ExpandScale;
-			yield return new WaitForSeconds(0.25f);//0.0005
+			yield return new WaitForSeconds(0.25f);
 		}
 		
 		m_bSqueezeDone = true;
