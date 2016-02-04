@@ -33,6 +33,8 @@ public class MainMenu_Buttons : MonoBehaviour
 
 	void Awake()
 	{
+        Screen.SetResolution(360, 640, false);
+
 		cameraTransform = GameObject.Find("Main Camera").transform;
 
 		shouldSnapUp = false;
