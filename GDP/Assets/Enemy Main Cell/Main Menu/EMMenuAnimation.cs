@@ -172,7 +172,7 @@ public class EMMenuAnimation : MonoBehaviour
 		// Expand animation in Landmine state
 		LandmineAnimation ();
 	}
-
+	// Randomize state
 	private void StateUpdate()
 	{
 		do 
@@ -191,7 +191,7 @@ public class EMMenuAnimation : MonoBehaviour
 		else
 			bIsExpanding = false;
 	}
-
+	// Pause state transition
 	private IEnumerator StateTransitionPause ()
 	{
 		// Pause transition

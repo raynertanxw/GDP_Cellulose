@@ -80,21 +80,21 @@ public class EMDifficulty : MonoBehaviour
 	{
 		fCurrentDiff = (fHealthDiff * fHealthWeight + fNutrientDiff * fNutrientWeight + fLevelDiff * fLevelWeight) / 3f;
 	}
-
+	// Update health factor
 	void HealthDiffUpdate ()
 	{
 		// Max fHealthDiff = 1f + fMaxHealthInfluence
 		if (EnemyMainFSM.Instance ().Health != 0)
 			fHealthDiff = 1f + fMaxHealthInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nCurrentHealth));
 	}
-
+	// Update nutrient factor
 	void NutrientDiffUpdate ()
 	{
 		// Max fNutrientDiff = 1f + fMaxNutrientInfluence
 		if (EMController.Instance().NutrientNum != 0)
 			fNutrientDiff = 1f + fMaxNutrientInfluence / Mathf.Sqrt (Mathf.Sqrt ((float)nCurrentNutrient) * 2f) / Mathf.Sqrt (Mathf.Sqrt ((2f)));
 	}
-
+	// update level factor
 	void LevelDiffUpdate ()
 	{
 		fLevelDiff = (float)Level_Manager.LevelID / 2f + 1f;
