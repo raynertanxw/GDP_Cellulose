@@ -23,6 +23,7 @@ public class MainMenu_Buttons : MonoBehaviour
 
 	private Transform titleTransform;
 	private float titlePosMultiplier = 0.464f;	// 5.8 / 12.5
+	private Animate titleAnimate;
 
 	public Sprite[] alienBodySprites;
 	private Image alienBodyImage;
@@ -39,9 +40,15 @@ public class MainMenu_Buttons : MonoBehaviour
 
 		swipeTextCanvasGroup = transform.GetChild(4).GetComponent<CanvasGroup>();
 		titleTransform = transform.GetChild(1);
+		titleAnimate = new Animate(titleTransform);
 
 		alienBodyImage = transform.GetChild(3).GetChild(0).GetComponent<Image>();
 		alienBodyImage.sprite = alienBodySprites[Random.Range(0, alienBodySprites.Length)];
+	}
+
+	void Start()
+	{
+		titleAnimate.IdleRotation(-5.0f, 5.0f, 2f, 4f, true, false);
 	}
 
 	void Update()
@@ -138,6 +145,8 @@ public class MainMenu_Buttons : MonoBehaviour
 
 		swipeTextCanvasGroup.alpha = 1f - Mathf.Abs(cameraTransform.position.y) * alphaMultiplier;
 		titleTransform.position = new Vector3(0f, cameraTransform.position.y * titlePosMultiplier);
+		if (titleAnimate.IsExpandContract == false)
+			titleAnimate.ExpandContract(2.0f, 1, 1.1f);
 	}
 
 	public void Button_Level(int _level)
