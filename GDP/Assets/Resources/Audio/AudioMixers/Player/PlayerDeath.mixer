@@ -5,8 +5,8 @@ AudioMixerController:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: EnemyDeath
-  m_OutputGroup: {fileID: 24332174, guid: 3dc9e83256237144d823dc7b41f5b305, type: 2}
+  m_Name: PlayerDeath
+  m_OutputGroup: {fileID: 24354914, guid: f3aa4fc89fb5dc1419ed34ca742df035, type: 2}
   m_MasterGroup: {fileID: 24300001}
   m_Snapshots:
   - {fileID: 24500003}
@@ -16,7 +16,7 @@ AudioMixerController:
   m_ExposedParameters: []
   m_AudioMixerGroupViews:
   - guids:
-    - bf77ea2a4aa706347aa249db7fdea3d7
+    - 9204d3e8652a04b4da24af3031d0db6c
     name: View
   m_CurrentViewIndex: 0
   m_TargetSnapshot: {fileID: 24500003}
@@ -27,10 +27,10 @@ AudioMixerGroupController:
   m_PrefabInternal: {fileID: 0}
   m_Name: Master
   m_AudioMixer: {fileID: 24100000}
-  m_GroupID: bf77ea2a4aa706347aa249db7fdea3d7
+  m_GroupID: 9204d3e8652a04b4da24af3031d0db6c
   m_Children: []
-  m_Volume: 7ed4b8beff02af64d910aa7c3962530e
-  m_Pitch: 8bfd49c6bb3ef924e95966b1099a3d60
+  m_Volume: f7828a2e841f00e41bfde57485cdb2d1
+  m_Pitch: 0ce0f12dee490cd41befc065fe5991b6
   m_Effects:
   - {fileID: 24400002}
   m_UserColorIndex: 0
@@ -43,9 +43,9 @@ AudioMixerEffectController:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: 
-  m_EffectID: 37331fb9fcebcde4aac8dfa939496df1
+  m_EffectID: 662aa71878f2512479d212fccb885d9d
   m_EffectName: Attenuation
-  m_MixLevel: c7d7dc36456810d46a5af43a3b3ac5a3
+  m_MixLevel: 3de5ee33ca049094586dab5945ca258e
   m_Parameters: []
   m_SendTarget: {fileID: 0}
   m_EnableWetMix: 0
@@ -57,7 +57,7 @@ AudioMixerSnapshotController:
   m_PrefabInternal: {fileID: 0}
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
-  m_SnapshotID: 11d705466c2c2fd46ae8b403b354e6eb
+  m_SnapshotID: 5bd6c2e2bb9adbb4e8096c317d69183b
   m_FloatValues:
-    7ed4b8beff02af64d910aa7c3962530e: 20
+    f7828a2e841f00e41bfde57485cdb2d1: 0
   m_TransitionOverrides: {}
