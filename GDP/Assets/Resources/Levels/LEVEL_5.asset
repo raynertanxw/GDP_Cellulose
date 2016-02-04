@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6530f6b77c04b4837b0c35effb66cb97, type: 3}
   m_Name: LEVEL_5
   m_EditorClassIdentifier: 
-  nPlayerInitialHealth: 50
+  nPlayerInitialHealth: 75
   nPlayerInitialResourceCount: 200
   nPlayerNutrientPerBlock: 15
   fPlayerNutrientChance: .800000012
@@ -24,12 +24,12 @@ MonoBehaviour:
   fMinimumCooldown: 1
   fMaximumCooldown: 2
   fThinkCooldown: .5
-  nEnemyMainInitialHealth: 150
+  nEnemyMainInitialHealth: 200
   nEnemyMainInitialNutrientNum: 50
   nEnemyMainInitialChildCellNum: 30
   nEnemyMainInitialAggressiveness: 8
-  fEnemyMainInitialVertSpeed: .075000003
-  fEnemyMainMinHiriSpeed: .075000003
+  fEnemyMainInitialVertSpeed: .0700000003
+  fEnemyMainMinHiriSpeed: .0700000003
   fDefaultStunTime: 3
   fDefaultStunTolerance: 9
   nEnemyChildCountCap: 50

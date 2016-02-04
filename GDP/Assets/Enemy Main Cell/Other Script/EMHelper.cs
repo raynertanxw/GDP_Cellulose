@@ -187,10 +187,14 @@ public class EMHelper : MonoBehaviour
 		if (GetComponent<Renderer> ().enabled) 
 		{
 			bIsEnemyVisible = true;
+			// Enable collider when invisible
+			GetComponent<CircleCollider2D> ().enabled = true;
 		}
 		else 
 		{
 			bIsEnemyVisible = false;
+			// Disable collider when invisible
+			GetComponent<CircleCollider2D> ().enabled = false;
 		}
 	}
 	// Prevent having more than 100 child cells
@@ -234,7 +238,7 @@ public class EMHelper : MonoBehaviour
 				);
 
 			if (Level_Manager.LevelID > 3)
-				intervalTime /= 1.5f;
+				intervalTime /= 1.2f;
 			yield return new WaitForSeconds (intervalTime);
 
 			if (m_EMFSM.AvailableChildNum < 100)
