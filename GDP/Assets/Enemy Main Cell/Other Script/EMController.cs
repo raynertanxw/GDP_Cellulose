@@ -171,6 +171,7 @@ public class EMController : MonoBehaviour
 		{
 			StartCoroutine(ForceBack());
 		}
+		// Stun the enemy main cell after receiving certain amount of hits within certain period of time
 		if ((float)nDamageNum > fCurrentStunTolerance && !bStunned && bCanStun && !bPushed) 
 		{
 			StartCoroutine(Stun ());
@@ -448,7 +449,7 @@ public class EMController : MonoBehaviour
 			bCanChangeHori = true;
 		}
 	}
-
+	// Swap direction
 	public void ChangeDirection ()
 	{
 		bMovingLeft = !bMovingLeft;
@@ -519,6 +520,7 @@ public class EMController : MonoBehaviour
 		}
 	}
 
+	// Add enemy child cells to enemy main cell
 	void AddChildCells (int num)
 	{
 		for (int i = 0; i < num; i++) {

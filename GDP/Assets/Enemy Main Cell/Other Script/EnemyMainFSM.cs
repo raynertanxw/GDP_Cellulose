@@ -224,7 +224,7 @@ public class EnemyMainFSM : MonoBehaviour
 		fCautiousAttackScore = LearningDictionary [EMState.CautiousAttack];
 		fLandmineScore = LearningDictionary [EMState.Landmine];
 	}
-
+	// Max and min value limit of the scores of learning agent
 	public void ScoreLimit ()
 	{
 		LearningDictionary [EMState.Production] = Mathf.Clamp (LearningDictionary [EMState.Production], -100f, 100f);
