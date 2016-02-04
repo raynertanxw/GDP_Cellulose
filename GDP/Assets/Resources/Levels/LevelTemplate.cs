@@ -45,7 +45,7 @@ public class LevelTemplate : ScriptableObject
     public int nEnemyMainInitialHealth = 50;
     [Range(50, 100)] [Tooltip("Enemy Main initial nutrient number.")]
     public int nEnemyMainInitialNutrientNum = 50;
-    [Range(5, 30)] [Tooltip("Enemy Main initial child cell number.")]
+    [Range(5, 50)] [Tooltip("Enemy Main initial child cell number.")]
     public int nEnemyMainInitialChildCellNum = 5;
     [Range(3, 8)] [Tooltip("Enemy Main initial aggressiveness.")]
     public int nEnemyMainInitialAggressiveness = 3;

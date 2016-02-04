@@ -25,8 +25,8 @@ MonoBehaviour:
   fMaximumCooldown: 2
   fThinkCooldown: .5
   nEnemyMainInitialHealth: 200
-  nEnemyMainInitialNutrientNum: 50
-  nEnemyMainInitialChildCellNum: 30
+  nEnemyMainInitialNutrientNum: 75
+  nEnemyMainInitialChildCellNum: 50
   nEnemyMainInitialAggressiveness: 8
   fEnemyMainInitialVertSpeed: .0700000003
   fEnemyMainMinHiriSpeed: .0700000003

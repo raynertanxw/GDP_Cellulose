@@ -14,7 +14,7 @@ MonoBehaviour:
   nPlayerInitialHealth: 50
   nPlayerInitialResourceCount: 200
   nPlayerNutrientPerBlock: 10
-  fPlayerNutrientChance: .25
+  fPlayerNutrientChance: .400000006
   nPlayerChildSpawnCost: 5
   nPlayerSqaudCaptainChildCost: 15
   nPlayerActionBurstShotChildCost: 5
@@ -25,8 +25,8 @@ MonoBehaviour:
   fMaximumCooldown: 2
   fThinkCooldown: .5
   nEnemyMainInitialHealth: 100
-  nEnemyMainInitialNutrientNum: 75
-  nEnemyMainInitialChildCellNum: 15
+  nEnemyMainInitialNutrientNum: 100
+  nEnemyMainInitialChildCellNum: 30
   nEnemyMainInitialAggressiveness: 5
   fEnemyMainInitialVertSpeed: .0599999987
   fEnemyMainMinHiriSpeed: .0599999987
