@@ -224,6 +224,8 @@ public class PlayerChildFSM : MonoBehaviour
 			col.gameObject.GetComponent<EnemyChildFSM>().KillChildCell();
 			// Kill Self.
 			KillPlayerChildCell();
+			
+			AudioManager.PlayPMSoundEffect(PlayerMainSFX.KillChild);
 		}
 		// Hit Enemy Main.
 		else if (col.gameObject.tag == Constants.s_strEnemyTag)

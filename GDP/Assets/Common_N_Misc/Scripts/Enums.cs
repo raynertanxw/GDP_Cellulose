@@ -47,7 +47,8 @@ public enum EnemyMainSFX {AbsorbNutrient,IdleContract,IdleExpand,Stunned,MainBei
 
 public enum EnemyChildSFX {CellChargeTowards,Defend,DeployLandmine,LandmineBeeping,LandmineExplode};
 
-public enum PlayerMainSFX {AbsorbNutrient, ActionSelectAppear, ActionSelectDissapear, ActionSelecteSelected, TapNutrient, Win, Lose, MainBeingHit, MainDeath, SpawnCell, BurstShot, ScatterShot, Swarm};
+public enum PlayerMainSFX {AbsorbNutrient, ActionSelectAppear, ActionSelectDissapear, ActionSelecteSelected, TapNutrient, Win, Lose, 
+	                       MainBeingHit, MainDeath, SpawnCell, BurstShot, ScatterShot, Swarm, KillChild};
 
 public enum SquadSFX {SpawnCell, ChildAttack};
 #endregion

@@ -40,7 +40,7 @@ public class AudioManager : MonoBehaviour {
 		BackgroundAudioSource = GetComponent<AudioSource>();
 
 		MenuTracks = new AudioSource[2];
-		PlayerMainTracks = new AudioSource[13];
+		PlayerMainTracks = new AudioSource[14];
 		EnemyMainTracks = new AudioSource[7];
 		SquadMainTracks = new AudioSource[2];
 
@@ -117,6 +117,9 @@ public class AudioManager : MonoBehaviour {
 		EnemyChildTracks[2] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_DeployLandmine",typeof(AudioClip)) as AudioClip);
 		EnemyChildTracks[3] = (Resources.Load("Audio/Sound Effects/Enemy SFX/PCM/Enemy_LandmineBeeping",typeof(AudioClip)) as AudioClip);
 		EnemyChildTracks[4] = (Resources.Load("Audio/Sound Effects/Enemy SFX/ADPCM/Enemy_LandmineExplode",typeof(AudioClip)) as AudioClip);
+		
+		Debug.Log("SquadMainTracks count: " + SquadMainTracks.Length);
+		for(int i = 0; i < SquadMainTracks.Length; i++){Debug.Log(SquadMainTracks[i].name);}
 		
 		/*Debug.Log("PlayerChildTrack count: " + PlayerChildTracks.Length);
 		for(int i = 0; i < PlayerChildTracks.Length; i++){Debug.Log(PlayerChildTracks[i].name);}
