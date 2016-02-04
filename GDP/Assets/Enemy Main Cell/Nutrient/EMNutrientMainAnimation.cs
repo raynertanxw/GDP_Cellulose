@@ -41,7 +41,9 @@ public class EMNutrientMainAnimation : MonoBehaviour
 		// Initialization of footsteps and array
 		if (bHaveFootstep) 
 		{
+			// Initialization of array
 			footstepArr = new Transform[10];
+			// Get all footstep objects 
 			footstep0 = footstepPool.transform.GetChild (0);
 			footstep1 = footstepPool.transform.GetChild (1);
 			footstep2 = footstepPool.transform.GetChild (2);
@@ -52,7 +54,7 @@ public class EMNutrientMainAnimation : MonoBehaviour
 			footstep7 = footstepPool.transform.GetChild (7);
 			footstep8 = footstepPool.transform.GetChild (8);
 			footstep9 = footstepPool.transform.GetChild (9);
-
+			// Assign all objects into array
 			footstepArr [0] = footstep0;
 			footstepArr [1] = footstep1;
 			footstepArr [2] = footstep2;
@@ -78,6 +80,7 @@ public class EMNutrientMainAnimation : MonoBehaviour
 			UpdateFootstep ();
 	}
 
+	// Update the position of footsteps
 	void UpdateFootstep ()
 	{
 		if (gameObject.activeSelf) 
