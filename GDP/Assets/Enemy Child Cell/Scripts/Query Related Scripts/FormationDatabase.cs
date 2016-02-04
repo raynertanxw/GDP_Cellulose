@@ -6,11 +6,11 @@ public class FormationDatabase
 {
 	private static FormationDatabase s_Instance;
 
-	private Dictionary<string,int> m_FIndexDatabase;
+	private Dictionary<GameObject,int> m_FIndexDatabase;
     private Dictionary<int, Vector2> m_FPositionDatabase;
 	private Dictionary<int, bool> m_FAvaliabilityDatabase;
 
-	public Dictionary<string,int> FIDatabase { get{ return m_FIndexDatabase;} }
+	public Dictionary<GameObject,int> FIDatabase { get{ return m_FIndexDatabase;} }
 	public Dictionary<int, Vector2> FPDatabase { get{ return m_FPositionDatabase;}}
 	
 	private Bounds m_EMainBound;
@@ -22,10 +22,9 @@ public class FormationDatabase
 	{
 		InitializeDatabases();
 		List<EnemyChildFSM> ECList = GameObject.Find("Enemy_Cell").GetComponent<EnemyMainFSM>().ECList;
-		RefreshDatabases(ECList);
-		
 		m_EMainBound = GameObject.Find("Enemy_Cell").GetComponent<SpriteRenderer>().bounds;
 		m_fPlayerDefendLimit = GameObject.Find("Player_Cell").transform.position.y + 5.0f;
+		RefreshDatabases(ECList);
 	}
 
 	//Singleton and Get function
@@ -43,7 +42,7 @@ public class FormationDatabase
 
     private void InitializeDatabases()
     {
-		m_FIndexDatabase = new Dictionary<string, int>();
+		m_FIndexDatabase = new Dictionary<GameObject, int>();
 		m_FPositionDatabase = new Dictionary<int, Vector2>();
 		m_FAvaliabilityDatabase = new Dictionary<int, bool>();
 		ClearDatabases();
@@ -57,7 +56,7 @@ public class FormationDatabase
 
 		for(int i = 0; i < _EnemyChild.Count; i++)
 		{
-			if(!m_FIndexDatabase.ContainsKey(_EnemyChild[i].name)){m_FIndexDatabase.Add(_EnemyChild[i].name,FormationIndex);}
+			if(!m_FIndexDatabase.ContainsKey(_EnemyChild[i].gameObject)){m_FIndexDatabase.Add(_EnemyChild[i].gameObject,FormationIndex);}
 			if(!m_FPositionDatabase.ContainsKey(FormationIndex)){m_FPositionDatabase.Add(FormationIndex,Vector2.zero);}
 			if(!m_FAvaliabilityDatabase.ContainsKey(FormationIndex)){m_FAvaliabilityDatabase.Add(FormationIndex,true);}
 			FormationIndex++;
@@ -423,12 +422,12 @@ public class FormationDatabase
 			m_FAvaliabilityDatabase[AvaliableIndex] = false;
 			
 			//Remove the entry whereby the previous defender occupy this formation index and rewrite with the new defender's name
-			foreach(string Key in m_FIndexDatabase.Keys)
+			foreach(GameObject Key in m_FIndexDatabase.Keys)
 			{
 				if(m_FIndexDatabase[Key] == AvaliableIndex)
 				{
 					m_FIndexDatabase.Remove(Key);
-					m_FIndexDatabase[_NewDefender.name] = AvaliableIndex;
+					m_FIndexDatabase[_NewDefender] = AvaliableIndex;
 					break;
 				}
 			}
@@ -436,9 +435,9 @@ public class FormationDatabase
 		//If not,
 		else
 		{
-			if(!m_FIndexDatabase.ContainsKey(_NewDefender.name)){m_FIndexDatabase.Add(_NewDefender.name, m_FIndexDatabase.Count);} else{m_FIndexDatabase[_NewDefender.name] = m_FIndexDatabase.Count;}
-			if(!m_FPositionDatabase.ContainsKey(m_FIndexDatabase[_NewDefender.name])){m_FPositionDatabase.Add(m_FIndexDatabase[_NewDefender.name], Vector2.zero);} else{m_FPositionDatabase[m_FIndexDatabase[_NewDefender.name]] = Vector2.zero;}
-			if(!m_FAvaliabilityDatabase.ContainsKey(m_FIndexDatabase[_NewDefender.name])){m_FAvaliabilityDatabase.Add(m_FIndexDatabase[_NewDefender.name], false);} else{m_FAvaliabilityDatabase[m_FIndexDatabase[_NewDefender.name]] = false;}
+			if(!m_FIndexDatabase.ContainsKey(_NewDefender)){m_FIndexDatabase.Add(_NewDefender, m_FIndexDatabase.Count);} else{m_FIndexDatabase[_NewDefender] = m_FIndexDatabase.Count;}
+			if(!m_FPositionDatabase.ContainsKey(m_FIndexDatabase[_NewDefender])){m_FPositionDatabase.Add(m_FIndexDatabase[_NewDefender], Vector2.zero);} else{m_FPositionDatabase[m_FIndexDatabase[_NewDefender]] = Vector2.zero;}
+			if(!m_FAvaliabilityDatabase.ContainsKey(m_FIndexDatabase[_NewDefender])){m_FAvaliabilityDatabase.Add(m_FIndexDatabase[_NewDefender], false);} else{m_FAvaliabilityDatabase[m_FIndexDatabase[_NewDefender]] = false;}
 		
 			UpdateDatabaseFormation(m_CurrentFormation,m_fCurrentMainScale);
 		}
@@ -447,9 +446,9 @@ public class FormationDatabase
 	
 	public void ReturnFormationPos(GameObject _ObjectReturn)
 	{
-		if(m_FIndexDatabase.ContainsKey(_ObjectReturn.name))
+		if(m_FIndexDatabase.ContainsKey(_ObjectReturn))
 		{
-			int IndexReturned = m_FIndexDatabase[_ObjectReturn.name];
+			int IndexReturned = m_FIndexDatabase[_ObjectReturn];
 			m_FAvaliabilityDatabase[IndexReturned] = true;
 		}
 	}
@@ -480,13 +479,13 @@ public class FormationDatabase
 
     public Vector2 GetTargetFormationPosition(Formation _Formation, GameObject _EnemyCell)
     {
-		if(!m_FIndexDatabase.ContainsKey(_EnemyCell.name))
+		if(!m_FIndexDatabase.ContainsKey(_EnemyCell))
 		{
 			MessageDispatcher.Instance.DispatchMessage(_EnemyCell,_EnemyCell,MessageType.Idle,0);
 			return Vector2.zero;
 		}
     
-		int TargetFIndex = m_FIndexDatabase[_EnemyCell.name];
+		int TargetFIndex = m_FIndexDatabase[_EnemyCell];
 		Vector2 PosDifference = m_FPositionDatabase[TargetFIndex];
 		Vector2 EMPosition = EMHelper.Instance().Position;
 		
@@ -520,10 +519,10 @@ public class FormationDatabase
 
     private void PrintIndexDatabase()
     {
-		List<string> Keys = new List<string>(m_FIndexDatabase.Keys);
-		foreach(string Key in Keys)
+		List<GameObject> Keys = new List<GameObject>(m_FIndexDatabase.Keys);
+		foreach(GameObject Key in Keys)
 		{
-			Debug.Log("Name: " + Key + " Index: " + m_FIndexDatabase[Key]);
+			Debug.Log("Name: " + Key.name + " Index: " + m_FIndexDatabase[Key]);
 		}
     }
 

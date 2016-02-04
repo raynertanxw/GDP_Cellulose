@@ -352,7 +352,7 @@ public class PositionQuery
 		
 		return Formation.ReverseCircular;
 
-		//return Formation.Turtle;
+		//return Formation.Ladder;
 	}
 
 	public PlayerAttackMode GetMostSignificantAttack()
