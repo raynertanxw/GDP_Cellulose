@@ -14,7 +14,9 @@ public class MainMenu_Buttons : MonoBehaviour
 	private bool shouldSnapUp, shouldSnapDown, shouldSnapBack, isSnapping;
 	private MainMenuPosition _menuPosition;
 	private float snapTolerance = 125.0f;
-	private float snapSpeed = 35.0f;
+	private float snapSpeed = 30.0f;
+	private float slowDownFactor;
+	private float minSlowDownFactor = 0.6f;
 
 	void Awake()
 	{
@@ -31,7 +33,12 @@ public class MainMenu_Buttons : MonoBehaviour
 	{
 		if (shouldSnapUp)
 		{
-			cameraTransform.position += Vector3.up * snapSpeed * Time.deltaTime;
+			cameraTransform.position += Vector3.up * snapSpeed * Time.deltaTime * slowDownFactor;
+			if (slowDownFactor > minSlowDownFactor)
+				slowDownFactor *= 0.925f;
+			else
+				slowDownFactor = minSlowDownFactor;
+
 			switch(_menuPosition)
 			{
 			case MainMenuPosition.Bottom:
@@ -142,6 +149,7 @@ public class MainMenu_Buttons : MonoBehaviour
 		shouldSnapDown = false;
 		shouldSnapBack = false;
 		isSnapping = true;
+		slowDownFactor = 1.0f;
 	}
 
 	private void SnapDown()
@@ -153,6 +161,7 @@ public class MainMenu_Buttons : MonoBehaviour
 		shouldSnapUp = false;
 		shouldSnapBack = false;
 		isSnapping = true;
+		slowDownFactor = 1.0f;
 	}
 
 	private void SnapBack()
@@ -160,6 +169,7 @@ public class MainMenu_Buttons : MonoBehaviour
 		shouldSnapDown = false;
 		shouldSnapUp = false;
 		shouldSnapBack = true;
+		slowDownFactor = 1.0f;
 	}
 	#endregion
 
