@@ -3515,7 +3515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3567bd2bff9ae43ed82f8dc327a1e0cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollSpeed: .0270000007
+  scrollSpeed: .0199999996
   minY: -12.5
   maxY: 12.5
   alienBodySprites:
