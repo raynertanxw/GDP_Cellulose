@@ -18,6 +18,12 @@ public class MainMenu_Buttons : MonoBehaviour
 	private float slowDownFactor;
 	private float minSlowDownFactor = 0.6f;
 
+	private CanvasGroup swipeTextCanvasGroup;
+	private float alphaMultiplier = 0.1f;
+
+	private Transform titleTransform;
+	private float titlePosMultiplier = 0.464f;	// 5.8 / 12.5
+
 	public Sprite[] alienBodySprites;
 	private Image alienBodyImage;
 
@@ -30,6 +36,9 @@ public class MainMenu_Buttons : MonoBehaviour
 		shouldSnapBack = false;
 		isSnapping = false;
 		_menuPosition = MainMenuPosition.Center;
+
+		swipeTextCanvasGroup = transform.GetChild(4).GetComponent<CanvasGroup>();
+		titleTransform = transform.GetChild(1);
 
 		alienBodyImage = transform.GetChild(3).GetChild(0).GetComponent<Image>();
 		alienBodyImage.sprite = alienBodySprites[Random.Range(0, alienBodySprites.Length)];
@@ -126,6 +135,9 @@ public class MainMenu_Buttons : MonoBehaviour
 
 			shouldSnapBack = false;
 		}
+
+		swipeTextCanvasGroup.alpha = 1f - Mathf.Abs(cameraTransform.position.y) * alphaMultiplier;
+		titleTransform.position = new Vector3(0f, cameraTransform.position.y * titlePosMultiplier);
 	}
 
 	public void Button_Level(int _level)
