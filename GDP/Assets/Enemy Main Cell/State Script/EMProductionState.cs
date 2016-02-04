@@ -50,9 +50,9 @@ public class EMProductionState : IEMState
 				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 				
 				// Transition to Defend
-				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 5f && (nPlayerChildFactor - nEnemyChildFactor) > 1f) {
+				if (EMHelper.Instance().MinToMaxYRatio > 0.5f) {
 					EMTransition.Instance().Transition (1000f / 
-					                                    (nPlayerChildFactor * 2.5f + 
+					                                    (nPlayerChildFactor * 10f + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Defend)) * (1f + EMHelper.Instance().MinToMaxYRatio),
 					                       EMState.Defend);
 				}
@@ -96,9 +96,9 @@ public class EMProductionState : IEMState
 				float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f + 1f;
 				
 				// Transition to Defend
-				if (nEnemyChildFactor < nPlayerChildFactor && nPlayerChildFactor <= 8f && (nPlayerChildFactor - nEnemyChildFactor) > 2f) {
+				if (EMHelper.Instance().MinToMaxYRatio > 0.5f) {
 					EMTransition.Instance().Transition (1000f / 
-					                                    (nPlayerChildFactor * 1.5f + 
+					                                    (nPlayerChildFactor * 10f + 
 					 EMLeraningAgent.Instance().RealScore(EMState.Defend)) * (1f + EMHelper.Instance().MinToMaxYRatio),
 					                       EMState.Defend);
 				}
