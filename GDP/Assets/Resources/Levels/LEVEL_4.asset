@@ -14,7 +14,7 @@ MonoBehaviour:
   nPlayerInitialHealth: 60
   nPlayerInitialResourceCount: 200
   nPlayerNutrientPerBlock: 10
-  fPlayerNutrientChance: .600000024
+  fPlayerNutrientChance: .649999976
   nPlayerChildSpawnCost: 5
   nPlayerSqaudCaptainChildCost: 15
   nPlayerActionBurstShotChildCost: 5

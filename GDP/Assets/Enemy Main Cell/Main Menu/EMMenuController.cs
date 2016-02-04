@@ -16,12 +16,13 @@ public class EMMenuController : MonoBehaviour
 
 	Vector2 previousCameraPos;
 
-	public static float fRadius;
+	private float fRadius;
+	public static float fDefaultRadius;
 	public static float width;
 
 	[SerializeField]
 	private Vector2 velocity;
-	private float fFlowFactor;
+	public static float fFlowFactor;
 	[SerializeField] 
 	private bool bCanChangeDir;
 	private float fChangeRate;
@@ -33,10 +34,11 @@ public class EMMenuController : MonoBehaviour
 
 		width = GetComponent<CircleCollider2D> ().bounds.size.x / 2f;
 		fRadius = GetComponent<CircleCollider2D> ().bounds.size.x;
+		fDefaultRadius = fRadius;
 
 		previousCameraPos = mainCamera.transform.position;
 
-		fFlowFactor = 0.5f;
+		fFlowFactor = 1.5f;
 		bCanChangeDir = true;
 		fChangeRate = Random.Range (3f, 6f);
 
@@ -100,7 +102,7 @@ public class EMMenuController : MonoBehaviour
 	void FlowSimulation ()
 	{
 		if (transform.position.x < leftLimit - fRadius * 4f)
-			transform.position = new Vector2 (rightLimit + fRadius * 4f, transform.position.y);
+			transform.position = new Vector2 (rightLimit + fDefaultRadius * 4f, Random.Range (bottomLimit, topLimit));
 	}
 	// Follow camera
 	private void FollowCamera ()

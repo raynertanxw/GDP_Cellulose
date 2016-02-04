@@ -16,7 +16,7 @@ public class EnemyNutrientMainMenuAgent : MonoBehaviour
 	private Vector2 currentScale;
 	private float fInitialRadius;
 	// Velocity
-	public float fMaxVelocity = 1;
+	public float fMaxVelocity = 2.5f;
 	public Vector2 currentVelocity;
 	[SerializeField]
 	private bool bSucked;
@@ -157,8 +157,11 @@ public class EnemyNutrientMainMenuAgent : MonoBehaviour
 	// Every flow to the left
 	void FlowSimulation ()
 	{
-		if (transform.position.x < EMMenuController.leftLimit - EMMenuController.fRadius * 4f)
-			transform.position = new Vector2 (EMMenuController.rightLimit + EMMenuController.fRadius * 4f, transform.position.y);
+		if (transform.position.x < EMMenuController.leftLimit - EMMenuController.fDefaultRadius * 2f)
+		{
+			transform.position = new Vector2 (EMMenuController.rightLimit + EMMenuController.fDefaultRadius * 4f, 
+			                                  Random.Range (EMMenuController.bottomLimit, EMMenuController.topLimit));
+		}
 	}
 	// Sucking behavior
 	void Sucking ()
