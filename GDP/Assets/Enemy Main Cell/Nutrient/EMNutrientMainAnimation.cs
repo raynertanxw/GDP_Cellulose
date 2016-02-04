@@ -4,6 +4,7 @@ using System.Collections;
 public class EMNutrientMainAnimation : MonoBehaviour
 {
 	public static bool bCanHaveFootstep = true;
+	public static GameObject previousParent;
 	[SerializeField]
 	private bool bHaveFootstep;
 
@@ -25,10 +26,11 @@ public class EMNutrientMainAnimation : MonoBehaviour
 	{
 		bHaveFootstep = false;
 
-		if (bCanHaveFootstep == true) 
+		if ((EMNutrientMainAnimation.bCanHaveFootstep == true || EMNutrientMainAnimation.previousParent == null) && gameObject.activeSelf) 
 		{
 			EMNutrientMainAnimation.bCanHaveFootstep = false;
 			bHaveFootstep = true;
+			EMNutrientMainAnimation.previousParent = this.gameObject;
 		}
 
 		if (bHaveFootstep) 
