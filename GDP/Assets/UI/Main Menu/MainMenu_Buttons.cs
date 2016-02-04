@@ -27,6 +27,9 @@ public class MainMenu_Buttons : MonoBehaviour
 
 	public Sprite[] alienBodySprites;
 	private Image alienBodyImage;
+	private SpriteRenderer[] backgroundImage;
+	public Color[] backgroundColors;
+	public ParticleSystem[] particleSystems;
 
 	void Awake()
 	{
@@ -44,11 +47,31 @@ public class MainMenu_Buttons : MonoBehaviour
 
 		alienBodyImage = transform.GetChild(3).GetChild(0).GetComponent<Image>();
 		alienBodyImage.sprite = alienBodySprites[Random.Range(0, alienBodySprites.Length)];
+		backgroundImage = new SpriteRenderer[5];
+		backgroundImage[0] = transform.GetChild(5).GetComponent<SpriteRenderer>();
+		backgroundImage[1] = transform.GetChild(6).GetComponent<SpriteRenderer>();
+		backgroundImage[2] = transform.GetChild(7).GetComponent<SpriteRenderer>();
+		backgroundImage[3] = transform.GetChild(8).GetComponent<SpriteRenderer>();
+		backgroundImage[4] = transform.GetChild(9).GetComponent<SpriteRenderer>();
+
+		int randColor = Random.Range(0, backgroundColors.Length);
+		for (int i = 0; i < backgroundImage.Length; i++)
+		{
+			backgroundImage[i].color = backgroundColors[randColor];
+		}
+
+		for (int i = 0; i < particleSystems.Length; i++)
+		{
+			particleSystems[i].startColor = backgroundColors[randColor];
+			particleSystems[i].Clear();
+			particleSystems[i].Simulate(particleSystems[i].startLifetime);
+			particleSystems[i].Play();
+		}
 	}
 
 	void Start()
 	{
-		titleAnimate.IdleRotation(-5.0f, 5.0f, 2f, 4f, true, false);
+		titleAnimate.IdleRotation(-3.0f, 3.0f, 2f, 4f, true, false);
 	}
 
 	void Update()
