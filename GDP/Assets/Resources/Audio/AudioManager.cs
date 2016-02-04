@@ -10,6 +10,7 @@ public class AudioManager : MonoBehaviour {
 	
 	private float m_BackgroundClipLength;
 	private string m_CurrentSceneName;
+	private int m_CurrentBackgroundTrackIndex;
 	
 	private static AudioSource[] m_MenuTracks;
 	private static AudioSource[] m_PlayerMainTracks;
@@ -136,15 +137,20 @@ public class AudioManager : MonoBehaviour {
 		
 		if(m_CurrentSceneType == SceneType.Null){return;}
 		
-		int RandomTrackIndex = 0;
+		int RandomTrackIndex = m_CurrentBackgroundTrackIndex;
 		
-		if(m_CurrentSceneType == SceneType.Menu){RandomTrackIndex = Random.Range(0,3);}
-		if(m_CurrentSceneType == SceneType.Gameplay){RandomTrackIndex = Random.Range(3,7);}
+		while(RandomTrackIndex == m_CurrentBackgroundTrackIndex)
+		{
+			if(m_CurrentSceneType == SceneType.Menu){RandomTrackIndex = Random.Range(0,3);}
+			if(m_CurrentSceneType == SceneType.Gameplay){RandomTrackIndex = Random.Range(3,7);}
+		}
 		
 		LoadAndPlayBackgroundTrack(m_BackgroundTracks[RandomTrackIndex]);
 	
 		if(RandomTrackIndex == 1 || RandomTrackIndex == 2){m_BackgroundClipLength = m_BackgroundTracks[RandomTrackIndex].length * 6f; return;}
 		m_BackgroundClipLength = m_BackgroundTracks[RandomTrackIndex].length;
+		
+		m_CurrentBackgroundTrackIndex = RandomTrackIndex;
 	}
 	
 	public void LoadAndPlayBackgroundTrack(AudioClip _Clip)
