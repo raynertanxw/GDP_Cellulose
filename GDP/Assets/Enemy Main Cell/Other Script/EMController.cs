@@ -254,6 +254,9 @@ public class EMController : MonoBehaviour
 	// Stun the enemy main cell after receiving certain amount of hits within certain period of time
 	IEnumerator Stun()
 	{
+		// Display Enemy Stun UI
+		Misc_UI.Instance.DisplayEnemyStun(Settings.s_fDefaultStunTime + Mathf.Sqrt((float)nDamageNum)/4f);
+
         // When already stunned cannot call this function
 		bStunned = true;
 		bCanStun = false;
