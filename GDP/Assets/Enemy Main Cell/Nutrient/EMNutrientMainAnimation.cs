@@ -76,6 +76,7 @@ public class EMNutrientMainAnimation : MonoBehaviour
 
 	void Update () 
 	{
+		// // Update the position of footsteps if footsteps are allowed for the current object
 		if (bHaveFootstep)
 			UpdateFootstep ();
 	}

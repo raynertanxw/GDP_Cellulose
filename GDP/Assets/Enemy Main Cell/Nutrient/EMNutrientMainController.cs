@@ -45,6 +45,7 @@ public class EMNutrientMainController : MonoBehaviour
 			StartCoroutine (Move ());
 	}
 
+	// Movement
 	IEnumerator Move ()
 	{
 		// Move the resource main for 2 seconds
@@ -61,6 +62,7 @@ public class EMNutrientMainController : MonoBehaviour
 		bCanMove = true;
 	}
 
+	// Limit position according to camera 
 	void CameraLimit ()
 	{
 		if (transform.position.x <= EMHelper.leftLimit || transform.position.x >= EMHelper.rightLimit) 

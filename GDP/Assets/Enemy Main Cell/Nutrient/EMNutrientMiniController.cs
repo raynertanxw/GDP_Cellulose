@@ -75,6 +75,7 @@ public class EMNutrientMiniController : MonoBehaviour
 		}
 	}
 
+	// Pause using A* pathfinding
  	IEnumerator PauseAStar ()
 	{
 		// Make sure the A* pathfinding is not called until the initial movement comes to the end
@@ -88,11 +89,13 @@ public class EMNutrientMiniController : MonoBehaviour
 		bCanFindPath = true;
 	}
 
+	// Initial movement of enemy mini nutrient
 	void InitialMovement ()
 	{
 		thisRB.AddForce ((EMHelper.Instance().Position - (Vector2)this.gameObject.transform.position) * Random.Range (5f, 10f));
 	}
 
+	// Update rotation
 	void RotationUpdate ()
 	{
 		// Rotate the mini nutrient towards current velocity
@@ -103,6 +106,7 @@ public class EMNutrientMiniController : MonoBehaviour
 		}
 	}
 
+	// Enemy main nutrient getting absorbed and provide nutrient(child cell) to enemy main cell
 	void Absorb ()
 	{
 		Vector2 vectorToTarget = EMHelper.Instance().Position - (Vector2)transform.position;
