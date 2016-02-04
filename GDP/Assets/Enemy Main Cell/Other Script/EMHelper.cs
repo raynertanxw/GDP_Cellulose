@@ -237,7 +237,7 @@ public class EMHelper : MonoBehaviour
 				1.75f / EMDifficulty.Instance().CurrentDiff
 				);
 
-			if (Level_Manager.LevelID > 3)
+			if (Level_Manager.LevelID > 2)
 				intervalTime /= 1.2f;
 			yield return new WaitForSeconds (intervalTime);
 

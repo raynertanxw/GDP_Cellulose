@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: LEVEL_3
   m_EditorClassIdentifier: 
   nPlayerInitialHealth: 50
-  nPlayerInitialResourceCount: 200
+  nPlayerInitialResourceCount: 150
   nPlayerNutrientPerBlock: 10
   fPlayerNutrientChance: .400000006
   nPlayerChildSpawnCost: 5
@@ -28,8 +28,8 @@ MonoBehaviour:
   nEnemyMainInitialNutrientNum: 100
   nEnemyMainInitialChildCellNum: 30
   nEnemyMainInitialAggressiveness: 5
-  fEnemyMainInitialVertSpeed: .0599999987
-  fEnemyMainMinHiriSpeed: .0599999987
+  fEnemyMainInitialVertSpeed: .0649999976
+  fEnemyMainMinHiriSpeed: .0649999976
   fDefaultStunTime: 4
   fDefaultStunTolerance: 7
   nEnemyChildCountCap: 50
