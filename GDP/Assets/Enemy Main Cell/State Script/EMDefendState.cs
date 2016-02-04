@@ -18,6 +18,9 @@ public class EMDefendState : IEMState
 		controller = m_EMFSM.emController;
 		helper = m_EMFSM.emHelper;
 
+		// Turn blink animation on
+		EMAnimation.Instance ().CanBlink = true;
+
 		// Reset availability to command mini cell to Defend state
 		if (!helper.CanAddDefend)
 			helper.CanAddDefend = true;
@@ -27,7 +30,7 @@ public class EMDefendState : IEMState
 		// Reset transition availability
 		transition.CanTransit = true;
 		// Pause the transition for randomized time
-		float fPauseTime = Random.Range (2f, 4f);
+		float fPauseTime = Random.Range (Mathf.Sqrt(Mathf.Sqrt((float)PlayerChildFSM.GetActiveChildCount () + 4f)) * 2f, Mathf.Sqrt((float)PlayerChildFSM.GetActiveChildCount () + 4f) * 2f);
 		helper.StartPauseTransition (fPauseTime);
 	}
 	
@@ -80,21 +83,14 @@ public class EMDefendState : IEMState
 		//Start checking transition only when transition is allowed
 		if (transition.CanTransit) 
 		{
-			float nEnemyChildFactor = (float)m_EMFSM.AvailableChildNum / 10f;
-			float nPlayerChildFactor = (float)PlayerChildFSM.GetActiveChildCount () / 10f;
-
 			// Transit to other states only when there are more player mini cells than enemy mini cells
-			if (nEnemyChildFactor >= nPlayerChildFactor && helper.CanAddDefend)
+			if (m_EMFSM.AvailableChildNum >= PlayerChildFSM.GetActiveChildCount ())
 			{
-				// Transit to Production only if has less than 25 mini cells and has nutrient
-				if (m_EMFSM.AvailableChildNum < 25 && controller.NutrientNum > 0)
-				{
-					transition.Transition (10f - ((float)m_EMFSM.AvailableChildNum - 10f)/2f, EMState.Production);
-				}
-
-				// If not transit to Production state, then transit to Maintain state
-				m_EMFSM.ChangeState (EMState.Maintain);
+				m_EMFSM.ChangeState (EMState.Production);
 			}
+
+			// If not transit to Production state, then transit to Maintain state
+			m_EMFSM.ChangeState (EMState.Maintain);
 		}
 
 		// Check transition every 0.2 second to save computing power
@@ -108,6 +104,9 @@ public class EMDefendState : IEMState
 		controller = m_EMFSM.emController;
 		helper = m_EMFSM.emHelper;
 
+		// Reset animation status
+		if (EMAnimation.Instance ().CanBlink)
+			EMAnimation.Instance ().CanBlink = false;
 		// Reset availability to command mini cell to Defend state
 		if (!helper.CanAddDefend)
 			helper.CanAddDefend = true;
