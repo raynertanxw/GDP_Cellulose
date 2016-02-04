@@ -1,0 +1,158 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!241 &24100000
+AudioMixerController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: EnemyAttack
+  m_OutputGroup: {fileID: 24363500, guid: 94fd9126e0ceea4449c2f4cbf16dad2b, type: 2}
+  m_MasterGroup: {fileID: 24300001}
+  m_Snapshots:
+  - {fileID: 24500003}
+  m_StartSnapshot: {fileID: 24500003}
+  m_SuspendThreshold: -80
+  m_EnableSuspend: 1
+  m_ExposedParameters: []
+  m_AudioMixerGroupViews:
+  - guids:
+    - 495c16d3abd827f40bba2eb6e9e324b4
+    - c717058642135ba4c8be1c6ee2452aeb
+    - 73e0963a4a7c961489db8a166d1156a7
+    - 555ea443ebf82c6498f41fe4ba0baaa9
+    name: View
+  m_CurrentViewIndex: 0
+  m_TargetSnapshot: {fileID: 24500003}
+--- !u!243 &24300001
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Master
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 495c16d3abd827f40bba2eb6e9e324b4
+  m_Children:
+  - {fileID: 24388330}
+  - {fileID: 24391658}
+  - {fileID: 24369096}
+  m_Volume: 46c62af55cdc8f1429f1ca879a63c3dd
+  m_Pitch: 58fc3725e930547449735170da7eeaa5
+  m_Effects:
+  - {fileID: 24400002}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!243 &24369096
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: LandmineExplode
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 555ea443ebf82c6498f41fe4ba0baaa9
+  m_Children: []
+  m_Volume: 1684e3c0d895d024b99f3e4fd9cc12c8
+  m_Pitch: 34409d06965de13499e8719c6c727ab0
+  m_Effects:
+  - {fileID: 24407888}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!243 &24388330
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Charge
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: c717058642135ba4c8be1c6ee2452aeb
+  m_Children: []
+  m_Volume: 9e84ee66e5b81f64e9e4b9a90c92bcd7
+  m_Pitch: 54220f1ad4f48e2478b11e199ede7321
+  m_Effects:
+  - {fileID: 24474478}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!243 &24391658
+AudioMixerGroupController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: LandmineBeep
+  m_AudioMixer: {fileID: 24100000}
+  m_GroupID: 73e0963a4a7c961489db8a166d1156a7
+  m_Children: []
+  m_Volume: 789678a050931404989d9958cb0a5530
+  m_Pitch: 12f79487d15d1694c96606b4ff3e288b
+  m_Effects:
+  - {fileID: 24422192}
+  m_UserColorIndex: 0
+  m_Mute: 0
+  m_Solo: 0
+  m_BypassEffects: 0
+--- !u!244 &24400002
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 
+  m_EffectID: e3454f58eebabe44ea9c3d01fdc30093
+  m_EffectName: Attenuation
+  m_MixLevel: d53af98ea61fb5342b65fad458b32b01
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24407888
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 
+  m_EffectID: 1d08947f182f25841abacc1b6e94a4e1
+  m_EffectName: Attenuation
+  m_MixLevel: ebb5b569defd834409b6ab8f620dfb58
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24422192
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 
+  m_EffectID: d3eb0d817a7874d449298ff304426df4
+  m_EffectName: Attenuation
+  m_MixLevel: 9ea8d3d38295c584c9894f0681673efb
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!244 &24474478
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: 
+  m_EffectID: 1906f2e227c5f6a40bb20dcc42d3a691
+  m_EffectName: Attenuation
+  m_MixLevel: 20c292c5742d72a4a9ed69e3bd82f09f
+  m_Parameters: []
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
+--- !u!245 &24500003
+AudioMixerSnapshotController:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Snapshot
+  m_AudioMixer: {fileID: 24100000}
+  m_SnapshotID: 3fe1fe7803b093a409e8118fbb0c2926
+  m_FloatValues: {}
+  m_TransitionOverrides: {}

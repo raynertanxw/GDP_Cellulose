@@ -70,7 +70,8 @@ AudioSource:
   m_GameObject: {fileID: 129788}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 24385066, guid: 94fd9126e0ceea4449c2f4cbf16dad2b,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -158,7 +159,7 @@ MonoBehaviour:
   m_EMain: {fileID: 0}
   m_ChargeTarget: {fileID: 0}
   m_AttackTarget: {fileID: 0}
-  bHitWall: 0
+  m_bHitWall: 0
 --- !u!212 &21292564
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -206,6 +207,11 @@ Prefab:
       propertyPath: m_SortingOrder
       value: -1
       objectReference: {fileID: 0}
+    - target: {fileID: 0}
+      propertyPath: OutputAudioMixerGroup
+      value: 
+      objectReference: {fileID: 24385066, guid: 94fd9126e0ceea4449c2f4cbf16dad2b,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 0}
   m_RootGameObject: {fileID: 129788}
