@@ -2373,7 +2373,7 @@ RectTransform:
   - {fileID: 790576292}
   - {fileID: 2026364173}
   - {fileID: 1316537331}
-  - {fileID: 2075040623}
+  - {fileID: 1364505986}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_AnchorMin: {x: 0, y: 0}
@@ -4805,11 +4805,11 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
-  m_Father: {fileID: 2075040623}
-  m_RootOrder: 0
+  m_Father: {fileID: 729912256}
+  m_RootOrder: 9
   m_AnchorMin: {x: .5, y: .5}
   m_AnchorMax: {x: .5, y: .5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -39, y: 1414}
   m_SizeDelta: {x: 960, y: 800}
   m_Pivot: {x: .5, y: .5}
 --- !u!114 &1364505987
@@ -4833,7 +4833,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 12800000, guid: cc6c6bc0a56e04104ba8f1f1ea6d9e2f, type: 3}
-    m_FontSize: 35
+    m_FontSize: 38
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -4845,10 +4845,10 @@ MonoBehaviour:
     m_LineSpacing: 1
   m_Text: "Development Team:\nChong Nian Kai\nWong Qin Liang\nXu Jie\nTan Xue Wen,
     Rayner\n\nSpecial Thanks To Our Lecturers:\nTan Hong Yap\nNg Chongming\nFinnigan,
-    Douglas Antony \nSean Lim\nEdward Lee\n\nMusic Credits:\nThe Source & Menu Theme
-    - TBC-x1x2x3\nHero\u2019s Journey - Davirus\nKeep It Running - Cody M. Gibson\nIn
-    Every Direction ! - James Opie\nRunner - Simon Bisset\nRace Against Time - Sebastian
-    Breitenbach\nUniversal SFX - Imphenzi"
+    Douglas Antony \nSean Lim\nEdward Lee\n\nMusic Credits:\nHero\u2019s Journey -
+    Davirus\nRunner - Simon Bisset\nUniversal SFX - Imphenzi\nKeep It Running - Cody
+    M. Gibson\nIn Every Direction ! - James Opie\nThe Source & Menu Theme - TBC-x1x2x3\nRace
+    Against Time - Sebastian Breitenbach"
 --- !u!222 &1364505988
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -7725,46 +7725,6 @@ AudioSource:
       tangentMode: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
---- !u!1 &2075040622
-GameObject:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 4
-  m_Component:
-  - 224: {fileID: 2075040623}
-  - 222: {fileID: 2075040625}
-  m_Layer: 5
-  m_Name: About_Panel
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &2075040623
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2075040622}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 1364505986}
-  m_Father: {fileID: 729912256}
-  m_RootOrder: 9
-  m_AnchorMin: {x: .5, y: 1}
-  m_AnchorMax: {x: .5, y: 1}
-  m_AnchoredPosition: {x: -39, y: 454}
-  m_SizeDelta: {x: 960, y: 800}
-  m_Pivot: {x: .5, y: .5}
---- !u!222 &2075040625
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2075040622}
 --- !u!1 &2077063105
 GameObject:
   m_ObjectHideFlags: 0
