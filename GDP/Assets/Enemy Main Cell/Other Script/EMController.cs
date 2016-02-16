@@ -182,6 +182,10 @@ public class EMController : MonoBehaviour
 		// Keep updating velocity when stunned
 		if (bStunned && thisRB.velocity != velocity)
 			ResetVelocity ();
+		// Check the direction of horizontal movement is correct
+		HorizontalCheck();
+		// Make sure the horizntal velocity is not lower than its minimum value
+		HorizontalVelocityCheck ();
 		// Update Aggresiveness
 		UpdateAggressiveness ();
 		// Check whether the Enemy main is being attacked by the player
@@ -200,10 +204,6 @@ public class EMController : MonoBehaviour
 		if (bCanChangeHori && !bPushed && !bStunned) {
 			StartCoroutine (MovingHorizontally ());
 		}
-		// Check the direction of horizontal movement is correct
-		HorizontalCheck();
-		// Make sure the horizntal velocity is not lower than its minimum value
-		HorizontalVelocityCheck ();
 		// Update values according to current dificulty
 		DifficultyUpdate ();
 	}
