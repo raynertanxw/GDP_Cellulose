@@ -171,6 +171,10 @@ public class player_control : MonoBehaviour
 			{
 				m_fHoldTime -= m_fHoldSpawnInterval;
 				ActionSpawn((int)activeNode);
+
+				// Update tutorial state
+				if (Tutorial.Instance().tutorialState == TutorialState.PlayerNodeHoldWaiting)
+					Tutorial.Instance().tutorialState = TutorialState.PlayerNodeHoldCompleted;
 			}
 		}
 		else
@@ -443,12 +447,17 @@ public class player_control : MonoBehaviour
 			case Node.LeftNode:
 				leftNodeChildText.transform.localPosition = new Vector3(leftNodeChildText.transform.localPosition.x, childCountTextOriginY + childCountTextPopOffsetY);
 				m_LeftNodeChildTextAnimate.ExpandContract(1.1f, 1, 4.0f, true, 0.4f);
+
 				break;
 			case Node.RightNode:
 				rightNodeChildText.transform.localPosition = new Vector3(rightNodeChildText.transform.localPosition.x, childCountTextOriginY + childCountTextPopOffsetY);
 				m_RightNodeChildTextAnimate.ExpandContract(1.1f, 1, 4.0f, true, 0.4f);
 				break;
 			}
+
+			// Update tutorial state
+			if (Tutorial.Instance().tutorialState == TutorialState.PlayerNodeTapWaiting)
+				Tutorial.Instance().tutorialState = TutorialState.PlayerNodeTapCompleted;
 
 			AudioManager.PlayPMSoundEffect(PlayerMainSFX.SpawnCell);
 		}

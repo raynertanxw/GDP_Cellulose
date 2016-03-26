@@ -22,6 +22,10 @@ public class Nutrients : MonoBehaviour
 				s_playerNutrientPool[i].spriteRen.enabled = true;
 				s_playerNutrientPool[i].bIsInPool = false;
 
+				// Update tutorial state
+				if (Tutorial.Instance().tutorialState == (int)TutorialState.Start)
+					Tutorial.Instance().playerNutrient = s_playerNutrientPool[i].gameObject;
+
 				return s_playerNutrientPool[i];
 			}
 		}
@@ -141,6 +145,8 @@ public class Nutrients : MonoBehaviour
 			bIsCollectable = false;
 
 			mAnimate.StopExpandContract(false);
+
+			Tutorial.Instance().tutorialState = TutorialState.PlayerNutrientCollected;
 		}
 	}
 
