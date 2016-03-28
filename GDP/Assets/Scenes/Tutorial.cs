@@ -5,7 +5,10 @@ public enum TutorialState {
 	Start, 
 	PlayerNutrientSpawned, PlayerNutrientWaiting, PlayerNutrientCollected, 
 	PlayerNodeTapWaiting, PlayerNodeTapCompleted,
-	PlayerNodeHoldWaiting, PlayerNodeHoldCompleted};
+	PlayerNodeHoldWaiting, PlayerNodeHoldCompleted,
+	PlayerNodeCommandWaiting, PlayerNodeCommandCompleted,
+	SquadCaptainSpawnWaiting, SquadCaptainSpawnCompleted,
+	End};
 
 public class Tutorial : MonoBehaviour 
 {
@@ -50,6 +53,18 @@ public class Tutorial : MonoBehaviour
 			Time.timeScale = 1f;
 			StartCoroutine (PlayerNodeHoldWaiting ());
 		}
+		else if (tutorialState == TutorialState.PlayerNodeHoldCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
+			StartCoroutine (PlayerNodeCommandWaiting ());
+		}
+		else if (tutorialState == TutorialState.PlayerNodeCommandCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
+			StartCoroutine (SquadCaptainSpawnWaiting ());
+		}
+		else if (tutorialState == TutorialState.SquadCaptainSpawnCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
+			tutorialState = TutorialState.End;
+		}
 	}
 
 	IEnumerator PlayerNutrientSpawned ()
@@ -70,6 +85,20 @@ public class Tutorial : MonoBehaviour
 	{
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.PlayerNodeHoldWaiting;
+		Time.timeScale = 0.5f;
+	}
+
+	IEnumerator PlayerNodeCommandWaiting ()
+	{
+		yield return new WaitForSeconds (3f);
+		Tutorial.Instance().tutorialState = TutorialState.PlayerNodeCommandWaiting;
+		Time.timeScale = 0.001f;
+	}
+
+	IEnumerator SquadCaptainSpawnWaiting ()
+	{
+		yield return new WaitForSeconds (3f);
+		Tutorial.Instance().tutorialState = TutorialState.SquadCaptainSpawnWaiting;
 		Time.timeScale = 0.5f;
 	}
 }

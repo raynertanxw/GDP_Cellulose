@@ -690,6 +690,10 @@ public class player_control : MonoBehaviour
 			PlayerSquadFSM.Instance.Initialise(spawnPos);
 
 			PlayerMain.Instance.animate.ExpandContract(1.0f, 1, 1.75f);
+
+			// Update tutorial state
+			if (Tutorial.Instance().tutorialState == TutorialState.SquadCaptainSpawnWaiting)
+				Tutorial.Instance().tutorialState = TutorialState.SquadCaptainSpawnCompleted;
 		}
 		else
 		{
@@ -938,6 +942,10 @@ public class player_control : MonoBehaviour
 		}
 
 		activeDraggedNode = Node.None;
+
+		// Update tutorial state
+		if (Tutorial.Instance().tutorialState == TutorialState.PlayerNodeCommandWaiting)
+			Tutorial.Instance().tutorialState = TutorialState.PlayerNodeCommandCompleted;
 	}
 
 	public void MainCellBtnUp()

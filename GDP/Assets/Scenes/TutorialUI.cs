@@ -16,7 +16,9 @@ public class TutorialUI : MonoBehaviour
 
 	private Text playerNutrientText,
 				 playerNodeTapText,
-				 playerNodeHoldText;
+				 playerNodeHoldText,
+				 playerNodeCommandText,
+				 squadCaptainSpawnText;
 	
 	void Start () 
 	{
@@ -27,6 +29,8 @@ public class TutorialUI : MonoBehaviour
 		playerNutrientText = transform.GetChild(1).GetComponent<Text>();
 		playerNodeTapText = transform.GetChild(2).GetComponent<Text>();
 		playerNodeHoldText = transform.GetChild(3).GetComponent<Text>();
+		playerNodeCommandText = transform.GetChild(4).GetComponent<Text>();
+		squadCaptainSpawnText = transform.GetChild(5).GetComponent<Text>();
 	}
 
 	// Update UI according to the current state
@@ -35,7 +39,9 @@ public class TutorialUI : MonoBehaviour
 		// Tutorial Panel
 		if (Tutorial.Instance ().tutorialState == TutorialState.PlayerNutrientWaiting ||
 		    Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeTapWaiting ||
-		    Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeHoldWaiting) {
+		    Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeHoldWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeCommandWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.SquadCaptainSpawnWaiting) {
 			if (!tutorialPanelImage.enabled)
 				tutorialPanelImage.enabled = true;
 		} else {
@@ -65,6 +71,22 @@ public class TutorialUI : MonoBehaviour
 		} else {
 			if (playerNodeHoldText.enabled)
 				playerNodeHoldText.enabled = false;
+		}
+		// Player Node Command Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeCommandWaiting) {
+			if (!playerNodeCommandText.enabled)
+				playerNodeCommandText.enabled = true;
+		} else {
+			if (playerNodeCommandText.enabled)
+				playerNodeCommandText.enabled = false;
+		}
+		// Squad Captain Spawn Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.SquadCaptainSpawnWaiting) {
+			if (!squadCaptainSpawnText.enabled)
+				squadCaptainSpawnText.enabled = true;
+		} else {
+			if (squadCaptainSpawnText.enabled)
+				squadCaptainSpawnText.enabled = false;
 		}
 	}
 }

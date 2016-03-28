@@ -146,7 +146,9 @@ public class Nutrients : MonoBehaviour
 
 			mAnimate.StopExpandContract(false);
 
-			Tutorial.Instance().tutorialState = TutorialState.PlayerNutrientCollected;
+			// Update tutorial state
+			if (Tutorial.Instance().tutorialState == TutorialState.PlayerNutrientWaiting)
+				Tutorial.Instance().tutorialState = TutorialState.PlayerNutrientCollected;
 		}
 	}
 
