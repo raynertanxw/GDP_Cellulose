@@ -8,6 +8,10 @@ public enum TutorialState {
 	PlayerNodeHoldWaiting, PlayerNodeHoldCompleted,
 	PlayerNodeCommandWaiting, PlayerNodeCommandCompleted,
 	SquadCaptainSpawnWaiting, SquadCaptainSpawnCompleted,
+	EnemyMainProductionWaiting, EnemyMainProductionCompleted,
+	EnemyMainDefendWaiting, EnemyMainDefendCompleted,
+	EnemyMainCautiousAttackWaiting, EnemyMainCautiousAttackCompleted,
+	EnemyMainAggressiveAttackWaiting, EnemyMainAggressiveAttackCompleted,
 	End};
 
 public class Tutorial : MonoBehaviour 
@@ -41,6 +45,7 @@ public class Tutorial : MonoBehaviour
 
 	void Update () 
 	{
+		// Update the tutorial state
 		if (tutorialState == TutorialState.Start && playerNutrient != null) {
 			StartCoroutine (PlayerNutrientSpawned ());
 			tutorialState = TutorialState.PlayerNutrientSpawned;
@@ -62,6 +67,22 @@ public class Tutorial : MonoBehaviour
 			StartCoroutine (SquadCaptainSpawnWaiting ());
 		}
 		else if (tutorialState == TutorialState.SquadCaptainSpawnCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
+			StartCoroutine (EnemyMainProductionWaiting ());
+		}
+		else if (tutorialState == TutorialState.EnemyMainProductionCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
+			StartCoroutine (EnemyMainDefendWaiting ());
+		}
+		else if (tutorialState == TutorialState.EnemyMainDefendCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
+			StartCoroutine (EnemyMainCautiousAttackWaiting ());
+		}
+		else if (tutorialState == TutorialState.EnemyMainCautiousAttackCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
+			StartCoroutine (EnemyMainAggressiveAttackWaiting ());
+		}
+		else if (tutorialState == TutorialState.EnemyMainAggressiveAttackCompleted && Time.timeScale != 1f) {
 			Time.timeScale = 1f;
 			tutorialState = TutorialState.End;
 		}
@@ -100,5 +121,49 @@ public class Tutorial : MonoBehaviour
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.SquadCaptainSpawnWaiting;
 		Time.timeScale = 0.5f;
+	}
+
+	IEnumerator EnemyMainProductionWaiting ()
+	{
+		yield return new WaitForSeconds (3f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainProductionWaiting;
+		EMTransition.Instance ().CanTransit = true;
+		EMTransition.Instance ().Transition (0f, EMState.Production);
+		Time.timeScale = 0.75f;
+		yield return new WaitForSeconds (3f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainProductionCompleted;
+	}
+
+	IEnumerator EnemyMainDefendWaiting ()
+	{
+		yield return new WaitForSeconds (2f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainDefendWaiting;
+		EMTransition.Instance ().CanTransit = true;
+		EMTransition.Instance ().Transition (0f, EMState.Defend);
+		Time.timeScale = 0.75f;
+		yield return new WaitForSeconds (3f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainDefendCompleted;
+	}
+
+	IEnumerator EnemyMainCautiousAttackWaiting ()
+	{
+		yield return new WaitForSeconds (2f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainCautiousAttackWaiting;
+		EMTransition.Instance ().CanTransit = true;
+		EMTransition.Instance ().Transition (0f, EMState.CautiousAttack);
+		Time.timeScale = 0.75f;
+		yield return new WaitForSeconds (3f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainCautiousAttackCompleted;
+	}
+
+	IEnumerator EnemyMainAggressiveAttackWaiting ()
+	{
+		yield return new WaitForSeconds (2f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainAggressiveAttackWaiting;
+		EMTransition.Instance ().CanTransit = true;
+		EMTransition.Instance ().Transition (0f, EMState.AggressiveAttack);
+		Time.timeScale = 0.75f;
+		yield return new WaitForSeconds (3f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainAggressiveAttackCompleted;
 	}
 }
