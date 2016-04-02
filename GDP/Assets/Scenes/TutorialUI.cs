@@ -18,7 +18,11 @@ public class TutorialUI : MonoBehaviour
 				 playerNodeTapText,
 				 playerNodeHoldText,
 				 playerNodeCommandText,
-				 squadCaptainSpawnText;
+				 squadCaptainSpawnText,
+				 enemyMainProductionText,
+				 enemyMainDefendText,
+				 enemyMainCautiousAttackText,
+				 enemyMainAggressiveAttackText;
 	
 	void Start () 
 	{
@@ -31,6 +35,10 @@ public class TutorialUI : MonoBehaviour
 		playerNodeHoldText = transform.GetChild(3).GetComponent<Text>();
 		playerNodeCommandText = transform.GetChild(4).GetComponent<Text>();
 		squadCaptainSpawnText = transform.GetChild(5).GetComponent<Text>();
+		enemyMainProductionText = transform.GetChild(6).GetComponent<Text>();
+		enemyMainDefendText = transform.GetChild(7).GetComponent<Text>();
+		enemyMainCautiousAttackText = transform.GetChild(8).GetComponent<Text>();
+		enemyMainAggressiveAttackText = transform.GetChild(9).GetComponent<Text>();
 	}
 
 	// Update UI according to the current state
@@ -41,7 +49,11 @@ public class TutorialUI : MonoBehaviour
 		    Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeTapWaiting ||
 		    Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeHoldWaiting ||
 		    Tutorial.Instance ().tutorialState == TutorialState.PlayerNodeCommandWaiting ||
-		    Tutorial.Instance ().tutorialState == TutorialState.SquadCaptainSpawnWaiting) {
+		    Tutorial.Instance ().tutorialState == TutorialState.SquadCaptainSpawnWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainProductionWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainDefendWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainCautiousAttackWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainAggressiveAttackWaiting) {
 			if (!tutorialPanelImage.enabled)
 				tutorialPanelImage.enabled = true;
 		} else {
@@ -87,6 +99,38 @@ public class TutorialUI : MonoBehaviour
 		} else {
 			if (squadCaptainSpawnText.enabled)
 				squadCaptainSpawnText.enabled = false;
+		}
+		// Enemy Main Production Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.EnemyMainProductionWaiting) {
+			if (!enemyMainProductionText.enabled)
+				enemyMainProductionText.enabled = true;
+		} else {
+			if (enemyMainProductionText.enabled)
+				enemyMainProductionText.enabled = false;
+		}
+		// Enemy Main Defend Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.EnemyMainDefendWaiting) {
+			if (!enemyMainDefendText.enabled)
+				enemyMainDefendText.enabled = true;
+		} else {
+			if (enemyMainDefendText.enabled)
+				enemyMainDefendText.enabled = false;
+		}
+		// Enemy Main Cautious Attack Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.EnemyMainCautiousAttackWaiting) {
+			if (!enemyMainCautiousAttackText.enabled)
+				enemyMainCautiousAttackText.enabled = true;
+		} else {
+			if (enemyMainCautiousAttackText.enabled)
+				enemyMainCautiousAttackText.enabled = false;
+		}
+		// Enemy Main Aggressive Attack Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.EnemyMainAggressiveAttackWaiting) {
+			if (!enemyMainAggressiveAttackText.enabled)
+				enemyMainAggressiveAttackText.enabled = true;
+		} else {
+			if (enemyMainAggressiveAttackText.enabled)
+				enemyMainAggressiveAttackText.enabled = false;
 		}
 	}
 }

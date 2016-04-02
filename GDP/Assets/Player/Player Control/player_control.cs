@@ -611,6 +611,10 @@ public class player_control : MonoBehaviour
 		// Squad Cpt can only spawn one instance.
 		if (PlayerSquadFSM.Instance.bIsAlive == true) return;
 
+		// Prohibit spawning of squad captain before it is permitted
+		if (Tutorial.bIsTutorial && Tutorial.Instance ().tutorialState < TutorialState.SquadCaptainSpawnWaiting)
+			return;
+
 		// Child count criteria met.
 		if (TotalActiveChildInNodes() >= Settings.s_nPlayerSqaudCaptainChildCost)
 		{

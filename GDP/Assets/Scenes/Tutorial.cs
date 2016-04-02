@@ -24,6 +24,8 @@ public class Tutorial : MonoBehaviour
 		return instance;
 	}
 
+	public static bool bIsTutorial = false;
+
 	public GameObject playerNutrient;
 
 	public GameObject[] EnemyNutrients = new GameObject[10];
@@ -34,6 +36,8 @@ public class Tutorial : MonoBehaviour
 	{
 		if (instance == null)
 			instance = this;
+
+		bIsTutorial = true;
 
 		tutorialState = (int)TutorialState.Start;
 
@@ -128,7 +132,7 @@ public class Tutorial : MonoBehaviour
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainProductionWaiting;
 		EMTransition.Instance ().CanTransit = true;
-		EMTransition.Instance ().Transition (0f, EMState.Production);
+		EnemyMainFSM.Instance ().ChangeState (EMState.Production);
 		Time.timeScale = 0.75f;
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainProductionCompleted;
@@ -139,7 +143,7 @@ public class Tutorial : MonoBehaviour
 		yield return new WaitForSeconds (2f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainDefendWaiting;
 		EMTransition.Instance ().CanTransit = true;
-		EMTransition.Instance ().Transition (0f, EMState.Defend);
+		EnemyMainFSM.Instance ().ChangeState (EMState.Defend);
 		Time.timeScale = 0.75f;
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainDefendCompleted;
@@ -150,7 +154,7 @@ public class Tutorial : MonoBehaviour
 		yield return new WaitForSeconds (2f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainCautiousAttackWaiting;
 		EMTransition.Instance ().CanTransit = true;
-		EMTransition.Instance ().Transition (0f, EMState.CautiousAttack);
+		EnemyMainFSM.Instance ().ChangeState (EMState.CautiousAttack);
 		Time.timeScale = 0.75f;
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainCautiousAttackCompleted;
@@ -161,7 +165,7 @@ public class Tutorial : MonoBehaviour
 		yield return new WaitForSeconds (2f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainAggressiveAttackWaiting;
 		EMTransition.Instance ().CanTransit = true;
-		EMTransition.Instance ().Transition (0f, EMState.AggressiveAttack);
+		EnemyMainFSM.Instance ().ChangeState (EMState.AggressiveAttack);
 		Time.timeScale = 0.75f;
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainAggressiveAttackCompleted;

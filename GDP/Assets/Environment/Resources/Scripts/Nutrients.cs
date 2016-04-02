@@ -136,6 +136,10 @@ public class Nutrients : MonoBehaviour
 		if (GameManager.IsPaused)
 			return;
 
+		// Prohibit collecting of nutrient before it is permitted
+		if (Tutorial.bIsTutorial && Tutorial.Instance ().tutorialState < TutorialState.PlayerNutrientWaiting)
+			return;
+
 		if (bIsCollectable)
 		{
 			AudioManager.PlayPMSoundEffect(PlayerMainSFX.AbsorbNutrient);
