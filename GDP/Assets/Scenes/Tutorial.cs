@@ -12,6 +12,7 @@ public enum TutorialState {
 	EnemyMainDefendWaiting, EnemyMainDefendCompleted,
 	EnemyMainCautiousAttackWaiting, EnemyMainCautiousAttackCompleted,
 	EnemyMainAggressiveAttackWaiting, EnemyMainAggressiveAttackCompleted,
+	EnemyMainLandmineWaiting, EnemyMainLandmineCompleted,
 	End};
 
 public class Tutorial : MonoBehaviour 
@@ -88,6 +89,10 @@ public class Tutorial : MonoBehaviour
 		}
 		else if (tutorialState == TutorialState.EnemyMainAggressiveAttackCompleted && Time.timeScale != 1f) {
 			Time.timeScale = 1f;
+			StartCoroutine (EnemyMainLandmineWaiting ());
+		}
+		else if (tutorialState == TutorialState.EnemyMainLandmineCompleted && Time.timeScale != 1f) {
+			Time.timeScale = 1f;
 			tutorialState = TutorialState.End;
 		}
 	}
@@ -131,10 +136,12 @@ public class Tutorial : MonoBehaviour
 	{
 		yield return new WaitForSeconds (3f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainProductionWaiting;
-		EMTransition.Instance ().CanTransit = true;
+		// Prohibit other transitions in the next 6 seconds
+		StartCoroutine(EMTransition.Instance().TransitionAvailability(6f));
+		// Transition to Production state for demonstration
 		EnemyMainFSM.Instance ().ChangeState (EMState.Production);
 		Time.timeScale = 0.75f;
-		yield return new WaitForSeconds (3f);
+		yield return new WaitForSeconds (4f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainProductionCompleted;
 	}
 
@@ -142,10 +149,10 @@ public class Tutorial : MonoBehaviour
 	{
 		yield return new WaitForSeconds (2f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainDefendWaiting;
-		EMTransition.Instance ().CanTransit = true;
+		StartCoroutine(EMTransition.Instance().TransitionAvailability(6f));
 		EnemyMainFSM.Instance ().ChangeState (EMState.Defend);
 		Time.timeScale = 0.75f;
-		yield return new WaitForSeconds (3f);
+		yield return new WaitForSeconds (4f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainDefendCompleted;
 	}
 
@@ -153,10 +160,10 @@ public class Tutorial : MonoBehaviour
 	{
 		yield return new WaitForSeconds (2f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainCautiousAttackWaiting;
-		EMTransition.Instance ().CanTransit = true;
+		StartCoroutine(EMTransition.Instance().TransitionAvailability(6f));
 		EnemyMainFSM.Instance ().ChangeState (EMState.CautiousAttack);
 		Time.timeScale = 0.75f;
-		yield return new WaitForSeconds (3f);
+		yield return new WaitForSeconds (4f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainCautiousAttackCompleted;
 	}
 
@@ -164,10 +171,21 @@ public class Tutorial : MonoBehaviour
 	{
 		yield return new WaitForSeconds (2f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainAggressiveAttackWaiting;
-		EMTransition.Instance ().CanTransit = true;
+		StartCoroutine(EMTransition.Instance().TransitionAvailability(6f));
 		EnemyMainFSM.Instance ().ChangeState (EMState.AggressiveAttack);
 		Time.timeScale = 0.75f;
-		yield return new WaitForSeconds (3f);
+		yield return new WaitForSeconds (4f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainAggressiveAttackCompleted;
+	}
+
+	IEnumerator EnemyMainLandmineWaiting ()
+	{
+		yield return new WaitForSeconds (2f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainLandmineWaiting;
+		StartCoroutine(EMTransition.Instance().TransitionAvailability(6f));
+		EnemyMainFSM.Instance ().ChangeState (EMState.Landmine);
+		Time.timeScale = 0.75f;
+		yield return new WaitForSeconds (4f);
+		Tutorial.Instance().tutorialState = TutorialState.EnemyMainLandmineCompleted;
 	}
 }

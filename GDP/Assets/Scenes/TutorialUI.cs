@@ -22,7 +22,8 @@ public class TutorialUI : MonoBehaviour
 				 enemyMainProductionText,
 				 enemyMainDefendText,
 				 enemyMainCautiousAttackText,
-				 enemyMainAggressiveAttackText;
+				 enemyMainAggressiveAttackText,
+				 enemyMainLandmineText;
 	
 	void Start () 
 	{
@@ -39,6 +40,7 @@ public class TutorialUI : MonoBehaviour
 		enemyMainDefendText = transform.GetChild(7).GetComponent<Text>();
 		enemyMainCautiousAttackText = transform.GetChild(8).GetComponent<Text>();
 		enemyMainAggressiveAttackText = transform.GetChild(9).GetComponent<Text>();
+		enemyMainLandmineText = transform.GetChild(10).GetComponent<Text>();
 	}
 
 	// Update UI according to the current state
@@ -53,7 +55,8 @@ public class TutorialUI : MonoBehaviour
 		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainProductionWaiting ||
 		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainDefendWaiting ||
 		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainCautiousAttackWaiting ||
-		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainAggressiveAttackWaiting) {
+		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainAggressiveAttackWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainLandmineWaiting) {
 			if (!tutorialPanelImage.enabled)
 				tutorialPanelImage.enabled = true;
 		} else {
@@ -131,6 +134,14 @@ public class TutorialUI : MonoBehaviour
 		} else {
 			if (enemyMainAggressiveAttackText.enabled)
 				enemyMainAggressiveAttackText.enabled = false;
+		}
+		// Enemy Main Landmine Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.EnemyMainLandmineWaiting) {
+			if (!enemyMainLandmineText.enabled)
+				enemyMainLandmineText.enabled = true;
+		} else {
+			if (enemyMainLandmineText.enabled)
+				enemyMainLandmineText.enabled = false;
 		}
 	}
 }
