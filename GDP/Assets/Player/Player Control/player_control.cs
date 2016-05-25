@@ -173,7 +173,7 @@ public class player_control : MonoBehaviour
 				ActionSpawn((int)activeNode);
 
 				// Update tutorial state
-				if (Tutorial.Instance().tutorialState == TutorialState.PlayerNodeHoldWaiting)
+				if (Tutorial.Instance() != null && Tutorial.Instance().tutorialState == TutorialState.PlayerNodeHoldWaiting)
 					Tutorial.Instance().tutorialState = TutorialState.PlayerNodeHoldCompleted;
 			}
 		}
@@ -456,7 +456,7 @@ public class player_control : MonoBehaviour
 			}
 
 			// Update tutorial state
-			if (Tutorial.Instance().tutorialState == TutorialState.PlayerNodeTapWaiting)
+			if (Tutorial.Instance() != null && Tutorial.Instance().tutorialState == TutorialState.PlayerNodeTapWaiting)
 				Tutorial.Instance().tutorialState = TutorialState.PlayerNodeTapCompleted;
 
 			AudioManager.PlayPMSoundEffect(PlayerMainSFX.SpawnCell);
@@ -612,7 +612,7 @@ public class player_control : MonoBehaviour
 		if (PlayerSquadFSM.Instance.bIsAlive == true) return;
 
 		// Prohibit spawning of squad captain before it is permitted
-		if (Tutorial.bIsTutorial && Tutorial.Instance ().tutorialState < TutorialState.SquadCaptainSpawnWaiting)
+		if (Tutorial.bIsTutorial && Tutorial.Instance() != null && Tutorial.Instance ().tutorialState < TutorialState.SquadCaptainSpawnWaiting)
 			return;
 
 		// Child count criteria met.
@@ -696,7 +696,7 @@ public class player_control : MonoBehaviour
 			PlayerMain.Instance.animate.ExpandContract(1.0f, 1, 1.75f);
 
 			// Update tutorial state
-			if (Tutorial.Instance().tutorialState == TutorialState.SquadCaptainSpawnWaiting)
+			if (Tutorial.Instance() != null && Tutorial.Instance().tutorialState == TutorialState.SquadCaptainSpawnWaiting)
 				Tutorial.Instance().tutorialState = TutorialState.SquadCaptainSpawnCompleted;
 		}
 		else
@@ -948,7 +948,7 @@ public class player_control : MonoBehaviour
 		activeDraggedNode = Node.None;
 
 		// Update tutorial state
-		if (Tutorial.Instance().tutorialState == TutorialState.PlayerNodeCommandWaiting)
+		if (Tutorial.Instance() != null && Tutorial.Instance().tutorialState == TutorialState.PlayerNodeCommandWaiting)
 			Tutorial.Instance().tutorialState = TutorialState.PlayerNodeCommandCompleted;
 	}
 
