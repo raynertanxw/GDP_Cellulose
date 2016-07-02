@@ -186,8 +186,9 @@ public class MainMenu_Buttons : MonoBehaviour
 	{
 		AudioManager.Instance.PlayMenuSoundEffect(MenuSFX.PressSelection);
 
-		Level_Manager.LoadTutorial();
-		SceneManager.LoadScene(3);
+		Level_Manager.LoadLevel(1);
+		//Level_Manager.LoadTutorial();
+		SceneManager.LoadScene("Tutorial");
 	}
 
 
