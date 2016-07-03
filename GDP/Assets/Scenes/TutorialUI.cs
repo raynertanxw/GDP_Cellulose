@@ -23,7 +23,8 @@ public class TutorialUI : MonoBehaviour
 				 enemyMainDefendText,
 				 enemyMainCautiousAttackText,
 				 enemyMainAggressiveAttackText,
-				 enemyMainLandmineText;
+				 enemyMainLandmineText,
+				 endingText;
 	
 	void Start () 
 	{
@@ -41,6 +42,7 @@ public class TutorialUI : MonoBehaviour
 		enemyMainCautiousAttackText = transform.GetChild(8).GetComponent<Text>();
 		enemyMainAggressiveAttackText = transform.GetChild(9).GetComponent<Text>();
 		enemyMainLandmineText = transform.GetChild(10).GetComponent<Text>();
+		endingText = transform.GetChild(11).GetComponent<Text>();
 	}
 
 	// Update UI according to the current state
@@ -56,7 +58,8 @@ public class TutorialUI : MonoBehaviour
 		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainDefendWaiting ||
 		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainCautiousAttackWaiting ||
 		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainAggressiveAttackWaiting ||
-		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainLandmineWaiting) {
+		    Tutorial.Instance ().tutorialState == TutorialState.EnemyMainLandmineWaiting ||
+		    Tutorial.Instance ().tutorialState == TutorialState.Ending) {
 			if (!tutorialPanelImage.enabled)
 				tutorialPanelImage.enabled = true;
 		} else {
@@ -142,6 +145,14 @@ public class TutorialUI : MonoBehaviour
 		} else {
 			if (enemyMainLandmineText.enabled)
 				enemyMainLandmineText.enabled = false;
+		}
+		// Ending Text
+		if (Tutorial.Instance ().tutorialState == TutorialState.Ending) {
+			if (!endingText.enabled)
+				endingText.enabled = true;
+		} else {
+			if (endingText.enabled)
+				endingText.enabled = false;
 		}
 	}
 }

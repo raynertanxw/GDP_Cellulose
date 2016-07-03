@@ -13,7 +13,7 @@ public enum TutorialState {
 	EnemyMainCautiousAttackWaiting, EnemyMainCautiousAttackCompleted,
 	EnemyMainAggressiveAttackWaiting, EnemyMainAggressiveAttackCompleted,
 	EnemyMainLandmineWaiting, EnemyMainLandmineCompleted,
-	End};
+	Ending, End};
 
 public class Tutorial : MonoBehaviour 
 {
@@ -38,10 +38,15 @@ public class Tutorial : MonoBehaviour
 		if (instance == null)
 			instance = this;
 
+		Init ();
+	}
+
+	public void Init ()
+	{
 		bIsTutorial = true;
-
+		
 		tutorialState = (int)TutorialState.Start;
-
+		
 		// Deactive all enemy nutrients by default
 		EnemyNutrients = GameObject.FindGameObjectsWithTag ("EnemyMainNutrient");
 		for (int i = 0; i < 10; i++)
@@ -90,10 +95,6 @@ public class Tutorial : MonoBehaviour
 		else if (tutorialState == TutorialState.EnemyMainAggressiveAttackCompleted && Time.timeScale != 1f) {
 			Time.timeScale = 1f;
 			StartCoroutine (EnemyMainLandmineWaiting ());
-		}
-		else if (tutorialState == TutorialState.EnemyMainLandmineCompleted && Time.timeScale != 1f) {
-			Time.timeScale = 1f;
-			tutorialState = TutorialState.End;
 		}
 	}
 
@@ -187,5 +188,15 @@ public class Tutorial : MonoBehaviour
 		Time.timeScale = 0.75f;
 		yield return new WaitForSeconds (4f);
 		Tutorial.Instance().tutorialState = TutorialState.EnemyMainLandmineCompleted;
+		StartCoroutine (Ending ());
+	}
+
+	IEnumerator Ending ()
+	{
+		yield return new WaitForSeconds (2f);
+		Tutorial.Instance ().tutorialState = TutorialState.Ending;
+		yield return new WaitForSeconds (4f);
+		Tutorial.Instance ().tutorialState = TutorialState.End;
+		Application.LoadLevel ("Main_Menu");
 	}
 }
